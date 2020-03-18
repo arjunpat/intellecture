@@ -1,24 +1,52 @@
 <template>
-  <v-container>
-    <v-card>
-      <v-card-title>Rate your understanding</v-card-title>
-      <v-card-text id="understanding" class="text-center headline" :style="{color: color}">{{ understanding }}</v-card-text>
-      <v-card-actions>
-      <v-slider
-        v-model="sliderValue"
-        :tick-labels="tickLabels"
-        :max="10"
-        thumb-label="always"
-      ></v-slider>
-      </v-card-actions>
-    </v-card>
-    <v-row>
+  <v-container fluid class="fill-height">
+    <v-row align="center" justify="center">
+      <v-col
+        cols="12"
+        sm="8"
+        md="6"
+        lg="4"
+      >
+        <v-card class="mb-3">
+          <v-card-title>Rate your understanding</v-card-title>
+          <v-card-text id="understanding" class="text-center headline" :style="{color: color}">{{ understanding }}</v-card-text>
+          <v-card-actions>
+          <v-slider
+            v-model="sliderValue"
+            :tick-labels="tickLabels"
+            :max="10"
+            thumb-label="always"
+          ></v-slider>
+          </v-card-actions>
+        </v-card>
+        <v-card>
+          <v-card-title>Questions</v-card-title>
+          <v-card-text align="center">
+            <v-text-field
+              label="Ask a question"
+              hide-details="true"
+              outlined
+              class="mb-n3"
+            ></v-text-field>
+            <v-btn color="primary">Ask</v-btn>
+          </v-card-text>
+        </v-card>
+      </v-col>
     </v-row>
   </v-container>
 </template>
 <style>
   #understanding {
     transition: all 0.4s;
+  }
+
+  .v-btn {
+    width: 100%;
+    height: 3.7em !important;
+  }
+
+  .row {
+    max-width: unset !important;
   }
 </style>
 <script>
