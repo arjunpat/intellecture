@@ -36,8 +36,8 @@ export default {
   computed: {
     understanding: function() {
       let index = Math.floor((this.sliderValue+1)/2) - 1;
-      this.color = this.colors[index < 0 ? 0 : index];
-      return this.levels[index < 0 ? 0 : index];
+      this.color = index < 0 ? 'rgb(0,0,0)' : this.colors[index];
+      return index < 0 ? '😭' : this.levels[index];
     }
   }
 };
