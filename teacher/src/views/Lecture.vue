@@ -30,11 +30,11 @@
             v-show="currentTab === 0"
             color="basil"
             flat
-            height="65vh"
+            height="75vh"
             class="pt-3"
           >
             <v-row align="center" justify="center">
-                <v-card width="30%" height="60vh">
+                <v-card class="mt-3" width="30%" height="60vh">
                     <v-card-text>
                         <span style="font-size: 20px; color: black; font-weight: bold;"><span style="background: red; padding: 2px 5px; color: white; border-radius: 3px; font-weight: normal;">LIVE</span> UNDERSTANDING SCORE</span>
                         <br><br><br><br><br><br><br>
@@ -48,10 +48,16 @@
                         <br>
                     </v-card-text>
                 </v-card>
-                <v-card width="60%" height="60vh" align="center" justify="center" style="padding-top: 50px;">
-                    <div id="chart-container" class="ml-3" style="height: 300px; width: 700px"></div>
+                <v-card width="60%" height="60vh" align="center" justify="center" style="">
+                    <div class="ml-3" style="max-width: 900px;">
+                        <line-chart :chart-data="datacollection" :width="400" :height="200"></line-chart>
+                        <button @click="fillData()">Randomize</button>
+                    </div>
                 </v-card>
             </v-row>
+            <v-row align="center" justify="center">
+            </v-row>
+
         </v-card>
           <!-- End of Understanding tab -->
 
@@ -60,6 +66,7 @@
             v-show="currentTab === 1"
             flat
             class="pt-3"
+            height="75vh"
           >
           <v-row align="center" justify="center">
             <v-col align="center">
@@ -115,7 +122,7 @@
       </v-row> -->
 
     </v-container>
-
+<!--
     <v-footer
       fixed
       color="green lighten-3"
@@ -128,17 +135,24 @@
       >
         <span style="font-size: 28px;">Give your students the join code: <span class="text--primary font-weight-black" style="background: #ddd; border-radius: 7px; padding: 4px 10px;">{{ id }}</span></span>
       </v-col>
-    </v-footer>
+    </v-footer>-->
   </v-content>
 </template>
 
 <script>
+/* eslint-disable */
+
+import LineChart from '../components/Chart'
 
 export default {
+  components: {
+    LineChart
+  },
   data () {
     return {
       id: this.$route.query.id,
       lectureName: this.$route.query.name,
+      datacollection: null,
       understandingScore: '--',
       averageUnderstanding: '--',
       range: '--',
@@ -160,11 +174,27 @@ export default {
   methods: {
     initChart () {
 
+    },
+    fillData () {
+      this.datacollection = {
+        labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'],
+          datasets: [
+            {
+              label: 'Understanding',
+              backgroundColor: '#4FC3F7',
+              data: [this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt()]
+            }
+          ]
+        }
+    },
+    getRandomInt () {
+        return Math.floor(Math.random() * (10))
     }
   },
   mounted () {
     this.initChart()
     this.$emit('startlecture')
+    this.fillData()
   }
 }
 </script>

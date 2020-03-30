@@ -13,9 +13,14 @@
       <v-toolbar-title><span id="main-logo">INTELLECTURE</span> Teacher</v-toolbar-title>
 
       <v-spacer></v-spacer>
+
       <v-btn v-if="!started" @click="$router.push({ path: '/new' })">Start Lecture</v-btn>
       <v-btn class="red" v-if="started" @click="$router.push({ path: '/dashboard' }); started = false;">End Lecture</v-btn>
-      <v-btn class="ml-1 deep-orange accent-2">Sign out <img id="avt-img" class="ml-2" v-bind:src="imageurl" width="25px"></v-btn>
+      <v-btn class="ml-1 deep-orange accent-2" v-if="!started">Sign out <img id="avt-img" class="ml-2" v-bind:src="imageurl" width="25px"></v-btn>
+      <div v-if="started" class="ml-3" style="background-color: #AED581; padding: 5px 8px; border-radius: 7px;">
+        <span class="mr-1" style="font-size: 20px; font-family: 'Roboto'; font-weight: 500;">ROOM:</span> <span class="text--primary font-weight-black" style="background: #ddd; border-radius: 7px; padding: 2px 10px; font-size: 25px;">j3238</span>
+      </div>
+
     </v-app-bar>
 
     <div style="height: 64px;"></div>
@@ -42,6 +47,7 @@ export default {
 
 <style>
 @import url('https://fonts.googleapis.com/css?family=Noto+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
 </style>
 
 <style scoped>
