@@ -54,7 +54,7 @@
               </div>
               <br>
                 <v-row align="center" justify="center">
-                  <v-col cols="12" sm="6">
+                  <v-col cols="12" sm="12">
               <v-alert v-if="formErrors" type="error">
                 Fill out all the fields.
               </v-alert>
@@ -85,7 +85,7 @@ export default {
       if (this.className !== '' && this.lectureName !== '') {
         this.formErrors = false
         const id = this.makeId(5)
-        this.$router.push({ path: '/live-lecture?id=' + id + '&name=' + this.lectureName })
+        this.$router.push({ path: '/lecture?id=' + id + '&name=' + this.lectureName })
       } else {
         this.formErrors = true
       }
