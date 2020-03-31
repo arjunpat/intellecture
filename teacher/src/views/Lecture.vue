@@ -30,11 +30,11 @@
             v-show="currentTab === 0"
             color="basil"
             flat
-            height="75vh"
-            class="pt-3"
+            min-height="75vh"
+            class="pt-3 pb-3"
           >
             <v-row align="center" justify="center">
-                <v-card class="mt-3" width="30%" height="60vh">
+                <v-card width="30%" height="60vh">
                     <v-card-text>
                         <span style="font-size: 20px; color: black; font-weight: bold;"><span style="background: red; padding: 2px 5px; color: white; border-radius: 3px; font-weight: normal;">LIVE</span> UNDERSTANDING SCORE</span>
                         <br><br><br><br><br><br><br>
@@ -55,7 +55,21 @@
                     </div>
                 </v-card>
             </v-row>
-            <v-row align="center" justify="center">
+            <v-row class="mt-1" align="center" justify="center">
+              <v-card width="90%" min-height="70px" style="padding: 5px 10px;">
+                <v-row>
+                  <v-col align="left">
+                  <div
+                      v-for="n in 3"
+                      v-bind:key="n"
+                      style="float: left; background-color: #E0E0E0; margin-bottom: 7px; border-radius: 10px; padding: 5px 7px; height: 5vh; text-align: center;"
+                      class="mr-3"
+                  >
+                      <h1 style="font-size: 20px;">{{ keywords[n-1].word }} </h1>
+                  </div>
+                  </v-col>
+                </v-row>
+              </v-card>
             </v-row>
 
         </v-card>
@@ -163,7 +177,7 @@ export default {
         { text: "What's the formula for flux?", id: 4 },
         { text: 'How do you used a closed surface integral to calculate flux?', id: 5 },
         { text: 'What is the relationship between voltage and a Gaussian surface?', id: 6 }],
-      keywords: /* hardcoded data */ [{ word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }],
+      keywords: /* hardcoded data */ [{ word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }],
       currentTab: 0,
       tab: null,
       items: [
