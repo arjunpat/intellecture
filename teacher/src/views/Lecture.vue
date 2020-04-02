@@ -123,6 +123,35 @@
         </v-card>
           <!-- End of Questions tab -->
 
+           <!-- Start of Students tab -->
+        <v-card
+            v-show="currentTab === 1"
+            flat
+            class="pt-3"
+            height="75vh"
+          >
+          <v-row align="center" justify="center">
+            <v-col align="center">
+            <v-row>
+
+                <v-col cols="8">
+                <ul style="list-style-type: none">
+                    <li v-for="student in stuednts" v-bind:key="student.id">
+                    <v-banner>
+                        {{question.text}}
+                        <template v-slot:actions>
+                        <v-btn text color="primary" v-on:click="dismiss(question)">Dismiss</v-btn>
+                        </template>
+                    </v-banner>
+                    </li>
+                </ul>
+                </v-col>
+            </v-row>
+            </v-col>
+        </v-row>
+        </v-card>
+          <!-- End of Students tab -->
+
       </v-tabs-items>
     </v-card>
 
