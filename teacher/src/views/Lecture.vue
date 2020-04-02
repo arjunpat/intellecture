@@ -48,7 +48,7 @@
                         <br>
                     </v-card-text>
                 </v-card>
-                <v-card width="60%" height="60vh" align="center" justify="center" style="">
+                <v-card width="60%" height="60vh" align="center" justify="center">
                     <div class="ml-3" style="max-width: 900px;">
                         <line-chart :chart-data="datacollection" :width="400" :height="200"></line-chart>
                         <button @click="fillData()">Randomize</button>
@@ -98,7 +98,7 @@
                         v-bind:key="n"
                     >
                         <v-list-item-content>
-                        <v-list-item-title>{{ (n) + ': ' + keywords[n-1].word }}</v-list-item-title>
+                        <v-list-item-title>{{ keywords[n-1].word }}</v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
                     </v-card-text>
@@ -107,11 +107,11 @@
 
                 <v-col cols="8">
                 <ul style="list-style-type: none">
-                    <li v-for="question in questions" v-bind:key="question.id">
+                    <li v-for="question in questions" v-bind:key="question.id" v-show="!question.dismiss">
                     <v-banner>
                         {{question.text}}
                         <template v-slot:actions>
-                        <v-btn text color="primary">Dismiss</v-btn>
+                        <v-btn text color="primary" v-on:click="dismiss(question)">Dismiss</v-btn>
                         </template>
                     </v-banner>
                     </li>
@@ -170,13 +170,13 @@ export default {
       understandingScore: '--',
       averageUnderstanding: '--',
       range: '--',
-      questions: [{ text: 'What is a Gaussian surface?', id: 0 },
-        { text: 'How do you calculate voltage?', id: 1 },
-        { text: 'How do you make a Gaussian surface??', id: 2 },
-        { text: 'Is a Gaussian surface a real physical object?', id: 3 },
-        { text: "What's the formula for flux?", id: 4 },
-        { text: 'How do you used a closed surface integral to calculate flux?', id: 5 },
-        { text: 'What is the relationship between voltage and a Gaussian surface?', id: 6 }],
+      questions: [{ text: 'What is a Gaussian surface?', id: 0, dismiss: false },
+        { text: 'How do you calculate voltage?', id: 1, dismiss: false },
+        { text: 'How do you make a Gaussian surface??', id: 2, dismiss: false },
+        { text: 'Is a Gaussian surface a real physical object?', id: 3, dismiss: false},
+        { text: "What's the formula for flux?", id: 4, dismiss: false },
+        { text: 'How do you used a closed surface integral to calculate flux?', id: 5, dismiss: false },
+        { text: 'What is the relationship between voltage and a Gaussian surface?', id: 6, dismiss: false }],
       keywords: /* hardcoded data */ [{ word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }],
       currentTab: 0,
       tab: null,
@@ -186,6 +186,9 @@ export default {
     }
   },
   methods: {
+    dismiss(question) {
+      question.dismiss = true;
+    },
     initChart () {
 
     },
