@@ -51,7 +51,7 @@
                 <v-card width="60%" height="60vh" align="center" justify="center">
                     <div class="ml-3" style="max-width: 900px;">
                         <line-chart :chart-data="datacollection" :width="400" :height="200"></line-chart>
-                        <button @click="fillData()">Randomize</button>
+                        <!--<button @click="fillData()">Randomize</button>-->
                     </div>
                 </v-card>
             </v-row>
@@ -62,7 +62,7 @@
                   <div
                       v-for="n in 3"
                       v-bind:key="n"
-                      style="float: left; background-color: #E0E0E0; margin-bottom: 7px; border-radius: 10px; padding: 5px 7px; height: 5vh; text-align: center;"
+                      style="float: left; background-color: #EEEEEE; margin-bottom: 7px; border-radius: 10px; padding: 5px 7px; height: 5vh; text-align: center;"
                       class="mr-3"
                   >
                       <h1 style="font-size: 20px;">{{ keywords[n-1].word }} </h1>
@@ -121,33 +121,37 @@
             </v-col>
         </v-row>
         </v-card>
-          <!-- End of Questions tab -->
+        <!-- End of Questions tab -->
 
-           <!-- Start of Students tab -->
+        <!-- Start of Students tab -->
         <v-card
-            v-show="currentTab === 1"
+            v-show="currentTab === 2"
             flat
             class="pt-3"
             height="75vh"
           >
           <v-row align="center" justify="center">
-            <v-col align="center">
-            <v-row>
-
+            <v-row align="center" justify="center">
                 <v-col cols="8">
                 <ul style="list-style-type: none">
-                    <li v-for="student in stuednts" v-bind:key="student.id">
+                    <li v-for="student in students" v-bind:key="student.id">
                     <v-banner>
-                        {{question.text}}
-                        <template v-slot:actions>
-                        <v-btn text color="primary" v-on:click="dismiss(question)">Dismiss</v-btn>
-                        </template>
+                        <v-avatar
+                          size="42px"
+                          class="mr-3"
+                        >
+                          <img
+                            alt="Avatar"
+                            :src="student.image"
+                            style="background-color: #F5F5F5;"
+                          >
+                        </v-avatar>
+                      {{student.name}}
                     </v-banner>
                     </li>
                 </ul>
                 </v-col>
             </v-row>
-            </v-col>
         </v-row>
         </v-card>
           <!-- End of Students tab -->
@@ -199,13 +203,18 @@ export default {
       understandingScore: '--',
       averageUnderstanding: '--',
       range: '--',
-      questions: [{ text: 'What is a Gaussian surface?', id: 0, dismiss: false },
+      questions: [ { text: 'What is a Gaussian surface?', id: 0, dismiss: false },
         { text: 'How do you calculate voltage?', id: 1, dismiss: false },
         { text: 'How do you make a Gaussian surface??', id: 2, dismiss: false },
         { text: 'Is a Gaussian surface a real physical object?', id: 3, dismiss: false},
         { text: "What's the formula for flux?", id: 4, dismiss: false },
         { text: 'How do you used a closed surface integral to calculate flux?', id: 5, dismiss: false },
         { text: 'What is the relationship between voltage and a Gaussian surface?', id: 6, dismiss: false }],
+      students: [ { name: 'Tony Xin', image: 'http://tonyxin.com/images/tonyxin2.png' },
+        { name: 'Tony Xin', image: 'http://tonyxin.com/images/tonyxin2.png' },
+        { name: 'Tony Xin', image: 'http://tonyxin.com/images/tonyxin2.png' },
+        { name: 'Tony Xin', image: 'http://tonyxin.com/images/tonyxin2.png' },
+        { name: 'Tony Xin', image: 'http://tonyxin.com/images/tonyxin2.png' } ],
       keywords: /* hardcoded data */ [{ word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }],
       currentTab: 0,
       tab: null,
