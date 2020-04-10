@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import Landing from '@/views/Landing.vue'
 import Dashboard from '@/views/Dashboard.vue'
 import Lecture from '@/views/Lecture.vue'
 import New from '@/views/New.vue'
@@ -7,6 +8,11 @@ import New from '@/views/New.vue'
 Vue.use(VueRouter)
 
 const routes = [
+  {
+    path: '/',
+    name: 'Landing',
+    component: Landing
+  },
   {
     path: '/dashboard',
     name: 'Dashboard',
