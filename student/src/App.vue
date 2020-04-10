@@ -1,6 +1,5 @@
 <template>
   <v-app>
-    <!--
     <v-app-bar
       app
       color="primary"
@@ -16,28 +15,34 @@
           width="40"
         />
 
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
+        <span class="display-1 shrink mt-1 hidden-sm-and-down">Intellecture</span>
       </div>
 
       <v-spacer></v-spacer>
 
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
+      <v-menu 
+        v-if="authUser" 
+        offset-y 
+        :close-on-content-click="false"
       >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
+        <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on">
+            <v-avatar>
+              <UserAvatarContent :user="authUser" />
+            </v-avatar>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item>
+            <v-list-item-title><strong>{{ authUser.displayName }}</strong></v-list-item-title>
+          </v-list-item>
+          <v-divider></v-divider>
+          <v-list-item @click="signOut">
+            <v-list-item-title class="red--text">Sign Out</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </v-app-bar>
-    -->
 
     <v-content>
       <router-view/>
@@ -46,14 +51,53 @@
 </template>
 
 <script>
+import firebase from 'firebase';
+import { mapState } from 'vuex';
+import UserAvatarContent from '@/components/UserAvatarContent';
+
 export default {
   name: 'App',
 
-  components: {
+  created() {
+    this.redirectAuthUser();
   },
 
-  data: () => ({
-    //
-  }),
+  components: {
+    UserAvatarContent,
+  },
+
+  watch: {
+    '$route': function(val) {
+      this.redirectAuthUser();
+    },
+    'authUser': function(val) {
+      this.redirectAuthUser();
+    }
+  },
+
+  computed: {
+    ...mapState(['authUser']),
+  },
+
+  methods: {
+    signOut() {
+      firebase.auth().signOut();
+    },
+    redirectAuthUser() {
+      // Redirects based on the state of authUser
+      let authRoutes = ['Room', 'Join'];
+      let noAuthRoutes = ['SignIn'];
+
+      if (this.authUser) {
+        if (noAuthRoutes.includes(this.$route.name)) {
+          this.$router.replace({ name: 'Join' });
+        }
+      } else {
+        if (authRoutes.includes(this.$route.name)) {
+          this.$router.replace({ name: 'SignIn' });
+        }
+      }
+    }
+  },
 };
 </script>

@@ -35,7 +35,7 @@
     </v-row>
   </v-container>
 </template>
-<style>
+<style scoped>
   #understanding {
     transition: all 0.4s;
   }
