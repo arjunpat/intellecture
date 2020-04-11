@@ -34,26 +34,26 @@
 </style>
 
 <script>
-import firebase from 'firebase';
-import ButtonWithImage from '@/components/ButtonWithImage';
+import firebase from 'firebase'
+import ButtonWithImage from '@/components/ButtonWithImage'
 
 export default {
   name: 'SignIn',
 
   components: {
-    ButtonWithImage,
+    ButtonWithImage
   },
 
   methods: {
-    signInGoogle() {
-      let provider = new firebase.auth.GoogleAuthProvider();
+    signInGoogle () {
+      const provider = new firebase.auth.GoogleAuthProvider()
       firebase.auth().signInWithPopup(provider).then((result) => {
-        console.log(result.user);
+        console.log(result.user)
       }).catch((err) => {
         // TODO: make this not alert()
-        alert(err.message);
+        alert(err.message)
       })
     }
   }
-};
+}
 </script>
