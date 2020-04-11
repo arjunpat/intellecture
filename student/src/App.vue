@@ -51,15 +51,15 @@
 </template>
 
 <script>
-import firebase from 'firebase';
-import { mapState } from 'vuex';
-import UserAvatarContent from '@/components/UserAvatarContent';
+import firebase from 'firebase'
+import { mapState } from 'vuex'
+import UserAvatarContent from '@/components/UserAvatarContent'
 
 export default {
   name: 'App',
 
   created() {
-    this.redirectAuthUser();
+    this.redirectAuthUser()
   },
 
   components: {
@@ -67,11 +67,11 @@ export default {
   },
 
   watch: {
-    '$route': function(val) {
-      this.redirectAuthUser();
+    $route: function(val) {
+      this.redirectAuthUser()
     },
-    'authUser': function(val) {
-      this.redirectAuthUser();
+    authUser: function(val) {
+      this.redirectAuthUser()
     }
   },
 
@@ -81,23 +81,23 @@ export default {
 
   methods: {
     signOut() {
-      firebase.auth().signOut();
+      firebase.auth().signOut()
     },
     redirectAuthUser() {
       // Redirects based on the state of authUser
-      let authRoutes = ['Room', 'Join'];
-      let noAuthRoutes = ['SignIn'];
+      let authRoutes = ['Room', 'Join']
+      let noAuthRoutes = ['SignIn']
 
       if (this.authUser) {
         if (noAuthRoutes.includes(this.$route.name)) {
-          this.$router.replace({ name: 'Join' });
+          this.$router.replace({ name: 'Join' })
         }
       } else {
         if (authRoutes.includes(this.$route.name)) {
-          this.$router.replace({ name: 'SignIn' });
+          this.$router.replace({ name: 'SignIn' })
         }
       }
     }
   },
-};
+}
 </script>

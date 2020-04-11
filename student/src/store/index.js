@@ -1,9 +1,9 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-import createPersistedState from 'vuex-persistedstate';
-import * as Cookies from 'js-cookie';
+import Vue from 'vue'
+import Vuex from 'vuex'
+import createPersistedState from 'vuex-persistedstate'
+import * as Cookies from 'js-cookie'
 
-Vue.use(Vuex);
+Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
@@ -11,7 +11,7 @@ export default new Vuex.Store({
   },
   mutations: {
     setAuthUser(state, authUser) {
-      state.authUser = authUser;
+      state.authUser = authUser
     }
   },
   actions: {
@@ -27,4 +27,4 @@ export default new Vuex.Store({
       }
     }),
   ],
-});
+})
