@@ -1,15 +1,15 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-import SignIn from '@/views/SignIn.vue';
-import Join from '@/views/Join.vue';
-import Room from '@/views/Room.vue';
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+import SignIn from '@/views/SignIn.vue'
+import Join from '@/views/Join.vue'
+import Room from '@/views/Room.vue'
 
-Vue.use(VueRouter);
+Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'Sign In',
+    name: 'SignIn',
     component: SignIn,
   },
   {
@@ -26,12 +26,12 @@ const routes = [
     name: 'Room',
     component: Room,
   },
-];
+]
 
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes,
-});
+})
 
-export default router;
+export default router

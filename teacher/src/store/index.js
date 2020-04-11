@@ -7,10 +7,10 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    authUser: null,
+    authUser: null
   },
   mutations: {
-    setAuthUser(state, authUser) {
+    setAuthUser (state, authUser) {
       state.authUser = authUser
     }
   },
@@ -25,6 +25,6 @@ export default new Vuex.Store({
         setItem: (key, value) => Cookies.set(key, value, { expires: 3 }),
         removeItem: key => Cookies.remove(key)
       }
-    }),
-  ],
+    })
+  ]
 })

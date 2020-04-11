@@ -35,7 +35,7 @@
     </v-row>
   </v-container>
 </template>
-<style>
+<style scoped>
   #understanding {
     transition: all 0.4s;
   }
@@ -59,14 +59,14 @@ export default {
       levels: ['I\'m lost', 'I\'m confused', 'I kinda get it', 'I think I get it', 'I completely understand'],
       colors: ['rgb(240, 53, 36)', 'rgb(255, 183, 0)', 'rgb(250, 225, 0)', 'rgb(126, 196, 4)', 'rgb(127, 240, 7)'],
       color: '',
-    };
+    }
   },
   computed: {
     understanding: function() {
-      let index = Math.floor((this.sliderValue+1)/2) - 1;
-      this.color = index < 0 ? 'rgb(0,0,0)' : this.colors[index];
-      return index < 0 ? '😭' : this.levels[index];
+      let index = Math.floor((this.sliderValue+1)/2) - 1
+      this.color = index < 0 ? 'rgb(0,0,0)' : this.colors[index]
+      return index < 0 ? '😭' : this.levels[index]
     }
   }
-};
+}
 </script>

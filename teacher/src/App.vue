@@ -14,9 +14,10 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn v-if="!started" @click="$router.push({ path: '/new' })">Start Lecture</v-btn>
-      <v-btn class="red" v-if="started" @click="$router.push({ path: '/dashboard' }); started = false;">End Lecture</v-btn>
-      <v-btn class="ml-1 deep-orange accent-2" v-if="!started">Sign out <img id="avt-img" class="ml-2" v-bind:src="imageurl" width="25px"></v-btn>
+      <v-btn class="ml-1 light-green lighten-2" v-if="landing" @click="$router.push({ path: '/signin' })">Sign In</v-btn>
+      <v-btn v-if="!started && dashboard" @click="$router.push({ path: '/new' })">Start Lecture</v-btn>
+      <v-btn class="red" v-if="started && livelecture" @click="$router.push({ path: '/dashboard' }); started = false;">End Lecture</v-btn>
+      <v-btn class="ml-1 deep-orange accent-2" v-if="!started && !landing && !signin" @click="signOut()">Sign out <img id="avt-img" class="ml-2" v-bind:src="imageurl" width="25px"></v-btn>
       <div v-if="started" class="ml-3" style="background-color: #AED581; padding: 5px 8px; border-radius: 7px;">
         <span class="mr-1" style="font-size: 20px; font-family: 'Roboto'; font-weight: 500;">ROOM:</span> <span class="text--primary font-weight-black" style="background: #ddd; border-radius: 7px; padding: 2px 10px; font-size: 25px;">j3238</span>
       </div>
@@ -32,13 +33,77 @@
 </template>
 
 <script>
+import firebase from 'firebase'
+import { mapState } from 'vuex'
 
 export default {
   name: 'App',
+  created: function () {
+    this.redirectAuthUser()
+  },
   data: function () {
     return {
       started: false,
       imageurl: 'https://tonyxin-8bae2.firebaseapp.com/images/tonyxin2.png'
+    }
+  },
+  computed: {
+    ...mapState(['authUser']),
+    landing: function () {
+      if (this.$route.name === 'Landing') {
+        return true
+      } else {
+        return false
+      }
+    },
+    dashboard: function () {
+      if (this.$route.name === 'Dashboard') {
+        return true
+      } else {
+        return false
+      }
+    },
+    signin: function () {
+      if (this.$route.name === 'SignIn') {
+        return true
+      } else {
+        return false
+      }
+    },
+    livelecture: function () {
+      if (this.$route.name === 'Lecture') {
+        return true
+      } else {
+        return false
+      }
+    }
+  },
+  watch: {
+    $route: function (val) {
+      this.redirectAuthUser()
+    },
+    authUser: function (val) {
+      this.redirectAuthUser()
+    }
+  },
+  methods: {
+    signOut () {
+      firebase.auth().signOut()
+    },
+    redirectAuthUser () {
+      // Redirects based on the state of authUser
+      const authRoutes = ['Dashboard', 'New', 'Lecture']
+      const noAuthRoutes = ['Landing', 'SignIn']
+
+      if (this.authUser) {
+        if (noAuthRoutes.includes(this.$route.name)) {
+          this.$router.replace({ name: 'Dashboard' })
+        }
+      } else {
+        if (authRoutes.includes(this.$route.name)) {
+          this.$router.replace({ name: 'SignIn' })
+        }
+      }
     }
   }
 }

@@ -41,12 +41,12 @@ export default {
   name: 'SignIn',
 
   components: {
-    ButtonWithImage,
+    ButtonWithImage
   },
 
   methods: {
-    signInGoogle() {
-      let provider = new firebase.auth.GoogleAuthProvider()
+    signInGoogle () {
+      const provider = new firebase.auth.GoogleAuthProvider()
       firebase.auth().signInWithPopup(provider).then((result) => {
         console.log(result.user)
       }).catch((err) => {
