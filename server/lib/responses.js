@@ -1,11 +1,11 @@
 module.exports = {
-  success(data = undefined) {
+  success(data = {}) {
     return {
       success: true,
       data
     }
   },
-  error(error = undefined) {
+  error(error = 404) {
     return {
       success: false,
       error
