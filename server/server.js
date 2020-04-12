@@ -16,6 +16,7 @@ admin.initializeApp({
   credential: admin.credential.cert(require('./credentials/firebase.json')),
   databaseURL: 'https://intellecture-6b3e6.firebaseio.com'
 });
+admin.auth().listUsers().then(res => console.log(JSON.parse(JSON.stringify(res)).users[0]))
 
 const mysql = new MySQL(
   MYSQL_USER,

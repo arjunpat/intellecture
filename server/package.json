@@ -13,6 +13,7 @@
     "express": "^4.17.1",
     "firebase-admin": "^8.10.0",
     "jsonwebtoken": "^8.5.1",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "ws": "^7.2.3"
   }
 }
