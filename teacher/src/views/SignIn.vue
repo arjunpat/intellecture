@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="fill-height">
+  <v-container fluid>
     <v-row
       align="center"
       justify="center"
@@ -10,11 +10,11 @@
         md="6"
         lg="4"
       >
-        <v-card>
-          <v-card-title>Sign In</v-card-title>
+        <v-card class="pb-3">
+          <v-card-title>SIGN IN</v-card-title>
           <v-card-text align="center">
             <ButtonWithImage :onClick="signInGoogle" class="mb-4" image="google_logo.svg" text="Continue with Google" />
-            <v-btn>Sign in with email/password</v-btn>
+            <ButtonWithImage image="mail.png" text="Sign in with email/password" />
           </v-card-text>
         </v-card>
       </v-col>
