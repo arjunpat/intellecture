@@ -8,16 +8,16 @@
       dark
       style="position: fixed; left: 0px; top: 0px;"
     >
-      <img src="../public/logo.png" width="35px" class="">
+      <img src="../public/logo.png" width="35px" class="pointer">
 
-      <v-toolbar-title><span id="main-logo">INTELLECTURE</span> Teacher</v-toolbar-title>
+      <v-toolbar-title @click="homeRedirect()"><span id="main-logo" class="pointer">INTELLECTURE</span> Teacher</v-toolbar-title>
 
       <v-spacer></v-spacer>
 
       <v-btn class="ml-1 light-green lighten-2" v-if="landing" @click="$router.push({ path: '/signin' })">Sign In</v-btn>
       <v-btn v-if="!started && dashboard" @click="$router.push({ path: '/new' })">Start Lecture</v-btn>
       <v-btn class="red" v-if="started && livelecture" @click="$router.push({ path: '/dashboard' }); started = false;">End Lecture</v-btn>
-      <v-btn class="ml-1 deep-orange accent-2" v-if="!started && !landing && !signin" @click="signOut()">Sign out <img id="avt-img" class="ml-2" v-bind:src="imageurl" width="25px"></v-btn>
+      <v-btn class="ml-1 deep-orange accent-2" v-if="!started && !landing && !signin" @click="signOut()">Sign out <img id="avt-img" class="ml-2" v-bind:src="authUser.photoURL" width="25px"></v-btn>
       <div v-if="started" class="ml-3" style="background-color: #AED581; padding: 5px 8px; border-radius: 7px;">
         <span class="mr-1" style="font-size: 20px; font-family: 'Roboto'; font-weight: 500;">ROOM:</span> <span class="text--primary font-weight-black" style="background: #ddd; border-radius: 7px; padding: 2px 10px; font-size: 25px;">j3238</span>
       </div>
@@ -104,6 +104,13 @@ export default {
           this.$router.replace({ name: 'SignIn' })
         }
       }
+    },
+    homeRedirect() {
+      if(this.authUser) {
+        this.$router.push({ path: '/dashboard' })
+      } else {
+        this.$router.push({ path: '/' })
+      }
     }
   }
 }
@@ -116,6 +123,10 @@ export default {
 </style>
 
 <style scoped>
+
+.pointer:hover {
+  cursor: pointer;
+}
 
 #main-logo {
   font-family: 'Noto Sans', sans-serif;

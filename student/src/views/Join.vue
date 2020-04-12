@@ -27,6 +27,7 @@
   </v-container>
 </template>
 <style scoped>
+
   .row {
     max-width: unset !important;
   }

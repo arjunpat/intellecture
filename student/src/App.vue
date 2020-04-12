@@ -5,18 +5,9 @@
       color="primary"
       dark
     >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
+        <img src="../public/logo.png" width="35px" class="pointer">
 
-        <span class="display-1 shrink mt-1 hidden-sm-and-down">Intellecture</span>
-      </div>
+        <v-toolbar-title @click="homeRedirect()"><span id="main-logo" class="pointer">INTELLECTURE</span> Student</v-toolbar-title>
 
       <v-spacer></v-spacer>
 
@@ -97,7 +88,33 @@ export default {
           this.$router.replace({ name: 'SignIn' });
         }
       }
+    },
+    homeRedirect() {
+      if(this.authUser) {
+        this.$router.replace({ name: 'Join' });
+      } else {
+        this.$router.replace({ name: 'SignIn' });
+      }
     }
   },
 };
 </script>
+
+<style>
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+</style>
+
+<style scoped>
+
+.pointer:hover {
+  cursor: pointer;
+}
+
+#main-logo {
+  font-family: 'Noto Sans', sans-serif;
+  font-size: 25px;
+  font-weight: 600;
+}
+
+</style>
