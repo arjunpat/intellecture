@@ -28,5 +28,5 @@ export default {
     onClick: {type: Function, required: true},
     color: {type: String, default: ''},
   },
-};
+}
 </script>
