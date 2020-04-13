@@ -5,8 +5,6 @@ const app = express();
 const server = http.createServer(app);
 
 const MySQL = require('./lib/MySQL');
-const WebSocket = require('ws');
-// const wss = new WebSocket.Server({ server });
 
 const {
   MYSQL_USER,

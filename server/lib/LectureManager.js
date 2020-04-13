@@ -64,6 +64,12 @@ class LectureManager {
         this.changeStudentScore(uid, data.score);
     }
   }
+
+  removeStudent(student_uid) {
+    delete this.studentScores[student_uid];
+    delete this.studentSockets[student_uid];
+    console.log('removed user', uid);
+  }
   
   async changeStudentScore(student_uid, value) {
     this.studentScores[student_uid] = value;
@@ -85,13 +91,39 @@ class LectureManager {
     });
   }
 
-  cleanSockets() {
-
+  broadcastToStudents(data) {
+    this.forEachStudent(s => s.json(data));
   }
 
-  broadcastToStudents(data) {
-    for (let each in this.studentSockets) {
-      this.studentSockets[each].json(data);
+  cleanSockets() {
+    this.forEachStudent((s, uid) => {
+      if (s.readyState !== 0 || s.readyState !== 1) { // not OPENING or OPEN
+        if (s.readyState === 1) s.terminate(); // CLOSING
+        this.removeStudent(uid);
+      }
+    });
+
+    this.updateTeacher();
+  }
+
+  end() {
+    this.broadcastToStudents({ type: 'end_lecture' });
+    this.forEachStudent(s => s.close());
+
+    // close any lingering connections after 10 seconds
+    setTimeout(() => {
+      this.forEachStudent(s => {
+        if (s.readyState !== 3) // if not CLOSED
+          s.terminate();
+      });
+
+      this.done = true;
+    }, 10000);
+  }
+
+  forEachStudent(func) {
+    for (let uid in this.studentSockets) {
+      func(this.studentSockets[uid], uid);
     }
   }
 }
