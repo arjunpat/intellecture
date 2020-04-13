@@ -85,7 +85,7 @@ class LectureManager {
     this.teacherSocket.json({
       type: 'student_leave',
       uid: student_uid
-    })
+    });
     this.updateTeacher();
     console.log('removed user', student_uid);
   }
