@@ -1,8 +1,12 @@
 require('dotenv').config()
+const http = require('http');
 const express = require('express');
 const app = express();
-const admin = require('firebase-admin');
+const server = http.createServer(app);
+
 const MySQL = require('./lib/MySQL');
+const WebSocket = require('ws');
+// const wss = new WebSocket.Server({ server });
 
 const {
   MYSQL_USER,
@@ -19,11 +23,14 @@ const mysql = new MySQL(
   MYSQL_HOST
 );
 
-admin.initializeApp({
-  credential: admin.credential.cert(require('./credentials/firebase.json')),
-  databaseURL: 'https://intellecture-6b3e6.firebaseio.com'
+server.on('upgrade', (req, socket, head) => {
+  let res = new http.ServerResponse(req)
+  res.assignSocket(socket)
+  req.ws = { head };
+
+  res.on('finish', () => res.socket.destroy())
+  app(req, res)
 });
-admin.auth().listUsers().then(res => console.log(JSON.parse(JSON.stringify(res)).users[0]))
 
 app.use(express.json());
 
@@ -46,6 +53,6 @@ app.all('*', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log('Server started');
+let listener = server.listen(PORT, () => {
+  console.log('Server started', listener.address().port);
 });

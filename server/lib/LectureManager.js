@@ -6,16 +6,25 @@ function avg(arr) {
 }
 
 class LectureManager {
-  constructor(lecture_id, mysql, teacherWS) {
+  constructor(lecture_id, mysql, teacher_uid) {
     this.lecture_id = lecture_id;
     this.mysql = mysql;
-    this.teacherWS = teacherWS;
+    this.teacher_uid = teacher_uid;
 
-    this.students = {};
+    this.studentScores = {};
+    this.sockets = {};
   }
 
-  async studentChanged(student_uid, value) {
-    this.students[student_uid] = value;
+  addSocket(uid, socket) {
+    this.sockets[uid] = socket;
+
+    socket.on('message', data => {
+      this.broadcast(data);
+    })
+  }
+
+  async changeStudentScore(student_uid, value) {
+    this.studentScores[student_uid] = value;
 
     await this.mysql.insert('lecture_log', {
       created_at: Date.now(),
@@ -28,10 +37,16 @@ class LectureManager {
   }
 
   updateTeacher() {
-    this.teacherWS.send({
+    this.sockets[this.teacher_uid].send({
       type: 'us_update', // understanding score update
-      value: avg(Object.values(this.students))
+      value: avg(Object.values(this.studentScores))
     });
+  }
+
+  broadcast(data) {
+    for (let each in this.sockets) {
+      this.sockets[each].send(data);
+    }
   }
 }
 

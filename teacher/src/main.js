@@ -32,4 +32,8 @@ setTimeout(() => {
   // createClass()
   // createLecture('psUn2zmIkFYc8sWsxuKG', 'Lecture 1')
 
+  firebase.auth().currentUser.getIdToken(true).then(data => {
+    console.log(data);
+  });
+
 }, 1000);
