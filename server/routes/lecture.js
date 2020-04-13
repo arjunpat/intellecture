@@ -60,6 +60,15 @@ router.post('/create', async (req, res) => {
 
 // loop through connections to see if still awake
 let lectures = {};
+function jsonifySocket(socket) {
+  socket.on('message', data => {
+    try {
+      socket.onjson(JSON.parse(data));
+    } catch (e) { console.log(e); }
+  });
+
+  socket.json = obj => socket.send(JSON.stringify(obj));
+}
 
 router.get('/live/:lecture_uid', (req, res) => {
   if (!req.headers.upgrade || req.headers.upgrade.toLowerCase() !== 'websocket')
@@ -68,12 +77,14 @@ router.get('/live/:lecture_uid', (req, res) => {
   let { lecture_uid } = req.params;
 
   wss.handleUpgrade(req, req.socket, req.ws.head, socket => {
+    jsonifySocket(socket);
     if (!lectures[lecture_uid]) {
-      // creating lecture, verify is teacher
-      lectures[lecture_uid] = new LectureManager(lecture_uid, mysql, req.uid);
+      // TODO creating lecture, verify is teacher, record start time of lecture
+      lectures[lecture_uid] = new LectureManager(lecture_uid, mysql, socket);
+    } else {
+      lectures[lecture_uid].addStudent(req.uid, socket);
     }
     
-    lectures[lecture_uid].addSocket(req.uid, socket);
   });
 });
 
