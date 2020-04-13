@@ -21,7 +21,7 @@ function genLectureId(length) {
 }
 
 router.all('*', (req, res, next) => {
-  req.uid = 'your_mom_' + Math.round(Math.random() * 100);
+  req.uid = 'your_mom_' + Math.round(Math.random() * 1000);
   return next();
   try {
     let token = req.headers.authorization.split(' ')[1];
@@ -58,8 +58,20 @@ router.post('/create', async (req, res) => {
   }));
 });
 
-// loop through connections to see if still awake
+
 let lectures = {};
+// loop through connections to see if still awake
+setInterval(() => {
+  for (let each in lectures) {
+    if (lectures[each].done === true) {
+      delete lectures[each];
+    } else {
+      lectures[each].cleanSockets();
+    }
+  }
+}, 10000);
+
+
 function jsonifySocket(socket) {
   socket.on('message', data => {
     try {
@@ -75,9 +87,11 @@ router.get('/live/:lecture_uid', (req, res) => {
     return res.send(responses.error('not_websocket'));
 
   let { lecture_uid } = req.params;
-
+  
   wss.handleUpgrade(req, req.socket, req.ws.head, socket => {
+
     jsonifySocket(socket);
+
     if (!lectures[lecture_uid]) {
       // TODO creating lecture, verify is teacher, record start time of lecture
       lectures[lecture_uid] = new LectureManager(lecture_uid, mysql, socket);
@@ -86,6 +100,10 @@ router.get('/live/:lecture_uid', (req, res) => {
     }
     
   });
+});
+
+router.get('/testing', (req, res) => {
+  res.sendFile(__dirname + '/testing.html');
 });
 
 module.exports = (a) => {

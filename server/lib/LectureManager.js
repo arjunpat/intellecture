@@ -41,8 +41,8 @@ server to teacher
 */
 
 class LectureManager {
-  constructor(lecture_id, mysql, teacherSocket) {
-    this.lecture_id = lecture_id;
+  constructor(lecture_uid, mysql, teacherSocket) {
+    this.lecture_uid = lecture_uid;
     this.mysql = mysql;
     this.teacherSocket = teacherSocket;
     
@@ -50,28 +50,50 @@ class LectureManager {
     this.studentSockets = {};
 
     teacherSocket.onjson = data => {
-      if (data.type === 'end_lecture')
-        this.broadcastToStudents({ type: 'end_lecture' });
+      if (data.type === 'end_lecture') this.end();
     }
   }
 
   addStudent(student_uid, socket) {
+    
+    // init student
     this.studentSockets[student_uid] = socket;
 
     socket.onjson = data => {
       // TODO write code to prevent abuse
       if (data.type === 'update_score' && typeof data.score === 'number')
-        this.changeStudentScore(uid, data.score);
+        this.changeStudentScore(student_uid, data.score);
     }
+
+    socket.isAlive = true;
+    socket.on('pong', () => socket.isAlive = true);
+    socket.on('close', () => this.removeStudent(student_uid));
+
+    // tell teacher that student has joined
+    // TODO finish api
+    this.teacherSocket.json({
+      type: 'student_join',
+      uid: student_uid
+    });
+
+    this.changeStudentScore(student_uid, 10); // set default value to 10
   }
 
   removeStudent(student_uid) {
     delete this.studentScores[student_uid];
     delete this.studentSockets[student_uid];
-    console.log('removed user', uid);
+    this.teacherSocket.json({
+      type: 'student_leave',
+      uid: student_uid
+    })
+    this.updateTeacher();
+    console.log('removed user', student_uid);
   }
   
   async changeStudentScore(student_uid, value) {
+    if (value < 1 || value > 10 || !Number.isInteger(value))
+      return;
+
     this.studentScores[student_uid] = value;
 
     await this.mysql.insert('lecture_log', {
@@ -87,7 +109,7 @@ class LectureManager {
   updateTeacher() {
     this.teacherSocket.json({
       type: 'us_update', // understanding score update
-      value: avg(Object.values(this.studentScores))
+      value: avg(Object.values(this.studentScores)) || 10
     });
   }
 
@@ -97,25 +119,26 @@ class LectureManager {
 
   cleanSockets() {
     this.forEachStudent((s, uid) => {
-      if (s.readyState !== 0 || s.readyState !== 1) { // not OPENING or OPEN
-        if (s.readyState === 1) s.terminate(); // CLOSING
-        this.removeStudent(uid);
-      }
-    });
 
-    this.updateTeacher();
+      if (!s.isAlive || (s.readyState !== 0 && s.readyState !== 1)) { // not OPENING or OPEN
+        console.log('readyState', s.readyState);
+        s.terminate();
+        return this.removeStudent(uid);
+      }
+
+      s.ping(() => {});
+    });
   }
 
   end() {
     this.broadcastToStudents({ type: 'end_lecture' });
+    this.teacherSocket.close();
     this.forEachStudent(s => s.close());
 
     // close any lingering connections after 10 seconds
     setTimeout(() => {
-      this.forEachStudent(s => {
-        if (s.readyState !== 3) // if not CLOSED
-          s.terminate();
-      });
+      this.forEachStudent(s => s.terminate());
+      this.teacherSocket.terminate();
 
       this.done = true;
     }, 10000);
