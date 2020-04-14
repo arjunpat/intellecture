@@ -1,0 +1,13 @@
+<script>
+
+    let ws = new WebSocket('ws://localhost:8080/lecture/live/asdf');
+    ws.onmessage = msg => {
+        ws.onjson(JSON.parse(msg.data));
+    }
+
+    ws.onjson = obj => {
+        console.log(obj);
+    }
+
+    ws.json = obj => ws.send(JSON.stringify(obj));
+</script>
