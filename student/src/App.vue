@@ -2,7 +2,7 @@
   <v-app>
     <v-app-bar
       app
-      color="primary"
+      color="green lighten-1"
       dark
     >
         <img src="../public/logo.png" width="35px" class="pointer">
