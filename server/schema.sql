@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS lectures (
   class_uid VARCHAR(15),
   name VARCHAR(50),
   start_time BIGINT UNSIGNED,
-  end_time BIGINT UNSIGNED
+  end_time BIGINT UNSIGNED,
   INDEX(class_uid)
 );
 

@@ -79,6 +79,11 @@ class LectureManager {
   }
 
   async addStudent(student_uid, socket) {
+    // new takes priority
+    if (this.studentSockets[student_uid]) {
+      this.studentSockets[student_uid].terminate();
+    }
+
     // init student
     this.studentSockets[student_uid] = socket;
 
@@ -113,6 +118,7 @@ class LectureManager {
       uid: student_uid
     });
     this.updateTeacher();
+
     console.log('removed user', student_uid);
   }
   
@@ -142,7 +148,7 @@ class LectureManager {
 
       if (!s.isAlive || (s.readyState !== 0 && s.readyState !== 1)) { // not OPENING or OPEN
         console.log('readyState', s.readyState);
-        s.terminate();
+        this.studentSockets[student_uid].terminate();
         return this.removeStudent(uid);
       }
 
@@ -152,6 +158,7 @@ class LectureManager {
 
   end() {
     this.broadcastToStudents({ type: 'end_lecture' });
+    this.db.lectures.endLecture(this.lecture_uid, Date.now());
     this.teacherSocket.close();
     this.forEachStudent(s => s.close());
 

@@ -22,13 +22,21 @@ class Lectures {
 
   getLecture(lecture_uid) {
     return this.mysql.query(
-      'SELECT uid, created_at, class_uid, name FROM lectures WHERE uid = ?', [lecture_uid]
+      'SELECT uid, created_at, class_uid, name, start_time, end_time FROM lectures WHERE uid = ?', [lecture_uid]
     ).then(d => d[0]);
   }
 
   startLecture(lecture_uid, start_time) {
     return this.mysql.update('lectures', {
       start_time
+    }, {
+      uid: lecture_uid
+    });
+  }
+
+  endLecture(lecture_uid, end_time) {
+    return this.mysql.update('lectures', {
+      end_time
     }, {
       uid: lecture_uid
     });
