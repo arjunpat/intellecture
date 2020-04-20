@@ -1,11 +1,12 @@
 <template>
   <v-app>
     <v-app-bar
+      v-if="$route.path !== '/'"
       app
       color="green lighten-1"
       dark
     >
-        <img src="../public/logo.png" width="35px" class="pointer">
+        <img src="@/assets/img/logo.svg" width="35px" class="pointer mr-2">
 
         <v-toolbar-title @click="homeRedirect()"><span id="main-logo" class="pointer">INTELLECTURE</span> Student</v-toolbar-title>
 
@@ -77,7 +78,7 @@ export default {
     redirectAuthUser() {
       // Redirects based on the state of authUser
       let authRoutes = ['Room', 'Join']
-      let noAuthRoutes = ['SignIn']
+      let noAuthRoutes = ['']
 
       if (this.authUser) {
         if (noAuthRoutes.includes(this.$route.name)) {

@@ -1,0 +1,9 @@
+html {
+  overflow-y: auto !important;
+}
+
+._gray {background-color: #8aa399ff;}
+._green {background-color: #aae691ff;}
+._green_dark {background-color: #50723cff;}
+._green_mid {background-color: #62a87cff;}
+._green_light {background-color: #d3fad6ff;}
