@@ -21,8 +21,6 @@ function genLectureId(length) {
 }
 
 router.all('*', (req, res, next) => {
-  req.uid = 'your_mom_' + Math.round(Math.random() * 1000);
-  return next();
   try {
     let token = req.headers.authorization.split(' ')[1];
     let contents = jwt.verify(token, JWT_SECRET);
