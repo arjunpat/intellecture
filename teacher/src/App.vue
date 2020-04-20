@@ -106,7 +106,9 @@ export default {
       }
     },
     homeRedirect() {
-      if(this.authUser) {
+      if(this.started) {
+        return;
+      } else if(this.authUser) {
         this.$router.push({ path: '/dashboard' })
       } else {
         this.$router.push({ path: '/' })
