@@ -4,7 +4,7 @@ const responses = require('../lib/responses');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = process.env;
 
-let mysql;
+const db = require('../models');
 
 const admin = require('firebase-admin');
 admin.initializeApp({
@@ -17,20 +17,14 @@ router.post('/login', async (req, res) => {
   let { firebase_token } = req.body;
   let uid = (await admin.auth().verifyIdToken(firebase_token)).uid;
   
-  // check if in database
-  let resp = await mysql.query('SELECT uid FROM accounts WHERE uid = ?', [ uid ]);
-  
-  if (resp.length === 0) {
-    let user = await admin.auth().getUser(uid);
-    await mysql.insert('accounts', {
-      uid,
-      created_at: Date.now(),
-      email: user.email,
-      first_name: user.displayName.split(' ')[0],
-      last_name: user.displayName.split(' ')[1],
-      photo: user.photoURL
-    });
-  }
+  let user = await admin.auth().getUser(uid);
+  await db.accounts.createOrUpdate(
+    uid,
+    user.email,
+    user.displayName.split(' ')[0],
+    user.displayName.split(' ')[1],
+    user.photoURL
+  );
 
   let token = jwt.sign({
     iat: Date.now(),
@@ -47,7 +41,8 @@ router.post('/login', async (req, res) => {
 });
 
 
-module.exports = (a) => {
-  mysql = a;
+/* module.exports = (a) => {
+  db = a;
   return router;
-}
+} */
+module.exports = router;

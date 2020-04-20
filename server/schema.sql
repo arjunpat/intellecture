@@ -28,8 +28,8 @@ CREATE TABLE IF NOT EXISTS lecture_log (
   db_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, 
   created_at BIGINT UNSIGNED,
   lecture_uid VARCHAR(10),
-  student_uid VARCHAR(36),
+  account_uid VARCHAR(36),
   value SMALLINT,
   INDEX(lecture_uid),
-  INDEX(student_uid)
+  INDEX(account_uid)
 );

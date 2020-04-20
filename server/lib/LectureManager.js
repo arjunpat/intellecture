@@ -41,9 +41,9 @@ server to teacher
 */
 
 class LectureManager {
-  constructor(lecture_uid, mysql, teacherSocket) {
+  constructor(lecture_uid, db, teacherSocket) {
     this.lecture_uid = lecture_uid;
-    this.mysql = mysql;
+    this.db = db;
     this.teacherSocket = teacherSocket;
     
     this.studentScores = {};
@@ -76,7 +76,7 @@ class LectureManager {
       uid: student_uid
     });
 
-    this.changeStudentScore(student_uid, 10); // set default value to 10
+    this.changeStudentScore(student_uid, 5); // set default value to 5
   }
 
   removeStudent(student_uid) {
@@ -96,13 +96,7 @@ class LectureManager {
 
     this.studentScores[student_uid] = value;
 
-    await this.mysql.insert('lecture_log', {
-      created_at: Date.now(),
-      lecture_uid: this.lecture_uid,
-      student_uid,
-      value
-    });
-
+    await this.db.lectureLog.recordScoreChange(this.lecture_uid, student_uid, value);
     this.updateTeacher();
   }
 

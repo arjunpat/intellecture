@@ -1,13 +1,51 @@
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-auth.js"></script>
+
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyCcVmiE6jRuOK-XrD2TeGHVAhRUamq80jU",
+    authDomain: "intellecture-6b3e6.firebaseapp.com",
+    databaseURL: "https://intellecture-6b3e6.firebaseio.com",
+    projectId: "intellecture-6b3e6",
+    storageBucket: "intellecture-6b3e6.appspot.com",
+    messagingSenderId: "462381253872",
+    appId: "1:462381253872:web:fc0f440c35a1c920026e35"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+
+  let token;
+  let provider = new firebase.auth.GoogleAuthProvider();
+  firebase.auth().signInWithPopup(provider).then(res => {
+    fetch('/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        firebase_token: res.user.xa
+      })
+    }).then(res => res.json()).then(res => {
+      token = res.data.token;
+    });
+  });
+</script>
+
 <script>
 
-    let ws = new WebSocket('ws://localhost:8080/lecture/live/asdf');
+  function wsStart() {
+    let ws = new WebSocket('ws://localhost:8080/lecture/live/asdf?access_token=' + encodeURIComponent(token));
     ws.onmessage = msg => {
-        ws.onjson(JSON.parse(msg.data));
+      ws.onjson(JSON.parse(msg.data));
     }
 
     ws.onjson = obj => {
-        console.log(obj);
+      console.log(obj);
     }
 
     ws.json = obj => ws.send(JSON.stringify(obj));
+  }
 </script>

@@ -1,36 +1,23 @@
 require('dotenv').config()
 const http = require('http');
 const express = require('express');
+const helmet = require('helmet');
+
 const app = express();
 const server = http.createServer(app);
 
-const MySQL = require('./lib/MySQL');
-
-const {
-  MYSQL_USER,
-  MYSQL_PASS,
-  MYSQL_HOST,
-  MYSQL_DB,
-  PORT
-} = process.env;
-
-const mysql = new MySQL(
-  MYSQL_USER,
-  MYSQL_PASS,
-  MYSQL_DB,
-  MYSQL_HOST
-);
 
 server.on('upgrade', (req, socket, head) => {
   let res = new http.ServerResponse(req)
   res.assignSocket(socket)
   req.ws = { head };
-
+  
   res.on('finish', () => res.socket.destroy())
   app(req, res)
 });
 
 app.use(express.json());
+app.use(helmet());
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Headers', 'content-type');
@@ -41,8 +28,9 @@ app.use((req, res, next) => {
 
   next();
 });
-app.use('/auth', require('./routes/auth')(mysql));
-app.use('/lecture', require('./routes/lecture')(mysql));
+app.use('/auth', require('./routes/auth'));
+app.use('/lecture', require('./routes/lecture'));
+app.use('/class', require('./routes/classes'));
 
 app.all('*', (req, res) => {
   res.send({
@@ -51,6 +39,6 @@ app.all('*', (req, res) => {
   });
 });
 
-let listener = server.listen(PORT, () => {
+let listener = server.listen(process.env.PORT, () => {
   console.log('Server started', listener.address().port);
 });
