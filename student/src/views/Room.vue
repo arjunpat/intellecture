@@ -44,10 +44,6 @@
     width: 100%;
     height: 3.7em !important;
   }
-
-  .row {
-    max-width: unset !important;
-  }
 </style>
 <script>
 export default {

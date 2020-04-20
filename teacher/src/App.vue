@@ -8,7 +8,11 @@
       dark
       style="position: fixed; left: 0px; top: 0px;"
     >
-      <img src="../public/logo.png" width="35px" class="pointer">
+      <v-img
+        src="@/assets/logo.svg"
+        height="1em"
+        contain
+      ></v-img>
 
       <v-toolbar-title @click="homeRedirect()"><span id="main-logo" class="pointer">INTELLECTURE</span> Teacher</v-toolbar-title>
 
@@ -139,4 +143,11 @@ export default {
   background-color: white;
 }
 
+</style>
+
+
+<style>
+html {
+  overflow-y: auto !important;
+}
 </style>

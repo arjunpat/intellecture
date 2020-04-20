@@ -6,6 +6,7 @@ import vuetify from './plugins/vuetify'
 import { firestorePlugin } from 'vuefire'
 import { firebase } from './store/db'
 
+
 // Initialize firebase stuff
 Vue.use(firestorePlugin)
 firebase.auth().onAuthStateChanged((user) => {
@@ -15,6 +16,9 @@ firebase.auth().onAuthStateChanged((user) => {
     store.commit('setAuthUser', null)
   }
 })
+
+// Import global css
+import '@/assets/css/global.css'
 
 // Mount Vue App
 Vue.config.productionTip = false
