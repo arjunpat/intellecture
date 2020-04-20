@@ -77,25 +77,18 @@ export default {
     },
     redirectAuthUser() {
       // Redirects based on the state of authUser
-      let authRoutes = ['Room', 'Join']
-      let noAuthRoutes = ['']
+      let authRoutes = ['Room']
 
-      if (this.authUser) {
-        if (noAuthRoutes.includes(this.$route.name)) {
-          this.$router.replace({ name: 'Join' })
-        }
-      } else {
+      if (!this.authUser) {
+        // TODO: catch for the case if the user gets a link to the room directly
+        //       In this case, prompt the user for sign in before they join the room
         if (authRoutes.includes(this.$route.name)) {
-          this.$router.replace({ name: 'SignIn' })
+          this.$router.replace({ name: 'Join' })
         }
       }
     },
     homeRedirect() {
-      if(this.authUser) {
-        this.$router.replace({ name: 'Join' });
-      } else {
-        this.$router.replace({ name: 'SignIn' });
-      }
+      this.$router.replace({ name: 'Join' });
     }
   },
 }
