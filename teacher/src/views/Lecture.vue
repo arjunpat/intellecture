@@ -220,6 +220,13 @@ export default {
       tab: null,
       items: [
         'Understanding', 'Questions', 'Students'
+      ],
+      start: Date.now(),
+      understandingData: [
+        { timestamp: 2, score: 5 },
+        { timestamp: 4, score: 6 },
+        { timestamp: 6, score: 10 },
+        { timestamp: 17, score: 1 }
       ]
     }
   },
@@ -228,28 +235,33 @@ export default {
       question.dismiss = true;
     },
     initChart () {
-
+      var x = new Array();
+      var y = new Array();
+      for(let i=0; i<this.understandingData.length; i++) {
+        console.log(this.understandingData[i]);
+        x.push(this.understandingData[i].timestamp);
+        y.push(this.understandingData[i].score);
+      }
+      this.fillData(x, y);
     },
-    fillData () {
+    fillData (x, y) {
       this.datacollection = {
-        labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'],
+        labels: x,
           datasets: [
             {
               label: 'Understanding',
               backgroundColor: '#4FC3F7',
-              data: [this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt(), this.getRandomInt()]
+              data: y
             }
           ]
         }
-    },
-    getRandomInt () {
-        return Math.floor(Math.random() * (10))
     }
   },
   mounted () {
-    this.initChart()
     this.$emit('startlecture')
-    this.fillData()
+  },
+  created () {
+    this.initChart()
   }
 }
 </script>
