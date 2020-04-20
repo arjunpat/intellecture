@@ -11,13 +11,11 @@
       > 
         <v-expand-transition>
           <div class="display-2 white--text mb-4 text-center" v-show="show">
-            
             <img
               src="@/assets/img/logo.svg"
               id="logo"
-              class="mr-1"
             >
-            <span id="logo-text">Intellecture</span>
+            <div id="logo-text">INTELLECTURE</div>
           </div>
         </v-expand-transition>
 
@@ -34,7 +32,7 @@
 
             <ButtonWithImage 
               :onClick="join" 
-              color="green" 
+              color="#AED581" 
               :dark="true" 
               :text="btnText" 
               :src="btnImageSrc" 
@@ -62,8 +60,17 @@
   }
 
   #logo {
-    width: 1em;
-    height: 1em;
+    width: 1.6em;
+    height: 1.6em;
+  }
+
+  #logo-text {
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 65px;
+    font-weight: 600;
+    display: inline-block;
+    position: relative;
+    bottom: 13px;
   }
 </style>
 

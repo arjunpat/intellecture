@@ -6,7 +6,7 @@
       color="green lighten-1"
       dark
     >
-        <img src="@/assets/img/logo.svg" width="35px" class="pointer mr-2">
+        <img src="@/assets/img/logo.svg" width="35px" class="pointer">
 
         <v-toolbar-title @click="homeRedirect()"><span id="main-logo" class="pointer">INTELLECTURE</span> Student</v-toolbar-title>
 
