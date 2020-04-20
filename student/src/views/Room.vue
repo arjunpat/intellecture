@@ -8,8 +8,8 @@
         lg="4"
       >
         <v-card class="mb-3">
-          <v-card-title>Rate your understanding</v-card-title>
-          <v-card-text id="understanding" class="text-center headline" :style="{color: color}">{{ understanding }}</v-card-text>
+          <v-card-title class="noto">UNDERSTANDING</v-card-title>
+          <v-card-text id="understanding" class="text-center headline mb-3" :style="{color: color}">{{ understanding }}</v-card-text>
           <v-card-actions>
           <v-slider
             v-model="sliderValue"
@@ -20,7 +20,7 @@
           </v-card-actions>
         </v-card>
         <v-card>
-          <v-card-title>Questions</v-card-title>
+          <v-card-title class="noto">QUESTIONS</v-card-title>
           <v-card-text align="center">
             <v-text-field
               label="Ask a question"
@@ -43,6 +43,11 @@
   .v-btn {
     width: 100%;
     height: 3.7em !important;
+  }
+
+  .noto {
+    font-family: 'Noto Sans';
+    font-weight: 600;
   }
 </style>
 <script>
