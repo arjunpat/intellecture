@@ -31,12 +31,22 @@ server to teacher
   type: 'student_join',
   uid: 'JfdslFKjd82jSDF',
   email: 'asdfjlsadf@asdf.com',
-  name: 'Arjun Patrawala',
+  first_name: 'Arjun',
+  last_name: 'Patrawala',
   photo: 'https://asdfajsdfasdfjaskdfjasldf.com/fasdfasd/dfasdfasdf'
 }
 {
   type: 'student_leave',
   uid: 'JfdslFKjd82jSDF'
+}
+
+server to all
+{
+  type: 'lecture_info,
+  class_uid: "00H1h5QWWHtRThQ",
+  created_at: 1587421189708,
+  name: "Testing",
+  uid: "rcusl"
 }
 */
 
@@ -52,10 +62,23 @@ class LectureManager {
     teacherSocket.onjson = data => {
       if (data.type === 'end_lecture') this.end();
     }
+
+    this.init();
   }
 
-  addStudent(student_uid, socket) {
-    
+  async init() {
+    this.startTime = Date.now();
+
+    await this.db.lectures.startLecture(this.lecture_uid, this.startTime);
+
+    this.lectureData = {
+      type: 'lecture_info',
+      ...await this.db.lectures.getLecture(this.lecture_uid)
+    }
+    this.teacherSocket.json(this.lectureData);
+  }
+
+  async addStudent(student_uid, socket) {
     // init student
     this.studentSockets[student_uid] = socket;
 
@@ -73,8 +96,11 @@ class LectureManager {
     // TODO finish api
     this.teacherSocket.json({
       type: 'student_join',
-      uid: student_uid
+      uid: student_uid,
+      ...await this.db.accounts.basicInfo(student_uid)
     });
+
+    socket.json(this.lectureData);
 
     this.changeStudentScore(student_uid, 5); // set default value to 5
   }
@@ -96,7 +122,7 @@ class LectureManager {
 
     this.studentScores[student_uid] = value;
 
-    await this.db.lectureLog.recordScoreChange(this.lecture_uid, student_uid, value);
+    await this.db.lectureLog.recordScoreChange(this.lecture_uid, Date.now() - this.startTime, student_uid, value);
     this.updateTeacher();
   }
 

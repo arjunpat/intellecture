@@ -5,7 +5,7 @@ module.exports = {
       data
     }
   },
-  error(error = 404) {
+  error(error) {
     return {
       success: false,
       error

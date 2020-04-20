@@ -6,7 +6,7 @@ class Classes {
 
   ownsClass(class_uid, user_uid) {
     return this.mysql.query(
-      'SELECT COUNT(*) FROM classes WHERE uid = ? AND owner_uid = ?',
+      'SELECT uid FROM classes WHERE uid = ? AND owner_uid = ?',
       [class_uid, user_uid]
     ).then(d => d.length === 1);
   }
@@ -18,6 +18,10 @@ class Classes {
       owner_uid,
       name
     });
+  }
+
+  getUserClasses(owner_uid) {
+    return this.mysql.query('SELECT uid, created_at, name FROM classes WHERE owner_uid = ?', [owner_uid]);
   }
 }
 

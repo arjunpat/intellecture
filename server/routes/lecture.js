@@ -36,6 +36,9 @@ router.post('/create', mw.auth, async (req, res) => {
   }));
 });
 
+router.get('/get/:class_uid', mw.auth, async (req, res) => {
+  res.send(responses.success(await db.lectures.getUserLectures(req.params.class_uid)));
+});
 
 let lectures = {};
 // loop through connections to see if still awake
@@ -73,7 +76,7 @@ router.get('/live/:lecture_uid', mw.queryAuth, mw.auth, (req, res) => {
       // TODO creating lecture, verify is teacher, record start time of lecture
       if (await db.lectures.getOwner(lecture_uid) !== req.uid)
         return res.send(responses.error('auth'));
-        
+
       lectures[lecture_uid] = new LectureManager(lecture_uid, db, socket);
     } else {
       lectures[lecture_uid].addStudent(req.uid, socket);

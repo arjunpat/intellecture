@@ -4,10 +4,10 @@ class LectureLog {
     this.mysql = mysql;
   }
 
-  recordScoreChange(lecture_uid, student_uid, value) {
+  recordScoreChange(lecture_uid, time, student_uid, value) {
     return this.mysql.insert('lecture_log', {
-      created_at: Date.now(),
       lecture_uid,
+      time,
       account_uid: student_uid,
       value
     });

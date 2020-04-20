@@ -21,13 +21,15 @@ CREATE TABLE IF NOT EXISTS lectures (
   created_at BIGINT UNSIGNED,
   class_uid VARCHAR(15),
   name VARCHAR(50),
+  start_time BIGINT UNSIGNED,
+  end_time BIGINT UNSIGNED
   INDEX(class_uid)
 );
 
 CREATE TABLE IF NOT EXISTS lecture_log (
   db_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, 
-  created_at BIGINT UNSIGNED,
   lecture_uid VARCHAR(10),
+  time BIGINT UNSIGNED,
   account_uid VARCHAR(36),
   value SMALLINT,
   INDEX(lecture_uid),
