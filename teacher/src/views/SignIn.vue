@@ -34,7 +34,7 @@
 </style>
 
 <script>
-import { firebase } from '@/store/db.js'
+import firebase from 'firebase';
 import ButtonWithImage from '@/components/ButtonWithImage'
 
 export default {

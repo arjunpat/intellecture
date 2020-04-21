@@ -54,11 +54,11 @@ setInterval(() => {
 
 
 function jsonifySocket(socket) {
-  socket.on('message', data => {
+  /* socket.on('message', data => {
     try {
       socket.onjson(JSON.parse(data));
     } catch (e) { console.log(e); }
-  });
+  }); */
 
   socket.json = obj => socket.send(JSON.stringify(obj));
 }

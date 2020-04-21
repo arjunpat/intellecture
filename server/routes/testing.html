@@ -19,31 +19,43 @@
 
   
 
-  let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1ODc0MjA2NzAyMzUsInVpZCI6IkJ5bGM5dmpYMHBVampXQjRrTHNZbWJDZ242QjMifQ.XXLbNrsr1evoo8rDRv0_A8B5jFL0iOiIcCM9gI6LXLA";
+  let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1ODc1MjU0NzQwMTgsInVpZCI6InJVSnlQMzE3aXVaRXJObGhybm55bjhlVDd1WTIifQ.ufVoZHvzopoevhVwBAklgXvUNG8Bn6Nmbg2M5goMhm4";
 
-  let postStuff = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + token
+  let postStuff;
+
+  function genPostStuff() {
+    postStuff = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      }
     }
   }
-  /* let provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithPopup(provider).then(res => {
-    fetch('/auth/login', {
-      ...postStuff,
-      body: JSON.stringify({
-        firebase_token: res.user.xa
-      })
-    }).then(res => res.json()).then(res => {
-      token = res.data.token;
+  genPostStuff();
+
+  function signIn() {
+    let provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider).then(res => {
+      fetch(hostp + '/auth/login', {
+        ...postStuff,
+        body: JSON.stringify({
+          firebase_token: res.user.xa
+        })
+      }).then(res => res.json()).then(res => {
+        token = res.data.token;
+        genPostStuff();
+      });
     });
-  }); */
+  }
+
 </script>
 
 <script>
+  let host = '54.193.0.135';
+  let hostp = 'http://54.193.0.135';
   function createClass(name) {
-    fetch('/class/create', {
+    fetch(hostp + '/class/create', {
       ...postStuff,
       body: JSON.stringify({
         name
@@ -52,14 +64,14 @@
   }
 
   function getMyClasses() {
-    fetch('/class/mine', {
+    fetch(hostp + '/class/mine', {
       ...postStuff,
       method: 'GET'
     }).then(res => res.json()).then(res => console.log(res.data));
   }
 
   function createLecture(class_uid, name) {
-    fetch('/lecture/create', {
+    fetch(hostp + '/lecture/create', {
       ...postStuff,
       body: JSON.stringify({
         class_uid,
@@ -69,7 +81,7 @@
   }
 
   function getMyLectures(class_uid) {
-    fetch('/lecture/get/' + class_uid, {
+    fetch(hostp + '/lecture/get/' + class_uid, {
       ...postStuff,
       method: 'GET'
     }).then(res => res.json()).then(res => console.log(res.data));
@@ -77,7 +89,7 @@
 
   let ws
   function wsStart(lecture_id) {
-    ws = new WebSocket(`ws://localhost:8080/lecture/live/${lecture_id}?access_token=` + encodeURIComponent(token));
+    ws = new WebSocket(`ws://${host}/lecture/live/${lecture_id}?access_token=` + encodeURIComponent(token));
     ws.onmessage = msg => {
       ws.onjson(JSON.parse(msg.data));
     }
