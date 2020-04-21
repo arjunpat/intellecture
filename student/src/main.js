@@ -4,8 +4,17 @@ import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
 import { firestorePlugin } from 'vuefire'
-import { firebase } from './store/db'
+import firebase from 'firebase/app'
 
+firebase.initializeApp({
+  apiKey: 'AIzaSyCcVmiE6jRuOK-XrD2TeGHVAhRUamq80jU',
+  authDomain: 'intellecture-6b3e6.firebaseapp.com',
+  databaseURL: 'https://intellecture-6b3e6.firebaseio.com',
+  projectId: 'intellecture-6b3e6',
+  storageBucket: 'intellecture-6b3e6.appspot.com',
+  messagingSenderId: '462381253872',
+  appId: '1:462381253872:web:fc0f440c35a1c920026e35'
+})
 
 // Initialize firebase stuff
 Vue.use(firestorePlugin)
@@ -29,9 +38,3 @@ new Vue({
   vuetify,
   render: (h) => h(App),
 }).$mount('#app')
-
-setTimeout(() => {
-  // createClass()
-  // createLecture('psUn2zmIkFYc8sWsxuKG', 'Lecture 1')
-
-}, 1000);
