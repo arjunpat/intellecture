@@ -2,8 +2,9 @@ html {
   overflow-y: auto !important;
 }
 
-._gray {background-color: #8aa399ff;}
-._green {background-color: #aae691ff;}
-._green_dark {background-color: #50723cff;}
-._green_mid {background-color: #62a87cff;}
-._green_light {background-color: #d3fad6ff;}
+._green_dark_2 {background-color: #62a87cff;}
+._green_dark {background-color: #65bb6aff;}
+._green {background-color: #81c784ff;}
+._green_2 {background-color: #aed581ff;}
+._green_light {background-color: #aae691ff;}
+._green_light_2 {background-color: #d3f6dbff;}

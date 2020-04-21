@@ -1,7 +1,8 @@
 export const colors = {
-  _green: '#aae691ff',
-  _gray: '#8aa399ff',
-  _green_dark: '#50723cff',
-  _green_mid: '#62a87cff',
-  _green_light: '#d3fad6ff',
+  _green_dark_2: '#62a87cff',
+  _green_dark: '#65bb6aff',
+  _green: '#81c784ff',
+  _green_2: '#aed581ff',
+  _green_light: '#aae691ff',
+  _green_light_2: '#d3f6dbff',
 }

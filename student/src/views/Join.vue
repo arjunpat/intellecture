@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="fill-height green lighten-2">
+  <v-container fluid class="fill-height _green">
     <v-row
       justify="center"
     >
@@ -18,7 +18,7 @@
             <div id="logo-text">INTELLECTURE</div>
           </div>
         </v-expand-transition>
-
+        
         <v-card>
           <v-card-title>Join Room</v-card-title>
           <v-card-text align="center">
@@ -32,7 +32,7 @@
 
             <ButtonWithImage 
               :onClick="join" 
-              color="#AED581" 
+              :color="colors._green_2" 
               :dark="true" 
               :text="btnText" 
               :src="btnImageSrc" 
