@@ -15,6 +15,9 @@ sudo yum -y install epel-release
 sudo yum -y install nginx
 sudo systemctl enable nginx
 
+sudo yum install python2-certbot-nginx
+#sudo certbot --nginx certonly
+
 # https://stackoverflow.com/questions/6795350/nginx-403-forbidden-for-all-files
 sudo setsebool -P httpd_can_network_connect 1
 setenforce Permissive
