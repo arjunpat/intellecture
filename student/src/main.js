@@ -3,8 +3,13 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
-import { firestorePlugin } from 'vuefire'
+
+// Import global css
+import '@/assets/css/global.css'
+
+// Initialize firebase stuff
 import firebase from 'firebase/app'
+import 'firebase/auth'
 
 firebase.initializeApp({
   apiKey: 'AIzaSyCcVmiE6jRuOK-XrD2TeGHVAhRUamq80jU',
@@ -16,18 +21,33 @@ firebase.initializeApp({
   appId: '1:462381253872:web:fc0f440c35a1c920026e35'
 })
 
-// Initialize firebase stuff
-Vue.use(firestorePlugin)
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     store.commit('setAuthUser', user)
+    user.getIdToken(true).then((idToken) => {
+      return fetch('https://api.intellecture.app/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          'firebase_token': idToken
+        })
+      })
+    }).then((res) => res.json())
+    .then((response) => {
+      if (!response.success)
+        throw response.error
+      
+      store.commit('setToken', response.data.token)
+    }).catch((err) => {
+      console.log(err)
+    })
   } else {
     store.commit('setAuthUser', null)
   }
 })
 
-// Import global css
-import '@/assets/css/global.css'
 
 // Mount Vue App
 Vue.config.productionTip = false

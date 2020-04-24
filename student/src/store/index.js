@@ -8,11 +8,15 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     authUser: null,
+    token: '',
   },
   mutations: {
     setAuthUser(state, authUser) {
       state.authUser = authUser
-    }
+    },
+    setToken(state, token) {
+      state.token = token
+    },
   },
   actions: {
   },
@@ -22,7 +26,7 @@ export default new Vuex.Store({
     createPersistedState({
       storage: {
         getItem: key => Cookies.get(key),
-        setItem: (key, value) => Cookies.set(key, value, { expires: 3 }),
+        setItem: (key, value) => Cookies.set(key, value, { expires: 3, samesite: 'None', secure: process.env.NODE_ENV !== 'development' }),
         removeItem: key => Cookies.remove(key)
       }
     }),
