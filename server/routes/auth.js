@@ -16,6 +16,10 @@ admin.initializeApp({
 router.post('/login', async (req, res) => {
   let { firebase_token } = req.body;
   let uid = (await admin.auth().verifyIdToken(firebase_token)).uid;
+
+  if (!uid) {
+    return res.send(responses.error('bad_token'));
+  }
   
   let user = await admin.auth().getUser(uid);
   await db.accounts.createOrUpdate(
