@@ -50,6 +50,9 @@ server to all
 }
 */
 
+// TODO
+// figure out what to do if a teacher leaves
+
 class LectureManager {
   constructor(lecture_uid, db, teacherSocket) {
     this.lecture_uid = lecture_uid;
@@ -58,10 +61,6 @@ class LectureManager {
     
     this.studentScores = {};
     this.studentSockets = {};
-
-    teacherSocket.onjson = data => {
-      if (data.type === 'end_lecture') this.end();
-    }
 
     this.init();
   }
@@ -75,7 +74,12 @@ class LectureManager {
       type: 'lecture_info',
       ...await this.db.lectures.getLecture(this.lecture_uid)
     }
+
     this.teacherSocket.json(this.lectureData);
+    this.teacherSocket.onjson = data => {
+      if (data.type === 'end_lecture') this.end();
+    }
+    this.teacherSocket.on('close', () => this.end());
   }
 
   async addStudent(student_uid, socket) {
@@ -87,11 +91,14 @@ class LectureManager {
     // init student
     this.studentSockets[student_uid] = socket;
 
-    socket.onjson = data => {
+    socket.on('message', data => {
       // TODO write code to prevent abuse
+      try {
+        data = JSON.parse(data);
+      } catch (e) { console.log(e); }
       if (data.type === 'update_score' && typeof data.score === 'number')
         this.changeStudentScore(student_uid, data.score);
-    }
+    });
 
     socket.isAlive = true;
     socket.on('pong', () => socket.isAlive = true);
@@ -154,6 +161,8 @@ class LectureManager {
 
       s.ping(() => {});
     });
+
+    this.teacherSocket.ping(() => {});
   }
 
   end() {

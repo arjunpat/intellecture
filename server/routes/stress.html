@@ -1,0 +1,102 @@
+<script>
+  let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1ODc1MjU0NzQwMTgsInVpZCI6InJVSnlQMzE3aXVaRXJObGhybm55bjhlVDd1WTIifQ.ufVoZHvzopoevhVwBAklgXvUNG8Bn6Nmbg2M5goMhm4";
+  
+  let postStuff = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    }
+  }
+
+  let host = '54.193.0.135';
+  let hostp = 'http://54.193.0.135';
+  
+  let lecture_uid = [];
+
+  function jsonIfy(ws, header) {
+    ws.onmessage = msg => {
+      ws.onjson(JSON.parse(msg.data));
+    }
+
+    ws.onjson = obj => {
+      // console.log(header, obj);
+      receives++;
+    }
+
+    ws.json = obj => ws.send(JSON.stringify(obj));
+  }
+  
+  function sleep(seconds) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve();
+      }, seconds * 1000);
+    });
+  }
+
+  async function startUpLectures(count = 20) {
+    for (let i = 0; i < count; i++) {
+      let res = await fetch(hostp + '/lecture/create', {
+        ...postStuff,
+        body: JSON.stringify({
+          class_uid: "nAHbjMDJkNTIfhg",
+          name: 'Lecture A' + i
+        })
+      });
+      res = await res.json();
+
+      lecture_uid.push(res.data.lecture_uid);
+
+      await sleep(.5);
+
+      startWS(res.data.lecture_uid, .1);
+    }
+  }
+
+  let wsConnsTeacher = [];
+  let wsConnsStudent = [];
+  let sends = 0;
+  let receives = 0;
+
+  async function startWS(lecture_uid, secs = 5) {
+    let wsT = new WebSocket(`ws://${host}/lecture/live/${lecture_uid}?access_token=` + encodeURIComponent(token));
+    wsConnsTeacher.push(wsT);
+    jsonIfy(wsT, 't: ' + lecture_uid);
+
+    await sleep(.5);
+
+    let wsS = new WebSocket(`ws://${host}/lecture/live/${lecture_uid}?access_token=` + encodeURIComponent(token));
+    wsConnsStudent.push(wsS);
+    jsonIfy(wsS, 's: ' + lecture_uid);
+    
+    await sleep(.5);
+
+    setInterval(() => {
+      wsS.json({
+        type: 'update_score',
+        score: Math.ceil(Math.random() * 10)
+      });
+      sends++;
+    }, secs * 1000);
+  }
+
+  setInterval(() => {
+    console.log('\n\n');
+    console.log('lectures', lecture_uid.length);
+    console.log('sends', sends);
+    console.log('receives', receives);
+
+    console.log('TEACHER');
+    console.log(/* 'Connecting', */ wsConnsTeacher.filter(e => e.readyState === 0).length);
+    console.log(/* 'Open', */ wsConnsTeacher.filter(e => e.readyState === 1).length);
+    console.log(/* 'Closing', */ wsConnsTeacher.filter(e => e.readyState === 2).length);
+    console.log(/* 'Closed', */ wsConnsTeacher.filter(e => e.readyState === 3).length);
+    console.log('STUDENT');
+    console.log(/* 'Connecting', */ wsConnsStudent.filter(e => e.readyState === 0).length);
+    console.log(/* 'Open', */ wsConnsStudent.filter(e => e.readyState === 1).length);
+    console.log(/* 'Closing', */ wsConnsStudent.filter(e => e.readyState === 2).length);
+    console.log(/* 'Closed', */ wsConnsStudent.filter(e => e.readyState === 3).length);
+    
+  }, 2000);
+</script>
