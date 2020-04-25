@@ -18,7 +18,7 @@
                   </v-banner>
                   </li>
                 </ul>
-                <ModalForm class="mt-3"></ModalForm>
+                <ModalForm v-on:createdClass="loadClasses" class="mt-3"></ModalForm>
               </v-col>
           </v-row>
         </v-row>
@@ -32,6 +32,7 @@
 <script>
 import ModalForm from '@/components/ModalForm'
 import { mapState } from 'vuex'
+import { post, get } from '@/helpers.js'
 
 export default {
   components: {
@@ -45,17 +46,8 @@ export default {
   },
   methods: {
     loadClasses() {
-      fetch('https://api.intellecture.app/classes/mine', {
-        method: 'GET',
-        headers: {
-          'content-type': 'application/json',
-          'Authorization': 'Bearer ' + this.token
-        }
-      }).then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        this.classes = data.data;
+      get('/classes/mine').then((response) => {
+        this.classes = response.data;
         this.classes.sort((a, b) => (a.name > b.name) ? 1 : -1)
       });
     }

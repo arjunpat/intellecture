@@ -73,6 +73,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { post, get } from '@/helpers.js'
 
 export default {
   data () {
@@ -88,23 +89,12 @@ export default {
     create () {
       if (this.chosenClass !== '' && this.lectureName !== '') {
         this.formErrors = false
-        fetch('https://api.intellecture.app/lectures/create', {
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json',
-            'Authorization': 'Bearer ' + this.token
-          },
-          body: JSON.stringify({
-            'class_uid': this.chosenClass,
-            'name': this.classes.find(obj => obj.uid == this.chosenClass).name
-          })
-        }).then((response) => {
-          return response.json();
-        })
-        .then((data) => {
+        post('/lectures/create', {
+          class_uid: this.chosenClass,
+          name: this.classes.find(obj => obj.uid == this.chosenClass).name
+        }).then((data) => {
           this.$router.push({ path: '/lecture?id=' + data.data.lecture_uid + '&name=' + this.lectureName })
         });
-        
       } else {
         this.formErrors = true
       }

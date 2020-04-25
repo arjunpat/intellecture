@@ -5,6 +5,7 @@ import store from './store'
 import vuetify from './plugins/vuetify'
 import { firestorePlugin } from 'vuefire'
 import firebase from 'firebase/app'
+import { post } from '@/helpers.js'
 
 firebase.initializeApp({
   apiKey: 'AIzaSyCcVmiE6jRuOK-XrD2TeGHVAhRUamq80jU',

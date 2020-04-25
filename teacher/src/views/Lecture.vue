@@ -190,6 +190,7 @@
 /* eslint-disable */
 
 import LineChart from '../components/Chart'
+import { post, get } from '@/helpers.js'
 
 export default {
   components: {

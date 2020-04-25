@@ -33,6 +33,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { post, get } from '@/helpers.js'
 
 export default {
   name: 'ModalForm',
@@ -44,22 +45,12 @@ export default {
   },
   methods: {
     createClass() {
-      console.log(this.token);
-      fetch('https://api.intellecture.app/classes/create', {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'Authorization': 'Bearer ' + this.token
-        },
-        body: JSON.stringify({
-          'name': this.className
-        })
-      }).then((response) => {
-        return response.json();
+      post('/classes/create', {
+        name: this.className
+      }).then(response => {
+        this.$emit("createdClass");
+        //console.log(response)
       })
-      .then((data) => {
-        //console.log(data);
-      });
     }
   },
   computed: {
