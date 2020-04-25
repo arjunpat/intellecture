@@ -18,7 +18,7 @@
                   </v-banner>
                   </li>
                 </ul>
-                <ModalForm></ModalForm>
+                <ModalForm class="mt-3"></ModalForm>
               </v-col>
           </v-row>
         </v-row>
@@ -31,33 +31,40 @@
 
 <script>
 import ModalForm from '@/components/ModalForm'
+import { mapState } from 'vuex'
 
 export default {
+  components: {
+    ModalForm
+  },
   data () {
     return {
       username: localStorage.username,
-      classes: [
-        {
-            "uid":"GsF2nERLrwvLe0T",
-            "created_at":1587439054817,
-            "name":"AP Physics C"
-        },
-        {
-            "uid":"j3fmOXvJyq5Dlww",
-            "created_at":1587439080846,
-            "name":"History"
-        },
-        {
-            "uid":"YaneS98ttCj7ErF",
-            "created_at":1587439072263,
-            "name":"English"
-        }
-
-      ]
+      classes: []
     }
   },
-  components: {
-    ModalForm
+  methods: {
+    loadClasses() {
+      fetch('https://api.intellecture.app/classes/mine', {
+        method: 'GET',
+        headers: {
+          'content-type': 'application/json',
+          'Authorization': 'Bearer ' + this.token
+        }
+      }).then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        this.classes = data.data;
+        this.classes.sort((a, b) => (a.name > b.name) ? 1 : -1)
+      });
+    }
+  },
+  mounted () {
+    this.loadClasses()
+  },
+  computed: {
+    ...mapState(['token']),
   }
 }
 </script>

@@ -30,9 +30,11 @@
                     <v-col  cols="12" sm="6">
                         <v-select
                             :items="classes"
+                            item-value="uid"
+                            item-text="name"
                             label="Class name"
                             outlined
-                            v-model="className"
+                            @change="changeClass"
                         ></v-select>
                     </v-col>
                 </v-row>
@@ -70,42 +72,67 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 
 export default {
   data () {
     return {
       lectureName: '',
-      classes: ['AP Calculus BC', 'AP Chemistry', 'AP Physics C: E & M', 'AP Physics C: Mechanics', 'Multivariable Calculus'],
-      className: '',
-      formErrors: false
+      classes: ['Loading classes...'],
+      chosenClass: '', // id of class
+      formErrors: false,
+      classIndex: 0
     }
   },
   methods: {
     create () {
-      if (this.className !== '' && this.lectureName !== '') {
+      if (this.chosenClass !== '' && this.lectureName !== '') {
         this.formErrors = false
-        const id = this.makeId(5)
-        /*axios.post(`api.intellecture.app/classes/create`, {
-          name: this.lectureName
+        fetch('https://api.intellecture.app/lectures/create', {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            'Authorization': 'Bearer ' + this.token
+          },
+          body: JSON.stringify({
+            'class_uid': this.chosenClass,
+            'name': this.classes.find(obj => obj.uid == this.chosenClass).name
+          })
+        }).then((response) => {
+          return response.json();
         })
-        .then(response => {})
-        .catch(e => {
-          this.errors.push(e)
-        })*/
-        this.$router.push({ path: '/lecture?id=' + id + '&name=' + this.lectureName })
+        .then((data) => {
+          this.$router.push({ path: '/lecture?id=' + data.data.lecture_uid + '&name=' + this.lectureName })
+        });
+        
       } else {
         this.formErrors = true
       }
     },
-    makeId (length) {
-      let result = ''
-      const characters = 'abcdefghijklmnopqrstuvwxyz'
-      const len = characters.length
-      for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * len))
-      }
-      return result
+    loadClasses () {
+      fetch('https://api.intellecture.app/classes/mine', {
+        method: 'GET',
+        headers: {
+          'content-type': 'application/json',
+          'Authorization': 'Bearer ' + this.token
+        }
+      }).then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        this.classes = data.data;
+        this.classes.sort((a, b) => (a.name > b.name) ? 1 : -1)
+      });
+    },
+    changeClass (chose) {
+      this.chosenClass = chose;
     }
+  },
+  mounted() {
+    this.loadClasses();
+  },
+  computed: {
+    ...mapState(['token']),
   }
 }
 
