@@ -45,6 +45,7 @@ firebase.auth().onAuthStateChanged((user) => {
     })
   } else {
     store.commit('setAuthUser', null)
+    store.commit('setToken', '')
   }
 })
 

@@ -85,13 +85,13 @@ export default {
       if (this.className !== '' && this.lectureName !== '') {
         this.formErrors = false
         const id = this.makeId(5)
-        axios.post(`api.intellecture.app/classes/create`, {
+        /*axios.post(`api.intellecture.app/classes/create`, {
           name: this.lectureName
         })
         .then(response => {})
         .catch(e => {
           this.errors.push(e)
-        })
+        })*/
         this.$router.push({ path: '/lecture?id=' + id + '&name=' + this.lectureName })
       } else {
         this.formErrors = true

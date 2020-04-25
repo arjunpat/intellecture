@@ -8,13 +8,10 @@
       dark
       style="position: fixed; left: 0px; top: 0px;"
     >
-      <v-img
-        src="@/assets/logo.svg"
-        height="1em"
-        contain
-      ></v-img>
+      <img src="@/assets/logo.svg" width="35px" class="pointer">
 
       <v-toolbar-title @click="homeRedirect()"><span id="main-logo" class="pointer">INTELLECTURE</span> Teacher</v-toolbar-title>
+
 
       <v-spacer></v-spacer>
 
@@ -143,6 +140,10 @@ export default {
 #avt-img {
   border-radius: 50%;
   background-color: white;
+}
+
+.pointer:hover {
+  cursor: pointer;
 }
 
 </style>
