@@ -22,21 +22,14 @@ firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     store.commit('setAuthUser', user)
     user.getIdToken(true).then((idToken) => {
-      return fetch('https://api.intellecture.app/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          'firebase_token': idToken
-        })
+      post('/auth/login', {
+        firebase_token: idToken
+      }).then((response) => {
+        if (!response.success)
+          throw response.error
+        
+        store.commit('setToken', response.data.token)
       })
-    }).then((res) => res.json())
-    .then((response) => {
-      if (!response.success)
-        throw response.error
-      
-      store.commit('setToken', response.data.token)
     }).catch((err) => {
       console.log(err)
     })
