@@ -11,7 +11,7 @@
     <div 
       class="slider-thumb-container"
       tabindex="0"
-      @click="sliderBarClick"
+      @click="moveToMouse"
     ></div>
     <div 
       v-for="i in (max-1)" 
@@ -81,17 +81,23 @@ export default {
   data() {
     return {
       dragging: false,
-      startX: 0,
       draw: null,
       thumb: null,
     }
   },
 
+  computed: {
+    percentage() {
+      return this.getPercentageFromValue(this.value)
+    },
+  },
+
   watch: {
     value: function(val, oldVal) {
       this.thumb.animate({
-        duration: 50*Math.abs(val-oldVal)*0.75,
-      }).cx(`${this.getPercentageFromValue(val)}%`)
+        duration: 50,
+        when: 'now',
+      }).cx(`${this.percentage}%`)
     }
   },
 
@@ -119,30 +125,7 @@ export default {
     },
     doDrag(event) {
       if (this.dragging) {
-        const rect = this.$refs['slider'].getBoundingClientRect()
-        const sliderLeft = rect.left
-        const sliderRight = rect.right
-        const mouseX = event.x
-        const incrementWidth = rect.width/this.max
-        
-        // If mouse is past the slider's boundaries,
-        // set value to min or max respectively
-        if (mouseX < sliderLeft) {
-          if (this.value != this.min) {
-            this.updateValue(this.min)
-            this.startX = sliderLeft
-          }
-        } else if (mouseX > sliderRight) {
-          if (this.value != this.max) {
-            this.updateValue(this.max)
-            this.startX = sliderRight
-          }
-        } else {
-          const change = Math.round((mouseX - this.startX) / incrementWidth)
-          
-          this.updateValue(this.value + change)
-          this.startX += change*incrementWidth
-        }
+        this.moveToMouse(event)
       }
     },
     stopDrag(event) {
@@ -151,20 +134,20 @@ export default {
     getTickStyle(i) {
       return `left: ${this.getPercentageFromValue(i)}%`
     },
-    sliderBarClick(event) {
+    moveToMouse(event) {
       const rect = this.$refs['slider'].getBoundingClientRect()
       const sliderLeft = rect.left
       const incrementWidth = rect.width/this.max
       const mouseX = event.x
 
-      const clickedValue = Math.round((mouseX-sliderLeft)/incrementWidth)
+      const newValue = Math.round((mouseX-sliderLeft)/incrementWidth)
       
-      if (clickedValue >= this.max) {
+      if (newValue >= this.max) {
         this.updateValue(this.max)
-      } else if (clickedValue <= this.min) {
+      } else if (newValue <= this.min) {
         this.updateValue(this.min)
       } else {
-        this.updateValue(clickedValue)
+        this.updateValue(newValue)
       }
     },
     getPercentageFromValue(value) {
