@@ -187,10 +187,8 @@
 </template>
 
 <script>
-/* eslint-disable */
-
 import LineChart from '../components/Chart'
-import { post, get } from '@/helpers.js'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -199,6 +197,7 @@ export default {
   data () {
     return {
       id: this.$route.query.id,
+      socket: '',
       lectureName: this.$route.query.name,
       datacollection: null,
       understandingScore: '--',
@@ -239,7 +238,6 @@ export default {
       var x = new Array();
       var y = new Array();
       for(let i=0; i<this.understandingData.length; i++) {
-        console.log(this.understandingData[i]);
         x.push(this.understandingData[i].timestamp);
         y.push(this.understandingData[i].score);
       }
@@ -260,9 +258,14 @@ export default {
   },
   mounted () {
     this.$emit('startlecture')
+    this.socket = new WebSocket("wss://api.intellecture.app/lectures/live/:" + this.id + "?access_token={" + this.token + "}", "protocolOne");
+    console.log("wss://api.intellecture.app/lectures/live/:" + this.id + "?access_token={" + this.token + "}");
   },
   created () {
     this.initChart()
+  },
+  computed: {
+    ...mapState(['token']),
   }
 }
 </script>
