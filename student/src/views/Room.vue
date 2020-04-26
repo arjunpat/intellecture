@@ -9,12 +9,13 @@
       >
         <v-card class="mb-3">
           <v-card-title class="noto">UNDERSTANDING</v-card-title>
-          <v-card-text id="understanding" class="text-center headline mb-3" :style="{color: color}">{{ understanding }}</v-card-text>
+          <v-card-text id="understanding" class="text-center headline" :style="{color: color}">{{ understanding }}</v-card-text>
           <v-card-actions>
           <UnderstandingSlider
             v-model="sliderValue"
             :min="0"
             :max="sliderMax"
+            class="mb-4"
           >
           </UnderstandingSlider>
           </v-card-actions>

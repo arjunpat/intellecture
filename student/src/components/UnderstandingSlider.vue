@@ -1,22 +1,26 @@
 <!-- TODO: support tap events (only supports mouse events rn) -->
 
 <template>
-  <div class="slider-container">
+  <div 
+    @click="moveToMouse"
+    class="slider-container"
+  >
     <div 
-      @click="moveToMouse"
       ref="slider"
       class="slider-bar"
       tabindex="0"
     >
     </div>
-    <div 
+    <v-img
       @mousedown="this.startDrag"
       ref="slider-thumb"
       class="slider-thumb"
       tabindex="0"
-      draggable="false"
+      :src="thumbSrc"
       :style="thumbStyle"
-    ></div>
+      transition="scale-transition"
+      rel="preload"
+    ></v-img>
     <div 
       v-for="i in (max-1)" 
       :key="i"
@@ -35,6 +39,10 @@
     position: relative;
   }
 
+  .slider-container:hover {
+    cursor: pointer;
+  }
+
   .slider-bar {
     z-index: 0;
     width: 100%;
@@ -47,6 +55,8 @@
     top: 0;
     bottom: 0;
     outline: none;
+
+    user-select: none;
   }
 
   .slider-thumb {
@@ -54,17 +64,15 @@
     width: 1.5em;
     height: 1.5em;
     position: absolute;
-    transition: left 0.1s ease-in-out;
-    background-position: center;
-    background-size: cover;
+    transition: left 0.05s ease-in-out;
     outline: none;
+    border-style: solid;
+    border-radius: 50%;
+    border-width: 1px;
+    background-color: #ffdd55;
 
     /* disable dragging/selecting */
     user-select: none;
-  }
-
-  .slider-thumb:hover {
-    left: 10%;
   }
 
   .slider-tick {
@@ -77,6 +85,8 @@
     position: absolute;
     top: 0;
     bottom: 0;
+
+    user-select: none;
   }
 </style>
 
@@ -94,6 +104,13 @@ export default {
   data() {
     return {
       dragging: false,
+      faces: {
+        sad: require('@/assets/img/sad.svg'),
+        meh: require('@/assets/img/meh.svg'),
+        happy: require('@/assets/img/happy.svg'),
+        wow: require('@/assets/img/wow.svg')
+      },
+      src: '',
     }
   },
 
@@ -101,16 +118,37 @@ export default {
     percentage() {
       return this.getPercentageFromValue(this.value)
     },
+    thumbSrc() {
+      if (this.dragging) {
+        return this.faces.wow
+      } else if (this.inRange(this.value, 0, 2)) {
+        return this.faces.sad
+      } else if (this.inRange(this.value, 3, 6)) {
+        return this.faces.meh
+      } else if (this.inRange(this.value, 7, 10)) {
+        return this.faces.happy
+      }
+    },
     thumbStyle() {
-      const img = `background-image: url(${require('@/assets/img/happy.svg')});`
+      const img = `background-image: url(${this.thumbSrc});`
       const pos = `left: calc(${this.percentage}% - 0.75em);`
-      return img + pos; 
+      return pos; 
     }
   },
 
   mounted() {
     window.addEventListener('mousemove', this.doDrag)
     window.addEventListener('mouseup', this.stopDrag)
+
+    // Preload images (not sure if this works)
+    /*for (let face in this.faces) {
+      let img = new Image()
+      img.onload = () => {
+        console.log(`${face} preloaded`)
+      }
+      let imgURL = this.faces[face]
+      img.src = imgURL
+    }*/
   },
 
   destroyed() {
@@ -153,8 +191,8 @@ export default {
     getPercentageFromValue(value) {
       return value/(this.max-this.min) * 100
     },
-    inRange(num, target, range) {
-      return Math.abs(num - target) <= range
+    inRange(num, a, b) {
+      return num >= a && num <= b
     },
     updateValue(value) {
       if (value > this.max)

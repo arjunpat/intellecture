@@ -1,9 +1,5 @@
 html {
-  overflow-y: auto !important;
-}
-
-svg {
-  overflow: visible !important;
+  overflow: auto !important;
 }
 
 ._green_dark_2 {background-color: #62a87cff;}
