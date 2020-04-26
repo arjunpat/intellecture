@@ -11,12 +11,12 @@
           <v-card-title class="noto">UNDERSTANDING</v-card-title>
           <v-card-text id="understanding" class="text-center headline mb-3" :style="{color: color}">{{ understanding }}</v-card-text>
           <v-card-actions>
-          <v-slider
+          <UnderstandingSlider
             v-model="sliderValue"
-            :tick-labels="tickLabels"
-            :max="10"
-            thumb-label="always"
-          ></v-slider>
+            :min="0"
+            :max="sliderMax"
+          >
+          </UnderstandingSlider>
           </v-card-actions>
         </v-card>
         <v-card>
@@ -49,25 +49,37 @@
     font-family: 'Noto Sans';
     font-weight: 600;
   }
+
+  .row {
+    max-width: unset !important;
+  }
 </style>
 <script>
+import UnderstandingSlider from '@/components/UnderstandingSlider'
+
 export default {
   name: 'Room',
   data() {
     return {
       sliderValue: 5,
+      sliderMax: 10,
       tickLabels: ['😭', '', '', '', '', '😐', '', '', '', '', '😄'],
       levels: ['I\'m lost', 'I\'m confused', 'I kinda get it', 'I think I get it', 'I completely understand'],
       colors: ['rgb(240, 53, 36)', 'rgb(255, 183, 0)', 'rgb(250, 225, 0)', 'rgb(126, 196, 4)', 'rgb(127, 240, 7)'],
       color: '',
     }
   },
+
+  components: {
+    UnderstandingSlider,
+  },
+
   computed: {
     understanding: function() {
-      let index = Math.floor((this.sliderValue+1)/2) - 1
+      let index = Math.floor((+this.sliderValue+1)/2) - 1
       this.color = index < 0 ? 'rgb(0,0,0)' : this.colors[index]
       return index < 0 ? '😭' : this.levels[index]
     }
-  }
+  },
 }
 </script>

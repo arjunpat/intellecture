@@ -2,6 +2,10 @@ html {
   overflow-y: auto !important;
 }
 
+svg {
+  overflow: visible !important;
+}
+
 ._green_dark_2 {background-color: #62a87cff;}
 ._green_dark {background-color: #65bb6aff;}
 ._green {background-color: #81c784ff;}
