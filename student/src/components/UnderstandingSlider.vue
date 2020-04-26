@@ -3,15 +3,19 @@
 <template>
   <div class="slider-container">
     <div 
+      @click="moveToMouse"
+      ref="slider"
       class="slider-bar"
       tabindex="0"
-      ref="slider"
     >
     </div>
     <div 
-      class="slider-thumb-container"
+      @mousedown="this.startDrag"
+      ref="slider-thumb"
+      class="slider-thumb"
       tabindex="0"
-      @click="moveToMouse"
+      draggable="false"
+      :style="thumbStyle"
     ></div>
     <div 
       v-for="i in (max-1)" 
@@ -45,12 +49,22 @@
     outline: none;
   }
 
-  .slider-thumb-container {
+  .slider-thumb {
     z-index: 5;
-    width: 100%;
-    height: 100%;
+    width: 1.5em;
+    height: 1.5em;
     position: absolute;
+    transition: left 0.1s ease-in-out;
+    background-position: center;
+    background-size: cover;
     outline: none;
+
+    /* disable dragging/selecting */
+    user-select: none;
+  }
+
+  .slider-thumb:hover {
+    left: 10%;
   }
 
   .slider-tick {
@@ -67,7 +81,6 @@
 </style>
 
 <script>
-import { SVG } from '@svgdotjs/svg.js'
 
 export default {
   name: 'UnderstandingSlider',
@@ -81,8 +94,6 @@ export default {
   data() {
     return {
       dragging: false,
-      draw: null,
-      thumb: null,
     }
   },
 
@@ -90,32 +101,21 @@ export default {
     percentage() {
       return this.getPercentageFromValue(this.value)
     },
-  },
-
-  watch: {
-    value: function(val, oldVal) {
-      this.thumb.animate({
-        duration: 50,
-        when: 'now',
-      }).cx(`${this.percentage}%`)
+    thumbStyle() {
+      const img = `background-image: url(${require('@/assets/img/happy.svg')});`
+      const pos = `left: calc(${this.percentage}% - 0.75em);`
+      return img + pos; 
     }
   },
 
   mounted() {
     window.addEventListener('mousemove', this.doDrag)
     window.addEventListener('mouseup', this.stopDrag)
-    this.draw = SVG().addTo('.slider-thumb-container').size('100%', '100%')
-    this.thumb = this.draw.circle('1.5em').attr({
-      fill: '#f06', 
-      cx: `${this.getPercentageFromValue(this.value)}%`,
-    })
-    this.thumb.on('mousedown', this.startDrag)
   },
 
   destroyed() {
     window.removeEventListener('mousemove', this.doDrag)
     window.removeEventListener('mouseup', this.stopDrag)
-    this.thumb.off('mousedown')
   },
 
   methods: {
