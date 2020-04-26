@@ -2,7 +2,11 @@
 
 <template>
   <div 
-    @click="moveToMouse"
+    @touchstart="moveThumbToTouch"
+    @touchmove="moveThumbToTouch"
+    @touchend="touchEnd"
+    @mousedown="startDrag"
+    @click="moveThumbToMouse"
     class="slider-container"
   >
     <div 
@@ -12,7 +16,6 @@
     >
     </div>
     <v-img
-      @mousedown="this.startDrag"
       ref="slider-thumb"
       class="slider-thumb"
       tabindex="0"
@@ -110,7 +113,6 @@ export default {
         happy: require('@/assets/img/happy.svg'),
         wow: require('@/assets/img/wow.svg')
       },
-      src: '',
     }
   },
 
@@ -159,26 +161,31 @@ export default {
   methods: {
     startDrag(event) {
       this.dragging = true
-      this.startX = event.x
     },
     doDrag(event) {
       if (this.dragging) {
-        this.moveToMouse(event)
+        this.moveThumb(event.x)
       }
     },
     stopDrag(event) {
       this.dragging = false
     },
-    getTickStyle(i) {
-      return `left: ${this.getPercentageFromValue(i)}%`
+    touchEnd() {
+      this.dragging = false
     },
-    moveToMouse(event) {
+    moveThumbToMouse(event) {
+      this.moveThumb(event.x)
+    },
+    moveThumbToTouch(event) {
+      this.dragging = true
+      this.moveThumb(event.touches[0].clientX)
+    },
+    moveThumb(x) {
       const rect = this.$refs['slider'].getBoundingClientRect()
       const sliderLeft = rect.left
       const incrementWidth = rect.width/this.max
-      const mouseX = event.x
 
-      const newValue = Math.round((mouseX-sliderLeft)/incrementWidth)
+      const newValue = Math.round((x-sliderLeft)/incrementWidth)
       
       if (newValue >= this.max) {
         this.updateValue(this.max)
@@ -187,6 +194,9 @@ export default {
       } else {
         this.updateValue(newValue)
       }
+    },
+    getTickStyle(i) {
+      return `left: ${this.getPercentageFromValue(i)}%`
     },
     getPercentageFromValue(value) {
       return value/(this.max-this.min) * 100
