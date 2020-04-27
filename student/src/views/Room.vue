@@ -9,7 +9,11 @@
       >
         <v-card class="mb-3">
           <v-card-title class="noto">UNDERSTANDING</v-card-title>
-          <v-card-text id="understanding" class="text-center headline" :style="{color: color}">{{ understanding }}</v-card-text>
+          <v-card-text id="understanding" class="text-center headline mb-2" style="height: 2em;" :style="{color: color}">
+            <div id="understandingText">{{ understanding }}</div>
+            <img v-if="!understanding" :src="require('@/assets/img/sad.svg')" style="width: 2em; height: 2em" />
+          </v-card-text>
+          
           <v-card-actions>
           <UnderstandingSlider
             v-model="sliderValue"
@@ -39,6 +43,15 @@
 <style scoped>
   #understanding {
     transition: all 0.4s;
+    position: relative;
+  }
+
+  #understandingText {
+    position: absolute;
+    top: 0.5em;
+    bottom: 0.5em;
+    left: 0;
+    right: 0;
   }
 
   .v-btn {
@@ -57,18 +70,28 @@
 </style>
 <script>
 import UnderstandingSlider from '@/components/UnderstandingSlider'
+import { mapState } from 'vuex'
 
 export default {
   name: 'Room',
+
+  props: {
+    id: {type: String},
+  },
+
   data() {
     return {
       sliderValue: 5,
       sliderMax: 10,
-      tickLabels: ['😭', '', '', '', '', '😐', '', '', '', '', '😄'],
       levels: ['I\'m lost', 'I\'m confused', 'I kinda get it', 'I think I get it', 'I completely understand'],
       colors: ['rgb(240, 53, 36)', 'rgb(255, 183, 0)', 'rgb(250, 225, 0)', 'rgb(126, 196, 4)', 'rgb(127, 240, 7)'],
       color: '',
+      socket: null,
     }
+  },
+
+  mounted() {
+    this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/${this.id}?access_token=${this.token}`)
   },
 
   components: {
@@ -76,10 +99,11 @@ export default {
   },
 
   computed: {
+    ...mapState(['token']),
     understanding: function() {
       let index = Math.floor((+this.sliderValue+1)/2) - 1
       this.color = index < 0 ? 'rgb(0,0,0)' : this.colors[index]
-      return index < 0 ? '😭' : this.levels[index]
+      return index < 0 ? '' : this.levels[index]
     }
   },
 }

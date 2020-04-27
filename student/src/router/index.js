@@ -15,6 +15,7 @@ const routes = [
     path: '/room/:id',
     name: 'Room',
     component: Room,
+    props: true,
   },
 ]
 
