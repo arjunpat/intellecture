@@ -52,8 +52,8 @@
 </script>
 
 <script>
-  let host = '54.193.0.135';
-  let hostp = 'http://54.193.0.135';
+  let host = 'api.intellecture.app';
+  let hostp = 'http://api.intellecture.app';
   function createClass(name) {
     fetch(hostp + '/class/create', {
       ...postStuff,
@@ -64,14 +64,14 @@
   }
 
   function getMyClasses() {
-    fetch(hostp + '/class/mine', {
+    fetch(hostp + '/classes/mine', {
       ...postStuff,
       method: 'GET'
     }).then(res => res.json()).then(res => console.log(res.data));
   }
 
   function createLecture(class_uid, name) {
-    fetch(hostp + '/lecture/create', {
+    fetch(hostp + '/lectures/create', {
       ...postStuff,
       body: JSON.stringify({
         class_uid,
@@ -80,8 +80,17 @@
     });
   }
 
+  function lectureExists(lecture_uid) {
+    fetch(hostp + '/lectures/exists/' + lecture_uid, {
+      ...postStuff,
+      method: 'GET'
+    }).then(res => res.json()).then(res => {
+      console.log(res.data);
+    });
+  }
+
   function getMyLectures(class_uid) {
-    fetch(hostp + '/lecture/get/' + class_uid, {
+    fetch(hostp + '/lectures/get/' + class_uid, {
       ...postStuff,
       method: 'GET'
     }).then(res => res.json()).then(res => console.log(res.data));

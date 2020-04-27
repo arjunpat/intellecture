@@ -40,6 +40,14 @@ router.get('/get/:class_uid', mw.auth, async (req, res) => {
   res.send(responses.success(await db.lectures.getUserLectures(req.params.class_uid)));
 });
 
+router.get('/exists/:lecture_uid', mw.auth, async (req, res) => {
+  let lecture = await db.lectures.getLecture(req.params.lecture_uid);
+
+  res.send(responses.success({
+    exists: !!lecture
+  }));
+});
+
 let lectures = {};
 // loop through connections to see if still awake
 setInterval(() => {
