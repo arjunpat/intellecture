@@ -3,19 +3,19 @@ const mysql = require('mysql');
 
 class MySQL {
   constructor(user, password, database, host) {
-    /* this.conn = mysql.createConnection({
-      user,
-      password,
-      database,
-      host
-    }); */
-    this.conn = mysql.createPool({
-      connectionLimit: 10,
+    this.conn = mysql.createConnection({
       user,
       password,
       database,
       host
     });
+    /* this.conn = mysql.createPool({
+      connectionLimit: 10,
+      user,
+      password,
+      database,
+      host
+    }); */
   }
 
   init(sql) {

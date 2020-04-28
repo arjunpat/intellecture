@@ -9,8 +9,8 @@
     }
   }
 
-  let host = '54.193.0.135';
-  let hostp = 'http://54.193.0.135';
+  let host = 'api.intellecture.app';
+  let hostp = 'https://api.intellecture.app';
   
   let lecture_uid = [];
 
@@ -37,7 +37,7 @@
 
   async function startUpLectures(count = 20) {
     for (let i = 0; i < count; i++) {
-      let res = await fetch(hostp + '/lecture/create', {
+      let res = await fetch(hostp + '/lectures/create', {
         ...postStuff,
         body: JSON.stringify({
           class_uid: "nAHbjMDJkNTIfhg",
@@ -60,13 +60,13 @@
   let receives = 0;
 
   async function startWS(lecture_uid, secs = 5) {
-    let wsT = new WebSocket(`ws://${host}/lecture/live/${lecture_uid}?access_token=` + encodeURIComponent(token));
+    let wsT = new WebSocket(`ws://${host}/lectures/live/teacher/${lecture_uid}?access_token=` + encodeURIComponent(token));
     wsConnsTeacher.push(wsT);
     jsonIfy(wsT, 't: ' + lecture_uid);
 
     await sleep(.5);
 
-    let wsS = new WebSocket(`ws://${host}/lecture/live/${lecture_uid}?access_token=` + encodeURIComponent(token));
+    let wsS = new WebSocket(`ws://${host}/lectures/live/student/${lecture_uid}?access_token=` + encodeURIComponent(token));
     wsConnsStudent.push(wsS);
     jsonIfy(wsS, 's: ' + lecture_uid);
     

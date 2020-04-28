@@ -8,5 +8,10 @@ module.exports = {
     
     req.headers.authorization = 'Bearer ' + req.query.access_token;
     next();
+  },
+  websocket(req, res, next) {
+    if (!req.headers.upgrade || req.headers.upgrade.toLowerCase() !== 'websocket')
+      return res.send(responses.error('not_websocket'));
+    next();
   }
 }

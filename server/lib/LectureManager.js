@@ -91,14 +91,11 @@ class LectureManager {
     // init student
     this.studentSockets[student_uid] = socket;
 
-    socket.on('message', data => {
+    socket.onjson = data => {
       // TODO write code to prevent abuse
-      try {
-        data = JSON.parse(data);
-      } catch (e) { console.log(e); }
       if (data.type === 'update_score' && typeof data.score === 'number')
         this.changeStudentScore(student_uid, data.score);
-    });
+    }
 
     socket.isAlive = true;
     socket.on('pong', () => socket.isAlive = true);
@@ -163,6 +160,13 @@ class LectureManager {
     });
 
     this.teacherSocket.ping(() => {});
+  
+    if (Object.values(this.studentSockets).length === 0
+      && (this.teacherSocket.readyState === 2 || this.teacherSocket.readyState === 3)
+    ) {
+      this.done = true;
+      this.end();
+    }
   }
 
   end() {
