@@ -22,22 +22,24 @@
         <v-card>
           <v-card-title>Join Room</v-card-title>
           <v-card-text align="center">
-            <v-text-field
-              label="Room Code"
-              v-model="roomCode"
-              hide-details="true"
-              outlined
-              class="mb-n3"
-            ></v-text-field>
+            <form @submit="join">
+              <v-text-field
+                label="Room Code"
+                v-model="roomCode"
+                :class="validRoomCode ? 'mb-n3' : ''"
+                :rules="[ validRoomCode || 'Invalid room code!' ]"
+                outlined
+              ></v-text-field>
 
-            <ButtonWithImage 
-              :onClick="join" 
-              :color="colors._green_2" 
-              :dark="true" 
-              :text="btnText" 
-              :src="btnImageSrc" 
-              :isAvatar="authUser !== null"
-            />
+              <ButtonWithImage 
+                :onClick="join" 
+                :color="colors._green_2" 
+                :dark="true" 
+                :text="btnText" 
+                :src="btnImageSrc" 
+                :isAvatar="authUser !== null"
+              />
+            </form>
 
             <div v-if="authUser" class="mt-2">Not you? (<a href="" @click.prevent="signOut">Sign out</a>)</div>
           </v-card-text>
@@ -48,6 +50,10 @@
 </template>
 
 <style scoped>
+  .v-text-field {
+    transition: margin-bottom 0.3s;
+  }
+
   .v-btn {
     width: 100%;
     height: 3em !important;
@@ -80,6 +86,7 @@ import 'firebase/auth'
 import ButtonWithImage from '@/components/ButtonWithImage'
 import { mapState } from 'vuex'
 import { colors } from '@/constants.js'
+import { get } from '@/helpers.js'
 
 export default {
   name: 'Join',
@@ -108,6 +115,7 @@ export default {
       colors,
       show: false,
       roomCode: '',
+      validRoomCode: true,
       btnText: 'Continue with Google',
       btnImageSrc: require('@/assets/img/google_logo_white.svg'),
     }
@@ -123,17 +131,35 @@ export default {
   },
 
   methods: {
-    join() {
-      if (this.authUser) {
-        this.redirectToRoom()
-      } else {
-        this.signInGoogle().then(() => {
-          this.redirectToRoom()
-        }).catch((err) => {
-          // TODO: make this not alert()
-          alert(err.message)
-        })
-      }
+    join(e) {
+      e.preventDefault()
+
+      // Check if room exists
+      this.validRoomCode = true
+      get(`/lectures/exists/${this.roomCode}`).then((response) => {
+        if (!response.success)
+          throw response.error
+
+        if (!response.data.exists) {
+          // Room does not exist
+          console.log('room does not exist!')
+          this.validRoomCode = false
+        } else {
+          // Sign in to google if needed and join room
+          if (this.authUser) {
+            this.redirectToRoom()
+          } else {
+            this.signInGoogle().then(() => {
+              this.redirectToRoom()
+            }).catch((err) => {
+              // TODO: make this not alert()
+              alert(err.message)
+            })
+          }
+        }
+      }).catch((err) => {
+        console.log(err)
+      })
     },
     redirectToRoom() {
       // TODO: validate that room with code `roomCode` exists

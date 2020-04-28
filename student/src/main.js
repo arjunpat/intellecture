@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
-import { get, post } from './helpers'
+import { post } from './helpers'
 
 // Import global css
 import '@/assets/css/global.css'

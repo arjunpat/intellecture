@@ -100,17 +100,8 @@ export default {
       }
     },
     loadClasses () {
-      fetch('https://api.intellecture.app/classes/mine', {
-        method: 'GET',
-        headers: {
-          'content-type': 'application/json',
-          'Authorization': 'Bearer ' + this.token
-        }
-      }).then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        this.classes = data.data;
+      get('/classes/mine').then((response) => {
+        this.classes = response.data;
         this.classes.sort((a, b) => (a.name > b.name) ? 1 : -1)
       });
     },

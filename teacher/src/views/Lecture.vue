@@ -258,7 +258,7 @@ export default {
   },
   mounted () {
     this.$emit('startlecture')
-    this.socket = new WebSocket("wss://api.intellecture.app/lectures/live/" + this.id + "?access_token=" + this.token + "", "protocolOne");
+    this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.id}?access_token=${this.token}`);
   },
   created () {
     this.initChart()
