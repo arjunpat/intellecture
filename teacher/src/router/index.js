@@ -22,7 +22,8 @@ const routes = [
   {
     path: '/lecture',
     name: 'Lecture',
-    component: Lecture
+    component: Lecture,
+    props: true
   },
   {
     path: '/new',
