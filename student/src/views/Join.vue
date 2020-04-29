@@ -86,7 +86,7 @@ import 'firebase/auth'
 import ButtonWithImage from '@/components/ButtonWithImage'
 import { mapState } from 'vuex'
 import { colors } from '@/constants.js'
-import { get } from '@/helpers.js'
+import { get, post } from '@/helpers.js'
 
 export default {
   name: 'Join',
@@ -134,6 +134,30 @@ export default {
     join(e) {
       e.preventDefault()
 
+      if (this.authUser) {
+        this.redirectToRoom()
+      } else {
+        // Sign user in if not already signed in
+        this.signInGoogle().then((result) => {
+          return result.user.getIdToken(true)
+        }).then((idToken) => {
+          // TODO: remove this redundancy in the code (only post in the authUser listener)
+          return post('/auth/login', {
+            firebase_token: idToken
+          })
+        }).then((response) => {
+          if (!response.success)
+            throw response.error
+          
+          this.$store.commit('setToken', response.data.token)
+          this.redirectToRoom()
+        }).catch((err) => {
+          // TODO: make this not alert()
+          alert(err.message)
+        })
+      }
+    },
+    redirectToRoom() {
       // Check if room exists
       this.validRoomCode = true
       get(`/lectures/exists/${this.roomCode}`).then((response) => {
@@ -142,30 +166,17 @@ export default {
 
         if (!response.data.exists) {
           // Room does not exist
-          console.log('room does not exist!')
           this.validRoomCode = false
         } else {
-          // Sign in to google if needed and join room
-          if (this.authUser) {
-            this.redirectToRoom()
-          } else {
-            this.signInGoogle().then(() => {
-              this.redirectToRoom()
-            }).catch((err) => {
-              // TODO: make this not alert()
-              alert(err.message)
-            })
-          }
+          // Redirect to room page
+          this.$router.replace(`/room/${this.roomCode}`)
         }
       }).catch((err) => {
         console.log(err)
       })
     },
-    redirectToRoom() {
-      // TODO: validate that room with code `roomCode` exists
-      this.$router.replace(`/room/${this.roomCode}`)
-    },
     signInGoogle() {
+      console.log('sign in with GOOGLE!')
       let provider = new firebase.auth.GoogleAuthProvider()
       return firebase.auth().signInWithPopup(provider)
     },
