@@ -17,7 +17,7 @@
 
       <v-btn class="ml-1 light-green lighten-2" v-if="landing" @click="$router.push({ path: '/signin' })">Sign In</v-btn>
       <v-btn v-if="!started && dashboard" @click="$router.push({ path: '/new' })">Start Lecture</v-btn>
-      <v-btn class="red" v-if="started && livelecture" @click="$router.push({ path: '/dashboard' }); started = false;">End Lecture</v-btn>
+      <v-btn class="red" v-if="started && livelecture" @click="endlecture()">End Lecture</v-btn>
       <v-btn class="ml-1 deep-orange accent-2" v-if="!started && !landing && !signin" @click="signOut()">Sign out <img id="avt-img" class="ml-2" v-bind:src="authUser.photoURL" width="25px"></v-btn>
       <div v-if="started" class="ml-3" style="background-color: #AED581; padding: 5px 8px; border-radius: 7px;">
         <span class="mr-1" style="font-size: 20px; font-family: 'Roboto'; font-weight: 500;">ROOM:</span> <span class="text--primary font-weight-black" style="background: #ddd; border-radius: 7px; padding: 2px 10px; font-size: 25px;">j3238</span>
@@ -49,7 +49,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['authUser']),
+    ...mapState(['authUser', 'token']),
     landing: function () {
       if (this.$route.name === 'Landing') {
         return true
@@ -77,10 +77,19 @@ export default {
       } else {
         return false
       }
+    },
+    endlecture: function() {
+      var socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.$route.query.id}?access_token=${this.token}`);
+      socket.onopen = function (event) {
+        socket.send({ type: "end_lecture" }); 
+        socket.close();
+      };
+      this.$router.push({ path: '/dashboard' })
+      this.started = false
     }
   },
   watch: {
-    $route: function (val) {
+    $route: function (to, from) {
       this.redirectAuthUser()
     },
     authUser: function (val) {

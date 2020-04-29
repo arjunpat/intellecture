@@ -196,6 +196,7 @@ export default {
   },
   data () {
     return {
+      connected: false,
       id: this.$route.query.id,
       socket: '',
       lectureName: this.$route.query.name,
@@ -259,6 +260,11 @@ export default {
   mounted () {
     this.$emit('startlecture')
     this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.id}?access_token=${this.token}`);
+    this.socket.onmessage = function (event) {
+      if(event.type == "lecture_info") {
+        this.connected = true;
+      }
+    }
   },
   created () {
     this.initChart()
