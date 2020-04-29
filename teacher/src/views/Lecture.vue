@@ -142,11 +142,11 @@
                         >
                           <img
                             alt="Avatar"
-                            :src="student.image"
+                            :src="student.photo"
                             style="background-color: #F5F5F5;"
                           >
                         </v-avatar>
-                      {{student.name}}
+                      {{student.first_name}} {{student.last_name}}
                     </v-banner>
                     </li>
                 </ul>
@@ -196,6 +196,7 @@ export default {
   },
   data () {
     return {
+      connected: false,
       id: this.$route.query.id,
       socket: '',
       lectureName: this.$route.query.name,
@@ -210,11 +211,7 @@ export default {
         { text: "What's the formula for flux?", id: 4, dismiss: false },
         { text: 'How do you used a closed surface integral to calculate flux?', id: 5, dismiss: false },
         { text: 'What is the relationship between voltage and a Gaussian surface?', id: 6, dismiss: false }],
-      students: [ { name: 'Tony Xin', image: 'http://tonyxin.com/images/tonyxin2.png' },
-        { name: 'Tony Xin', image: 'http://tonyxin.com/images/tonyxin2.png' },
-        { name: 'Tony Xin', image: 'http://tonyxin.com/images/tonyxin2.png' },
-        { name: 'Tony Xin', image: 'http://tonyxin.com/images/tonyxin2.png' },
-        { name: 'Tony Xin', image: 'http://tonyxin.com/images/tonyxin2.png' } ],
+      students: [],
       keywords: /* hardcoded data */ [{ word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }],
       currentTab: 0,
       tab: null,
@@ -257,8 +254,25 @@ export default {
     }
   },
   mounted () {
-    this.$emit('startlecture')
-    this.socket = new WebSocket("wss://api.intellecture.app/lectures/live/" + this.id + "?access_token=" + this.token + "", "protocolOne");
+    this.$emit('startlecture', this.id);
+    this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.id}?access_token=${this.token}`);
+    this.socket.onmessage = function (event) {
+      const data = JSON.parse(event)
+      if(data.type == "lecture_info") {
+        this.connected = true
+      } else if(data.type == "student_join") {
+        this.students.push(data)
+      } else if(data.type == "student_leave") {
+        this.students = this.students.filter(function( obj ) {
+            return obj.uid !== data.uid
+        });
+      } else if(data.type == "us_update") {
+        this.understandingData.push({
+          timestamp: Date.now() - this.start,
+          score: data.value
+        })
+      }
+    }
   },
   created () {
     this.initChart()

@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
-import { get, post } from './helpers'
+import { post } from './helpers'
 
 // Import global css
 import '@/assets/css/global.css'
@@ -26,14 +26,14 @@ firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     store.commit('setAuthUser', user)
     user.getIdToken(true).then((idToken) => {
-      post('/auth/login', {
+      return post('/auth/login', {
         firebase_token: idToken
-      }).then((response) => {
-        if (!response.success)
-          throw response.error
-        
-        store.commit('setToken', response.data.token)
       })
+    }).then((response) => {
+      if (!response.success)
+        throw response.error
+        
+      store.commit('setToken', response.data.token)
     }).catch((err) => {
       console.log(err)
     })

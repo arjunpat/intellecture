@@ -205,6 +205,9 @@ export default {
       return num >= a && num <= b
     },
     updateValue(value) {
+      if (value === this.value)
+        return
+      
       if (value > this.max)
         value = this.max
       else if (value < this.min)
