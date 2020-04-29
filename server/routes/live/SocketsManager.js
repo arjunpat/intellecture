@@ -22,6 +22,7 @@ class SocketsManager {
           this.obj[lecture_uid].splice(i, 1);
           i--;
         } else {
+          socket.isAlive = false;
           socket.ping(() => {});
         }
       }
