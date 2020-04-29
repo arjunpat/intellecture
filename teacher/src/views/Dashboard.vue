@@ -6,7 +6,7 @@
 
 
       <br><br>
-      <v-card flat class="pt-3">
+      <v-card flat class="pt-3" v-if="classes != []">
         <v-row align="center" justify="center">
           <v-row align="center" justify="center">
               <v-col cols="12">
@@ -40,7 +40,7 @@ export default {
   },
   data () {
     return {
-      username: localStorage.username,
+      username: "",
       classes: []
     }
   },
@@ -54,9 +54,21 @@ export default {
   },
   mounted () {
     this.loadClasses()
+    if(this.authUser) {
+      this.username = this.authUser.displayName
+      console.log(this.authUser);
+    }
   },
   computed: {
-    ...mapState(['token']),
+    ...mapState(['authUser', 'token']),
+  },
+  watch: {
+    token: function (val) {
+      this.loadClasses()
+    },
+    authUser: function(val) {
+      this.username = this.authUser.displayName
+    }
   }
 }
 </script>

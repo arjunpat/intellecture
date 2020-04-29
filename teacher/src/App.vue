@@ -20,7 +20,7 @@
       <v-btn class="red" v-if="started && livelecture" @click="endlecture()">End Lecture</v-btn>
       <v-btn class="ml-1 deep-orange accent-2" v-if="!started && !landing && !signin" @click="signOut()">Sign out <img id="avt-img" class="ml-2" v-bind:src="authUser.photoURL" width="25px"></v-btn>
       <div v-if="started" class="ml-3" style="background-color: #AED581; padding: 5px 8px; border-radius: 7px;">
-        <span class="mr-1" style="font-size: 20px; font-family: 'Roboto'; font-weight: 500;">ROOM:</span> <span class="text--primary font-weight-black" style="background: #ddd; border-radius: 7px; padding: 2px 10px; font-size: 25px;">j3238</span>
+        <span class="mr-1" style="font-size: 20px; font-family: 'Roboto'; font-weight: 500;">ROOM:</span> <span class="text--primary font-weight-black" style="background: #ddd; border-radius: 7px; padding: 2px 10px; font-size: 25px;">{{id}}</span>
       </div>
 
     </v-app-bar>
@@ -28,7 +28,7 @@
     <div style="height: 64px;"></div>
 
     <v-content>
-      <router-view v-on:startlecture="started = true" />
+      <router-view v-on:startlecture="starting" />
     </v-content>
   </v-app>
 </template>
@@ -45,7 +45,8 @@ export default {
   data: function () {
     return {
       started: false,
-      imageurl: 'https://tonyxin-8bae2.firebaseapp.com/images/tonyxin2.png'
+      imageurl: 'https://tonyxin-8bae2.firebaseapp.com/images/tonyxin2.png',
+      id: ''
     }
   },
   computed: {
@@ -77,15 +78,6 @@ export default {
       } else {
         return false
       }
-    },
-    endlecture: function() {
-      var socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.$route.query.id}?access_token=${this.token}`);
-      socket.onopen = function (event) {
-        socket.send({ type: "end_lecture" }); 
-        socket.close();
-      };
-      this.$router.push({ path: '/dashboard' })
-      this.started = false
     }
   },
   watch: {
@@ -123,6 +115,19 @@ export default {
       } else {
         this.$router.push({ path: '/' })
       }
+    },
+    endlecture: function() {
+      var socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.$route.query.id}?access_token=${this.token}`);
+      socket.onopen = function (event) {
+        socket.send(JSON.stringify({ type: "end_lecture" })); 
+        socket.close();
+      };
+      this.$router.push({ path: '/dashboard' })
+      this.started = false
+    },
+    starting: function(e) {
+      this.id = e;
+      this.started = true;
     }
   }
 }
