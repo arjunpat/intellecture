@@ -4,7 +4,6 @@ const { reactiveProp } = mixins
 export default {
   extends: Line,
   mixins: [reactiveProp],
-  props: ['options'],
   data () {
     return {
       options: {
@@ -18,6 +17,11 @@ export default {
             }
           }],
           xAxes: [{
+            type: 'time',
+            time: {
+                unit: 'minute'
+            },
+            distribution: 'linear',
             gridLines: {
               display: false
             }
@@ -26,7 +30,8 @@ export default {
         legend: {
           display: false
         },
-        maintainAspectRatio: false
+        maintainAspectRatio: false,
+        responsive: true
       }
     }
   },

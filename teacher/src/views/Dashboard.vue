@@ -6,22 +6,21 @@
 
 
       <br><br>
-      <v-card flat class="pt-3" v-if="classes != []">
-        <v-row align="center" justify="center">
-          <v-row align="center" justify="center">
-              <v-col cols="12">
-                <h1>Classes</h1>
-                <ul style="list-style-type: none">
-                  <li v-for="cla in classes" v-bind:key="cla.id">
-                  <v-banner>
-                    {{cla.name}}
-                  </v-banner>
-                  </li>
-                </ul>
-                <ModalForm v-on:createdClass="loadClasses" class="mt-3"></ModalForm>
-              </v-col>
-          </v-row>
-        </v-row>
+      <v-card v-if="classes != []">
+        
+        <v-card-title style="background-color: #ECEFF1;" class="headline font-weight-bold">CLASSES</v-card-title>
+        <v-divider></v-divider>
+        
+        <v-card-text align="center">
+          <ul style="list-style-type: none">
+            <li v-for="cla in classes" v-bind:key="cla.id">
+            <v-banner>
+              {{cla.name}}
+            </v-banner>
+            </li>
+          </ul>
+          <ModalForm v-on:createdClass="loadClasses" class="mt-3"></ModalForm>
+        </v-card-text>
       </v-card>
 
     </v-container>

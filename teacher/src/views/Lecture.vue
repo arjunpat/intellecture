@@ -38,7 +38,7 @@
                     <v-card-text>
                         <span style="font-size: 20px; color: black; font-weight: bold;"><span style="background: red; padding: 2px 5px; color: white; border-radius: 3px; font-weight: normal;">LIVE</span> UNDERSTANDING SCORE</span>
                         <br><br><br><br><br><br><br>
-                        <span class="text--primary font-weight-black" style="margin-top: 40px; text-align: center; font-size: 200px; background: #ddd; border-radius: 7px; padding: 4px 10px;">{{ understandingScore }}%</span>
+                        <span class="text--primary font-weight-black" style="margin-top: 40px; text-align: center; font-size: 180px; background: #ddd; border-radius: 7px; padding: 4px 10px;">{{ understandingScore }}%</span>
                         <br><br><br><br>
                         <span class="text--primary data-text">Average Understanding: </span>
                         <span class="text--primary font-weight-black" style="font-size: 20px; background: #ddd; padding: 2px 4px; border-radius: 3px;">{{ averageUnderstanding }}</span>
@@ -49,8 +49,8 @@
                     </v-card-text>
                 </v-card>
                 <v-card width="60%" height="60vh" align="center" justify="center">
-                    <div class="ml-3" style="max-width: 900px;">
-                        <line-chart :chart-data="datacollection" :width="400" :height="200"></line-chart>
+                    <div style="max-width: 900px; margin-top: 5%;">
+                        <line-chart :chart-data="datacollection"></line-chart>
                         <!--<button @click="fillData()">Randomize</button>-->
                     </div>
                 </v-card>
@@ -212,6 +212,7 @@ export default {
         { text: 'How do you used a closed surface integral to calculate flux?', id: 5, dismiss: false },
         { text: 'What is the relationship between voltage and a Gaussian surface?', id: 6, dismiss: false }],
       students: [],
+      whatever: "awefawef",
       keywords: /* hardcoded data */ [{ word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }],
       currentTab: 0,
       tab: null,
@@ -219,12 +220,8 @@ export default {
         'Understanding', 'Questions', 'Students'
       ],
       start: Date.now(),
-      understandingData: [
-        { timestamp: 2, score: 5 },
-        { timestamp: 4, score: 6 },
-        { timestamp: 6, score: 10 },
-        { timestamp: 17, score: 1 }
-      ]
+      understandingData: [],
+      socketdata: ""
     }
   },
   methods: {
@@ -256,21 +253,26 @@ export default {
   mounted () {
     this.$emit('startlecture', this.id);
     this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.id}?access_token=${this.token}`);
+    var self = this;
     this.socket.onmessage = function (event) {
-      const data = JSON.parse(event)
+      const data = JSON.parse(event.data)
+      console.log(data);
       if(data.type == "lecture_info") {
-        this.connected = true
+        self.connected = true
       } else if(data.type == "student_join") {
-        this.students.push(data)
+        self.students.push(data)
       } else if(data.type == "student_leave") {
-        this.students = this.students.filter(function( obj ) {
+        self.students = this.students.filter(function( obj ) {
             return obj.uid !== data.uid
         });
       } else if(data.type == "us_update") {
-        this.understandingData.push({
-          timestamp: Date.now() - this.start,
+        var d = (Date.now() - self.start)/1000;
+        self.understandingData.push({
+          timestamp: new Date(),
           score: data.value
         })
+        self.understandingScore = data.value
+        self.initChart();
       }
     }
   },
@@ -278,7 +280,12 @@ export default {
     this.initChart()
   },
   computed: {
-    ...mapState(['token']),
+    ...mapState(['token'])
+  },
+  watch: {
+    socketdata: function(val) {
+
+    }
   }
 }
 </script>
