@@ -139,7 +139,7 @@ class LectureManager {
   updateTeacher() {
     this.teacherSocket.json({
       type: 'us_update', // understanding score update
-      value: avg(Object.values(this.studentScores)) || 10
+      value: 10 * (avg(Object.values(this.studentScores)) || 5)
     });
   }
 
