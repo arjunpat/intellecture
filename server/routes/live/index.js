@@ -1,25 +1,10 @@
 const router = require('express').Router();
 const WebSocket = require('ws');
 
-const mw = require('../middleware');
-
+const mw = require('../../middleware');
 const wss = new WebSocket.Server({ noServer: true });
-const LectureManager = require('../lib/LectureManager');
 
-const db = require('../models');
-
-let lectures = {};
-// loop through connections to see if still awake
-setInterval(() => {
-  for (let each in lectures) {
-    if (lectures[each].done === true) {
-      console.log('deleting', each);
-      delete lectures[each];
-    } else {
-      lectures[each].cleanSockets();
-    }
-  }
-}, 10000);
+const db = require('../../models');
 
 function jsonifySocket(socket) {
   socket.on('message', data => {
@@ -45,31 +30,48 @@ router.get('/teacher/:lecture_uid', mw.queryAuth, mw.auth, mw.websocket, async (
 
   let socket = await handleUpgrade(req);
 
-  if (lectures[lecture_uid] || await db.lectures.getOwner(lecture_uid) !== req.uid) {
+  let lecture = await db.lectures.getLecture(lecture_uid);
+  if (lecture.owner_uid !== req.uid) {
     socket.json({
       type: 'error',
       error: 'permissions'
     });
     return socket.terminate();
   }
+
+  if (typeof lecture.start_time === 'number') {
+    socket.json({
+      type: 'error',
+      error: 'already_started'
+    });
+    return socket.terminate();
+  }
   
-  lectures[lecture_uid] = new LectureManager(lecture_uid, db, socket);
 });
 
 router.get('/student/:lecture_uid', mw.queryAuth, mw.auth, mw.websocket, async (req, res) => {
   let { lecture_uid } = req.params;
-  
+
   let socket = await handleUpgrade(req);
-  
-  if (!lectures[lecture_uid]) {
+
+  let lecture = await db.lectures.getLecture(lecture_uid);
+  if (typeof lecture.start_time !== 'number') {
     socket.json({
       type: 'error',
       error: 'lecture_not_initialized'
     });
     return socket.terminate();
   }
-  
-  lectures[lecture_uid].addStudent(req.uid, socket);
+
+  if (typeof lecture.end_time === 'number') {
+    socket.json({
+      type: 'error',
+      error: 'already_ended'
+    });
+    return socket.terminate();
+  }
+
+  // handle case that lecture ends before student initialized
 });
 
 module.exports = router;

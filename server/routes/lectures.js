@@ -35,7 +35,7 @@ router.post('/create', mw.auth, async (req, res) => {
 });
 
 router.get('/get/:class_uid', mw.auth, async (req, res) => {
-  res.send(responses.success(await db.lectures.getUserLectures(req.params.class_uid)));
+  res.send(responses.success(await db.lectures.getClassLectures(req.params.class_uid)));
 });
 
 router.get('/exists/:lecture_uid', mw.auth, async (req, res) => {
