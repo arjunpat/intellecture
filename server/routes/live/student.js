@@ -28,12 +28,16 @@ sub.on('message', (lecture_uid, message) => {
   }
 });
 
+function isValidScore(value) {
+  return typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= 10;
+}
+
 async function handleStudent(lecture_uid, student_uid, socket) {
   sub.subscribe(lecture_uid);
 
   socket.uid = uid;
   socket.onjson = data => {
-    if (data.type === 'update_score' && typeof data.score === 'number')
+    if (data.type === 'update_score' && isValidScore(data.score))
       publish(lecture_uid, {
         type: 'ssu', // student score update
         student_uid,
@@ -49,6 +53,11 @@ async function handleStudent(lecture_uid, student_uid, socket) {
   });
 
   socketsManager.addSocket(lecture_uid, socket);
+
+  publish(lecture_uid, {
+    type: 'sj', // student join
+    student_uid
+  });
 
   let { uid, start_time, class_name, lecture_name} = await db.lectures.getLecture(lecture_uid);
   socket.json({
