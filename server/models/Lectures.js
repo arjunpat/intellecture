@@ -26,13 +26,13 @@ class Lectures {
         b.owner_uid,
         b.name as class_name
       FROM
-        (SELECT uid, created_at, class_uid, name, start_time, end_time FROM lectures WHERE uid = "ggspv") a
+        (SELECT uid, created_at, class_uid, name, start_time, end_time FROM lectures WHERE uid = ?) a
       LEFT JOIN
         classes b
       ON
         a.class_uid = b.uid`,
       [lecture_uid]
-    ).then(d => d[0]);
+    ).then(d => d.length === 1 && d[0]);
   }
 
   startLecture(lecture_uid, start_time) {
