@@ -36,6 +36,7 @@
 <script>
 import firebase from 'firebase'
 import { mapState } from 'vuex'
+import store from './store'
 
 export default {
   name: 'App',
@@ -117,12 +118,7 @@ export default {
       }
     },
     endlecture: function() {
-      var socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.$route.query.id}?access_token=${this.token}`);
-      socket.onopen = function (event) {
-        socket.send(JSON.stringify({ type: "end_lecture" })); 
-        socket.close();
-      };
-      this.$router.push({ path: '/dashboard' })
+      store.commit("setEndLecture", true)
       this.started = false
     },
     starting: function(e) {

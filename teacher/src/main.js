@@ -40,6 +40,8 @@ firebase.auth().onAuthStateChanged((user) => {
   }
 })
 
+store.commit("setEndLecture", false)
+
 // Mount Vue App
 Vue.config.productionTip = false
 

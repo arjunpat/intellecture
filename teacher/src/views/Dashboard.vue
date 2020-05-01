@@ -47,7 +47,9 @@ export default {
     loadClasses() {
       get('/classes/mine').then((response) => {
         this.classes = response.data;
-        this.classes.sort((a, b) => (a.name > b.name) ? 1 : -1)
+        if(this.classes) {
+          this.classes.sort((a, b) => (a.name > b.name) ? 1 : -1)
+        }
       });
     }
   },
