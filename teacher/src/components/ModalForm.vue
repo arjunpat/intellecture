@@ -49,6 +49,7 @@ export default {
         name: this.className
       }).then(response => {
         this.$emit("createdClass");
+        this.className = '';
         //console.log(response)
       })
     }

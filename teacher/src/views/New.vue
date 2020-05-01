@@ -91,9 +91,9 @@ export default {
         this.formErrors = false
         post('/lectures/create', {
           class_uid: this.chosenClass,
-          name: this.classes.find(obj => obj.uid == this.chosenClass).name
+          name: this.lectureName
         }).then((data) => {
-          this.$router.push({ path: '/lecture?id=' + data.data.lecture_uid + '&name=' + this.lectureName })
+          this.$router.push({ path: '/lecture/' + data.data.lecture_uid })
         });
       } else {
         this.formErrors = true

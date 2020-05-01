@@ -194,10 +194,12 @@ export default {
   components: {
     LineChart
   },
+  props: {
+    id: { type: String }
+  },
   data () {
     return {
       connected: false,
-      id: this.$route.query.id,
       socket: '',
       lectureName: this.$route.query.name,
       datacollection: null,
@@ -275,16 +277,21 @@ export default {
         self.initChart();
       }
     }
+    console.log(this.endLecture);
   },
   created () {
     this.initChart()
   },
   computed: {
-    ...mapState(['token'])
+    ...mapState(['token', 'endLecture'])
   },
   watch: {
-    socketdata: function(val) {
-
+    endLecture(val) {
+      if(this.endLecture) {
+        this.socket.send(JSON.stringify({ type: "end_lecture" })); 
+        this.socket.close();
+        this.$router.push({ path: '/dashboard' })
+      }
     }
   }
 }

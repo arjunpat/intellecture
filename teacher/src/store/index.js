@@ -9,6 +9,7 @@ export default new Vuex.Store({
   state: {
     authUser: null,
     token: '',
+    endLecture: false
   },
   mutations: {
     setAuthUser (state, authUser) {
@@ -17,6 +18,9 @@ export default new Vuex.Store({
     setToken(state, token) {
       state.token = token
     },
+    setEndLecture(state, endLecture) {
+      state.endLecture = endLecture
+    }
   },
   actions: {
   },
