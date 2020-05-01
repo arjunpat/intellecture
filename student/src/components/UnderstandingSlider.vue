@@ -102,6 +102,7 @@ export default {
     value: Number,
     min: Number,
     max: Number,
+    throttleDelay: Number,
   },
 
   data() {
@@ -113,6 +114,9 @@ export default {
         happy: require('@/assets/img/happy.svg'),
         wow: require('@/assets/img/wow.svg')
       },
+      lastValueSent: this.value,
+      lastValueSentTime: (new Date()).getTime(),
+      timeout: null,
     }
   },
 
@@ -123,11 +127,11 @@ export default {
     thumbSrc() {
       if (this.dragging) {
         return this.faces.wow
-      } else if (this.inRange(this.value, 0, 2)) {
+      } else if (this.valueInRange(0, 25)) {
         return this.faces.sad
-      } else if (this.inRange(this.value, 3, 6)) {
+      } else if (this.valueInRange(26, 65)) {
         return this.faces.meh
-      } else if (this.inRange(this.value, 7, 10)) {
+      } else if (this.valueInRange(66, 100)) {
         return this.faces.happy
       }
     },
@@ -135,6 +139,9 @@ export default {
       const img = `background-image: url(${this.thumbSrc});`
       const pos = `left: calc(${this.percentage}% - 0.75em);`
       return pos; 
+    },
+    range() {
+      return this.max - this.min
     }
   },
 
@@ -169,9 +176,11 @@ export default {
     },
     stopDrag(event) {
       this.dragging = false
+      this.updateUnderstanding()
     },
     touchEnd() {
       this.dragging = false
+      this.updateUnderstanding()
     },
     moveThumbToMouse(event) {
       this.moveThumb(event.x)
@@ -204,6 +213,9 @@ export default {
     inRange(num, a, b) {
       return num >= a && num <= b
     },
+    valueInRange(beginPercent, endPercent) {
+      return this.inRange(this.value, this.min + beginPercent/100*this.range, this.min + endPercent/100*this.range)
+    },
     updateValue(value) {
       if (value === this.value)
         return
@@ -215,6 +227,27 @@ export default {
 
       this.$emit('input' , +value)
     },
+    updateUnderstanding() {
+      // Throttle sending student understanding to send 
+      // at max once per `throttleDelay` milliseconds
+      const currentTime = (new Date()).getTime()
+      const diff = Math.abs(currentTime - this.lastValueSentTime)
+      let delay = 0
+
+      if (diff < this.throttleDelay)
+        delay = this.throttleDelay - diff  
+
+      if (this.timeout)
+        clearTimeout(this.timeout)
+
+      this.timeout = setTimeout(() => {
+        if (this.lastValueSent !== this.value) {
+          this.lastValueSent = this.value
+          this.lastValueSentTime = (new Date()).getTime()
+          this.$emit('updateUnderstanding')
+        }
+      }, delay)
+    }
   },
 
 }

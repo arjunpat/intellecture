@@ -18,10 +18,11 @@
           
           <v-card-actions>
           <UnderstandingSlider
-            @input="updateUnderstanding"
+            @updateUnderstanding="updateUnderstanding"
             v-model="sliderValue"
             :min="0"
             :max="sliderMax"
+            :throttleDelay="throttleDelay"
             class="mb-4"
           >
           </UnderstandingSlider>
@@ -92,6 +93,7 @@ export default {
     return {
       sliderValue: 5,
       sliderMax: 10,
+      throttleDelay: 1000, 
       levels: ['I\'m lost', 'I\'m confused', 'I kinda get it', 'I think I get it', 'I completely understand'],
       colors: ['rgb(240, 53, 36)', 'rgb(255, 183, 0)', 'rgb(250, 225, 0)', 'rgb(126, 196, 4)', 'rgb(127, 240, 7)'],
       color: '',
@@ -103,6 +105,7 @@ export default {
 
   created() {
     // TODO: don't render page until checking that lecture exists via the api
+    // TODO: have a sign in page if they aren't logged in
 
     // Set up socket stuff
     this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/student/${this.id}?access_token=${this.token}`)
@@ -155,11 +158,15 @@ export default {
 
   methods: {
     updateUnderstanding() {
+      const score = this.sliderValue
       if (this.socket.readyState === this.socket.OPEN) {
-        this.socket.send(JSON.stringify({
-          type: 'update_score',
-          score: this.sliderValue,
-        }))
+        if (true) {
+          console.log(`SEND SCORE: ${score}`)
+          this.socket.send(JSON.stringify({
+            type: 'update_score',
+            score: score,
+          }))
+        }
       }
     },
     askQuestion(e) {

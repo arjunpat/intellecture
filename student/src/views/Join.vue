@@ -86,7 +86,7 @@ import 'firebase/auth'
 import ButtonWithImage from '@/components/ButtonWithImage'
 import { mapState } from 'vuex'
 import { colors } from '@/constants.js'
-import { get, post } from '@/helpers.js'
+import { get, setTokenForUser } from '@/helpers.js'
 
 export default {
   name: 'Join',
@@ -139,17 +139,10 @@ export default {
       } else {
         // Sign user in if not already signed in
         this.signInGoogle().then((result) => {
-          return result.user.getIdToken(true)
-        }).then((idToken) => {
-          // TODO: remove this redundancy in the code (only post in the authUser listener)
-          return post('/auth/login', {
-            firebase_token: idToken
-          })
-        }).then((response) => {
-          if (!response.success)
-            throw response.error
-          
-          this.$store.commit('setToken', response.data.token)
+          // TODO: find a better way to do this rather than setting token twice
+          //       It sets it here and also in main.js
+          return setTokenForUser(result.user)
+        }).then(() => {
           this.redirectToRoom()
         }).catch((err) => {
           // TODO: make this not alert()
@@ -176,7 +169,6 @@ export default {
       })
     },
     signInGoogle() {
-      console.log('sign in with GOOGLE!')
       let provider = new firebase.auth.GoogleAuthProvider()
       return firebase.auth().signInWithPopup(provider)
     },
