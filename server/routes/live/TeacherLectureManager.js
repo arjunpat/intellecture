@@ -11,12 +11,25 @@ class TeacherLectureManager {
     this.scores = {};
     this.lecture_uid = lecture_uid;
     this.teachers = [];
+    this.questions = [];
     this.init();
   }
   
   async init() {
     this.lectureInfo = await db.lectures.getLecture(this.lecture_uid);
     this.sendToTeachers(this.getLectureInfo());
+  }
+
+  addQuestion(uid, question) {
+    this.questions.push({
+      uid,
+      question
+    });
+    this.sendToTeachers({
+      type: 'new_question',
+      uid,
+      question
+    });
   }
 
   getLectureInfo() {

@@ -3,6 +3,7 @@ const WebSocket = require('ws');
 const redis = require('redis');
 
 const pub = redis.createClient(process.env.REDIS_URL);
+const responses = require('../../lib/responses');
 const mw = require('../../middleware');
 const wss = new WebSocket.Server({ noServer: true });
 
@@ -21,7 +22,7 @@ router.get('/teacher/:lecture_uid', mw.websocket, mw.auth, async (req, res) => {
       type: 'error',
       error: 'permissions'
     });
-    return socket.terminate();
+    return socket.close();
   }
 
   if (typeof lecture.start_time === 'number') {
@@ -29,7 +30,7 @@ router.get('/teacher/:lecture_uid', mw.websocket, mw.auth, async (req, res) => {
       type: 'error',
       error: 'already_started'
     });
-    return socket.terminate();
+    return socket.close();
   }
 
   await db.lectures.startLecture(lecture_uid, Date.now());
@@ -48,7 +49,7 @@ router.get('/student/:lecture_uid', mw.websocket, mw.auth, async (req, res) => {
       type: 'error',
       error: 'does_not_exist'
     });
-    return socket.terminate();
+    return socket.close();
   }
 
   if (typeof lecture.start_time !== 'number') {
@@ -56,7 +57,7 @@ router.get('/student/:lecture_uid', mw.websocket, mw.auth, async (req, res) => {
       type: 'error',
       error: 'lecture_not_initialized'
     });
-    return socket.terminate();
+    return socket.close();
   }
 
   if (typeof lecture.end_time === 'number') {
@@ -64,11 +65,35 @@ router.get('/student/:lecture_uid', mw.websocket, mw.auth, async (req, res) => {
       type: 'error',
       error: 'already_ended'
     });
-    return socket.terminate();
+    return socket.close();
   }
 
   // handle case that lecture ends before student initialized
   handleStudent(lecture_uid, req.uid, socket);
+});
+
+router.post('/student/:lecture_uid/question', mw.auth, async (req, res) => {
+  let { lecture_uid } = req.params;
+  let lecture = await db.lectures.getLecture(lecture_uid);
+
+  if (
+    !lecture
+    || typeof lecture.start_time !== 'number'
+    || typeof lecture.end_time === 'number'
+    || typeof req.body.question !== 'string'
+  )
+    return res.send(responses.error());
+
+  let elapsed = Date.now() - lecture.start_time;
+  await db.lectureQs.add(lecture_uid, elapsed, req.uid, req.body.question);
+
+  pub.publish(lecture_uid, JSON.stringify({
+    type: 'q', // question
+    student_uid: req.uid,
+    q: req.body.question
+  }));
+
+  res.send(responses.success());
 });
 
 module.exports = router;

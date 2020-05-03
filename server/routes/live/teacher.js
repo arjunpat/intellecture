@@ -40,6 +40,9 @@ sub.on('message', (lecture_uid, message) => {
     case 'sl': // student leave
       lectures[lecture_uid].removeStudent(data.student_uid);
       break;
+    case 'q': // question
+      lectures[lecture_uid].addQuestion(data.student_uid, data.q);
+      break;
     case 'end': // end lecture
       lectures[lecture_uid].end();
       removeLecture(lecture_uid);
