@@ -2,6 +2,8 @@ const redis = require('redis');
 const pub = redis.createClient(process.env.REDIS_URL);
 const sub = redis.createClient(process.env.REDIS_URL);
 
+const db = require('../../models');
+
 const lectures = {};
 const TeacherLectureManager = require('./TeacherLectureManager');
 
@@ -25,16 +27,16 @@ sub.on('message', (lecture_uid, message) => {
   let data = JSON.parse(message);
 
   switch (data.type) {
-    case 'ssu':
+    case 'ssu': // student score update
       lectures[lecture_uid].updateStudentScore(data.student_uid, data.score);
       break;
-    case 'sj':
+    case 'sj': // student join
       lectures[lecture_uid].addStudent(data.student_uid);
       break;
-    case 'sl':
+    case 'sl': // student leave
       lectures[lecture_uid].removeStudent(data.student_uid);
       break;
-    case 'end':
+    case 'end': // end lecture
       lectures[lecture_uid].end();
       removeLecture(lecture_uid);
       break;
@@ -54,8 +56,9 @@ async function handleTeacher(lecture_uid, teacher_uid, socket) {
     lectures[lecture_uid] = new TeacherLectureManager(lecture_uid);
   lectures[lecture_uid].addTeacher(socket);
 
-  socket.onjson = data => {
+  socket.onjson = async data => {
     if (data.type === 'end_lecture') {
+      await db.lectures.endLecture(lecture_uid, Date.now());
       publish(lecture_uid, { type: 'end' });
     }
   }
