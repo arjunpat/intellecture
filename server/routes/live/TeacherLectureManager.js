@@ -15,35 +15,42 @@ class TeacherLectureManager {
   }
   
   async init() {
-    this.lectureInfo = await db.lectures.getLecture(lecture_uid);
+    this.lectureInfo = await db.lectures.getLecture(this.lecture_uid);
 
     let { uid, start_time, class_name, lecture_name } = this.lectureInfo;
-    this.sendToTeachers({
+    /* this.sendToTeachers({
       uid,
       start_time,
       class_name,
       lecture_name
-    });
+    }); */
+    this.sendToTeachers(this.lectureInfo);
   }
 
   addTeacher(socket) {
     socket.on('pong', () => socket.isAlive = true);
+    socket.isAlive = true;
     this.teachers.push(socket);
   }
 
-  addStudent(student_uid) {
+  async addStudent(student_uid) {
     this.sendToTeachers({
       type: 'student_join',
       uid: student_uid,
-      ...await this.db.accounts.basicInfo(student_uid)
+      ...await db.accounts.basicInfo(student_uid)
     });
     this.scores[student_uid] = 5;
   }
 
+  removeStudent(student_uid) {
+    delete this.scores[student_uid];
+    this.updateTeachers()
+  }
+
   async updateStudentScore(student_uid, score) {
     this.scores[student_uid] = score;
-    await this.db.lectureLog.recordScoreChange(
-      lecture_uid,
+    await db.lectureLog.recordScoreChange(
+      this.lecture_uid,
       Date.now() - this.lectureInfo.start_time,
       student_uid,
       score
@@ -54,7 +61,7 @@ class TeacherLectureManager {
   updateTeachers() {
     this.sendToTeachers({
       type: 'us_update',
-      value: getUS(Object.values(scores))
+      value: getUS(Object.values(this.scores))
     });
   }
 

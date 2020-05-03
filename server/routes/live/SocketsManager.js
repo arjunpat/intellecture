@@ -37,6 +37,11 @@ class SocketsManager {
   forEach(lecture_uid, func) {
     if (!(this.obj[lecture_uid] instanceof Array))
       return false;
+
+    if (this.obj[lecture_uid].length === 0) {
+      delete this.obj[lecture_uid];
+      return false;
+    }
     
     for (let i = 0; i < this.obj[lecture_uid].length; i++) {
       func(this.obj[lecture_uid][i]);

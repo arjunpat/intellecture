@@ -25,6 +25,7 @@ function handleUpgrade(req) {
   });
 }
 
+const handleTeacher = require('./teacher');
 router.get('/teacher/:lecture_uid', mw.queryAuth, mw.auth, mw.websocket, async (req, res) => {
   let { lecture_uid } = req.params;
 
@@ -46,9 +47,12 @@ router.get('/teacher/:lecture_uid', mw.queryAuth, mw.auth, mw.websocket, async (
     });
     return socket.terminate();
   }
-  
+
+  await db.lectures.startLecture(lecture_uid, Date.now());
+  handleTeacher(lecture_uid, req.uid, socket);
 });
 
+const handleStudent = require('./student');
 router.get('/student/:lecture_uid', mw.queryAuth, mw.auth, mw.websocket, async (req, res) => {
   let { lecture_uid } = req.params;
 
@@ -72,6 +76,7 @@ router.get('/student/:lecture_uid', mw.queryAuth, mw.auth, mw.websocket, async (
   }
 
   // handle case that lecture ends before student initialized
+  handleStudent(lecture_uid, req.uid, socket);
 });
 
 module.exports = router;

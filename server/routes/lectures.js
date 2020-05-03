@@ -15,7 +15,7 @@ function genLectureId(length) {
   return id;
 }
 
-router.use('/live', require('./live'));
+router.use('/live', require('./live/'));
 
 router.post('/create', mw.auth, async (req, res) => {
   let { name, class_uid } = req.body;

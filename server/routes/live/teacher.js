@@ -31,7 +31,10 @@ sub.on('message', (lecture_uid, message) => {
       lectures[lecture_uid].updateStudentScore(data.student_uid, data.score);
       break;
     case 'sj':
-      
+      lectures[lecture_uid].addStudent(data.student_uid);
+      break;
+    case 'sl':
+      lectures[lecture_uid].removeStudent(data.student_uid);
       break;
   }
 });

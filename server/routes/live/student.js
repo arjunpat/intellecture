@@ -11,6 +11,8 @@ setInterval(() => {
   socketsManager.prune();
 }, 10000);
 
+// TODO figure out when to unsub from channel
+
 function publish(lecture_uid, obj) {
   pub.publish(lecture_uid, JSON.stringify(obj));
 }
@@ -35,7 +37,7 @@ function isValidScore(value) {
 async function handleStudent(lecture_uid, student_uid, socket) {
   sub.subscribe(lecture_uid);
 
-  socket.uid = uid;
+  socket.uid = student_uid;
   socket.onjson = data => {
     if (data.type === 'update_score' && isValidScore(data.score))
       publish(lecture_uid, {

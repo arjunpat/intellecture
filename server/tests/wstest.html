@@ -1,0 +1,73 @@
+<script>
+  let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1ODg0NjU2OTIyNzUsInVpZCI6InJVSnlQMzE3aXVaRXJObGhybm55bjhlVDd1WTIifQ.VgW9832VI9VlNXjzzHhDmAsFELDKaGjQ0Q1wHU-RyyI';
+
+  let postStuff = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    }
+  }
+
+  let host = 'localhost:8080';
+  let hostp = 'http://localhost:8080';
+
+  function jsonify(ws, header) {
+    ws.onmessage = msg => {
+      ws.onjson(JSON.parse(msg.data));
+    }
+
+    ws.onjson = obj => {
+      console.log(header, obj);
+    }
+
+    ws.json = obj => ws.send(JSON.stringify(obj));
+  }
+
+  function sleep(seconds) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve();
+      }, seconds * 1000);
+    });
+  }
+
+  async function createLecture(class_uid = "iIXsX3Ny647h2k1") {
+    let res = await fetch(hostp + '/lectures/create', {
+      ...postStuff,
+      body: JSON.stringify({
+        class_uid,
+        name: 'Lecture A' + Math.floor(Math.random() * 100)
+      })
+    });
+    res = await res.json();
+    let lecture_uid = res.data.lecture_uid;
+
+    await sleep(2);
+
+    startWS(res.data.lecture_uid, 7);
+  }
+
+  async function startWS(lecture_uid, secs = 5) {
+    console.log('Conencting to teacher');
+    let wsT = new WebSocket(`ws://${host}/lectures/live/teacher/${lecture_uid}?access_token=` + encodeURIComponent(token));
+    jsonify(wsT, 'teacher');
+
+    await sleep(2);
+
+    console.log('Connecting to student');
+    let wsS = new WebSocket(`ws://${host}/lectures/live/student/${lecture_uid}?access_token=` + encodeURIComponent(token));
+    jsonify(wsS, 'student');
+
+    await sleep(2);
+
+    setInterval(() => {
+      wsS.json({
+        type: 'update_score',
+        score: Math.ceil(Math.random() * 10)
+      });
+    }, secs * 1000);
+  }
+  
+
+</script>
