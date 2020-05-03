@@ -63,7 +63,7 @@
   }
 
   .slider-thumb {
-    z-index: 5;
+    z-index: 2;
     width: 1.5em;
     height: 1.5em;
     position: absolute;

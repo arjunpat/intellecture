@@ -10,6 +10,7 @@ const routes = [
     path: '/',
     name: 'Join',
     component: Join,
+    props: true,
   },
   {
     path: '/room/:id',

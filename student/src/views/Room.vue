@@ -2,6 +2,9 @@
 
 <template>
   <v-container fluid class="fill-height">
+    <v-overlay :value="!authUser" opacity="0.7">
+      <NotSignedIn></NotSignedIn>
+    </v-overlay>
     <v-row align="center" justify="center">
       <v-col
         cols="12"
@@ -24,8 +27,7 @@
             :max="sliderMax"
             :throttleDelay="throttleDelay"
             class="mb-4"
-          >
-          </UnderstandingSlider>
+          ></UnderstandingSlider>
           </v-card-actions>
         </v-card>
         <v-card>
@@ -38,6 +40,7 @@
                 hide-details="true"
                 outlined
                 class="mb-n3"
+                autocomplete="off"
               ></v-text-field>
               <v-btn 
                 @click="askQuestion"
@@ -80,6 +83,7 @@
 </style>
 <script>
 import UnderstandingSlider from '@/components/UnderstandingSlider'
+import NotSignedIn from '@/components/NotSignedIn'
 import { mapState } from 'vuex'
 
 export default {
@@ -105,7 +109,6 @@ export default {
 
   created() {
     // TODO: don't render page until checking that lecture exists via the api
-    // TODO: have a sign in page if they aren't logged in
 
     // Set up socket stuff
     this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/student/${this.id}?access_token=${this.token}`)
@@ -119,8 +122,7 @@ export default {
       if (data.type === 'error') {
         switch(data.error) {
           case 'lecture_not_initialized':
-            // TODO: Show this error somewhere
-            this.$router.replace('/')
+            this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join does not exist!' } })
             break;
         }
       } else if (data.type === 'lecture_info') {
@@ -145,10 +147,11 @@ export default {
 
   components: {
     UnderstandingSlider,
+    NotSignedIn,
   },
 
   computed: {
-    ...mapState(['token']),
+    ...mapState(['authUser', 'token']),
     understanding() {
       let index = Math.floor((+this.sliderValue+1)/2) - 1
       this.color = index < 0 ? 'rgb(0,0,0)' : this.colors[index]
@@ -160,13 +163,10 @@ export default {
     updateUnderstanding() {
       const score = this.sliderValue
       if (this.socket.readyState === this.socket.OPEN) {
-        if (true) {
-          console.log(`SEND SCORE: ${score}`)
-          this.socket.send(JSON.stringify({
-            type: 'update_score',
-            score: score,
-          }))
-        }
+        this.socket.send(JSON.stringify({
+          type: 'update_score',
+          score: score,
+        }))
       }
     },
     askQuestion(e) {

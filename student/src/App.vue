@@ -78,7 +78,7 @@ export default {
     },
     redirectAuthUser() {
       // Redirects based on the state of authUser
-      let authRoutes = ['Room']
+      let authRoutes = []
 
       if (!this.authUser) {
         // TODO: catch for the case if the user gets a link to the room directly

@@ -34,10 +34,14 @@ export default {
   props: {
     src: {type: String, required: true},
     text: {type: String, required: true},
-    onClick: {type: Function, required: true},
     color: {type: String, default: ''},
     dark: {type: Boolean, default: false},
     isAvatar: {type: Boolean, default: false},
   },
+  methods: {
+    onClick(e) {
+      this.$emit('click', e)
+    }
+  }
 }
 </script>

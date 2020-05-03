@@ -1,5 +1,18 @@
 <template>
   <v-container fluid class="fill-height _green">
+    <v-snackbar
+      v-model="snackbar"
+      top
+      color="error"
+    >
+      {{ error }}
+      <v-btn
+        text
+        @click="snackbar = false"
+      >
+        Close
+      </v-btn>
+    </v-snackbar>
     <v-row
       justify="center"
     >
@@ -22,24 +35,34 @@
         <v-card>
           <v-card-title>Join Room</v-card-title>
           <v-card-text align="center">
-            <form @submit="join">
+            <v-form 
+              v-model="validForm" 
+              ref="form"
+              lazy-validation 
+              @submit="join"
+            >
               <v-text-field
                 label="Room Code"
                 v-model="roomCode"
-                :class="validRoomCode ? 'mb-n3' : ''"
-                :rules="[ validRoomCode || 'Invalid room code!' ]"
+                :class="validForm ? 'mb-n3' : ''"
+                :rules="roomCodeRules"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
+                @input="roomCodeInput"
                 outlined
               ></v-text-field>
 
               <ButtonWithImage 
-                :onClick="join" 
+                @click="join" 
                 :color="colors._green_2" 
                 :dark="true" 
                 :text="btnText" 
                 :src="btnImageSrc" 
                 :isAvatar="authUser !== null"
               />
-            </form>
+            </v-form>
 
             <div v-if="authUser" class="mt-2">Not you? (<a href="" @click.prevent="signOut">Sign out</a>)</div>
           </v-card-text>
@@ -110,20 +133,33 @@ export default {
     }
   },
 
+  props: {
+    error: {type: String, default: ''},
+  },
+
   data() {
     return {
       colors,
       show: false,
+      validForm: true,
       roomCode: '',
       validRoomCode: true,
       btnText: 'Continue with Google',
       btnImageSrc: require('@/assets/img/google_logo_white.svg'),
+      roomCodeRules: [
+        v => !!v || 'Please enter a room code.', 
+        v => this.validRoomCode || 'Invalid room code!', 
+      ],
+      snackbar: false,
     }
   },
 
   mounted() {
     // Do a cool little animation when loaded
     setTimeout(() => {this.show = true}, 100)
+
+    if (this.error)
+      this.snackbar = true
   },
 
   computed: {
@@ -131,8 +167,18 @@ export default {
   },
 
   methods: {
+    roomCodeInput() {
+      this.validRoomCode = true
+      this.$refs['form'].validate()
+    },
     join(e) {
       e.preventDefault()
+
+      this.$refs['form'].validate()
+      if (!this.roomCode)
+        return
+
+      this.roomCode = this.roomCode.toLowerCase()
 
       if (this.authUser) {
         this.redirectToRoom()
@@ -153,6 +199,7 @@ export default {
     redirectToRoom() {
       // Check if room exists
       this.validRoomCode = true
+      this.$refs['form'].validate()
       get(`/lectures/exists/${this.roomCode}`).then((response) => {
         if (!response.success)
           throw response.error
@@ -160,12 +207,13 @@ export default {
         if (!response.data.exists) {
           // Room does not exist
           this.validRoomCode = false
+          this.$refs['form'].validate()
         } else {
           // Redirect to room page
           this.$router.replace(`/room/${this.roomCode}`)
         }
       }).catch((err) => {
-        console.log(err)
+        console.log('ERROR WHEN CHECKING EXISTS: ', err)
       })
     },
     signInGoogle() {
