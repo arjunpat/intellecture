@@ -1,12 +1,10 @@
 <script>
-  let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1ODg0ODk5NjYxOTMsInVpZCI6InJVSnlQMzE3aXVaRXJObGhybm55bjhlVDd1WTIifQ.3T1nl1fxC95WnM4y4oD-kKcyoObB8nsFfRBS9Ab500I';
-
   let postStuff = {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + token
-    }
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include'
   }
 
   let host = 'localhost:8080';
@@ -51,13 +49,13 @@
   let wsT, wsS;
   async function startWS(lecture_uid, secs = 5) {
     console.log('Conencting to teacher');
-    wsT = new WebSocket(`ws://${host}/lectures/live/teacher/${lecture_uid}?access_token=` + encodeURIComponent(token));
+    wsT = new WebSocket(`ws://${host}/lectures/live/teacher/${lecture_uid}`);
     jsonify(wsT, 'teacher');
 
     await sleep(2);
 
     console.log('Connecting to student');
-    wsS = new WebSocket(`ws://${host}/lectures/live/student/${lecture_uid}?access_token=` + encodeURIComponent(token));
+    wsS = new WebSocket(`ws://${host}/lectures/live/student/${lecture_uid}`);
     jsonify(wsS, 'student');
 
     await sleep(2);

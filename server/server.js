@@ -6,7 +6,6 @@ const helmet = require('helmet');
 const app = express();
 const server = http.createServer(app);
 
-
 server.on('upgrade', (req, socket, head) => {
   let res = new http.ServerResponse(req)
   res.assignSocket(socket)
@@ -17,6 +16,7 @@ server.on('upgrade', (req, socket, head) => {
 });
 
 app.use(express.json());
+app.use(require('cookie-parser')());
 app.use(helmet());
 
 app.use((req, res, next) => {

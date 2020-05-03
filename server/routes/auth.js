@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = process.env;
 
 const db = require('../models');
+const mw = require('../middleware');
 
 const admin = require('firebase-admin');
 admin.initializeApp({
@@ -35,18 +36,24 @@ router.post('/login', async (req, res) => {
     uid
   }, JWT_SECRET);
 
-  /*res.cookie('intell_', token, {
-    maxAge: 5 * (24 * 60 * 60 * 1000)
-  });*/
+  res.cookie('intell_', token, {
+    maxAge: 3 * (24 * 60 * 60 * 1000) // 3 days
+  });
   
-  res.send(responses.success({
-    token
-  }));
+  res.send(responses.success());
 });
 
+router.get('/renew', mw.auth, (req, res) => {
+  let token = jwt.sign({
+    iat: Date.now(),
+    uid: req.uid
+  }, JWT_SECRET);
 
-/* module.exports = (a) => {
-  db = a;
-  return router;
-} */
+  res.cookie('intell_', token, {
+    maxAge: 3 * (24 * 60 * 60 * 1000) // 3 days
+  });
+
+  res.send(responses.success());
+});
+
 module.exports = router;

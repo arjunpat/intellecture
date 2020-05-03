@@ -7,9 +7,7 @@ export function get(url) {
   }
 
   return fetch(url, {
-    headers: {
-      'Authorization': 'Bearer ' + store.state.token
-    }
+    credentials: 'include'
   }).then(res => res.json());
 }
 
@@ -20,9 +18,9 @@ export function post(url, json) {
 
   return window.fetch(url, {
     method: 'POST',
+    credentials: 'include',
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + store.state.token
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify(json)
   }).then(res => res.json());
