@@ -16,7 +16,6 @@ class TeacherLectureManager {
   
   async init() {
     this.lectureInfo = await db.lectures.getLecture(this.lecture_uid);
-
     this.sendToTeachers(this.getLectureInfo());
   }
 
@@ -59,12 +58,6 @@ class TeacherLectureManager {
 
   async updateStudentScore(student_uid, score) {
     this.scores[student_uid] = score;
-    await db.lectureLog.recordScoreChange(
-      this.lecture_uid,
-      Date.now() - this.lectureInfo.start_time,
-      student_uid,
-      score
-    );
     this.updateTeachers();
   }
 

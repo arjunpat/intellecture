@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS lectures (
 CREATE TABLE IF NOT EXISTS lecture_log (
   db_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, 
   lecture_uid VARCHAR(10),
-  time BIGINT UNSIGNED,
+  elapsed BIGINT UNSIGNED,
   account_uid VARCHAR(36),
   value SMALLINT,
   INDEX(lecture_uid),
