@@ -2,20 +2,19 @@ const redis = require('redis');
 const pub = redis.createClient();
 const sub = redis.createClient();
 
+const lectures = {};
 const TeacherLectureManager = require('./TeacherLectureManager');
 
-function publish(lecture_uid, obj) {
-  pub.publish(lecture_uid, JSON.stringify(obj));
+function removeLecture(lecture_uid) {
+  console.log('(t) removing lecture', lecture_uid);
+  sub.unsubscribe(lecture_uid);
+  delete lectures[lecture_uid];
 }
-
-const lectures = {};
 
 setInterval(() => {
   for (let lecture_uid in lectures) {
     if (lectures[lecture_uid].done) {
-      console.log('removing lecture', lecture_uid);
-      sub.unsubscribe(lecture_uid);
-      delete lectures[lecture_uid];
+      removeLecture(lecture_uid);
     } else {
       lectures[lecture_uid].prune();
     }
@@ -35,8 +34,16 @@ sub.on('message', (lecture_uid, message) => {
     case 'sl':
       lectures[lecture_uid].removeStudent(data.student_uid);
       break;
+    case 'end':
+      lectures[lecture_uid].end();
+      removeLecture(lecture_uid);
+      break;
   }
 });
+
+function publish(lecture_uid, obj) {
+  pub.publish(lecture_uid, JSON.stringify(obj));
+}
 
 async function handleTeacher(lecture_uid, teacher_uid, socket) {
   // init socket
@@ -48,9 +55,7 @@ async function handleTeacher(lecture_uid, teacher_uid, socket) {
   lectures[lecture_uid].addTeacher(socket);
 
   socket.onjson = data => {
-    console.log(data);
     if (data.type === 'end_lecture') {
-      console.log('hi');
       publish(lecture_uid, { type: 'end' });
     }
   }

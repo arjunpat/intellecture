@@ -66,17 +66,14 @@ class TeacherLectureManager {
   }
 
   sendToTeachers(obj) {
-    this.forEach(socket => {
-      if (socket.readyState === 1) {
-        socket.json(obj);
-      }
-    });
+    for (let s of this.teachers)
+      if (s.readyState === 1)
+        s.json(obj);
   }
 
-  forEach(func) {
-    for (let i = 0; i < this.teachers.length; i++) {
-      func(this.teachers[i]);
-    }
+  end() {
+    this.sendToTeachers({ type: 'end_lecture' });
+    for (let s of this.teachers) s.close();
   }
 
   prune() {

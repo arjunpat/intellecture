@@ -4,14 +4,24 @@ const sub = redis.createClient();
 
 const db = require('../../models');
 
-const SocketsManager = require('./SocketsManager');
-const socketsManager = new SocketsManager();
+const lectures = {};
+const StudentLectureManager = require('./StudentLectureManager');
+
+function removeLecture(lecture_uid) {
+  console.log('(s) removing lecture', lecture_uid);
+  sub.unsubscribe(lecture_uid);
+  delete lectures[lecture_uid];
+}
 
 setInterval(() => {
-  socketsManager.prune();
+  for (let lecture_uid in lectures) {
+    if (lectures[lecture_uid].done) {
+      removeLecture(lecture_uid);
+    } else {
+      lectures[lecture_uid].prune();
+    }
+  }
 }, 10000);
-
-// TODO figure out when to unsub from channel
 
 function publish(lecture_uid, obj) {
   pub.publish(lecture_uid, JSON.stringify(obj));
@@ -19,14 +29,10 @@ function publish(lecture_uid, obj) {
 
 sub.on('message', (lecture_uid, message) => {
   let data = JSON.parse(message);
-
+  
   if (data.type === 'end') {
-    socketsManager.forEach(lecture_uid, socket => {
-      socket.json({
-        type: 'end_lecture'
-      });
-      socket.close();
-    });
+    lectures[lecture_uid].end();
+    removeLecture(lecture_uid);
   }
 });
 
@@ -54,14 +60,16 @@ async function handleStudent(lecture_uid, student_uid, socket) {
     });
   });
 
-  socketsManager.addSocket(lecture_uid, socket);
-
   publish(lecture_uid, {
     type: 'sj', // student join
     student_uid
   });
 
-  let { uid, start_time, class_name, lecture_name} = await db.lectures.getLecture(lecture_uid);
+  if (!lectures[lecture_uid])
+    lectures[lecture_uid] = new StudentLectureManager();
+  lectures[lecture_uid].addStudent(socket);
+
+  let { uid, start_time, class_name, lecture_name } = await db.lectures.getLecture(lecture_uid);
   socket.json({
     type: 'lecture_info',
     uid,
