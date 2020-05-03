@@ -17,7 +17,7 @@ class SocketsManager {
       let sockets = this.obj[lecture_uid];
       for (let i = 0; i < sockets.length; i++) {
         if (socket.readyState === 2 || socket.readyState === 3 || !socket.isAlive) {
-          console.log('removing', socket.uid);
+          console.log('removing student', socket.uid);
           socket.terminate();
           this.obj[lecture_uid].splice(i, 1);
           i--;

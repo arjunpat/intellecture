@@ -2,8 +2,6 @@ const redis = require('redis');
 const pub = redis.createClient();
 const sub = redis.createClient();
 
-const db = require('../../models');
-
 const TeacherLectureManager = require('./TeacherLectureManager');
 
 function publish(lecture_uid, obj) {
@@ -15,6 +13,7 @@ const lectures = {};
 setInterval(() => {
   for (let lecture_uid in lectures) {
     if (lectures[lecture_uid].done) {
+      console.log('removing lecture', lecture_uid);
       sub.unsubscribe(lecture_uid);
       delete lectures[lecture_uid];
     } else {
@@ -49,7 +48,9 @@ async function handleTeacher(lecture_uid, teacher_uid, socket) {
   lectures[lecture_uid].addTeacher(socket);
 
   socket.onjson = data => {
+    console.log(data);
     if (data.type === 'end_lecture') {
+      console.log('hi');
       publish(lecture_uid, { type: 'end' });
     }
   }

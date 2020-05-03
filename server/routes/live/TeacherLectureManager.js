@@ -83,7 +83,7 @@ class TeacherLectureManager {
     for (let i = 0; i < this.teachers.length; i++) {
       let socket = this.teachers[i];
       if (socket.readyState === 2 || socket.readyState === 3 || !socket.isAlive) {
-        console.log('removing', socket.uid);
+        console.log('removing teacher', socket.uid);
         socket.terminate();
         this.teachers.splice(i, 1);
         i--;
@@ -92,6 +92,8 @@ class TeacherLectureManager {
         socket.ping(() => { });
       }
     }
+
+    this.done = this.teachers.length === 0;
   }
 }
 

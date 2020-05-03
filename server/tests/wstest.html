@@ -48,15 +48,16 @@
     startWS(res.data.lecture_uid, 7);
   }
 
+  let wsT, wsS;
   async function startWS(lecture_uid, secs = 5) {
     console.log('Conencting to teacher');
-    let wsT = new WebSocket(`ws://${host}/lectures/live/teacher/${lecture_uid}?access_token=` + encodeURIComponent(token));
+    wsT = new WebSocket(`ws://${host}/lectures/live/teacher/${lecture_uid}?access_token=` + encodeURIComponent(token));
     jsonify(wsT, 'teacher');
 
     await sleep(2);
 
     console.log('Connecting to student');
-    let wsS = new WebSocket(`ws://${host}/lectures/live/student/${lecture_uid}?access_token=` + encodeURIComponent(token));
+    wsS = new WebSocket(`ws://${host}/lectures/live/student/${lecture_uid}?access_token=` + encodeURIComponent(token));
     jsonify(wsS, 'student');
 
     await sleep(2);

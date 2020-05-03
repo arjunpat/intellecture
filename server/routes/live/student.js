@@ -31,7 +31,7 @@ sub.on('message', (lecture_uid, message) => {
 });
 
 function isValidScore(value) {
-  return typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= 10;
+  return typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 10;
 }
 
 async function handleStudent(lecture_uid, student_uid, socket) {
