@@ -1,6 +1,6 @@
 const redis = require('redis');
-const pub = redis.createClient();
-const sub = redis.createClient();
+const pub = redis.createClient(process.env.REDIS_URL);
+const sub = redis.createClient(process.env.REDIS_URL);
 
 const lectures = {};
 const TeacherLectureManager = require('./TeacherLectureManager');
