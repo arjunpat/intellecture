@@ -1,4 +1,6 @@
 import store from './store';
+import firebase from 'firebase/app'
+import 'firebase/auth'
 export const serverHost = 'https://api.intellecture.app';
 
 export function get(url) {
@@ -39,4 +41,9 @@ export function setTokenForUser(user) {
 
     store.commit('setToken', response.data.token)
   })
+}
+
+export function signInGoogle() {
+  let provider = new firebase.auth.GoogleAuthProvider()
+  return firebase.auth().signInWithPopup(provider)
 }

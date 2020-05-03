@@ -2,7 +2,7 @@
 
 <template>
   <v-container fluid class="fill-height">
-    <v-overlay :value="!authUser" opacity="0.7">
+    <v-overlay :value="!authUser" opacity="0.7" :dark="false">
       <NotSignedIn></NotSignedIn>
     </v-overlay>
     <v-row align="center" justify="center">

@@ -108,8 +108,8 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import ButtonWithImage from '@/components/ButtonWithImage'
 import { mapState } from 'vuex'
-import { colors } from '@/constants.js'
-import { get, setTokenForUser } from '@/helpers.js'
+import { colors } from '@/constants'
+import { get, setTokenForUser, signInGoogle } from '@/helpers'
 
 export default {
   name: 'Join',
@@ -184,7 +184,7 @@ export default {
         this.redirectToRoom()
       } else {
         // Sign user in if not already signed in
-        this.signInGoogle().then((result) => {
+        signInGoogle().then((result) => {
           // TODO: find a better way to do this rather than setting token twice
           //       It sets it here and also in main.js
           return setTokenForUser(result.user)
@@ -215,10 +215,6 @@ export default {
       }).catch((err) => {
         console.log('ERROR WHEN CHECKING EXISTS: ', err)
       })
-    },
-    signInGoogle() {
-      let provider = new firebase.auth.GoogleAuthProvider()
-      return firebase.auth().signInWithPopup(provider)
     },
     signOut() {
       firebase.auth().signOut()

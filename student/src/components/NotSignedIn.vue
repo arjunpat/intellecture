@@ -6,14 +6,15 @@
     md="12"
     lg="12"
   >
-    <div class="container">
-      <div class="display-4 text-center">😐</div>
+    <div class="container white--text">
+      <div class="display-4 text-center">{{ face }}</div>
       <div class="display-2 mb-2"> You do not appear to be signed in...</div>
       <ButtonWithImage
         :src="require('@/assets/img/google_logo.svg')"
         text="Continue with Google"
         color="white"
         :dark="false"
+        @click="signInGoogle"
       ></ButtonWithImage>
     </div>
   </v-col>
@@ -32,12 +33,30 @@
 
 <script>
 import ButtonWithImage from '@/components/ButtonWithImage'
+import { signInGoogle } from '@/helpers'
 
 export default {
   name: 'NotSignedIn',
   
   components: {
     ButtonWithImage,
-  }
+  },
+
+  data() {
+    return {
+      face: '😐',
+    }
+  },
+
+  methods: {
+    signInGoogle() {
+      signInGoogle().then((result) => {
+        this.face = '😍'
+      }).catch((err) => {
+        // TODO: Make this not alert()
+        alert(err)
+      })
+    }
+  },
 }
 </script>
