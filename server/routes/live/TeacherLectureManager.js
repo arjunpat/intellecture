@@ -17,20 +17,26 @@ class TeacherLectureManager {
   async init() {
     this.lectureInfo = await db.lectures.getLecture(this.lecture_uid);
 
+    this.sendToTeachers(this.getLectureInfo());
+  }
+
+  getLectureInfo() {
     let { uid, start_time, class_name, lecture_name } = this.lectureInfo;
-    this.sendToTeachers({
+    return {
       type: 'lecture_info',
       uid,
       start_time,
       class_name,
       lecture_name
-    });
+    }
   }
 
   addTeacher(socket) {
     socket.on('pong', () => socket.isAlive = true);
     socket.isAlive = true;
     this.teachers.push(socket);
+    if (this.lectureInfo)
+      socket.json(this.getLectureInfo());
   }
 
   async addStudent(student_uid) {

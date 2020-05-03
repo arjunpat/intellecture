@@ -7,6 +7,10 @@ const db = require('../../models');
 const lectures = {};
 const StudentLectureManager = require('./StudentLectureManager');
 
+function publish(lecture_uid, obj) {
+  pub.publish(lecture_uid, JSON.stringify(obj));
+}
+
 function removeLecture(lecture_uid) {
   console.log('(s) removing lecture', lecture_uid);
   sub.unsubscribe(lecture_uid);
@@ -23,16 +27,14 @@ setInterval(() => {
   }
 }, 10000);
 
-function publish(lecture_uid, obj) {
-  pub.publish(lecture_uid, JSON.stringify(obj));
-}
-
 sub.on('message', (lecture_uid, message) => {
   let data = JSON.parse(message);
   
-  if (data.type === 'end') {
-    lectures[lecture_uid].end();
-    removeLecture(lecture_uid);
+  switch (data.type) {
+    case 'end':
+      lectures[lecture_uid].end();
+      removeLecture(lecture_uid);
+      break;
   }
 });
 
@@ -66,7 +68,7 @@ async function handleStudent(lecture_uid, student_uid, socket) {
   });
 
   if (!lectures[lecture_uid])
-    lectures[lecture_uid] = new StudentLectureManager();
+    lectures[lecture_uid] = new StudentLectureManager(lecture_uid);
   lectures[lecture_uid].addStudent(socket);
 
   let { uid, start_time, class_name, lecture_name } = await db.lectures.getLecture(lecture_uid);

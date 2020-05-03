@@ -1,35 +1,19 @@
 const router = require('express').Router();
 const WebSocket = require('ws');
+const redis = require('redis');
 
+const pub = redis.createClient(process.env.REDIS_URL);
 const mw = require('../../middleware');
 const wss = new WebSocket.Server({ noServer: true });
 
+const { handleUpgrade } = require('./helpers');
 const db = require('../../models');
 
-function jsonifySocket(socket) {
-  socket.on('message', data => {
-    try {
-      socket.onjson(JSON.parse(data));
-    } catch (e) { console.log(e); }
-  });
-
-  socket.json = obj => socket.send(JSON.stringify(obj));
-}
-
-function handleUpgrade(req) {
-  return new Promise((resolve, reject) => {
-    wss.handleUpgrade(req, req.socket, req.ws.head, s => {
-      jsonifySocket(s);
-      resolve(s);
-    });
-  });
-}
-
 const handleTeacher = require('./teacher');
-router.get('/teacher/:lecture_uid', mw.auth, mw.websocket, async (req, res) => {
+router.get('/teacher/:lecture_uid', mw.websocket, mw.auth, async (req, res) => {
   let { lecture_uid } = req.params;
 
-  let socket = await handleUpgrade(req);
+  let socket = await handleUpgrade(wss, req);
 
   let lecture = await db.lectures.getLecture(lecture_uid);
   if (lecture.owner_uid !== req.uid) {
@@ -53,12 +37,20 @@ router.get('/teacher/:lecture_uid', mw.auth, mw.websocket, async (req, res) => {
 });
 
 const handleStudent = require('./student');
-router.get('/student/:lecture_uid', mw.auth, mw.websocket, async (req, res) => {
+router.get('/student/:lecture_uid', mw.websocket, mw.auth, async (req, res) => {
   let { lecture_uid } = req.params;
 
-  let socket = await handleUpgrade(req);
+  let socket = await handleUpgrade(wss, req);
 
   let lecture = await db.lectures.getLecture(lecture_uid);
+  if (!lecture) {
+    socket.json({
+      type: 'error',
+      error: 'does_not_exist'
+    });
+    return socket.terminate();
+  }
+
   if (typeof lecture.start_time !== 'number') {
     socket.json({
       type: 'error',

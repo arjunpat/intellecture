@@ -7,6 +7,10 @@ const db = require('../../models');
 const lectures = {};
 const TeacherLectureManager = require('./TeacherLectureManager');
 
+function publish(lecture_uid, obj) {
+  pub.publish(lecture_uid, JSON.stringify(obj));
+}
+
 function removeLecture(lecture_uid) {
   console.log('(t) removing lecture', lecture_uid);
   sub.unsubscribe(lecture_uid);
@@ -42,10 +46,6 @@ sub.on('message', (lecture_uid, message) => {
       break;
   }
 });
-
-function publish(lecture_uid, obj) {
-  pub.publish(lecture_uid, JSON.stringify(obj));
-}
 
 async function handleTeacher(lecture_uid, teacher_uid, socket) {
   // init socket

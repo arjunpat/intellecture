@@ -50,8 +50,4 @@ router.get('/testing', (req, res) => {
   res.sendFile(__dirname + '/testing.html');
 });
 
-/* module.exports = (a) => {
-  db = a;
-  return router;
-} */
 module.exports = router;
