@@ -17,19 +17,15 @@
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
 
-  
-
-  let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1ODc1MjU0NzQwMTgsInVpZCI6InJVSnlQMzE3aXVaRXJObGhybm55bjhlVDd1WTIifQ.ufVoZHvzopoevhVwBAklgXvUNG8Bn6Nmbg2M5goMhm4";
-
   let postStuff;
 
   function genPostStuff() {
     postStuff = {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      }
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include'
     }
   }
   genPostStuff();
@@ -47,6 +43,13 @@
         token = res.data.token;
         genPostStuff();
       });
+    });
+  }
+
+  function renewCookie() {
+    fetch(hostp + '/auth/renew', {
+      ...postStuff,
+      method: 'GET'
     });
   }
 

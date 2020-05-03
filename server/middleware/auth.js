@@ -4,12 +4,10 @@ const { JWT_SECRET } = process.env;
 
 module.exports = (req, res, next) => {
   try {
-    let token = req.headers.authorization.split(' ')[1];
-    let contents = jwt.verify(token, JWT_SECRET);
+    let contents = jwt.verify(req.cookies.intell_, JWT_SECRET);
     req.uid = contents.uid;
     next();
   } catch (e) {
-    console.log(e);
-    res.send(responses.error('bad_token'));
+    res.send(responses.error('cookie'));
   }
 }

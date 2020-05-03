@@ -35,11 +35,19 @@ class Lectures {
     ).then(d => d.length === 1 && d[0]);
   }
 
-  startLecture(lecture_uid, start_time) {
+  startLecture(uid, start_time) {
     return this.mysql.update('lectures', {
       start_time
     }, {
-      uid: lecture_uid
+      uid
+    });
+  }
+
+  endLecture(uid, end_time) {
+    return this.mysql.update('lectures', {
+      end_time
+    }, {
+      uid
     });
   }
 

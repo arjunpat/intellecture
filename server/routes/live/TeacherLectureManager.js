@@ -18,13 +18,13 @@ class TeacherLectureManager {
     this.lectureInfo = await db.lectures.getLecture(this.lecture_uid);
 
     let { uid, start_time, class_name, lecture_name } = this.lectureInfo;
-    /* this.sendToTeachers({
+    this.sendToTeachers({
+      type: 'lecture_info',
       uid,
       start_time,
       class_name,
       lecture_name
-    }); */
-    this.sendToTeachers(this.lectureInfo);
+    });
   }
 
   addTeacher(socket) {
@@ -44,6 +44,10 @@ class TeacherLectureManager {
 
   removeStudent(student_uid) {
     delete this.scores[student_uid];
+    this.sendToTeachers({
+      type: 'student_leave',
+      uid: student_uid
+    });
     this.updateTeachers()
   }
 
@@ -80,7 +84,7 @@ class TeacherLectureManager {
     for (let i = 0; i < this.teachers.length; i++) {
       let socket = this.teachers[i];
       if (socket.readyState === 2 || socket.readyState === 3 || !socket.isAlive) {
-        console.log('removing teacher', socket.uid);
+        console.log('(t) removing', socket.uid);
         socket.terminate();
         this.teachers.splice(i, 1);
         i--;

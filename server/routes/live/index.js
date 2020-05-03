@@ -26,7 +26,7 @@ function handleUpgrade(req) {
 }
 
 const handleTeacher = require('./teacher');
-router.get('/teacher/:lecture_uid', mw.queryAuth, mw.auth, mw.websocket, async (req, res) => {
+router.get('/teacher/:lecture_uid', mw.auth, mw.websocket, async (req, res) => {
   let { lecture_uid } = req.params;
 
   let socket = await handleUpgrade(req);
@@ -53,7 +53,7 @@ router.get('/teacher/:lecture_uid', mw.queryAuth, mw.auth, mw.websocket, async (
 });
 
 const handleStudent = require('./student');
-router.get('/student/:lecture_uid', mw.queryAuth, mw.auth, mw.websocket, async (req, res) => {
+router.get('/student/:lecture_uid', mw.auth, mw.websocket, async (req, res) => {
   let { lecture_uid } = req.params;
 
   let socket = await handleUpgrade(req);
