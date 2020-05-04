@@ -2,6 +2,9 @@
 
 <template>
   <v-container fluid class="fill-height">
+    <ErrorSnackbar
+      :error="error"
+    ></ErrorSnackbar>
     <v-overlay :value="!authUser" opacity="0.7" :dark="false">
       <NotSignedIn></NotSignedIn>
     </v-overlay>
@@ -85,6 +88,7 @@
 import UnderstandingSlider from '@/components/UnderstandingSlider'
 import NotSignedIn from '@/components/NotSignedIn'
 import { mapState } from 'vuex'
+import { get } from '@/helpers'
 
 export default {
   name: 'Room',
@@ -104,17 +108,14 @@ export default {
       question: '',
       socket: null,
       lectureInfo: null,
+      error: '',
     }
   },
 
   created() {
-    // TODO: don't render page until checking that lecture exists via the api
-
     // Set up socket stuff
     this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/student/${this.id}`)
-    this.socket.onopen = (event) => {
-      console.log('SOCKET OPENED: ', event)
-    }
+    this.socket.onopen = (event) => {}
     this.socket.onmessage = (event) => {
       console.log('GOT MESSAGE', event.data)
       const data = JSON.parse(event.data)
@@ -122,6 +123,7 @@ export default {
       if (data.type === 'error') {
         switch(data.error) {
           case 'does_not_exist':
+            // TODO: ask arjun why this doesn't work anymore
             this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join does not exist!' } })
             break;
         }

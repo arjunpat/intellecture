@@ -1,18 +1,8 @@
 <template>
   <v-container fluid class="fill-height _green">
-    <v-snackbar
-      v-model="snackbar"
-      top
-      color="error"
-    >
-      {{ error }}
-      <v-btn
-        text
-        @click="snackbar = false"
-      >
-        Close
-      </v-btn>
-    </v-snackbar>
+    <ErrorSnackbar
+      :error="currentError"
+    ></ErrorSnackbar>
     <v-row
       justify="center"
     >
@@ -107,15 +97,21 @@
 import firebase from 'firebase/app'
 import 'firebase/auth'
 import ButtonWithImage from '@/components/ButtonWithImage'
+import ErrorSnackbar from '@/components/ErrorSnackbar'
 import { mapState } from 'vuex'
 import { colors } from '@/constants'
-import { get, setTokenForUser, signInGoogle } from '@/helpers'
+import { get, setTokenForUser, signInGoogle, logOut } from '@/helpers'
 
 export default {
   name: 'Join',
 
+  props: {
+    error: {type: String, default: ''},
+  },
+
   components: {
     ButtonWithImage,
+    ErrorSnackbar,
   },
 
   watch: {
@@ -123,18 +119,14 @@ export default {
       immediate: true,
       handler(authUser) {
         if (authUser) {
-          this.btnText = `Continue as ${authUser.displayName}`
-          this.btnImageSrc = authUser.photoURL
+          this.btnText = `Continue as ${authUser.first_name} ${authUser.last_name}`
+          this.btnImageSrc = authUser.photo
         } else {
           this.btnText = 'Continue with Google'
           this.btnImageSrc = require('@/assets/img/google_logo_white.svg')
         }
       }
-    }
-  },
-
-  props: {
-    error: {type: String, default: ''},
+    },
   },
 
   data() {
@@ -151,6 +143,7 @@ export default {
         v => this.validRoomCode || 'Invalid room code!', 
       ],
       snackbar: false,
+      currentError: '',
     }
   },
 
@@ -158,8 +151,7 @@ export default {
     // Do a cool little animation when loaded
     setTimeout(() => {this.show = true}, 100)
 
-    if (this.error)
-      this.snackbar = true
+    this.currentError = this.error
   },
 
   computed: {
@@ -187,8 +179,7 @@ export default {
         signInGoogle().then((result) => {
           this.redirectToRoom()
         }).catch((err) => {
-          // TODO: make this not alert()
-          alert(err.message)
+          this.currentError = 'There was an error signing in!'
         })
       }
     },
@@ -209,11 +200,13 @@ export default {
           this.$router.replace(`/room/${this.roomCode}`)
         }
       }).catch((err) => {
-        console.log('ERROR WHEN CHECKING EXISTS: ', err)
+        this.currentError = 'Could not join room!'
       })
     },
     signOut() {
-      firebase.auth().signOut()
+      logOut().catch((err) => {
+        this.currentError = 'There was an error signing out!'
+      })
     }
   }
 }

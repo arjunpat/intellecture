@@ -2,11 +2,11 @@
            OR MAYBE: display letter name when profile pic hasn't loaded yet -->
 <template>
   <img 
-    v-if="user.photoURL"
-    :src="user.photoURL"
-    :alt="user.displayName"
+    v-if="user.photo"
+    :src="user.photo"
+    :alt="user.first_name"
   >
-  <span v-else class="white--text headline">{{ user.displayName[0] }}</span>
+  <span v-else class="white--text headline">{{ user.first_name[0] }}</span>
 </template>
 
 <script>

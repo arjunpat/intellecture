@@ -18,6 +18,10 @@ const routes = [
     component: Room,
     props: true,
   },
+  {
+    path: '*',
+    redirect: '/',
+  },
 ]
 
 const router = new VueRouter({

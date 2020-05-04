@@ -1,5 +1,9 @@
 <template>
   <v-app>
+    <ErrorSnackbar
+      :error="error"
+    ></ErrorSnackbar>
+
     <v-app-bar
       v-if="$route.path !== '/'"
       app
@@ -8,7 +12,7 @@
     >
         <img src="@/assets/img/logo.svg" width="35px" class="pointer">
 
-        <v-toolbar-title @click="homeRedirect()"><span id="main-logo" class="pointer">INTELLECTURE</span> Student</v-toolbar-title>
+        <v-toolbar-title @click="homeRedirect"><span id="main-logo" class="pointer">INTELLECTURE</span> Student</v-toolbar-title>
 
       <v-spacer></v-spacer>
 
@@ -47,26 +51,29 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import { mapState } from 'vuex'
 import UserAvatarContent from '@/components/UserAvatarContent'
-import { get } from '@/helpers'
+import ErrorSnackbar from '@/components/ErrorSnackbar'
+import { get, logOut } from '@/helpers'
 
 export default {
   name: 'App',
 
+  data() {
+    return {
+      error: '',
+    }
+  },
+
   created() {
-    get('/auth/renew').then((result) => {
+    get('/auth/profile').then((result) => {
       if (result.success) {
-        // TODO: remove hardcode
-        //this.$store.commit('setAuthUser', result.user)
-        this.$store.commit('setAuthUser', { 
-          displayName: 'JONY XD LIU',  
-          photoURL: 'https://lh3.googleusercontent.com/a-/AOh14GhLdwXOcIH2W9KoJdVZTTDkxu-TCJesb3_HRqDOpQ=s28-c-k-no',
-        })
+        this.$store.commit('setAuthUser', result.data)
       } else {
         this.$store.commit('setAuthUser', null)
       }
       this.redirectAuthUser()
+    }).catch((err) => {
+      // This error should really never be thrown
     })
-
   },
 
   components: {
@@ -88,16 +95,15 @@ export default {
 
   methods: {
     signOut() {
-      // TODO: replace with sign out api call
-      firebase.auth().signOut()
+      logOut().catch((err) => {
+        this.error = "There was an error signing out!"
+      })
     },
     redirectAuthUser() {
       // Redirects based on the state of authUser
       let authRoutes = []
 
       if (!this.authUser) {
-        // TODO: catch for the case if the user gets a link to the room directly
-        //       In this case, prompt the user for sign in before they join the room
         if (authRoutes.includes(this.$route.name)) {
           this.$router.replace({ name: 'Join' })
         }
