@@ -3,7 +3,6 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
-import { setTokenForUser } from './helpers'
 
 // Import global css
 import '@/assets/css/global.css'
@@ -22,18 +21,7 @@ firebase.initializeApp({
   appId: '1:462381253872:web:fc0f440c35a1c920026e35'
 })
 
-firebase.auth().onAuthStateChanged((user) => {
-  if (user) {
-    store.commit('setAuthUser', user)
-    setTokenForUser(user).catch((err) => {
-      console.log(err)
-    })
-  } else {
-    store.commit('setAuthUser', null)
-    store.commit('setToken', '')
-  }
-})
-
+firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE)
 
 // Mount Vue App
 Vue.config.productionTip = false

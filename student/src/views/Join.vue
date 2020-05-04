@@ -185,10 +185,6 @@ export default {
       } else {
         // Sign user in if not already signed in
         signInGoogle().then((result) => {
-          // TODO: find a better way to do this rather than setting token twice
-          //       It sets it here and also in main.js
-          return setTokenForUser(result.user)
-        }).then(() => {
           this.redirectToRoom()
         }).catch((err) => {
           // TODO: make this not alert()

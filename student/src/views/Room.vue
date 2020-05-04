@@ -111,7 +111,7 @@ export default {
     // TODO: don't render page until checking that lecture exists via the api
 
     // Set up socket stuff
-    this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/student/${this.id}?access_token=${this.token}`)
+    this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/student/${this.id}`)
     this.socket.onopen = (event) => {
       console.log('SOCKET OPENED: ', event)
     }
@@ -121,7 +121,7 @@ export default {
 
       if (data.type === 'error') {
         switch(data.error) {
-          case 'lecture_not_initialized':
+          case 'does_not_exist':
             this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join does not exist!' } })
             break;
         }
