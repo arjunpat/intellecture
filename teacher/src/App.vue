@@ -19,7 +19,7 @@
       <v-btn v-if="!started && dashboard" @click="$router.push({ path: '/new' })">Start Lecture</v-btn>
       <v-btn class="red" v-if="started && livelecture" @click="endlecture()">End Lecture</v-btn>
       <v-btn class="ml-1 deep-orange accent-2" v-if="!started && !landing && !signin" @click="signOut()">Sign out <img id="avt-img" class="ml-2" v-bind:src="authUser.photoURL" width="25px"></v-btn>
-      <div v-if="started" class="ml-3" style="background-color: #AED581; padding: 5px 8px; border-radius: 7px;">
+      <div v-if="started && livelecture" class="ml-3" style="background-color: #AED581; padding: 5px 8px; border-radius: 7px;">
         <span class="mr-1" style="font-size: 20px; font-family: 'Roboto'; font-weight: 500;">ROOM:</span> <span class="text--primary font-weight-black" style="background: #ddd; border-radius: 7px; padding: 2px 10px; font-size: 25px;">{{id}}</span>
       </div>
 
@@ -28,7 +28,7 @@
     <div style="height: 64px;"></div>
 
     <v-content>
-      <router-view v-on:startlecture="starting" />
+      <router-view v-on:startlecture="starting" v-on:nonexistant="started = false" />
     </v-content>
   </v-app>
 </template>
@@ -37,6 +37,7 @@
 import firebase from 'firebase'
 import { mapState } from 'vuex'
 import store from './store'
+import { post, get } from '@/helpers.js'
 
 export default {
   name: 'App',
@@ -94,6 +95,12 @@ export default {
       firebase.auth().signOut()
     },
     redirectAuthUser () {
+      get('/auth/renew').then((response) => {
+        if(!response.success) {
+          store.commit('setAuthUser', null)
+        }
+      });
+
       // Redirects based on the state of authUser
       const authRoutes = ['Dashboard', 'New', 'Lecture']
       const noAuthRoutes = ['Landing', 'SignIn']

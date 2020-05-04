@@ -39,14 +39,6 @@ firebase.auth().onAuthStateChanged((user) => {
 
 store.commit("setEndLecture", false)
 
-// Checking cookie
-get('/auth/renew').then((response) => {
-  if(!response.success) {
-    store.commit('setAuthUser', null)
-  }
-  console.log(response);
-});
-
 // Mount Vue App
 Vue.config.productionTip = false
 
