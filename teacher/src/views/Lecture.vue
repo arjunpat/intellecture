@@ -49,10 +49,10 @@
                     </v-card-text>
                 </v-card>
                 <v-card width="60%" height="60vh" align="center" justify="center">
-                    <div style="max-width: 900px; margin-top: 5%;">
+                    <div style="max-width: 900px; margin-top: 3%;">
                         <line-chart :chart-data="datacollection"></line-chart>
-                        <!--<button @click="fillData()">Randomize</button>-->
                     </div>
+                  <v-btn style="float: none;" class="" @click="shortened = !shortened">{{ shortentext }}</v-btn>
                 </v-card>
             </v-row>
             <v-row class="mt-1" align="center" justify="center">
@@ -189,6 +189,8 @@
 <script>
 import LineChart from '../components/Chart'
 import { mapState } from 'vuex'
+import { post, get } from '@/helpers.js'
+import store from '@/store'
 
 export default {
   components: {
@@ -223,7 +225,9 @@ export default {
       ],
       start: Date.now(),
       understandingData: [],
-      socketdata: ""
+      socketdata: "",
+      shortened: false,
+      shortentext: "Shorten"
     }
   },
   methods: {
@@ -233,9 +237,18 @@ export default {
     initChart () {
       var x = new Array();
       var y = new Array();
-      for(let i=0; i<this.understandingData.length; i++) {
-        x.push(this.understandingData[i].timestamp);
-        y.push(this.understandingData[i].score);
+      var data = [...this.understandingData];
+      if(this.shortened) {
+        for(let i=data.length-1; i>=0; i--) {
+          if((Date.now() - data[i].timestamp.getTime())/60000 > 5) {
+            data.splice(0, i+1);
+            break;
+          }
+        }
+      }
+      for(let i=0; i<data.length; i++) {
+        x.push(data[i].timestamp);
+        y.push(data[i].score);
       }
       this.fillData(x, y);
     },
@@ -253,15 +266,17 @@ export default {
     }
   },
   mounted () {
-    get(`/lecture/exists/${this.id}`).then((response) => {
+    this.$emit('startlecture', this.id);
+
+    get(`/lectures/exists/${this.id}`).then((response) => {
       if(response.success) {
         if(!response.data.exists) {
           this.$router.push({ path: '/dashboard' });
+          this.$emit('nonexistant');
         }
       }
     });
 
-    this.$emit('startlecture', this.id);
     this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.id}`);
     var self = this;
     this.socket.onmessage = function (event) {
@@ -272,17 +287,19 @@ export default {
       } else if(data.type == "student_join") {
         self.students.push(data)
       } else if(data.type == "student_leave") {
-        self.students = this.students.filter(function( obj ) {
+        self.students = self.students.filter(function( obj ) {
             return obj.uid !== data.uid
         });
       } else if(data.type == "us_update") {
-        var d = (Date.now() - self.start)/1000;
-        self.understandingData.push({
-          timestamp: new Date(),
-          score: data.value
-        })
-        self.understandingScore = data.value
-        self.initChart();
+        if(data.value != null) {
+          var d = (Date.now() - self.start)/1000;
+          self.understandingData.push({
+            timestamp: new Date(),
+            score: data.value
+          })
+          self.understandingScore = data.value
+          self.initChart();
+        }
       }
     }
   },
@@ -298,7 +315,12 @@ export default {
         this.socket.send(JSON.stringify({ type: "end_lecture" })); 
         this.socket.close();
         this.$router.push({ path: '/dashboard' })
+        store.commit("setEndLecture", false)
       }
+    },
+    shortened(val) {
+      this.initChart();
+      this.shortentext = this.shortened ? "Entire" : "Shorten";
     }
   }
 }

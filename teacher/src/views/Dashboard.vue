@@ -13,6 +13,7 @@
         
         <v-card-text align="center">
           <ul style="list-style-type: none">
+            <h1 v-if="!classes">No classes</h1>
             <li v-for="cla in classes" v-bind:key="cla.id">
             <v-banner>
               {{cla.name}}
@@ -47,6 +48,7 @@ export default {
     loadClasses() {
       get('/classes/mine').then((response) => {
         this.classes = response.data;
+        console.log(this.classes);
         if(this.classes) {
           this.classes.sort((a, b) => (a.name > b.name) ? 1 : -1)
         }
