@@ -7,6 +7,10 @@ const db = require('../../models');
 const lectures = {};
 const TeacherLectureManager = require('./TeacherLectureManager');
 
+function publish(lecture_uid, obj) {
+  pub.publish(lecture_uid, JSON.stringify(obj));
+}
+
 function removeLecture(lecture_uid) {
   console.log('(t) removing lecture', lecture_uid);
   sub.unsubscribe(lecture_uid);
@@ -36,16 +40,15 @@ sub.on('message', (lecture_uid, message) => {
     case 'sl': // student leave
       lectures[lecture_uid].removeStudent(data.student_uid);
       break;
+    case 'q': // question
+      lectures[lecture_uid].addQuestion(data.student_uid, data.q);
+      break;
     case 'end': // end lecture
       lectures[lecture_uid].end();
       removeLecture(lecture_uid);
       break;
   }
 });
-
-function publish(lecture_uid, obj) {
-  pub.publish(lecture_uid, JSON.stringify(obj));
-}
 
 async function handleTeacher(lecture_uid, teacher_uid, socket) {
   // init socket

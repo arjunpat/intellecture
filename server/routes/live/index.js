@@ -1,35 +1,20 @@
 const router = require('express').Router();
 const WebSocket = require('ws');
+const redis = require('redis');
 
+const pub = redis.createClient(process.env.REDIS_URL);
+const responses = require('../../lib/responses');
 const mw = require('../../middleware');
 const wss = new WebSocket.Server({ noServer: true });
 
+const { handleUpgrade } = require('./helpers');
 const db = require('../../models');
 
-function jsonifySocket(socket) {
-  socket.on('message', data => {
-    try {
-      socket.onjson(JSON.parse(data));
-    } catch (e) { console.log(e); }
-  });
-
-  socket.json = obj => socket.send(JSON.stringify(obj));
-}
-
-function handleUpgrade(req) {
-  return new Promise((resolve, reject) => {
-    wss.handleUpgrade(req, req.socket, req.ws.head, s => {
-      jsonifySocket(s);
-      resolve(s);
-    });
-  });
-}
-
 const handleTeacher = require('./teacher');
-router.get('/teacher/:lecture_uid', mw.auth, mw.websocket, async (req, res) => {
+router.get('/teacher/:lecture_uid', mw.websocket, mw.auth, async (req, res) => {
   let { lecture_uid } = req.params;
 
-  let socket = await handleUpgrade(req);
+  let socket = await handleUpgrade(wss, req);
 
   let lecture = await db.lectures.getLecture(lecture_uid);
   if (lecture.owner_uid !== req.uid) {
@@ -37,7 +22,7 @@ router.get('/teacher/:lecture_uid', mw.auth, mw.websocket, async (req, res) => {
       type: 'error',
       error: 'permissions'
     });
-    return socket.terminate();
+    return socket.close();
   }
 
   if (typeof lecture.start_time === 'number') {
@@ -45,7 +30,7 @@ router.get('/teacher/:lecture_uid', mw.auth, mw.websocket, async (req, res) => {
       type: 'error',
       error: 'already_started'
     });
-    return socket.terminate();
+    return socket.close();
   }
 
   await db.lectures.startLecture(lecture_uid, Date.now());
@@ -53,18 +38,26 @@ router.get('/teacher/:lecture_uid', mw.auth, mw.websocket, async (req, res) => {
 });
 
 const handleStudent = require('./student');
-router.get('/student/:lecture_uid', mw.auth, mw.websocket, async (req, res) => {
+router.get('/student/:lecture_uid', mw.websocket, mw.auth, async (req, res) => {
   let { lecture_uid } = req.params;
 
-  let socket = await handleUpgrade(req);
+  let socket = await handleUpgrade(wss, req);
 
   let lecture = await db.lectures.getLecture(lecture_uid);
+  if (!lecture) {
+    socket.json({
+      type: 'error',
+      error: 'does_not_exist'
+    });
+    return socket.close();
+  }
+
   if (typeof lecture.start_time !== 'number') {
     socket.json({
       type: 'error',
       error: 'lecture_not_initialized'
     });
-    return socket.terminate();
+    return socket.close();
   }
 
   if (typeof lecture.end_time === 'number') {
@@ -72,11 +65,35 @@ router.get('/student/:lecture_uid', mw.auth, mw.websocket, async (req, res) => {
       type: 'error',
       error: 'already_ended'
     });
-    return socket.terminate();
+    return socket.close();
   }
 
   // handle case that lecture ends before student initialized
   handleStudent(lecture_uid, req.uid, socket);
+});
+
+router.post('/student/:lecture_uid/question', mw.auth, async (req, res) => {
+  let { lecture_uid } = req.params;
+  let lecture = await db.lectures.getLecture(lecture_uid);
+
+  if (
+    !lecture
+    || typeof lecture.start_time !== 'number'
+    || typeof lecture.end_time === 'number'
+    || typeof req.body.question !== 'string'
+  )
+    return res.send(responses.error());
+
+  let elapsed = Date.now() - lecture.start_time;
+  await db.lectureQs.add(lecture_uid, elapsed, req.uid, req.body.question);
+
+  pub.publish(lecture_uid, JSON.stringify({
+    type: 'q', // question
+    student_uid: req.uid,
+    q: req.body.question
+  }));
+
+  res.send(responses.success());
 });
 
 module.exports = router;

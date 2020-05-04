@@ -22,9 +22,8 @@ router.post('/create', mw.auth, async (req, res) => {
 
   let resp = await db.classes.ownsClass(class_uid, req.uid);
 
-  if (!resp) {
+  if (!resp)
     return res.send(responses.error());
-  }
   
   let lecture_uid = genLectureId(5);
   await db.lectures.createLecture(lecture_uid, class_uid, name || 'Untitled Lecture');
@@ -50,8 +49,4 @@ router.get('/testing', (req, res) => {
   res.sendFile(__dirname + '/testing.html');
 });
 
-/* module.exports = (a) => {
-  db = a;
-  return router;
-} */
 module.exports = router;

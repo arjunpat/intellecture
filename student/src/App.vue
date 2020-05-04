@@ -47,12 +47,26 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import { mapState } from 'vuex'
 import UserAvatarContent from '@/components/UserAvatarContent'
+import { get } from '@/helpers'
 
 export default {
   name: 'App',
 
   created() {
-    this.redirectAuthUser()
+    get('/auth/renew').then((result) => {
+      if (result.success) {
+        // TODO: remove hardcode
+        //this.$store.commit('setAuthUser', result.user)
+        this.$store.commit('setAuthUser', { 
+          displayName: 'JONY XD LIU',  
+          photoURL: 'https://lh3.googleusercontent.com/a-/AOh14GhLdwXOcIH2W9KoJdVZTTDkxu-TCJesb3_HRqDOpQ=s28-c-k-no',
+        })
+      } else {
+        this.$store.commit('setAuthUser', null)
+      }
+      this.redirectAuthUser()
+    })
+
   },
 
   components: {
@@ -74,6 +88,7 @@ export default {
 
   methods: {
     signOut() {
+      // TODO: replace with sign out api call
       firebase.auth().signOut()
     },
     redirectAuthUser() {

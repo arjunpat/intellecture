@@ -6,6 +6,7 @@ const Lectures = require('./Lectures');
 const Classes = require('./Classes');
 const LectureLog = require('./LectureLog');
 const Accounts = require('./Accounts');
+const LectureQs = require('./LectureQs');
 
 const mysql = new MySQL(
   MYSQL_USER,
@@ -19,5 +20,6 @@ module.exports = {
   lectures: new Lectures(mysql),
   classes: new Classes(mysql),
   lectureLog: new LectureLog(mysql),
-  accounts: new Accounts(mysql)
+  accounts: new Accounts(mysql),
+  lectureQs: new LectureQs(mysql)
 }

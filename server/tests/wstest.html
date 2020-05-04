@@ -30,7 +30,9 @@
     });
   }
 
-  async function createLecture(class_uid = "8J9OC7IqeVMhehv") {
+  let lecture_uid;
+
+  async function createLecture(class_uid = "kabBtQs7hzkk2cL") {
     let res = await fetch(hostp + '/lectures/create', {
       ...postStuff,
       body: JSON.stringify({
@@ -39,11 +41,11 @@
       })
     });
     res = await res.json();
-    let lecture_uid = res.data.lecture_uid;
+    lecture_uid = res.data.lecture_uid;
 
     await sleep(2);
 
-    startWS(res.data.lecture_uid, 2);
+    startWS(lecture_uid, 2);
   }
 
   let wsT, wsS;
@@ -67,6 +69,14 @@
       });
     }, secs * 1000);
   }
-  
+
+  async function askQuestion(question) {
+    fetch(hostp + '/lectures/live/student/' + lecture_uid + '/question', {
+      ...postStuff,
+      body: JSON.stringify({
+        question
+      })
+    });
+  }
 
 </script>
