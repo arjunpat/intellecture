@@ -55,7 +55,7 @@ class TeacherLectureManager {
     this.sendToTeachers({
       type: 'student_join',
       uid: student_uid,
-      ...await db.accounts.basicInfo(student_uid)
+      ...await db.accounts.getBasicInfo(student_uid)
     });
     this.scores[student_uid] = 5;
   }

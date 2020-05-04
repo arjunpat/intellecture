@@ -63,10 +63,7 @@
     await sleep(2);
 
     setInterval(() => {
-      wsS.json({
-        type: 'update_score',
-        score: Math.ceil(Math.random() * 10)
-      });
+      updateScore(Math.ceil(Math.random() * 10))
     }, secs * 1000);
   }
 
@@ -79,4 +76,19 @@
     });
   }
 
+  async function updateScore(score) {
+    fetch(hostp + '/lectures/live/student/' + lecture_uid + '/score', {
+      ...postStuff,
+      body: JSON.stringify({
+        score
+      })
+    });
+  }
+
+  async function endLecture() {
+    fetch(hostp + '/lectures/live/teacher/' + lecture_uid + '/end', {
+      ...postStuff,
+      body: '{}'
+    });
+  }
 </script>

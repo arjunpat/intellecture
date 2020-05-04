@@ -11,10 +11,9 @@ class Accounts {
     );
   }
 
-  basicInfo(uid) {
+  getBasicInfo(uid) {
     return this.mysql.query('SELECT email, first_name, last_name, photo FROM accounts WHERE uid = ?', [uid]).then(d => d[0]);
   }
-
 }
 
 module.exports = Accounts;

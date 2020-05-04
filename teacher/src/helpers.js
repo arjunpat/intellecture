@@ -1,4 +1,3 @@
-import store from './store';
 export const serverHost = 'https://api.intellecture.app';
 
 export function get(url) {
