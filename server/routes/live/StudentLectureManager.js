@@ -1,13 +1,34 @@
+const db = require('../../models');
 
 class StudentLectureManager {
-  constructor() {
+  constructor(lecture_uid) {
+    this.lecture_uid = lecture_uid;
     this.sockets = [];
+    this.init();
+  }
+
+  async init() {
+    this.lectureInfo = await db.lectures.getLecture(this.lecture_uid);
+    this.sendToStudents(this.getLectureInfo());
+  }
+
+  getLectureInfo() {
+    let { uid, start_time, class_name, lecture_name } = this.lectureInfo;
+    return {
+      type: 'lecture_info',
+      uid,
+      start_time,
+      class_name,
+      lecture_name
+    }
   }
 
   addStudent(socket) {
     socket.on('pong', () => socket.isAlive = true);
     socket.isAlive = true;
     this.sockets.push(socket);
+    if (this.lectureInfo)
+      socket.json(this.getLectureInfo());
   }
 
   sendToStudents(obj) {

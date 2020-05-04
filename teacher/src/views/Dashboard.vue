@@ -61,14 +61,12 @@ export default {
     }
   },
   computed: {
-    ...mapState(['authUser', 'token']),
+    ...mapState(['authUser']),
   },
   watch: {
-    token: function (val) {
-      this.loadClasses()
-    },
     authUser: function(val) {
       this.username = this.authUser.displayName
+      this.loadClasses()
     }
   }
 }

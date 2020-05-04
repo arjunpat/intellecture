@@ -7,6 +7,10 @@ const db = require('../../models');
 const lectures = {};
 const StudentLectureManager = require('./StudentLectureManager');
 
+function publish(lecture_uid, obj) {
+  pub.publish(lecture_uid, JSON.stringify(obj));
+}
+
 function removeLecture(lecture_uid) {
   console.log('(s) removing lecture', lecture_uid);
   sub.unsubscribe(lecture_uid);
@@ -23,16 +27,14 @@ setInterval(() => {
   }
 }, 10000);
 
-function publish(lecture_uid, obj) {
-  pub.publish(lecture_uid, JSON.stringify(obj));
-}
-
 sub.on('message', (lecture_uid, message) => {
   let data = JSON.parse(message);
   
-  if (data.type === 'end') {
-    lectures[lecture_uid].end();
-    removeLecture(lecture_uid);
+  switch (data.type) {
+    case 'end':
+      lectures[lecture_uid].end();
+      removeLecture(lecture_uid);
+      break;
   }
 });
 
@@ -44,13 +46,21 @@ async function handleStudent(lecture_uid, student_uid, socket) {
   sub.subscribe(lecture_uid);
 
   socket.uid = student_uid;
-  socket.onjson = data => {
-    if (data.type === 'update_score' && isValidScore(data.score))
+  socket.onjson = async data => {
+    if (data.type === 'update_score' && isValidScore(data.score)) {
+      let { start_time } = lectures[lecture_uid].lectureInfo;
+      await db.lectureLog.recordScoreChange(
+        lecture_uid,
+        Date.now() - start_time,
+        student_uid,
+        data.score
+      );
       publish(lecture_uid, {
         type: 'ssu', // student score update
         student_uid,
         score: data.score
       });
+    }
   }
 
   socket.on('close', () => {
@@ -66,17 +76,8 @@ async function handleStudent(lecture_uid, student_uid, socket) {
   });
 
   if (!lectures[lecture_uid])
-    lectures[lecture_uid] = new StudentLectureManager();
+    lectures[lecture_uid] = new StudentLectureManager(lecture_uid);
   lectures[lecture_uid].addStudent(socket);
-
-  let { uid, start_time, class_name, lecture_name } = await db.lectures.getLecture(lecture_uid);
-  socket.json({
-    type: 'lecture_info',
-    uid,
-    start_time,
-    class_name,
-    lecture_name
-  });
 }
 
 module.exports = handleStudent;

@@ -11,26 +11,44 @@ class TeacherLectureManager {
     this.scores = {};
     this.lecture_uid = lecture_uid;
     this.teachers = [];
+    this.questions = [];
     this.init();
   }
   
   async init() {
     this.lectureInfo = await db.lectures.getLecture(this.lecture_uid);
+    this.sendToTeachers(this.getLectureInfo());
+  }
 
-    let { uid, start_time, class_name, lecture_name } = this.lectureInfo;
+  addQuestion(uid, question) {
+    this.questions.push({
+      uid,
+      question
+    });
     this.sendToTeachers({
+      type: 'new_question',
+      uid,
+      question
+    });
+  }
+
+  getLectureInfo() {
+    let { uid, start_time, class_name, lecture_name } = this.lectureInfo;
+    return {
       type: 'lecture_info',
       uid,
       start_time,
       class_name,
       lecture_name
-    });
+    }
   }
 
   addTeacher(socket) {
     socket.on('pong', () => socket.isAlive = true);
     socket.isAlive = true;
     this.teachers.push(socket);
+    if (this.lectureInfo)
+      socket.json(this.getLectureInfo());
   }
 
   async addStudent(student_uid) {
@@ -53,12 +71,6 @@ class TeacherLectureManager {
 
   async updateStudentScore(student_uid, score) {
     this.scores[student_uid] = score;
-    await db.lectureLog.recordScoreChange(
-      this.lecture_uid,
-      Date.now() - this.lectureInfo.start_time,
-      student_uid,
-      score
-    );
     this.updateTeachers();
   }
 

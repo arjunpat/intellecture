@@ -50,12 +50,8 @@ export default {
       }).then(response => {
         this.$emit("createdClass");
         this.className = '';
-        //console.log(response)
       })
     }
-  },
-  computed: {
-    ...mapState(['token']),
   }
 }
 </script>

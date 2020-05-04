@@ -51,7 +51,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['authUser', 'token']),
+    ...mapState(['authUser']),
     landing: function () {
       if (this.$route.name === 'Landing') {
         return true

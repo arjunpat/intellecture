@@ -253,8 +253,16 @@ export default {
     }
   },
   mounted () {
+    get(`/lecture/exists/${this.id}`).then((response) => {
+      if(response.success) {
+        if(!response.data.exists) {
+          this.$router.push({ path: '/dashboard' });
+        }
+      }
+    });
+
     this.$emit('startlecture', this.id);
-    this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.id}?access_token=${this.token}`);
+    this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.id}`);
     var self = this;
     this.socket.onmessage = function (event) {
       const data = JSON.parse(event.data)
@@ -277,13 +285,12 @@ export default {
         self.initChart();
       }
     }
-    console.log(this.endLecture);
   },
   created () {
     this.initChart()
   },
   computed: {
-    ...mapState(['token', 'endLecture'])
+    ...mapState(['endLecture'])
   },
   watch: {
     endLecture(val) {

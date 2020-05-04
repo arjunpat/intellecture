@@ -5,7 +5,7 @@ import store from './store'
 import vuetify from './plugins/vuetify'
 import { firestorePlugin } from 'vuefire'
 import firebase from 'firebase/app'
-import { post } from '@/helpers.js'
+import { post, get } from '@/helpers.js'
 
 firebase.initializeApp({
   apiKey: 'AIzaSyCcVmiE6jRuOK-XrD2TeGHVAhRUamq80jU',
@@ -28,19 +28,24 @@ firebase.auth().onAuthStateChanged((user) => {
       }).then((response) => {
         if (!response.success)
           throw response.error
-        
-        store.commit('setToken', response.data.token)
       })
     }).catch((err) => {
       console.log(err)
     })
   } else {
     store.commit('setAuthUser', null)
-    store.commit('setToken', '')
   }
 })
 
 store.commit("setEndLecture", false)
+
+// Checking cookie
+get('/auth/renew').then((response) => {
+  if(!response.success) {
+    store.commit('setAuthUser', null)
+  }
+  console.log(response);
+});
 
 // Mount Vue App
 Vue.config.productionTip = false
