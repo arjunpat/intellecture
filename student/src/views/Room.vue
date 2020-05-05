@@ -147,7 +147,10 @@ export default {
       // Set up socket stuff
       if (!this.socket) {
         this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/student/${this.id}`)
-        this.socket.onopen = (event) => {}
+        this.socket.onopen = (event) => {
+          // Send initial slider value
+          this.updateUnderstanding()
+        }
         this.socket.onmessage = (event) => {
           console.log('GOT MESSAGE', event.data)
           const data = JSON.parse(event.data)
