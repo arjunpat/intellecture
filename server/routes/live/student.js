@@ -2,8 +2,6 @@ const redis = require('redis');
 const pub = redis.createClient(process.env.REDIS_URL);
 const sub = redis.createClient(process.env.REDIS_URL);
 
-const db = require('../../models');
-
 const lectures = {};
 const StudentLectureManager = require('./StudentLectureManager');
 
@@ -38,31 +36,10 @@ sub.on('message', (lecture_uid, message) => {
   }
 });
 
-function isValidScore(value) {
-  return typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 10;
-}
-
 async function handleStudent(lecture_uid, student_uid, socket) {
   sub.subscribe(lecture_uid);
 
   socket.uid = student_uid;
-  socket.onjson = async data => {
-    if (data.type === 'update_score' && isValidScore(data.score)) {
-      let { start_time } = lectures[lecture_uid].lectureInfo;
-      await db.lectureLog.recordScoreChange(
-        lecture_uid,
-        Date.now() - start_time,
-        student_uid,
-        data.score
-      );
-      publish(lecture_uid, {
-        type: 'ssu', // student score update
-        student_uid,
-        score: data.score
-      });
-    }
-  }
-
   socket.on('close', () => {
     publish(lecture_uid, {
       type: 'sl', // student leave

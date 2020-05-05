@@ -61,8 +61,8 @@ async function handleTeacher(lecture_uid, teacher_uid, socket) {
 
   socket.onjson = async data => {
     if (data.type === 'end_lecture') {
-      await db.lectures.endLecture(lecture_uid, Date.now());
       publish(lecture_uid, { type: 'end' });
+      await db.lectures.endLecture(lecture_uid, Date.now());
     }
   }
 

@@ -46,8 +46,17 @@
     });
   }
 
-  function renewCookie() {
-    fetch(hostp + '/auth/renew', {
+  async function getProfile() {
+    let res = await fetch(hostp + '/auth/profile', {
+      ...postStuff,
+      method: 'GET'
+    });
+    res = await res.json();
+    console.log(res.data);
+  }
+
+  function logout() {
+    fetch(hostp + '/auth/logout', {
       ...postStuff,
       method: 'GET'
     });

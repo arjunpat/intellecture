@@ -28,7 +28,7 @@ export function post(url, json) {
   }).then(res => res.json());
 }
 
-export function login(user) {
+export function logIn(user) {
   return user.getIdToken(true).then((idToken) => {
     return post('/auth/login', {
       firebase_token: idToken
@@ -39,16 +39,25 @@ export function login(user) {
 export function signInGoogle() {
   let provider = new firebase.auth.GoogleAuthProvider()
   return firebase.auth().signInWithPopup(provider).then((result) => {
-    return login(result.user)
+    return logIn(result.user)
   }).then((result) => {
     if (!result.success)
-      throw result
+      throw result.error
 
-    // TODO: remove hardcode
-    //store.commit('setAuthUser', result.user)   
-    store.commit('setAuthUser', { 
-      displayName: 'JONY XD LIU',  
-      photoURL: 'https://lh3.googleusercontent.com/a-/AOh14GhLdwXOcIH2W9KoJdVZTTDkxu-TCJesb3_HRqDOpQ=s28-c-k-no',
-    }) 
+    return get('/auth/profile')   
+  }).then((result) => {
+    if (!result.success)
+      throw result.error
+
+    store.commit('setAuthUser', result.data)
+  })
+}
+
+export function logOut() {
+  return get('/auth/logout').then((result) => {
+    if (!result.success)
+      throw result.error
+
+    store.commit('setAuthUser', null)
   })
 }
