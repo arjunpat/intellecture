@@ -203,18 +203,18 @@ export default {
     return {
       connected: false,
       socket: '',
-      lectureName: this.$route.query.name,
+      lectureName: '',
       datacollection: null,
       understandingScore: '--',
       averageUnderstanding: '--',
       range: '--',
-      questions: [ { text: 'What is a Gaussian surface?', id: 0, dismiss: false },
+      questions: [/* { text: 'What is a Gaussian surface?', id: 0, dismiss: false },
         { text: 'How do you calculate voltage?', id: 1, dismiss: false },
         { text: 'How do you make a Gaussian surface??', id: 2, dismiss: false },
         { text: 'Is a Gaussian surface a real physical object?', id: 3, dismiss: false},
         { text: "What's the formula for flux?", id: 4, dismiss: false },
         { text: 'How do you used a closed surface integral to calculate flux?', id: 5, dismiss: false },
-        { text: 'What is the relationship between voltage and a Gaussian surface?', id: 6, dismiss: false }],
+        { text: 'What is the relationship between voltage and a Gaussian surface?', id: 6, dismiss: false }*/],
       students: [],
       whatever: "awefawef",
       keywords: /* hardcoded data */ [{ word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }],
@@ -284,6 +284,7 @@ export default {
       console.log(data);
       if(data.type == "lecture_info") {
         self.connected = true
+        self.lectureName = data.lecture_name
       } else if(data.type == "student_join") {
         self.students.push(data)
       } else if(data.type == "student_leave") {
@@ -300,11 +301,20 @@ export default {
           self.understandingScore = data.value
           self.initChart();
         }
+      } else if(data.type == "new_question") {
+        self.questions.push({
+          text: data.question,
+          id: self.questions.length,
+          dismiss: false
+        })
       }
     }
   },
   created () {
     this.initChart()
+    window.onbeforeunload = function() {
+        return "Reloading the page will end your lecture";
+    }
   },
   computed: {
     ...mapState(['endLecture'])

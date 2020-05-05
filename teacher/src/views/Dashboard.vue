@@ -1,8 +1,8 @@
 <template>
-  <v-content>
+  <v-content v-if="authUser">
     <v-container>
       <div style="height: 10px;"></div>
-      <span class="display-1">Hi {{ username }},</span>
+      <span class="display-1">Hi {{ authUser.first_name }} {{ authUser.last_name }},</span>
 
 
       <br><br>
@@ -31,7 +31,6 @@
 
 <script>
 import ModalForm from '@/components/ModalForm'
-import { mapState } from 'vuex'
 import { post, get } from '@/helpers.js'
 
 export default {
@@ -40,7 +39,7 @@ export default {
   },
   data () {
     return {
-      username: "",
+      authUser: null,
       classes: []
     }
   },
@@ -56,20 +55,18 @@ export default {
     }
   },
   mounted () {
-    this.loadClasses()
-    if(this.authUser) {
-      this.username = this.authUser.displayName
-      console.log(this.authUser);
-    }
+    get('/auth/profile').then((response) => {
+      if(!response.success) {
+        this.authUser = null;
+      } else {
+        this.authUser = response.data;
+        this.loadClasses()
+      }
+    });
   },
   computed: {
-    ...mapState(['authUser']),
   },
   watch: {
-    authUser: function(val) {
-      this.username = this.authUser.displayName
-      this.loadClasses()
-    }
   }
 }
 </script>

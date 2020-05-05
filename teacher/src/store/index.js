@@ -7,13 +7,9 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    authUser: null,
     endLecture: false
   },
   mutations: {
-    setAuthUser (state, authUser) {
-      state.authUser = authUser
-    },
     setEndLecture(state, endLecture) {
       state.endLecture = endLecture
     }

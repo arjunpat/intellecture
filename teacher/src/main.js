@@ -21,7 +21,6 @@ firebase.initializeApp({
 Vue.use(firestorePlugin)
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
-    store.commit('setAuthUser', user)
     user.getIdToken(true).then((idToken) => {
       post('/auth/login', {
         firebase_token: idToken
@@ -32,10 +31,9 @@ firebase.auth().onAuthStateChanged((user) => {
     }).catch((err) => {
       console.log(err)
     })
-  } else {
-    store.commit('setAuthUser', null)
   }
 })
+firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE)
 
 store.commit("setEndLecture", false)
 
