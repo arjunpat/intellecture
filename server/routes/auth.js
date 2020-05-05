@@ -14,6 +14,12 @@ admin.initializeApp({
 });
 // admin.auth().listUsers().then(res => console.log(JSON.parse(JSON.stringify(res)).users[2]))
 
+const cookieOpts = {
+    maxAge: 3 * (24 * 60 * 60 * 1000), // 3 days
+    sameSite: 'None',
+    secure: true
+}
+
 router.post('/login', async (req, res) => {
   let { firebase_token } = req.body;
   let uid;
@@ -38,9 +44,7 @@ router.post('/login', async (req, res) => {
     uid
   }, JWT_SECRET);
 
-  res.cookie('intell_', token, {
-    maxAge: 3 * (24 * 60 * 60 * 1000) // 3 days
-  });
+  res.cookie('intell_', token, cookieOpts);
   
   res.send(responses.success());
 });
@@ -51,9 +55,7 @@ router.get('/profile', mw.auth, async (req, res) => {
     uid: req.uid
   }, JWT_SECRET);
 
-  res.cookie('intell_', token, {
-    maxAge: 3 * (24 * 60 * 60 * 1000) // 3 days
-  });
+  res.cookie('intell_', token, cookieOpts);
 
   res.send(responses.success(await db.accounts.getBasicInfo(req.uid)));
 });
