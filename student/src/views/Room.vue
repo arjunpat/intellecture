@@ -87,8 +87,9 @@
 <script>
 import UnderstandingSlider from '@/components/UnderstandingSlider'
 import NotSignedIn from '@/components/NotSignedIn'
+import ErrorSnackbar from '@/components/ErrorSnackbar'
 import { mapState } from 'vuex'
-import { get } from '@/helpers'
+import { get, post } from '@/helpers'
 
 export default {
   name: 'Room',
@@ -112,35 +113,14 @@ export default {
     }
   },
 
-  created() {
-    // Set up socket stuff
-    this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/student/${this.id}`)
-    this.socket.onopen = (event) => {}
-    this.socket.onmessage = (event) => {
-      console.log('GOT MESSAGE', event.data)
-      const data = JSON.parse(event.data)
-
-      if (data.type === 'error') {
-        switch(data.error) {
-          case 'does_not_exist':
-            // TODO: ask arjun why this doesn't work anymore
-            this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join does not exist!' } })
-            break;
-        }
-      } else if (data.type === 'lecture_info') {
-        // TODO: show lecture name and creation time somewhere
-        this.lectureInfo = {...data}
-      } else if (data.type === 'end_lecture') {
-        // TODO: show a "lecture ended" screen, with a place to rate their experience/give feedback
-        console.log('teacher ended lecture')
-      }
-    }
-    this.socket.onclose = (event) => {
-      console.log('Socket connection was closed')
-    }
-    this.socket.onerror = (error) => {
-      console.log('Websocket error: ', error)
-    }
+  watch: {
+    authUser: {
+      immediate: true,
+      handler(authUser) {
+        if (authUser && !this.socket) 
+          this.setUpSocketConnection()
+      },
+    },
   },
 
   destroyed() {
@@ -150,6 +130,7 @@ export default {
   components: {
     UnderstandingSlider,
     NotSignedIn,
+    ErrorSnackbar,
   },
 
   computed: {
@@ -162,20 +143,55 @@ export default {
   },
 
   methods: {
+    setUpSocketConnection() {
+      // Set up socket stuff
+      if (!this.socket) {
+        this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/student/${this.id}`)
+        this.socket.onopen = (event) => {}
+        this.socket.onmessage = (event) => {
+          console.log('GOT MESSAGE', event.data)
+          const data = JSON.parse(event.data)
+
+          if (data.type === 'error') {
+            switch(data.error) {
+              case 'does_not_exist':
+                this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join does not exist!' } })
+                break;
+            }
+          } else if (data.type === 'lecture_info') {
+            // TODO: show lecture name and creation time somewhere
+            this.lectureInfo = {...data}
+          } else if (data.type === 'end_lecture') {
+            // TODO: show a "lecture ended" screen, with a place to rate their experience/give feedback
+            console.log('teacher ended lecture')
+          }
+        }
+        this.socket.onclose = (event) => {
+          console.log('Socket connection was closed')
+        }
+        this.socket.onerror = (error) => {
+          console.log('Websocket error: ', error)
+        }
+      }
+    },
     updateUnderstanding() {
       const score = this.sliderValue
       if (this.socket.readyState === this.socket.OPEN) {
-        this.socket.send(JSON.stringify({
-          type: 'update_score',
-          score: score,
-        }))
+        post(`/lectures/live/student/${this.id}/score`, {
+          score: score
+        }).catch((err) => {
+          console.log('ERROR WHEN SENDING SCORE: ', err)
+        })
       }
     },
     askQuestion(e) {
       e.preventDefault()
 
-      console.log('ask question ', this.question)
-      this.question = ''
+      post(`/lectures/live/student/${this.id}/question`).then(() => {
+        this.question = ''
+      }).catch((err) => {
+        console.log('ERROR WHEN SENDING QUESTION: ', err)
+      })
     },
   },
 }

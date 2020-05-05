@@ -78,6 +78,7 @@ export default {
 
   components: {
     UserAvatarContent,
+    ErrorSnackbar,
   },
 
   watch: {
