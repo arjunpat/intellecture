@@ -67,17 +67,9 @@ export default {
 	}
 }
 
-@keyframes rainbow { // This is highly cuttable. I thought it was a somewhat nice effect here, though, giving the page a different splash of color.
-  0%, 100% {
-  }
-  50% {
-    filter:hue-rotate(180deg);
-  }
-  
-}
-
 
 .hat {
+  /*
   &:before {
 		content: "🎓";
 		font-size: 4rem;
@@ -87,27 +79,32 @@ export default {
     display: inline-block;
     position: relative;  
 	}
+  */
   display: inline;
   white-space: nowrap;
+  /*-moz-animation-duration: ;
   margin-left:-4rem;
   &:hover {
       &:before {
         transform: rotate(-24deg);
     }
   }
+  */
 }
+
+
 .page {
   margin-top: 5%;
 }
 .logo {
-  animation: up-down 3s  infinite,
-             rainbow 20s infinite;
+  animation: up-down 3s  infinite;
   animation-timing-function: easeInOutCirc; 
   width:25rem;
 }
 .title {
   color:gray; // Please change this at some point. These values are here strictly to keep the styling consistent throughout the code.
   border-right: solid gray 1rem;
+  padding-right: 10%;
 }
 .title2 {
   color:gray; // Please change this at some point. These values are here strictly to keep the styling consistent throughout the code.
@@ -127,7 +124,7 @@ export default {
     font-size: 400%;
     line-height: 120%;
 }
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 1100px) {
   .logo {
     width:15rem;
   }
@@ -138,13 +135,12 @@ export default {
   .title2 {
     border-left:none;
   }
-}
-@media only screen and (max-width: 1264px) {
   @keyframes up-down {
 	50% {
 		margin-top: 0px;
 	}
 }
-} 
+}
+
 
 </style>
