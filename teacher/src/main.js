@@ -5,7 +5,6 @@ import store from './store'
 import vuetify from './plugins/vuetify'
 import { firestorePlugin } from 'vuefire'
 import firebase from 'firebase/app'
-import { post, get } from '@/helpers.js'
 
 firebase.initializeApp({
   apiKey: 'AIzaSyCcVmiE6jRuOK-XrD2TeGHVAhRUamq80jU',
@@ -19,20 +18,7 @@ firebase.initializeApp({
 
 // Initialize firebase stuff
 Vue.use(firestorePlugin)
-firebase.auth().onAuthStateChanged((user) => {
-  if (user) {
-    user.getIdToken(true).then((idToken) => {
-      post('/auth/login', {
-        firebase_token: idToken
-      }).then((response) => {
-        if (!response.success)
-          throw response.error
-      })
-    }).catch((err) => {
-      console.log(err)
-    })
-  }
-})
+
 firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE)
 
 store.commit("setEndLecture", false)

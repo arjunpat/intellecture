@@ -37,22 +37,31 @@
 import firebase from 'firebase'
 import store from './store'
 import { post, get } from '@/helpers.js'
+import { mapState } from 'vuex'
 
 export default {
   name: 'App',
   created: function () {
-    this.redirectAuthUser()
+    get('/auth/profile').then((result) => {
+      if (result.success) {
+        this.$store.commit('setAuthUser', result.data)
+      } else {
+        this.$store.commit('setAuthUser', null)
+      }
+      this.redirectAuthUser()
+    }).catch((err) => {
+    })
     window.onbeforeunload = function() {}
   },
   data: function () {
     return {
       started: false,
       imageurl: 'https://tonyxin-8bae2.firebaseapp.com/images/tonyxin2.png',
-      id: '',
-      authUser: null
+      id: ''
     }
   },
   computed: {
+    ...mapState(['authUser']),
     landing: function () {
       if (this.$route.name === 'Landing') {
         return true
@@ -85,37 +94,33 @@ export default {
   watch: {
     $route: function (to, from) {
       this.redirectAuthUser()
+    },
+    authUser: function(val) {
+      this.redirectAuthUser();
     }
   },
   methods: {
     signOut () {
-      get('/auth/logout').then((response) => {
-        this.authUser = null;
-      });
-      firebase.auth().signOut()
-      this.redirectAuthUser();
+      get('/auth/logout').then((result) => {
+        if (!result.success)
+          throw result.error
+        store.commit('setAuthUser', null)
+      })
     },
     redirectAuthUser () {
-      get('/auth/profile').then((response) => {
-        if(!response.success) {
-          this.authUser = null;
-        } else {
-          this.authUser = response.data;
-          // Redirects based on the state of authUser
-          const authRoutes = ['Dashboard', 'New', 'Lecture']
-          const noAuthRoutes = ['Landing', 'SignIn']
+      // Redirects based on the state of authUser
+      const authRoutes = ['Dashboard', 'New', 'Lecture']
+      const noAuthRoutes = ['Landing', 'SignIn']
 
-          if (this.authUser) {
-            if (noAuthRoutes.includes(this.$route.name)) {
-              this.$router.replace({ name: 'Dashboard' })
-            }
-          } else {
-            if (authRoutes.includes(this.$route.name)) {
-              this.$router.replace({ name: 'SignIn' })
-            }
-          }
+      if (this.authUser) {
+        if (noAuthRoutes.includes(this.$route.name)) {
+          this.$router.replace({ name: 'Dashboard' })
         }
-      });
+      } else {
+        if (authRoutes.includes(this.$route.name)) {
+          this.$router.replace({ name: 'SignIn' })
+        }
+      }
     },
     homeRedirect() {
       if(this.started) {

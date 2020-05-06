@@ -1,4 +1,7 @@
 export const serverHost = 'https://api.intellecture.app';
+import firebase from 'firebase/app'
+import 'firebase/auth'
+import store from './store';
 
 export function get(url) {
   if (!url.includes('http')) {
@@ -23,4 +26,37 @@ export function post(url, json) {
     },
     body: JSON.stringify(json)
   }).then(res => res.json());
+}
+
+export function signInGoogle() {
+  let provider = new firebase.auth.GoogleAuthProvider()
+  return firebase.auth().signInWithPopup(provider).then((result) => {
+    return logIn(result.user)
+  }).then((result) => {
+    if (!result.success)
+      throw result.error
+
+    return get('/auth/profile')   
+  }).then((result) => {
+    if (!result.success)
+      throw result.error
+
+    store.commit('setAuthUser', result.data)
+  })
+}
+
+export function logIn(user) {
+  return user.getIdToken(true).then((idToken) => {
+    return post('/auth/login', {
+      firebase_token: idToken
+    })
+  })
+}
+
+export function logOut() {
+  return get('/auth/logout').then((result) => {
+    if (!result.success)
+      throw result.error
+    store.commit('setAuthUser', null)
+  })
 }
