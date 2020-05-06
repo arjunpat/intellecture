@@ -324,6 +324,7 @@ export default {
       if(this.endLecture) {
         this.socket.send(JSON.stringify({ type: "end_lecture" })); 
         this.socket.close();
+        post(`/lectures/live/teacher/${this.id}/end`);
         this.$router.push({ path: '/dashboard' })
         store.commit("setEndLecture", false)
       }
