@@ -6,6 +6,7 @@
       absolute
       color="green lighten-1"
       dark
+      flat
       style="position: fixed; left: 0px; top: 0px;"
     >
       <img src="@/assets/logo.svg" width="35px" class="pointer">
