@@ -16,13 +16,33 @@
     </v-container>
     <v-container><!-- Overview Cards -->
         <v-row align="center" class="page">
-          <v-col align="center"  class="col-8 overview">
-            <v-col  v-for="i in Array(3).keys()" :key="i"  class="">
-              <v-card elevation="0" outlined  class="overview">
+          <v-col align="center"  class="col-8 overview gray">
+            <v-col  class="">
+              <v-card elevation="0" outlined  class="overview green lighten-1">
                   <v-list-item three-line>
                       <v-list-item-content>
-                        <v-list-item-title class="headline mb-1">Create An Account.</v-list-item-title>
-                        <v-list-item-subtitle>Subtitle explaining How easy this is.</v-list-item-subtitle>
+                        <v-list-item-title class="headline mb-1"><div class="text">1: Create a class</div></v-list-item-title>
+                        <v-list-item-subtitle>Description, or better still, screenshots of polished app. We might want to get some nice SVG art here to make it look more professional.</v-list-item-subtitle>
+                      </v-list-item-content>
+                  </v-list-item>  
+              </v-card>
+            </v-col>
+            <v-col  class="">
+              <v-card elevation="0" outlined  class="overview green lighten-1">
+                  <v-list-item three-line>
+                      <v-list-item-content>
+                        <v-list-item-title class="headline mb-1"><div class="text">2: Start a lecture</div></v-list-item-title>
+                        <v-list-item-subtitle>Description, or better still, screenshots of polished app. We might want to get some nice SVG art here to make it look more professional.</v-list-item-subtitle>
+                      </v-list-item-content>
+                  </v-list-item>  
+              </v-card>
+            </v-col>
+            <v-col  class="">
+              <v-card elevation="0" outlined  class="overview green lighten-1">
+                  <v-list-item three-line>
+                      <v-list-item-content>
+                        <v-list-item-title class="headline mb-1"><div class="text">3: Recieve immediate feedback</div></v-list-item-title>
+                        <v-list-item-subtitle>Description, or better still, screenshots of polished app. We might want to get some nice SVG art here to make it look more professional.</v-list-item-subtitle>
                       </v-list-item-content>
                   </v-list-item>  
               </v-card>
@@ -37,11 +57,16 @@
           </v-col>
         </v-row>
     </v-container>
-    <v-container><!-- Overview Cards -->
+    <v-container><!-- Overview Blurbs -->
         <v-row class="blurbs page container">
           <v-col><p>Here's a cool blurb! Join us to get industry leading something or other.</p></v-col>
           <v-col><p>Here's a cool blurb! Join us to get industry leading something or other.</p></v-col>
           <v-col><p>Here's a cool blurb! Join us to get industry leading something or other.</p></v-col>
+        </v-row>
+    </v-container>
+    <v-container><!-- Overview Blurbs -->
+        <v-row class="blurbs page container">
+          This space will eventually be used for user feedback. For now, it harbors this text...
         </v-row>
     </v-container>
   </v-content>
@@ -71,7 +96,9 @@ p {
     color:grey;
     flex-shrink: 3;
   }
-
+grey {
+  color:grey;
+}
 .overview {
   justify-content: space-between;
   align-self:flex-start;
