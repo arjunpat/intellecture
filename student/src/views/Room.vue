@@ -190,7 +190,9 @@ export default {
     askQuestion(e) {
       e.preventDefault()
 
-      post(`/lectures/live/student/${this.id}/question`).then(() => {
+      post(`/lectures/live/student/${this.id}/question`, {
+        question: this.question
+      }).then(() => {
         this.question = ''
       }).catch((err) => {
         console.log('ERROR WHEN SENDING QUESTION: ', err)
