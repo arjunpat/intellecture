@@ -1,9 +1,9 @@
 <template>
   <v-content class="fullscreen">
-    <v-container><!-- Opening Page -->
+    <v-container ><!-- Opening Page -->
         <v-row align="center" class="page">
             <v-col align="center" class="title"> 
-                <h1>Meet <div class="hat">I</div>ntellecture, corny phrase.</h1>
+                <h1>Meet <div class="hat" style="background-color: #aed581">Intellecture</div>, corny phrase.</h1>
                 <br/>
                 <h3>It's worth noting that this description here will likely be somewhat long and rather worthless. That's why I've left all of this negative space on the page-- this needs to be filled!</h3>
                 <br/>
@@ -37,6 +37,13 @@
           </v-col>
         </v-row>
     </v-container>
+    <v-container><!-- Overview Cards -->
+        <v-row class="blurbs page container">
+          <v-col><p>Here's a cool blurb! Join us to get industry leading something or other.</p></v-col>
+          <v-col><p>Here's a cool blurb! Join us to get industry leading something or other.</p></v-col>
+          <v-col><p>Here's a cool blurb! Join us to get industry leading something or other.</p></v-col>
+        </v-row>
+    </v-container>
   </v-content>
 </template>
 
@@ -56,10 +63,23 @@ export default {
 .container {
   display:flex;
 }
+.blurbs {
+  justify-content: space-evenly;
+  font-size:1.5rem;
+}
+p {
+    color:grey;
+    flex-shrink: 3;
+  }
+
 .overview {
   justify-content: space-between;
   align-self:flex-start;
 
+}
+.bubbled {
+  border-radius: 10%;
+  background-color:#aed581;
 }
 @keyframes up-down {
 	50% {
@@ -115,6 +135,7 @@ export default {
 .fullscreen {
   height:100%;
   width:100%;
+  background-color: #d3f6db;
 }
 .title > h1 {
     font-size: 400%;
