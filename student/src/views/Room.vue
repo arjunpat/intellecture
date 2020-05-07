@@ -1,5 +1,3 @@
-<!-- TODO: catch for the case if user navigates to this page directly from a url -->
-
 <template>
   <div class="fill-height">
     <ErrorSnackbar
@@ -20,7 +18,7 @@
           class="ma-auto pa-0"
         > 
           <!-- TODO: make class name font size smaller when the name is longer -->
-          <div id="lecture-info" v-if="lecture_info !== null">
+          <div id="lecture-info" v-if="lectureInfo !== null">
             <div class="display-2 font-weight-regular mb-2">{{ lectureInfo.class_name }}</div>
             <div style="border-left-style: solid; border-left-width: 2px;" class="ml-2 mb-4">
               <div class="headline ml-2 font-weight-light">{{ lectureInfo.lecture_name }}</div>
@@ -43,20 +41,10 @@
               class="mb-4"
             ></UnderstandingSlider>
 
-            <form @submit="askQuestion">
-              <v-text-field
-                v-model="question"
-                label="Ask a question"
-                hide-details="true"
-                outlined
-                class="mb-n3"
-                autocomplete="off"
-              ></v-text-field>
-              <v-btn 
-                @click="askQuestion"
-                color="primary"
-              >Ask</v-btn>
-            </form>
+            <AskQuestionDialog
+              @askQuestion="askQuestion"
+              style="width: 100%;"
+            ></AskQuestionDialog>
           </div>
         </v-col>
       </div>
@@ -77,10 +65,12 @@
     right: 0;
   }
 
+  /*
   .v-btn {
     width: 100%;
     height: 3.7em !important;
   }
+  */
 
   .noto {
     font-family: 'Noto Sans';
@@ -113,6 +103,7 @@
 import UnderstandingSlider from '@/components/UnderstandingSlider'
 import NotSignedIn from '@/components/NotSignedIn'
 import ErrorSnackbar from '@/components/ErrorSnackbar'
+import AskQuestionDialog from '@/components/AskQuestionDialog'
 import { mapState } from 'vuex'
 import { get, post } from '@/helpers'
 
@@ -170,6 +161,7 @@ export default {
     UnderstandingSlider,
     NotSignedIn,
     ErrorSnackbar,
+    AskQuestionDialog,
   },
 
   computed: {
@@ -231,13 +223,10 @@ export default {
         })
       }
     },
-    askQuestion(e) {
-      e.preventDefault()
-
+    askQuestion(question) {
       post(`/lectures/live/student/${this.id}/question`, {
-        question: this.question
+        question: question
       }).then(() => {
-        this.question = ''
         // TODO: display success message when message sent
       }).catch((err) => {
         console.log('ERROR WHEN SENDING QUESTION: ', err)
