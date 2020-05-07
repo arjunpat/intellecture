@@ -8,18 +8,21 @@ class StudentLectureManager {
   }
 
   async init() {
-    this.lectureInfo = await db.lectures.getLecture(this.lecture_uid);
+    let lectureInfo = await db.lectures.getLecture(this.lecture_uid);
+    lectureInfo.creator = await db.accounts.getBasicInfo(lectureInfo.owner_uid);
+    this.lectureInfo = lectureInfo;
     this.sendToStudents(this.getLectureInfo());
   }
 
   getLectureInfo() {
-    let { uid, start_time, class_name, lecture_name } = this.lectureInfo;
+    let { uid, start_time, class_name, lecture_name, creator } = this.lectureInfo;
     return {
       type: 'lecture_info',
       uid,
       start_time,
       class_name,
-      lecture_name
+      lecture_name,
+      creator
     }
   }
 

@@ -14,10 +14,12 @@ admin.initializeApp({
 });
 // admin.auth().listUsers().then(res => console.log(JSON.parse(JSON.stringify(res)).users[2]))
 
+const { NODE_ENV } = process.env;
+
 const cookieOpts = {
-    maxAge: 3 * (24 * 60 * 60 * 1000), // 3 days
-    sameSite: 'None',
-    secure: true
+  maxAge: 3 * (24 * 60 * 60 * 1000), // 3 days
+  sameSite: (NODE_ENV === 'production') ? 'None' : undefined,
+  secure: (NODE_ENV === 'production') ? true : undefined
 }
 
 router.post('/login', async (req, res) => {
