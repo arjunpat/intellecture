@@ -1,16 +1,17 @@
 <template>
-  <div id="container" class="mt-8">
+  <div class="ask-question-container">
     <v-btn
-      id="ask-btn"
+      class="ask-btn"
       @click="click"
       fab
-      color="primary"
+      color="#65bb6aff"
+      dark
     >
       <v-icon>{{ showDialog ? 'mdi-send' : 'mdi-comment-question' }}</v-icon>
     </v-btn>
 
     <v-expand-transition>
-      <v-card id="form-card" v-show="showDialog">
+      <v-card v-show="showDialog" color="#aed581ff" dark>
         <v-card-text>
         <form @submit="askQuestion">
           <v-text-field
@@ -18,8 +19,9 @@
             v-model="question"
             label="Ask a question"
             hide-details="true"
-            outlined
             autocomplete="off"
+            solo-inverted
+            @blur="onBlur"
           ></v-text-field>
         </form>
         </v-card-text>
@@ -29,7 +31,7 @@
 </template>
 
 <style scoped>
-  #ask-btn {
+  .ask-btn {
     z-index: 2;
     position: absolute;
     left: 50%;
@@ -37,7 +39,7 @@
     transform: translate(-50%, 50%);
   }
 
-  #container {
+  .ask-question-container {
     position: relative;
   }
 </style>
@@ -49,11 +51,15 @@ export default {
   data() {
     return {
       question: '',
-      showDialog: true,
+      showDialog: false,
     }
   },
 
   methods: {
+    onBlur(e) {
+      if (!this.question)
+        this.showDialog = false 
+    },
     click(e) {
       if (!this.showDialog) {
         // Open dialog
@@ -67,9 +73,11 @@ export default {
     askQuestion(e) {
       e.preventDefault()
 
-      this.$emit('askQuestion', this.question)
-      this.question = ''
-      this.showDialog = false
+      if (this.question) {
+        this.$emit('askQuestion', this.question)
+        this.question = ''
+        this.showDialog = false
+      }
     },
   },
 }

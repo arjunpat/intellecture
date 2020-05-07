@@ -7,18 +7,17 @@
       <NotSignedIn></NotSignedIn>
     </v-overlay>
 
-    <v-container fluid class="fill-height">
-      <div id="main-container">
-        <v-col
-          id="col"
-          cols="12"
-          sm="8"
-          md="6"
-          lg="4"
-          class="ma-auto pa-0"
-        > 
+    <v-container id="main-container" fluid class="fill-height">
+      <v-col
+        cols="12"
+        sm="8"
+        md="6"
+        lg="4"
+        class="ma-auto pa-0 fill-height"
+      > 
+        <div id="flex-container" class="fill-height">
           <!-- TODO: make class name font size smaller when the name is longer -->
-          <div id="lecture-info" v-if="lectureInfo !== null">
+          <div v-if="lectureInfo !== null">
             <div class="display-2 font-weight-regular mb-2">{{ lectureInfo.class_name }}</div>
             <div style="border-left-style: solid; border-left-width: 2px;" class="ml-2 mb-4">
               <div class="headline ml-2 font-weight-light">{{ lectureInfo.lecture_name }}</div>
@@ -26,7 +25,7 @@
             </div>
           </div>
 
-          <div id="controls">
+          <div>
             <div id="understanding" class="text-center headline mb-2" style="height: 2em;" :style="{color: color}">
               <div id="understandingText">{{ understanding }}</div>
               <img v-if="!understanding" :src="require('@/assets/img/sad.svg')" style="width: 2em; height: 2em" />
@@ -38,16 +37,15 @@
               :min="0"
               :max="sliderMax"
               :throttleDelay="throttleDelay"
-              class="mb-4"
+              class="mb-12"
             ></UnderstandingSlider>
-
-            <AskQuestionDialog
-              @askQuestion="askQuestion"
-              style="width: 100%;"
-            ></AskQuestionDialog>
           </div>
-        </v-col>
-      </div>
+
+          <AskQuestionDialog
+            @askQuestion="askQuestion"
+          ></AskQuestionDialog>
+        </div>
+      </v-col>
     </v-container>
   </div>
 </template>
@@ -65,13 +63,6 @@
     right: 0;
   }
 
-  /*
-  .v-btn {
-    width: 100%;
-    height: 3.7em !important;
-  }
-  */
-
   .noto {
     font-family: 'Noto Sans';
     font-weight: 600;
@@ -82,21 +73,17 @@
   }
 
   #main-container {
-    width: 100%;
-    height: 100%;
-    position: relative;
+    padding-top: 10vh !important;
   }
 
-  #col {
-    margin-top: 10vh !important;
-  }
-
-  #lecture-info {
-    width: 100%;
-  }
-
-  #controls {
-    width: 100%;
+  #flex-container {
+    /* 
+    Currently does not do anything,
+    may use in the future 
+    */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
   }
 </style>
 <script>
@@ -133,7 +120,7 @@ export default {
         lecture_name: 'Gaussian surfaces',
         uid: 'rcusl'
       },
-      testing: false,
+      testing: true,
     }
   },
 

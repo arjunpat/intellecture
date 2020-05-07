@@ -8,17 +8,17 @@
     @mousedown="startDrag"
     @click="moveThumbToMouse"
     class="slider-container"
+    tabindex="0"
+    ref="slider-container"
   >
     <div 
       ref="slider"
       class="slider-bar"
-      tabindex="0"
     >
     </div>
     <v-img
       ref="slider-thumb"
       class="slider-thumb"
-      tabindex="0"
       :src="thumbSrc"
       :style="thumbStyle"
       transition="scale-transition"
@@ -39,6 +39,7 @@
     margin: 0 0.75em;
     height: 1.5em;
     position: relative;
+    outline: none;
   }
 
   .slider-container:hover {
@@ -189,6 +190,7 @@ export default {
       this.moveThumb(event.touches[0].clientX)
     },
     moveThumb(x) {
+      //this.$refs['slider-container'].focus()
       const rect = this.$refs['slider'].getBoundingClientRect()
       const sliderLeft = rect.left
       const incrementWidth = rect.width/this.max
