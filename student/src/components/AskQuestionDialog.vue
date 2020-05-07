@@ -6,6 +6,7 @@
       fab
       color="#65bb6aff"
       dark
+      :class="{ 'disabled': disabled }"
     >
       <v-icon>{{ showDialog ? 'mdi-send' : 'mdi-comment-question' }}</v-icon>
     </v-btn>
@@ -39,6 +40,13 @@
     transform: translate(-50%, 50%);
   }
 
+  .disabled {
+    pointer-events: none;
+    color: gray !important;
+    background-color: lightgray !important;
+    border-color: lightgray !important;
+  }
+
   .ask-question-container {
     position: relative;
   }
@@ -55,9 +63,15 @@ export default {
     }
   },
 
+  computed: {
+    disabled() {
+      return this.showDialog && !this.question
+    },
+  },
+
   methods: {
     onBlur(e) {
-      if (!this.question)
+      if (!this.question && this.showDialog)
         this.showDialog = false 
     },
     click(e) {

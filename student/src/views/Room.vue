@@ -120,7 +120,7 @@ export default {
         lecture_name: 'Gaussian surfaces',
         uid: 'rcusl'
       },
-      testing: true,
+      testing: false,
     }
   },
 
