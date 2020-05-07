@@ -10,16 +10,17 @@
     </v-overlay>
 
     <v-container fluid class="fill-height">
-      <v-col
-        cols="12"
-        sm="8"
-        md="6"
-        lg="4"
-        class="fill-height ma-auto pa-0"
-      > 
-        <div id="main-container">
+      <div id="main-container">
+        <v-col
+          id="col"
+          cols="12"
+          sm="8"
+          md="6"
+          lg="4"
+          class="ma-auto pa-0"
+        > 
           <!-- TODO: make class name font size smaller when the name is longer -->
-          <div id="lecture-info">
+          <div id="lecture-info" v-if="lecture_info !== null">
             <div class="display-2 font-weight-regular mb-2">{{ lectureInfo.class_name }}</div>
             <div style="border-left-style: solid; border-left-width: 2px;" class="ml-2 mb-4">
               <div class="headline ml-2 font-weight-light">{{ lectureInfo.lecture_name }}</div>
@@ -27,40 +28,38 @@
             </div>
           </div>
 
-          <div id="controls-container">
-            <div id="controls">
-              <div id="understanding" class="text-center headline mb-2" style="height: 2em;" :style="{color: color}">
-                <div id="understandingText">{{ understanding }}</div>
-                <img v-if="!understanding" :src="require('@/assets/img/sad.svg')" style="width: 2em; height: 2em" />
-              </div>
-
-              <UnderstandingSlider
-                @updateUnderstanding="updateUnderstanding"
-                v-model="sliderValue"
-                :min="0"
-                :max="sliderMax"
-                :throttleDelay="throttleDelay"
-                class="mb-4"
-              ></UnderstandingSlider>
-
-              <form @submit="askQuestion">
-                <v-text-field
-                  v-model="question"
-                  label="Ask a question"
-                  hide-details="true"
-                  outlined
-                  class="mb-n3"
-                  autocomplete="off"
-                ></v-text-field>
-                <v-btn 
-                  @click="askQuestion"
-                  color="primary"
-                >Ask</v-btn>
-              </form>
+          <div id="controls">
+            <div id="understanding" class="text-center headline mb-2" style="height: 2em;" :style="{color: color}">
+              <div id="understandingText">{{ understanding }}</div>
+              <img v-if="!understanding" :src="require('@/assets/img/sad.svg')" style="width: 2em; height: 2em" />
             </div>
+
+            <UnderstandingSlider
+              @updateUnderstanding="updateUnderstanding"
+              v-model="sliderValue"
+              :min="0"
+              :max="sliderMax"
+              :throttleDelay="throttleDelay"
+              class="mb-4"
+            ></UnderstandingSlider>
+
+            <form @submit="askQuestion">
+              <v-text-field
+                v-model="question"
+                label="Ask a question"
+                hide-details="true"
+                outlined
+                class="mb-n3"
+                autocomplete="off"
+              ></v-text-field>
+              <v-btn 
+                @click="askQuestion"
+                color="primary"
+              >Ask</v-btn>
+            </form>
           </div>
-        </div>
-      </v-col>
+        </v-col>
+      </div>
     </v-container>
   </div>
 </template>
@@ -93,27 +92,21 @@
   }
 
   #main-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
     width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  #col {
+    margin-top: 10vh !important;
   }
 
   #lecture-info {
     width: 100%;
   }
 
-  #controls-container {
-    flex-grow: 1;
-    position: relative;
-  }
-
   #controls {
     width: 100%;
-    margin: auto;
-    position: absolute;
-    top: 30%;
-    transform: translateY(-50%);
   }
 </style>
 <script>
@@ -148,7 +141,8 @@ export default {
         start_time: 1587421189708,
         lecture_name: 'Gaussian surfaces',
         uid: 'rcusl'
-      }
+      },
+      testing: false,
     }
   },
 
@@ -164,7 +158,8 @@ export default {
 
   created() {
     // FOR TESTING: 
-    //this.lectureInfo = this.testLectureInfo
+    if (this.testing)
+      this.lectureInfo = this.testLectureInfo
   },
 
   destroyed() {
@@ -206,7 +201,8 @@ export default {
           if (data.type === 'error') {
             switch(data.error) {
               case 'does_not_exist':
-                this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join does not exist!' } })
+                if (!this.testing)
+                  this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join does not exist!' } })
                 break;
             }
           } else if (data.type === 'lecture_info') {
