@@ -44,4 +44,15 @@ CREATE TABLE IF NOT EXISTS lecture_qs (
   question TINYTEXT,
   INDEX(lecture_uid),
   INDEX(account_uid)
-)
+);
+
+CREATE TABLE IF NOT EXISTS feedback (
+  account_uid VARCHAR(36),
+  ts BIGINT UNSIGNED,
+  stars TINYINT UNSIGNED,
+  comments TEXT,
+  tech_stars TINYINT UNSIGNED,
+  diff_stars TINYINT UNSIGNED,
+  helpful_stars TINYINT UNSIGNED,
+  CONSTRAINT PRIMARY KEY (account_uid, ts)
+);

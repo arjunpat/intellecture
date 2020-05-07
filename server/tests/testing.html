@@ -110,6 +110,29 @@
     }).then(res => res.json()).then(res => console.log(res.data));
   }
 
+  function createFeedback(stars) {
+    fetch(hostp + '/feedback/create', {
+      ...postStuff,
+      body: JSON.stringify({
+        stars: 4
+      })
+    }).then(res => res.json()).then(res => console.log(res));
+  }
+
+  function updateFeedback(id, stars, comments, tech_stars, diff_stars, helpful_stars) {
+    fetch(hostp + '/feedback/update', {
+      ...postStuff,
+      body: JSON.stringify({
+        id,
+        stars,
+        comments,
+        tech_stars,
+        diff_stars,
+        helpful_stars
+      })
+    }).then(res => res.json()).then(res => console.log(res));
+  }
+
   let ws
   function wsStart(lecture_id) {
     ws = new WebSocket(`ws://${host}/lecture/live/${lecture_id}?access_token=` + encodeURIComponent(token));
