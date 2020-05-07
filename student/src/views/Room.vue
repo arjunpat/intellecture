@@ -1,60 +1,68 @@
 <!-- TODO: catch for the case if user navigates to this page directly from a url -->
 
 <template>
-  <v-container fluid class="fill-height">
+  <div class="fill-height">
     <ErrorSnackbar
       :error="error"
     ></ErrorSnackbar>
     <v-overlay :value="!authUser" opacity="0.7" :dark="false">
       <NotSignedIn></NotSignedIn>
     </v-overlay>
-    <v-row align="center" justify="center">
+
+    <v-container fluid class="fill-height">
       <v-col
         cols="12"
         sm="8"
         md="6"
         lg="4"
-      >
-        <v-card class="mb-3">
-          <v-card-title class="noto">UNDERSTANDING</v-card-title>
-          <v-card-text id="understanding" class="text-center headline mb-2" style="height: 2em;" :style="{color: color}">
-            <div id="understandingText">{{ understanding }}</div>
-            <img v-if="!understanding" :src="require('@/assets/img/sad.svg')" style="width: 2em; height: 2em" />
-          </v-card-text>
-          
-          <v-card-actions>
-          <UnderstandingSlider
-            @updateUnderstanding="updateUnderstanding"
-            v-model="sliderValue"
-            :min="0"
-            :max="sliderMax"
-            :throttleDelay="throttleDelay"
-            class="mb-4"
-          ></UnderstandingSlider>
-          </v-card-actions>
-        </v-card>
-        <v-card>
-          <v-card-title class="noto">QUESTIONS</v-card-title>
-          <v-card-text align="center">
-            <form @submit="askQuestion">
-              <v-text-field
-                v-model="question"
-                label="Ask a question"
-                hide-details="true"
-                outlined
-                class="mb-n3"
-                autocomplete="off"
-              ></v-text-field>
-              <v-btn 
-                @click="askQuestion"
-                color="primary"
-              >Ask</v-btn>
-            </form>
-          </v-card-text>
-        </v-card>
+        class="fill-height ma-auto pa-0"
+      > 
+        <div id="main-container">
+          <!-- TODO: make class name font size smaller when the name is longer -->
+          <div id="lecture-info">
+            <div class="display-2 font-weight-regular mb-2">{{ lectureInfo.class_name }}</div>
+            <div style="border-left-style: solid; border-left-width: 2px;" class="ml-2 mb-4">
+              <div class="headline ml-2 font-weight-light">{{ lectureInfo.lecture_name }}</div>
+              <div class="overline ml-4">{{ lectureStartTime }}</div>
+            </div>
+          </div>
+
+          <div id="controls-container">
+            <div id="controls">
+              <div id="understanding" class="text-center headline mb-2" style="height: 2em;" :style="{color: color}">
+                <div id="understandingText">{{ understanding }}</div>
+                <img v-if="!understanding" :src="require('@/assets/img/sad.svg')" style="width: 2em; height: 2em" />
+              </div>
+
+              <UnderstandingSlider
+                @updateUnderstanding="updateUnderstanding"
+                v-model="sliderValue"
+                :min="0"
+                :max="sliderMax"
+                :throttleDelay="throttleDelay"
+                class="mb-4"
+              ></UnderstandingSlider>
+
+              <form @submit="askQuestion">
+                <v-text-field
+                  v-model="question"
+                  label="Ask a question"
+                  hide-details="true"
+                  outlined
+                  class="mb-n3"
+                  autocomplete="off"
+                ></v-text-field>
+                <v-btn 
+                  @click="askQuestion"
+                  color="primary"
+                >Ask</v-btn>
+              </form>
+            </div>
+          </div>
+        </div>
       </v-col>
-    </v-row>
-  </v-container>
+    </v-container>
+  </div>
 </template>
 <style scoped>
   #understanding {
@@ -83,6 +91,30 @@
   .row {
     max-width: unset !important;
   }
+
+  #main-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+  }
+
+  #lecture-info {
+    width: 100%;
+  }
+
+  #controls-container {
+    flex-grow: 1;
+    position: relative;
+  }
+
+  #controls {
+    width: 100%;
+    margin: auto;
+    position: absolute;
+    top: 30%;
+    transform: translateY(-50%);
+  }
 </style>
 <script>
 import UnderstandingSlider from '@/components/UnderstandingSlider'
@@ -110,6 +142,13 @@ export default {
       socket: null,
       lectureInfo: null,
       error: '',
+      testLectureInfo: {
+        type: 'lecture_info',
+        class_name: 'AP Physics C',
+        start_time: 1587421189708,
+        lecture_name: 'Gaussian surfaces',
+        uid: 'rcusl'
+      }
     }
   },
 
@@ -121,6 +160,11 @@ export default {
           this.setUpSocketConnection()
       },
     },
+  },
+
+  created() {
+    // FOR TESTING: 
+    //this.lectureInfo = this.testLectureInfo
   },
 
   destroyed() {
@@ -136,9 +180,13 @@ export default {
   computed: {
     ...mapState(['authUser', 'token']),
     understanding() {
-      let index = Math.floor((+this.sliderValue+1)/2) - 1
+      const index = Math.floor((+this.sliderValue+1)/2) - 1
       this.color = index < 0 ? 'rgb(0,0,0)' : this.colors[index]
       return index < 0 ? '' : this.levels[index]
+    },
+    lectureStartTime() {
+      const date = new Date(this.lectureInfo.start_time)
+      return date.toLocaleString()
     }
   },
 
@@ -194,6 +242,7 @@ export default {
         question: this.question
       }).then(() => {
         this.question = ''
+        // TODO: display success message when message sent
       }).catch((err) => {
         console.log('ERROR WHEN SENDING QUESTION: ', err)
       })

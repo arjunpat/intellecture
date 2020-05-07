@@ -31,6 +31,18 @@
     <v-content>
       <router-view v-on:startlecture="starting" v-on:nonexistant="started = false" />
     </v-content>
+    <v-footer padless color="green lighten-1">
+        <v-card
+          flat
+          tile
+          width="100%"
+          class="green lighten-1 text-center"
+        >
+          <v-card-text class="white--text">
+                {{ new Date().getFullYear() }} <strong>Intellecture, All rights reserved.</strong>
+          </v-card-text>
+        </v-card>
+    </v-footer>
   </v-app>
 </template>
 

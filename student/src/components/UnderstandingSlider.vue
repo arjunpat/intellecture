@@ -36,8 +36,7 @@
 
 <style scoped>
   .slider-container {
-    margin: 0 1.5em;
-    width: 100%;
+    margin: 0 0.75em;
     height: 1.5em;
     position: relative;
   }
