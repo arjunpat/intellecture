@@ -100,9 +100,8 @@ grey {
   color:grey;
 }
 .overview {
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-self:flex-start;
-
 }
 .bubbled {
   border-radius: 10%;
@@ -175,6 +174,14 @@ grey {
 @media only screen and (max-width: 1100px) {
   .logo {
     width:15rem;
+  }
+  .container {
+    display:flex;
+    width:100%;
+  }
+  .overview {
+    flex-grow: 4;
+    width:100%;
   }
   .title {
     color:gray; // Please change this at some point. These values are here strictly to keep the styling consistent throughout the code.
