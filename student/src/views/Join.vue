@@ -11,24 +11,26 @@
         sm="8"
         md="6"
         lg="4"
-      > 
+      >
         <v-expand-transition>
-          <div class="display-2 white--text mb-4 text-center" v-show="show">
+          <div class="display-2 white--text mb-4 text-center" style="display:inline-block" v-show="show">
+            <v-row class="bufferUp text-center">
             <img
               src="@/assets/img/logo.svg"
               id="logo"
             >
             <div id="logo-text">INTELLECTURE</div>
+            </v-row>
           </div>
         </v-expand-transition>
-        
+
         <v-card>
           <v-card-title>Join Room</v-card-title>
           <v-card-text align="center">
-            <v-form 
-              v-model="validForm" 
+            <v-form
+              v-model="validForm"
               ref="form"
-              lazy-validation 
+              lazy-validation
               @submit="join"
             >
               <v-text-field
@@ -44,12 +46,12 @@
                 outlined
               ></v-text-field>
 
-              <ButtonWithImage 
-                @click="join" 
-                :color="colors._green_2" 
-                :dark="true" 
-                :text="btnText" 
-                :src="btnImageSrc" 
+              <ButtonWithImage
+                @click="join"
+                :color="colors._green_2"
+                :dark="true"
+                :text="btnText"
+                :src="btnImageSrc"
                 :isAvatar="authUser !== null"
               />
             </v-form>
@@ -71,7 +73,10 @@
     width: 100%;
     height: 3em !important;
   }
-
+  .bufferUp {
+    transform:translateY(-160%);
+    align-content: center;
+  }
   .row {
     width: 100%;
     position: absolute;
@@ -81,15 +86,38 @@
   #logo {
     width: 1.6em;
     height: 1.6em;
+    display: inline-block;
   }
 
   #logo-text {
     font-family: 'Noto Sans', sans-serif;
-    font-size: 65px;
+    font-size: 75px;
     font-weight: 600;
     display: inline-block;
     position: relative;
-    bottom: 13px;
+    bottom: -10px;
+  }
+  @media only screen and (max-width: 1600px) {
+    #logo-text {
+      font-size: 55px;
+    }
+  }
+  @media only screen and (max-width: 730px) {
+    #logo-text {
+      font-size: 50px;
+    }
+  }
+  @media only screen and (max-width: 380px) {
+    #logo-text {
+      font-size: 13vw;
+    }
+    #logo {
+    width: 0em;
+    height: 0em;
+     }
+    .bufferUp {
+      transform:translateY(-180%);
+    }
   }
 </style>
 
@@ -139,8 +167,8 @@ export default {
       btnText: 'Continue with Google',
       btnImageSrc: require('@/assets/img/google_logo_white.svg'),
       roomCodeRules: [
-        v => !!v || 'Please enter a room code.', 
-        v => this.validRoomCode || 'Invalid room code!', 
+        v => !!v || 'Please enter a room code.',
+        v => this.validRoomCode || 'Invalid room code!',
       ],
       snackbar: false,
       currentError: '',
