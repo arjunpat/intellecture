@@ -111,7 +111,7 @@ export default {
       }
     },
     homeRedirect() {
-      this.$router.replace({ name: 'Join' });
+      this.$router.push({ name: 'Join' });
     }
   },
 }
