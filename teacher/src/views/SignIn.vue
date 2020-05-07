@@ -11,9 +11,10 @@
         lg="4"
       >
         <v-card class="pb-3">
-          <v-card-title>SIGN IN</v-card-title>
+          <v-card-title id="main-text">SIGN IN</v-card-title>
+          <v-divider></v-divider>
           <v-card-text align="center">
-            <ButtonWithImage :onClick="signInWithGoogle" class="mb-4" image="google_logo.svg" text="Continue with Google" />
+            <ButtonWithImage :onClick="signInWithGoogle" class="mb-2 mt-2" image="google_logo.svg" text="Continue with Google" />
             <!--<ButtonWithImage :onClick="console.log('email signin')" image="mail.png" text="Sign in with email/password" />-->
           </v-card-text>
         </v-card>
