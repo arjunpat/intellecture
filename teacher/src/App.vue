@@ -18,10 +18,11 @@
 
       <v-btn class="ml-1 light-green lighten-2" v-if="landing" @click="$router.push({ path: '/signin' })">Sign In</v-btn>
       <v-btn v-if="!started && dashboard" @click="$router.push({ path: '/new' })">Start Lecture</v-btn>
+      <v-btn v-if="newlecture" @click="$router.push({ path: '/dashboard' })">Back</v-btn>
       <v-btn class="red" v-if="started && livelecture" @click="endlecture()">End Lecture</v-btn>
       <v-btn class="ml-1 deep-orange accent-2" v-if="!started && !landing && !signin && authUser" @click="signOut()">Sign out <img id="avt-img" class="ml-2" v-bind:src="authUser.photo" width="25px"></v-btn>
       <div v-if="started && livelecture" class="ml-3" style="background-color: #AED581; padding: 5px 8px; border-radius: 7px;">
-        <span class="mr-1" style="font-size: 20px; font-family: 'Roboto'; font-weight: 500;">ROOM:</span> <span class="text--primary font-weight-black" style="background: #ddd; border-radius: 7px; padding: 2px 10px; font-size: 25px;">{{id}}</span>
+        <span class="mr-1 font-weight-medium" style="font-size: 20px;">ROOM:</span> <span class="text--primary font-weight-black" style="background: #ddd; border-radius: 7px; padding: 2px 10px; font-size: 25px;">{{id}}</span>
       </div>
 
     </v-app-bar>
@@ -31,7 +32,7 @@
     <v-content>
       <router-view v-on:startlecture="starting" v-on:nonexistant="started = false" />
     </v-content>
-    <v-footer padless color="green lighten-1">
+    <v-footer padless color="green lighten-1" v-if="!livelecture">
         <v-card
           flat
           tile
@@ -55,6 +56,7 @@ import { mapState } from 'vuex'
 export default {
   name: 'App',
   created: function () {
+    window.onbeforeunload = function() {}
     get('/auth/profile').then((result) => {
       if (result.success) {
         this.$store.commit('setAuthUser', result.data)
@@ -64,7 +66,6 @@ export default {
       this.redirectAuthUser()
     }).catch((err) => {
     })
-    window.onbeforeunload = function() {}
   },
   data: function () {
     return {
@@ -76,32 +77,19 @@ export default {
   computed: {
     ...mapState(['authUser']),
     landing: function () {
-      if (this.$route.name === 'Landing') {
-        return true
-      } else {
-        return false
-      }
+      return this.$route.name === 'Landing'
     },
     dashboard: function () {
-      if (this.$route.name === 'Dashboard') {
-        return true
-      } else {
-        return false
-      }
+      return this.$route.name === 'Dashboard'
     },
     signin: function () {
-      if (this.$route.name === 'SignIn') {
-        return true
-      } else {
-        return false
-      }
+      return this.$route.name === 'SignIn'
     },
     livelecture: function () {
-      if (this.$route.name === 'Lecture') {
-        return true
-      } else {
-        return false
-      }
+      return this.$route.name === 'Lecture'
+    },
+    newlecture: function () {
+      return this.$route.name === 'New'
     }
   },
   watch: {
@@ -118,6 +106,7 @@ export default {
         if (!result.success)
           throw result.error
         store.commit('setAuthUser', null)
+        this.$router.replace({ name: 'Landing' })
       })
     },
     redirectAuthUser () {
@@ -160,6 +149,15 @@ export default {
 <style>
 @import url('https://fonts.googleapis.com/css?family=Noto+Sans&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Poppins&display=swap');
+
+:root {
+  --main-font: 'Poppins';
+}
+
+h1 {
+  font-family: var(--main-font);
+}
 </style>
 
 <style scoped>

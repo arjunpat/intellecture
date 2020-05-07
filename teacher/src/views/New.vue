@@ -19,13 +19,13 @@
               dark
               flat
             >
-              <v-toolbar-title style="font-family: 'Noto Sans', sans-serif; font-weight: bold;">CREATE A LECTURE</v-toolbar-title>
+              <v-toolbar-title style="font-family: 'Noto Sans', sans-serif; font-weight: bold; font-size: 25px;">CREATE A LECTURE</v-toolbar-title>
             </v-toolbar>
 
             <v-card-text>
               <br><br>
               <v-form>
-                <h1>Select a class</h1>
+                <h1 class="mb-2">Select a class</h1>
                 <v-row align="center" justify="center">
                     <v-col  cols="12" sm="6">
                         <v-select
@@ -39,7 +39,7 @@
                     </v-col>
                 </v-row>
 
-                <h1>Give it a name</h1>
+                <h1 class="mb-2">Give it a name</h1>
                 <v-row align="center" justify="center">
                   <v-col cols="12" sm="6">
                     <v-text-field
@@ -52,7 +52,7 @@
                 </v-row>
               </v-form>
               <div class="text-center">
-                <v-btn @click="create" color="light-green lighten-2" style="color: #424242;" x-large>Create</v-btn>
+                <v-btn @click="create" style="font-family: var(--main-font)" large>Create</v-btn>
               </div>
               <br>
                 <v-row align="center" justify="center">

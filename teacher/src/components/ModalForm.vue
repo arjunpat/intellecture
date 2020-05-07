@@ -1,9 +1,9 @@
 
 <template>
-  <v-row justify="center">
+  <v-row justify="left">
     <v-dialog v-model="dialog" persistent max-width="600px">
       <template v-slot:activator="{ on }">
-        <v-btn color="grey lighten-1" dark v-on="on">New Class</v-btn>
+        <v-btn text color="primary" v-on="on" style="font-family: 'Poppins';">+ New Class</v-btn>
       </template>
       <v-card>
         <v-card-title>

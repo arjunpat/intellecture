@@ -1,60 +1,53 @@
-<!-- TODO: catch for the case if user navigates to this page directly from a url -->
-
 <template>
-  <v-container fluid class="fill-height">
+  <div class="fill-height">
     <ErrorSnackbar
       :error="error"
     ></ErrorSnackbar>
     <v-overlay :value="!authUser" opacity="0.7" :dark="false">
       <NotSignedIn></NotSignedIn>
     </v-overlay>
-    <v-row align="center" justify="center">
+
+    <v-container id="main-container" fluid class="fill-height">
       <v-col
         cols="12"
         sm="8"
         md="6"
         lg="4"
-      >
-        <v-card class="mb-3">
-          <v-card-title class="noto">UNDERSTANDING</v-card-title>
-          <v-card-text id="understanding" class="text-center headline mb-2" style="height: 2em;" :style="{color: color}">
-            <div id="understandingText">{{ understanding }}</div>
-            <img v-if="!understanding" :src="require('@/assets/img/sad.svg')" style="width: 2em; height: 2em" />
-          </v-card-text>
-          
-          <v-card-actions>
-          <UnderstandingSlider
-            @updateUnderstanding="updateUnderstanding"
-            v-model="sliderValue"
-            :min="0"
-            :max="sliderMax"
-            :throttleDelay="throttleDelay"
-            class="mb-4"
-          ></UnderstandingSlider>
-          </v-card-actions>
-        </v-card>
-        <v-card>
-          <v-card-title class="noto">QUESTIONS</v-card-title>
-          <v-card-text align="center">
-            <form @submit="askQuestion">
-              <v-text-field
-                v-model="question"
-                label="Ask a question"
-                hide-details="true"
-                outlined
-                class="mb-n3"
-                autocomplete="off"
-              ></v-text-field>
-              <v-btn 
-                @click="askQuestion"
-                color="primary"
-              >Ask</v-btn>
-            </form>
-          </v-card-text>
-        </v-card>
+        class="ma-auto pa-0 fill-height"
+      > 
+        <div id="flex-container" class="fill-height">
+          <!-- TODO: make class name font size smaller when the name is longer -->
+          <div v-if="lectureInfo !== null">
+            <div class="display-2 font-weight-regular mb-2">{{ lectureInfo.class_name }}</div>
+            <div style="border-left-style: solid; border-left-width: 2px;" class="ml-2 mb-4">
+              <div class="headline ml-2 font-weight-light">{{ lectureInfo.lecture_name }}</div>
+              <div class="overline ml-4">{{ lectureStartTime }}</div>
+            </div>
+          </div>
+
+          <div>
+            <div id="understanding" class="text-center headline mb-2" style="height: 2em;" :style="{color: color}">
+              <div id="understandingText">{{ understanding }}</div>
+              <img v-if="!understanding" :src="require('@/assets/img/sad.svg')" style="width: 2em; height: 2em" />
+            </div>
+
+            <UnderstandingSlider
+              @updateUnderstanding="updateUnderstanding"
+              v-model="sliderValue"
+              :min="0"
+              :max="sliderMax"
+              :throttleDelay="throttleDelay"
+              class="mb-12"
+            ></UnderstandingSlider>
+          </div>
+
+          <AskQuestionDialog
+            @askQuestion="askQuestion"
+          ></AskQuestionDialog>
+        </div>
       </v-col>
-    </v-row>
-  </v-container>
+    </v-container>
+  </div>
 </template>
 <style scoped>
   #understanding {
@@ -70,11 +63,6 @@
     right: 0;
   }
 
-  .v-btn {
-    width: 100%;
-    height: 3.7em !important;
-  }
-
   .noto {
     font-family: 'Noto Sans';
     font-weight: 600;
@@ -83,11 +71,26 @@
   .row {
     max-width: unset !important;
   }
+
+  #main-container {
+    padding-top: 10vh !important;
+  }
+
+  #flex-container {
+    /* 
+    Currently does not do anything,
+    may use in the future 
+    */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
 </style>
 <script>
 import UnderstandingSlider from '@/components/UnderstandingSlider'
 import NotSignedIn from '@/components/NotSignedIn'
 import ErrorSnackbar from '@/components/ErrorSnackbar'
+import AskQuestionDialog from '@/components/AskQuestionDialog'
 import { mapState } from 'vuex'
 import { get, post } from '@/helpers'
 
@@ -110,6 +113,14 @@ export default {
       socket: null,
       lectureInfo: null,
       error: '',
+      testLectureInfo: {
+        type: 'lecture_info',
+        class_name: 'AP Physics C',
+        start_time: 1587421189708,
+        lecture_name: 'Gaussian surfaces',
+        uid: 'rcusl'
+      },
+      testing: true,
     }
   },
 
@@ -123,6 +134,12 @@ export default {
     },
   },
 
+  created() {
+    // FOR TESTING: 
+    if (this.testing)
+      this.lectureInfo = this.testLectureInfo
+  },
+
   destroyed() {
     this.socket.close()
   },
@@ -131,14 +148,19 @@ export default {
     UnderstandingSlider,
     NotSignedIn,
     ErrorSnackbar,
+    AskQuestionDialog,
   },
 
   computed: {
     ...mapState(['authUser', 'token']),
     understanding() {
-      let index = Math.floor((+this.sliderValue+1)/2) - 1
+      const index = Math.floor((+this.sliderValue+1)/2) - 1
       this.color = index < 0 ? 'rgb(0,0,0)' : this.colors[index]
       return index < 0 ? '' : this.levels[index]
+    },
+    lectureStartTime() {
+      const date = new Date(this.lectureInfo.start_time)
+      return date.toLocaleString()
     }
   },
 
@@ -158,7 +180,8 @@ export default {
           if (data.type === 'error') {
             switch(data.error) {
               case 'does_not_exist':
-                this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join does not exist!' } })
+                if (!this.testing)
+                  this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join does not exist!' } })
                 break;
             }
           } else if (data.type === 'lecture_info') {
@@ -187,13 +210,11 @@ export default {
         })
       }
     },
-    askQuestion(e) {
-      e.preventDefault()
-
+    askQuestion(question) {
       post(`/lectures/live/student/${this.id}/question`, {
-        question: this.question
+        question: question
       }).then(() => {
-        this.question = ''
+        // TODO: display success message when message sent
       }).catch((err) => {
         console.log('ERROR WHEN SENDING QUESTION: ', err)
       })
