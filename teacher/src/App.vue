@@ -106,6 +106,7 @@ export default {
         if (!result.success)
           throw result.error
         store.commit('setAuthUser', null)
+        this.$router.replace({ name: 'Landing' })
       })
     },
     redirectAuthUser () {
