@@ -2,15 +2,12 @@
   <v-content v-if="authUser">
     <v-container>
       <div style="height: 10px;"></div>
-      <span class="display-1">Hi {{ authUser.first_name }},</span>
+      <h1 class="poppins">Hi {{ authUser.first_name }},</h1>
+      <br>
 
-
-      <br><br>
       <v-card v-if="classes != []">
-        
         <v-card-title style="background-color: #ECEFF1;" id="class-title">CLASSES</v-card-title>
         <v-divider></v-divider>
-        
         <v-card-text align="center">
           <ul style="list-style-type: none">
             <h1 v-if="!classes">No classes</h1>
@@ -20,7 +17,7 @@
             </v-banner>
             </li>
           </ul>
-          <ModalForm v-on:createdClass="loadClasses" class="mt-3"></ModalForm>
+          <ModalForm v-on:createdClass="loadClasses" class="mt-3 ml-6"></ModalForm>
         </v-card-text>
       </v-card>
 
@@ -72,18 +69,24 @@ export default {
 </script>
 
 <style scoped>
+
 .v-sheet--offset {
   top: -24px;
   position: relative;
 }
-</style>
-
-<style scoped>
 
 #class-title {
   font-family: 'Noto Sans';
   font-weight: 800;
   font-size: 25px;
+}
+
+.poppins {
+  font-family: 'Poppins';
+}
+
+h1 {
+  font-size: 40px;
 }
 
 </style>

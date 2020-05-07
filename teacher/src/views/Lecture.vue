@@ -35,17 +35,19 @@
           >
             <v-row align="center" justify="center">
                 <v-card width="30%" height="60vh">
-                    <v-card-text>
-                        <span style="font-size: 20px; color: black; font-weight: bold;"><span style="background: red; padding: 2px 5px; color: white; border-radius: 3px; font-weight: normal;">LIVE</span> UNDERSTANDING SCORE</span>
-                        <br><br><br><br><br><br><br>
-                        <span class="text--primary font-weight-black" style="margin-top: 40px; text-align: center; font-size: 180px; background: #ddd; border-radius: 7px; padding: 4px 10px;">{{ understandingScore }}%</span>
+                    <v-card-text style="text-align: center;">
+                        <span style="font-size: 23px; color: black; font-weight: bold;"><span style="background: red; padding: 2px 5px; color: white; border-radius: 3px; font-weight: normal;">LIVE</span> UNDERSTANDING SCORE</span>
+                        <br><br><br><br><br><br><br><br>
+                        <span class="text--primary font-weight-black" style="margin-top: 40px; text-align: center; font-size: 180px; background: #ddd; border-radius: 7px; padding: 4px 20px;">{{ understandingScore }}%</span>
                         <br><br><br><br>
+                        <div style="width: 335px; display: inline-block;"><v-progress-linear :value="understandingScore" :color="progressColor" rounded></v-progress-linear></div>
+                        <!--
                         <span class="text--primary data-text">Average Understanding: </span>
                         <span class="text--primary font-weight-black" style="font-size: 20px; background: #ddd; padding: 2px 4px; border-radius: 3px;">{{ averageUnderstanding }}</span>
                         <div style="height: 5px;"></div>
                         <span class="text--primary data-text">Understanding Range: </span>
                         <span class="text--primary font-weight-black" style="font-size: 20px; background: #ddd; padding: 2px 4px; border-radius: 3px;">{{ range }}</span>
-                        <br>
+                        <br>-->
                     </v-card-text>
                 </v-card>
                 <v-card width="60%" height="60vh" align="center" justify="center">
@@ -317,7 +319,18 @@ export default {
     }
   },
   computed: {
-    ...mapState(['endLecture'])
+    ...mapState(['endLecture']),
+    progressColor () {
+      if(this.understandingScore == '--') {
+        return 'primary'
+      } else if(this.understandingScore >= 70) {
+        return 'success'
+      } else if(this.understandingScore <= 20) {
+        return 'error'
+      } else {
+        return 'warning'
+      }
+    }
   },
   watch: {
     endLecture(val) {
@@ -368,5 +381,9 @@ html {
 .data-text {
     font-size: 25px;
     font-weight: 500;
+}
+
+span {
+  font-family: var(--main-font);
 }
 </style>
