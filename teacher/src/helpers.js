@@ -36,7 +36,7 @@ export function signInGoogle() {
     if (!result.success)
       throw result.error
 
-    return get('/auth/profile')   
+    return get('/auth/profile')
   }).then((result) => {
     if (!result.success)
       throw result.error

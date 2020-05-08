@@ -35,7 +35,6 @@
 </style>
 
 <script>
-import firebase from 'firebase';
 import ButtonWithImage from '@/components/ButtonWithImage'
 import { signInGoogle } from '@/helpers.js'
 

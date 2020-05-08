@@ -41,7 +41,7 @@ router.get('/exists/:lecture_uid', mw.auth, async (req, res) => {
   let lecture = await db.lectures.getLecture(req.params.lecture_uid);
 
   res.send(responses.success({
-    exists: !!lecture
+    exists: lecture && typeof lecture.start_time === 'number' && typeof lecture.end_time !== 'number' 
   }));
 });
 
