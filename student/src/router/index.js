@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Join from '@/views/Join.vue'
-import Room from '@/views/Room.vue'
+import Join from '@/views/Join'
+import Room from '@/views/Room'
+import Feedback from '@/views/Feedback'
 
 Vue.use(VueRouter)
 
@@ -16,6 +17,12 @@ const routes = [
     path: '/room/:id',
     name: 'Room',
     component: Room,
+    props: true,
+  },
+  {
+    path: '/feedback',
+    name: 'Feedback',
+    component: Feedback,
     props: true,
   },
   {

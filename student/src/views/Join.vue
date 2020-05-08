@@ -225,7 +225,7 @@ export default {
           this.$refs['form'].validate()
         } else {
           // Redirect to room page
-          this.$router.replace(`/room/${this.roomCode}`)
+          this.$router.push({ name: 'Room', params: { id: this.roomCode } })
         }
       }).catch((err) => {
         this.currentError = 'Could not join room!'
