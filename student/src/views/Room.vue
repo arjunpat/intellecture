@@ -190,18 +190,13 @@ export default {
           const data = JSON.parse(event.data)
 
           if (data.type === 'error') {
-            switch(data.error) {
-              case 'does_not_exist':
-                if (!this.testing)
-                  this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join does not exist!' } })
-                break;
-            }
+            this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join does not exist!' } })
           } else if (data.type === 'lecture_info') {
-            // TODO: show lecture name and creation time somewhere
             this.lectureInfo = {...data}
           } else if (data.type === 'end_lecture') {
             // TODO: show a "lecture ended" screen, with a place to rate their experience/give feedback
             console.log('teacher ended lecture')
+            this.$router.replace({ name: 'Feedback' })
           }
         }
         this.socket.onclose = (event) => {
