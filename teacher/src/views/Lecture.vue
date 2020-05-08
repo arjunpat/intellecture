@@ -273,8 +273,9 @@ export default {
     get(`/lectures/exists/${this.id}`).then((response) => {
       if(response.success) {
         if(!response.data.exists) {
-          this.$router.push({ path: '/dashboard' });
-          this.$emit('nonexistant');
+          console.log("Lecture doesn't exist")
+          //this.$router.push({ path: '/dashboard' });
+          //this.$emit('nonexistant');
         }
       }
     });
@@ -338,6 +339,7 @@ export default {
         this.socket.send(JSON.stringify({ type: "end_lecture" })); 
         this.socket.close();
         post(`/lectures/live/teacher/${this.id}/end`);
+        console.log("Ending lecture");
         this.$router.push({ path: '/dashboard' })
         store.commit("setEndLecture", false)
       }

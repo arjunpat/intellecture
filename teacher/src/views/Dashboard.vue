@@ -17,7 +17,7 @@
             </v-banner>
             </li>
           </ul>
-          <ModalForm v-on:createdClass="loadClasses" class="mt-3 ml-6"></ModalForm>
+          <ModalForm class="mt-3 ml-6"></ModalForm>
         </v-card-text>
       </v-card>
 
@@ -29,6 +29,7 @@
 <script>
 import ModalForm from '@/components/ModalForm'
 import { post, get } from '@/helpers.js'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -36,20 +37,10 @@ export default {
   },
   data () {
     return {
-      authUser: null,
-      classes: []
+      authUser: null
     }
   },
   methods: {
-    loadClasses() {
-      get('/classes/mine').then((response) => {
-        this.classes = response.data;
-        console.log(this.classes);
-        if(this.classes) {
-          this.classes.sort((a, b) => (a.name > b.name) ? 1 : -1)
-        }
-      });
-    }
   },
   mounted () {
     get('/auth/profile').then((response) => {
@@ -57,11 +48,11 @@ export default {
         this.authUser = null;
       } else {
         this.authUser = response.data;
-        this.loadClasses()
       }
     });
   },
   computed: {
+    ...mapState(['classes'])
   },
   watch: {
   }

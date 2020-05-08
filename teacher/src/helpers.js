@@ -31,16 +31,15 @@ export function post(url, json) {
 export function signInGoogle() {
   let provider = new firebase.auth.GoogleAuthProvider()
   return firebase.auth().signInWithPopup(provider).then((result) => {
+    console.log(result.user);
     return logIn(result.user)
   }).then((result) => {
     if (!result.success)
       throw result.error
-
     return get('/auth/profile')
   }).then((result) => {
     if (!result.success)
       throw result.error
-
     store.commit('setAuthUser', result.data)
   })
 }
@@ -58,5 +57,16 @@ export function logOut() {
     if (!result.success)
       throw result.error
     store.commit('setAuthUser', null)
+    store.commit('setClasses', null)
+  })
+}
+
+export function getClasses() {
+  return get('/classes/mine').then((result) => {
+    if(!result.success)
+      throw result.error
+    var classes = [...result.data];
+    classes.sort((a, b) => (a.name > b.name) ? 1 : -1)
+    store.commit('setClasses', result.data)
   })
 }
