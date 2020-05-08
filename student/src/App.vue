@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app scroll="no" style="overflow:hidden" class="no_overflow">
     <ErrorSnackbar
       :error="error"
     ></ErrorSnackbar>
@@ -16,9 +16,9 @@
 
       <v-spacer></v-spacer>
 
-      <v-menu 
-        v-if="authUser" 
-        offset-y 
+      <v-menu
+        v-if="authUser"
+        offset-y
         :close-on-content-click="false"
       >
         <template v-slot:activator="{ on }">
@@ -127,6 +127,9 @@ export default {
 .pointer:hover {
   cursor: pointer;
 }
+.overflow {
+    overflow:hidden;
+  }
 
 #main-logo {
   font-family: 'Noto Sans', sans-serif;
