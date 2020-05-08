@@ -6,7 +6,7 @@
       <br>
 
       <v-card v-if="classes != []">
-        <v-card-title style="background-color: #ECEFF1;" id="class-title">CLASSES</v-card-title>
+        <v-card-title style="background-color: #ECEFF1;" class="card-title">CLASSES</v-card-title>
         <v-divider></v-divider>
         <v-card-text align="center">
           <ul style="list-style-type: none">
@@ -17,7 +17,15 @@
             </v-banner>
             </li>
           </ul>
-          <ModalForm v-on:createdClass="loadClasses" class="mt-3 ml-6"></ModalForm>
+          <ModalForm class="mt-3 ml-6"></ModalForm>
+        </v-card-text>
+      </v-card>
+
+      <v-card class="mt-12" v-if="classes != []">
+        <v-card-title style="background-color: #ECEFF1;" class="card-title">LECTURES</v-card-title>
+        <v-divider></v-divider>
+        <v-card-text align="center">
+          
         </v-card-text>
       </v-card>
 
@@ -29,6 +37,7 @@
 <script>
 import ModalForm from '@/components/ModalForm'
 import { post, get } from '@/helpers.js'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -36,20 +45,10 @@ export default {
   },
   data () {
     return {
-      authUser: null,
-      classes: []
+      authUser: null
     }
   },
   methods: {
-    loadClasses() {
-      get('/classes/mine').then((response) => {
-        this.classes = response.data;
-        console.log(this.classes);
-        if(this.classes) {
-          this.classes.sort((a, b) => (a.name > b.name) ? 1 : -1)
-        }
-      });
-    }
   },
   mounted () {
     get('/auth/profile').then((response) => {
@@ -57,11 +56,11 @@ export default {
         this.authUser = null;
       } else {
         this.authUser = response.data;
-        this.loadClasses()
       }
     });
   },
   computed: {
+    ...mapState(['classes'])
   },
   watch: {
   }
@@ -75,7 +74,7 @@ export default {
   position: relative;
 }
 
-#class-title {
+.card-title {
   font-family: 'Noto Sans';
   font-weight: 800;
   font-size: 25px;

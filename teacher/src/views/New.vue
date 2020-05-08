@@ -79,7 +79,6 @@ export default {
   data () {
     return {
       lectureName: '',
-      classes: ['Loading classes...'],
       chosenClass: '', // id of class
       formErrors: false,
       classIndex: 0
@@ -99,21 +98,14 @@ export default {
         this.formErrors = true
       }
     },
-    loadClasses () {
-      get('/classes/mine').then((response) => {
-        this.classes = response.data;
-        this.classes.sort((a, b) => (a.name > b.name) ? 1 : -1)
-      });
-    },
     changeClass (chose) {
       this.chosenClass = chose;
     }
   },
   mounted() {
-    this.loadClasses();
   },
   computed: {
-    ...mapState(['token']),
+    ...mapState(['classes']),
   }
 }
 

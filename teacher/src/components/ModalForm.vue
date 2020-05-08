@@ -1,6 +1,6 @@
 
 <template>
-  <v-row justify="left">
+  <v-row>
     <v-dialog v-model="dialog" persistent max-width="600px">
       <template v-slot:activator="{ on }">
         <v-btn text color="primary" v-on="on" style="font-family: 'Poppins';">+ New Class</v-btn>
@@ -33,7 +33,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { post, get } from '@/helpers.js'
+import { post, get, getClasses } from '@/helpers.js'
 
 export default {
   name: 'ModalForm',
@@ -48,8 +48,8 @@ export default {
       post('/classes/create', {
         name: this.className
       }).then(response => {
-        this.$emit("createdClass");
         this.className = '';
+        getClasses();
       })
     }
   }
