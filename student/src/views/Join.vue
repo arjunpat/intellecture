@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="fill-height _green">
+  <v-container fluid class="fill-height _green overflow">
     <ErrorSnackbar
       :error="currentError"
     ></ErrorSnackbar>
@@ -67,6 +67,12 @@
 <style scoped>
   .v-text-field {
     transition: margin-bottom 0.3s;
+  }
+  .overflow {
+    overflow:hidden;
+  }
+  #element::-webkit-scrollbar {
+    display: none;
   }
 
   .v-btn {
