@@ -6,7 +6,7 @@
       <br>
 
       <v-card v-if="classes != []">
-        <v-card-title style="background-color: #ECEFF1;" id="class-title">CLASSES</v-card-title>
+        <v-card-title style="background-color: #ECEFF1;" class="card-title">CLASSES</v-card-title>
         <v-divider></v-divider>
         <v-card-text align="center">
           <ul style="list-style-type: none">
@@ -18,6 +18,14 @@
             </li>
           </ul>
           <ModalForm class="mt-3 ml-6"></ModalForm>
+        </v-card-text>
+      </v-card>
+
+      <v-card class="mt-12" v-if="classes != []">
+        <v-card-title style="background-color: #ECEFF1;" class="card-title">LECTURES</v-card-title>
+        <v-divider></v-divider>
+        <v-card-text align="center">
+          
         </v-card-text>
       </v-card>
 
@@ -66,7 +74,7 @@ export default {
   position: relative;
 }
 
-#class-title {
+.card-title {
   font-family: 'Noto Sans';
   font-weight: 800;
   font-size: 25px;
