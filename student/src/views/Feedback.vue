@@ -1,42 +1,43 @@
 <template>
-  <v-container class="text-center pt-8">
-    <div class="display-2 font-weight-light mb-2">How was your experience?</div>
-    <v-rating 
-      v-model="rating"
-      @input="changeOverallRating"
-      hover
-      size="64"
-      color="yellow darken-1"  
-      background-color="grey lighten-1"
-    ></v-rating>
-  </v-container>
+  <FeedbackForm 
+    :questions="questions"
+    @changeOverallRating="changeOverallRating"
+  />
 </template>
 
-<style scoped>
-</style>
-
 <script>
-import { post } from '@/helpers'
+import FeedbackForm from '@/components/FeedbackForm'
 
 export default {
   name: 'Feedback',
 
+  components: {
+    FeedbackForm,
+  },
+
   data() {
     return {
-      rating: 0,
       questions: [
-        'How easy was it to use Intellecture?',
-        'How helpful was it to your learning?',
-        'Did you experience any technical difficulties?',
-        'Anything else?',
-      ]
+        {
+          text: 'How easy was it to use Intellecture?',
+          handler(rating) {
+            console.log('change ease of use rating to ', rating)
+          },
+        },
+        {
+          text: 'How helpful was it to your learning?',
+          handler(rating) {
+            console.log('change helpfulness rating to ', rating)
+          },
+        },
+      ],
     }
   },
 
   methods: {
-    changeOverallRating() {
-
+    changeOverallRating(rating) {
+      console.log('change overall rating to ', rating)
     },
-  }
+  },
 }
 </script>
