@@ -7,7 +7,7 @@
       <NotSignedIn></NotSignedIn>
     </v-overlay>
 
-    <v-container id="main-container" fluid class="fill-height">
+    <v-container style="padding-top: 10vh !important;" fluid class="fill-height">
       <v-col
         cols="12"
         sm="8"
@@ -19,9 +19,17 @@
           <!-- TODO: make class name font size smaller when the name is longer -->
           <div v-if="lectureInfo !== null">
             <div class="display-2 font-weight-regular mb-2">{{ lectureInfo.class_name }}</div>
-            <div style="border-left-style: solid; border-left-width: 2px;" class="ml-2 mb-4">
+            <div style="border-left-style: solid; border-left-width: 2px; position: relative;" class="ml-2 mb-4">
               <div class="headline ml-2 font-weight-light">{{ lectureInfo.lecture_name }}</div>
               <div class="overline ml-4">{{ lectureStartTime }}</div>
+              <v-tooltip left>
+                <template v-slot:activator="{ on }">
+                  <v-avatar v-on="on" style="position: absolute; right: 0; top: 0;">
+                    <UserAvatarContent :user="lectureInfo.creator"/>
+                  </v-avatar>
+                </template>
+                <span>{{ `${lectureInfo.creator.first_name} ${lectureInfo.creator.last_name}` }}</span>
+              </v-tooltip>
             </div>
           </div>
 
@@ -38,12 +46,12 @@
               :max="sliderMax"
               :throttleDelay="throttleDelay"
               class="mb-12"
-            ></UnderstandingSlider>
+            />
           </div>
 
           <AskQuestionDialog
             @askQuestion="askQuestion"
-          ></AskQuestionDialog>
+          />
         </div>
       </v-col>
     </v-container>
@@ -72,10 +80,6 @@
     max-width: unset !important;
   }
 
-  #main-container {
-    padding-top: 10vh !important;
-  }
-
   #flex-container {
     /* 
     Currently does not do anything,
@@ -91,6 +95,7 @@ import UnderstandingSlider from '@/components/UnderstandingSlider'
 import NotSignedIn from '@/components/NotSignedIn'
 import ErrorSnackbar from '@/components/ErrorSnackbar'
 import AskQuestionDialog from '@/components/AskQuestionDialog'
+import UserAvatarContent from '@/components/UserAvatarContent'
 import { mapState } from 'vuex'
 import { get, post } from '@/helpers'
 
@@ -114,11 +119,17 @@ export default {
       lectureInfo: null,
       error: '',
       testLectureInfo: {
-        type: 'lecture_info',
-        class_name: 'AP Physics C',
-        start_time: 1587421189708,
-        lecture_name: 'Gaussian surfaces',
-        uid: 'rcusl'
+        type:"lecture_info",
+        uid:"cqywa",
+        start_time:1588889535833,
+        class_name:"AP Calc BC",
+        lecture_name:"Lecture A83",
+        creator:{
+          email:"ajpat1234@gmail.com",
+          first_name:"Arjun",
+          last_name:"Patrawala",
+          photo:"https://lh3.googleusercontent.com/a-/AOh14GhLdwXOcIH2W9KoJdVZTTDkxu-TCJesb3_HRqDOpQ"
+        }
       },
       testing: false,
     }
@@ -149,6 +160,7 @@ export default {
     NotSignedIn,
     ErrorSnackbar,
     AskQuestionDialog,
+    UserAvatarContent,
   },
 
   computed: {
