@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS feedback (
   ts BIGINT UNSIGNED,
   stars TINYINT UNSIGNED,
   comments TEXT,
-  tech_stars TINYINT UNSIGNED,
+  tech_comments TEXT,
   diff_stars TINYINT UNSIGNED,
   helpful_stars TINYINT UNSIGNED,
   CONSTRAINT PRIMARY KEY (account_uid, ts)

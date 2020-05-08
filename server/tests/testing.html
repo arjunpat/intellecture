@@ -119,14 +119,14 @@
     }).then(res => res.json()).then(res => console.log(res));
   }
 
-  function updateFeedback(id, stars, comments, tech_stars, diff_stars, helpful_stars) {
+  function updateFeedback(id, stars, comments, tech_comments, diff_stars, helpful_stars) {
     fetch(hostp + '/feedback/update', {
       ...postStuff,
       body: JSON.stringify({
         id,
         stars,
         comments,
-        tech_stars,
+        tech_comments,
         diff_stars,
         helpful_stars
       })

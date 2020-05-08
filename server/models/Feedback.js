@@ -11,10 +11,10 @@ class Accounts {
     );
   }
 
-  update(account_uid, ts, stars, comments, tech_stars, diff_stars, helpful_stars) {
+  update(account_uid, ts, stars, comments, tech_comments, diff_stars, helpful_stars) {
     return this.mysql.query(
-      'UPDATE feedback SET stars = ?, comments = ?, tech_stars = ?, diff_stars = ?, helpful_stars = ? WHERE account_uid = ? AND ts = ?',
-      [stars, comments, tech_stars, diff_stars, helpful_stars, account_uid, ts]
+      'UPDATE feedback SET stars = ?, comments = ?, tech_comments = ?, diff_stars = ?, helpful_stars = ? WHERE account_uid = ? AND ts = ?',
+      [stars, comments, tech_comments, diff_stars, helpful_stars, account_uid, ts]
     );
   }
 }

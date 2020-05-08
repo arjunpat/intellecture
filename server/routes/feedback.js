@@ -23,7 +23,7 @@ router.post('/create', mw.auth, async (req, res) => {
 });
 
 router.post('/update', mw.auth, async (req, res) => {
-  let { id, stars, comments, tech_stars, diff_stars, helpful_stars } = req.body;
+  let { id, stars, comments, tech_comments, diff_stars, helpful_stars } = req.body;
 
   if (typeof id !== 'number' || Date.now() - id > 30 * 60 * 1000) // 30 minutes
     return res.send(responses.error());
@@ -33,7 +33,7 @@ router.post('/update', mw.auth, async (req, res) => {
     id,
     isValidStars(stars) ? stars : null,
     typeof comments === 'string' ? comments : null,
-    isValidStars(tech_stars) ? tech_stars : null,
+    typeof tech_comments === 'string' ? tech_comments : null,
     isValidStars(diff_stars) ? diff_stars : null,
     isValidStars(helpful_stars) ? helpful_stars : null
   );
