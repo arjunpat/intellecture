@@ -14,12 +14,12 @@
       >
         <v-expand-transition>
           <div class="display-2 white--text mb-4 text-center" style="display:inline-block" v-show="show">
-            <v-row class="bufferUp text-center">
-            <img
-              src="@/assets/img/logo.svg"
-              id="logo"
-            >
-            <div id="logo-text">INTELLECTURE</div>
+            <v-row class="bufferUp text-center mx-auto justify-contents-center align-center">
+              <img
+                src="@/assets/img/logo.svg"
+                id="logo"
+              >
+              <div id="logo-text">INTELLECTURE</div>
             </v-row>
           </div>
         </v-expand-transition>
@@ -97,23 +97,33 @@
 
   #logo-text {
     font-family: 'Noto Sans', sans-serif;
-    font-size: 75px;
+    font-size: 3.8vw;
     font-weight: 600;
     display: inline-block;
     position: relative;
-    bottom: -10px;
+    bottom: 0px;
   }
   @media only screen and (max-width: 1600px) {
     #logo-text {
-      font-size: 55px;
+      font-size: 3.5vw;
     }
   }
-  @media only screen and (max-width: 730px) {
+  @media only screen and (max-width: 1260px) {
     #logo-text {
-      font-size: 50px;
+      font-size: 5.5vw;
     }
   }
-  @media only screen and (max-width: 380px) {
+  @media only screen and (max-width: 950px) {
+    #logo-text {
+      font-size: 8vw;
+    }
+  }
+  @media only screen and (max-width: 600px) {
+    #logo-text {
+      font-size: 10vw;
+    }
+  }
+  @media only screen and (max-width: 440px) {
     #logo-text {
       font-size: 13vw;
     }
@@ -122,7 +132,7 @@
     height: 0em;
      }
     .bufferUp {
-      transform:translateY(-180%);
+      transform:translateY(-200%);
     }
   }
 </style>
