@@ -1,7 +1,12 @@
+<!-- TODO: Only allow navigation to this page if from lecture_ended -->
+
 <template>
   <FeedbackForm 
+    message="The lecture has ended"
     :questions="questions"
     @changeOverallRating="changeOverallRating"
+    @submitTechDiff="submitTechDiff"
+    @submitAdditionalInfo="submitAdditionalInfo"
   />
 </template>
 
@@ -37,6 +42,12 @@ export default {
   methods: {
     changeOverallRating(rating) {
       console.log('change overall rating to ', rating)
+    },
+    submitTechDiff(techDiff) {
+      console.log('change tech diff to ', techDiff)
+    },
+    submitAdditionalInfo(additionalInfo) {
+      console.log('change additional info to ', additionalInfo)
     },
   },
 }
