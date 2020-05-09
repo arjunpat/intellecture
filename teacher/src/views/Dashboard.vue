@@ -22,13 +22,26 @@
       </v-card>
 
       <v-card class="mt-12" v-if="classes != []">
-        <v-card-title style="background-color: #ECEFF1;" class="card-title">LECTURES</v-card-title>
+        <v-card-title style="background-color: #ECEFF1;" class="card-title">LECTURES
+          <v-spacer></v-spacer>
+          <v-text-field
+          v-model="search"
+          append-icon="mdi-magnify"
+          label="Search"
+          color="green lighten-1"
+          filled
+          rounded=""
+          single-line
+          hide-details
+        ></v-text-field></v-card-title>
+        
         <v-divider></v-divider>
         <v-card-text align="center">
           <v-data-table
             :headers="headers"
             :items="(lectures==null) ? skeleton : lectures"
             :items-per-page="5"
+            :search="search"
             class="elevation-1"
           >
              <template v-slot:item.created_at="{ item }">
@@ -59,6 +72,7 @@ export default {
   data () {
     return {
       authUser: null,
+      search: "",
       skeleton:[{"uid":"WAIT","created_at":"Loading","name":"Please wait.","start_time":"Loading  ","className":"Loading Data"}],
       headers: [
         {
