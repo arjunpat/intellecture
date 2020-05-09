@@ -49,7 +49,7 @@
 
 <script>
 import store from './store'
-import { post, get, getClasses } from '@/helpers.js'
+import { post, get, getClasses, setLectures } from '@/helpers.js'
 import { mapState } from 'vuex'
 
 export default {
@@ -59,7 +59,7 @@ export default {
     get('/auth/profile').then((result) => {
       if (result.success) {
         this.$store.commit('setAuthUser', result.data)
-        getClasses();
+        getClasses().then(()=>{setLectures()});
       } else {
         this.$store.commit('setAuthUser', null)
         this.$store.commit('setClasses', null)

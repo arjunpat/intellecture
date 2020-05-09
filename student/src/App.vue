@@ -1,5 +1,5 @@
 <template>
-  <v-app scroll="no" style="overflow:hidden" class="no_overflow">
+  <v-app scroll="no" :style="{overflow:scroll}" class="no_overflow">
     <ErrorSnackbar
       :error="error"
     ></ErrorSnackbar>
@@ -60,6 +60,7 @@ export default {
   data() {
     return {
       error: '',
+      scroll:"hidden",
     }
   },
 
@@ -83,6 +84,7 @@ export default {
 
   watch: {
     $route: function(val) {
+      this.scroll="visible";
       this.redirectAuthUser()
     },
     authUser: function(val) {
