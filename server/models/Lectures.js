@@ -14,7 +14,6 @@ class Lectures {
   }
 
   getLecture(lecture_uid) {
-
     return this.mysql.query(
       `SELECT
         a.uid,
@@ -59,8 +58,35 @@ class Lectures {
     });
   }
 
+
+  // analytics/aggregation
   getClassLectures(class_uid) {
-    return this.mysql.query('SELECT uid, created_at, name, start_time FROM lectures WHERE class_uid = ?', [ class_uid ]);
+    return this.mysql.query('SELECT uid, name, start_time, end_time FROM lectures WHERE class_uid = ?', [ class_uid ]);
+  }
+
+  getStudents(lecture_uid) {
+    return this.mysql.query(
+      `SELECT
+        a.account_uid,
+        b.email,
+        b.first_name,
+        b.last_name,
+        b.photo
+      FROM
+        (SELECT DISTINCT account_uid FROM lecture_log WHERE lecture_uid = ?) a
+      LEFT JOIN
+        accounts b
+      ON
+        a.account_uid = b.uid`,
+      [lecture_uid]
+    );
+  }
+
+  getFullLog(lecture_uid) {
+    return this.mysql.query(
+      'SELECT elapsed AS ts, account_uid AS uid, value AS val FROM lecture_log WHERE lecture_uid = ?',
+      [lecture_uid]
+    );
   }
 }
 

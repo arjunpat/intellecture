@@ -1,10 +1,5 @@
-function getUS(arr) {
-  let sum = 0;
-  for (let each of arr) sum += each;
-  return (sum / arr.length) * 10;
-}
-
 const db = require('../../models');
+const { getUnderstandingScore } = require('../../lib/helpers');
 
 class TeacherLectureManager {
   constructor(lecture_uid) {
@@ -22,14 +17,14 @@ class TeacherLectureManager {
     this.sendToTeachers(this.getLectureInfo());
   }
 
-  addQuestion(uid, question) {
+  addQuestion(creator_uid, question) {
     this.questions.push({
-      uid,
+      creator_uid,
       question
     });
     this.sendToTeachers({
       type: 'new_question',
-      uid,
+      creator_uid,
       question
     });
   }
@@ -80,7 +75,7 @@ class TeacherLectureManager {
   updateTeachers() {
     this.sendToTeachers({
       type: 'us_update',
-      value: getUS(Object.values(this.scores))
+      value: getUnderstandingScore(Object.values(this.scores))
     });
   }
 
