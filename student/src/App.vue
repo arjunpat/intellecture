@@ -1,8 +1,9 @@
 <template>
   <v-app scroll="no" :style="{overflow:scroll}" class="no_overflow">
-    <ErrorSnackbar
-      :error="error"
-    ></ErrorSnackbar>
+    <AutoSnackbar
+      :text="error"
+      color="error"
+    ></AutoSnackbar>
 
     <v-app-bar
       v-if="$route.path !== '/'"
@@ -51,7 +52,7 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import { mapState } from 'vuex'
 import UserAvatarContent from '@/components/UserAvatarContent'
-import ErrorSnackbar from '@/components/ErrorSnackbar'
+import AutoSnackbar from '@/components/AutoSnackbar'
 import { get, signOut } from '@/helpers'
 
 export default {
@@ -79,7 +80,7 @@ export default {
 
   components: {
     UserAvatarContent,
-    ErrorSnackbar,
+    AutoSnackbar,
   },
 
   watch: {

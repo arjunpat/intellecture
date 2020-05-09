@@ -1,10 +1,11 @@
 <!-- TODO: Only allow navigation to this page if from lecture_ended -->
 
 <template>
-  <div>
-    <ErrorSnackbar
-      :error="error"
-    ></ErrorSnackbar>
+  <span>
+    <AutoSnackbar
+      :text="error"
+      color="error"
+    ></AutoSnackbar>
     <FeedbackForm 
       message="The lecture has ended"
       :questions="questions"
@@ -12,12 +13,12 @@
       @updateTechDiff="updateTechDiff"
       @updateAdditionalInfo="updateAdditionalInfo"
     />
-  </div>
+  </span>
 </template>
 
 <script>
 import FeedbackForm from '@/components/FeedbackForm'
-import ErrorSnackbar from '@/components/ErrorSnackbar'
+import AutoSnackbar from '@/components/AutoSnackbar'
 import { post } from '@/helpers.js'
 import { mapState } from 'vuex'
 
@@ -25,7 +26,7 @@ export default {
   name: 'Feedback',
 
   components: {
-    ErrorSnackbar,
+    AutoSnackbar,
     FeedbackForm,
   },
 

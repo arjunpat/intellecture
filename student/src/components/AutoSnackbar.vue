@@ -2,9 +2,9 @@
   <v-snackbar
     v-model="show"
     top
-    color="error"
+    :color="color"
   >
-    {{ error }}
+    {{ text }}
     <v-btn
       text
       @click="show = false"
@@ -16,10 +16,11 @@
 
 <script>
 export default {
-  name: 'ErrorSnackbar',
+  name: 'AutoSnackbar',
   
   props: {
-    error: {type: String, default: ''},
+    text: {type: String, default: ''},
+    color: {type: String, default: ''}
   },
 
   data() {
@@ -28,16 +29,16 @@ export default {
     }
   },
 
+  created() {},
+
   watch: {
-    error: {
+    text: {
       immediate: true,
-      handler(error) {
-        if (error) {
-          console.log(`Error is '${error}'`)
+      handler(text) {
+        if (text) {
           this.show = true
-        } else {
+        } else
           this.show = false
-        }
       },
     },
   },

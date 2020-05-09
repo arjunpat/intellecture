@@ -1,8 +1,9 @@
 <template>
   <div class="fill-height">
-    <ErrorSnackbar
-      :error="error"
-    ></ErrorSnackbar>
+    <AutoSnackbar
+      :text="error"
+      color="error"
+    ></AutoSnackbar>
     <v-overlay :value="!authUser" opacity="0.7" :dark="false">
       <NotSignedIn></NotSignedIn>
     </v-overlay>
@@ -94,7 +95,7 @@
 <script>
 import UnderstandingSlider from '@/components/UnderstandingSlider'
 import NotSignedIn from '@/components/NotSignedIn'
-import ErrorSnackbar from '@/components/ErrorSnackbar'
+import AutoSnackbar from '@/components/AutoSnackbar'
 import AskQuestionDialog from '@/components/AskQuestionDialog'
 import UserAvatarContent from '@/components/UserAvatarContent'
 import { mapState } from 'vuex'
@@ -159,7 +160,7 @@ export default {
   components: {
     UnderstandingSlider,
     NotSignedIn,
-    ErrorSnackbar,
+    AutoSnackbar,
     AskQuestionDialog,
     UserAvatarContent,
   },
