@@ -69,6 +69,7 @@
     bottom: 0.5em;
     left: 0;
     right: 0;
+    font-family: 'Poppins';
   }
 
   .noto {
@@ -112,7 +113,7 @@ export default {
       sliderMax: 10,
       throttleDelay: 1000, 
       levels: ['I\'m lost', 'I\'m confused', 'I kinda get it', 'I think I get it', 'I completely understand'],
-      colors: ['rgb(240, 53, 36)', 'rgb(255, 183, 0)', 'rgb(250, 225, 0)', 'rgb(126, 196, 4)', 'rgb(127, 240, 7)'],
+      colors: ['rgb(240, 53, 36)', 'rgb(255, 183, 0)', 'rgb(250, 225, 0)', 'rgb(126, 196, 4)', '#B2FF59'],
       color: '',
       question: '',
       socket: null,
