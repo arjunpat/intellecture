@@ -16,7 +16,7 @@
           top: overallTop, 
           left: '0', 
           right: '0',
-          transition: 'top .3s ease-in-out',
+          transition: 'top .3s',
         }"
       >
         <div class="display-2 font-weight-light mb-2">How was your experience?</div>
@@ -39,7 +39,7 @@
               <div class="display-1 font-weight-light mb-2">{{ question.text }}</div>
               <v-rating 
                 v-model="questionsState[i].rating"
-                @input="question.handler(questionsState[i].rating, feedbackId)"
+                @input="question.handler(questionsState[i].rating)"
                 hover
                 :size="ratingSize"
                 color="yellow darken-1"  
@@ -104,9 +104,8 @@ export default {
   name: 'FeedbackForm',
 
   props: {
-    message: {type: String}, // TODO: display "how was your experience" at the center of the screen if no message
+    message: {type: String},
     questions: {type: Array, required: true},
-    feedbackId: {type: Number}
   },
 
   created() {
@@ -149,13 +148,13 @@ export default {
 
   methods: {
     changeOverallRating() {
-      this.$emit('changeOverallRating', this.overallRating)
+      this.$emit('updateOverallRating', this.overallRating)
     },
     submitTechDiff() {
-      this.$emit('submitTechDiff', this.techDiff)
+      this.$emit('updateTechDiff', this.techDiffText)
     },
     submitAdditionalInfo() {
-      this.$emit('submitAdditionalInfo', this.additionalInfoText)
+      this.$emit('updateAdditionalInfo', this.additionalInfoText)
     },
     submit() {
       this.submitted = true

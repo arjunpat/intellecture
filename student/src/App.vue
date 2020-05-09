@@ -104,7 +104,8 @@ export default {
     },
     redirectAuthUser() {
       // Redirects based on the state of authUser
-      let authRoutes = []
+      // All redirecting based on authUser should be placed here
+      let authRoutes = ['Feedback']
 
       if (!this.authUser) {
         if (authRoutes.includes(this.$route.name)) {
