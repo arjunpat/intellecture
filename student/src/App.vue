@@ -12,7 +12,7 @@
     >
         <img src="@/assets/img/logo.svg" width="35px" class="pointer">
 
-        <v-toolbar-title @click="homeRedirect"><span id="main-logo" class="pointer">INTELLECTURE</span> Student</v-toolbar-title>
+        <v-toolbar-title @click="homeRedirect" style="font-family: 'Roboto';"><span id="main-logo" class="pointer">INTELLECTURE</span> Student</v-toolbar-title>
 
       <v-spacer></v-spacer>
 
@@ -120,6 +120,15 @@ export default {
 <style>
 @import url('https://fonts.googleapis.com/css?family=Noto+Sans&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Poppins&display=swap');
+
+:root {
+  --main-font: 'Poppins';
+}
+
+.mainfont {
+  font-family: var(--main-font);
+}
 </style>
 
 <style scoped>
@@ -135,6 +144,10 @@ export default {
   font-family: 'Noto Sans', sans-serif;
   font-size: 25px;
   font-weight: 600;
+}
+
+* {
+  font-family: var(--main-font);
 }
 
 </style>

@@ -5,6 +5,7 @@ import Dashboard from '@/views/Dashboard.vue'
 import Lecture from '@/views/Lecture.vue'
 import New from '@/views/New.vue'
 import SignIn from '@/views/SignIn.vue'
+import Feedback from '@/views/Feedback.vue'
 
 Vue.use(VueRouter)
 
@@ -34,6 +35,11 @@ const routes = [
     path: '/signin',
     name: 'SignIn',
     component: SignIn
+  },
+  {
+    path: '/feedback',
+    name: 'Feedback',
+    component: Feedback
   }
 ]
 

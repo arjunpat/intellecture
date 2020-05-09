@@ -32,7 +32,7 @@
     <v-content>
       <router-view v-on:startlecture="starting" v-on:nonexistant="started = false" />
     </v-content>
-    <v-footer padless color="green lighten-1" v-if="!livelecture">
+    <v-footer padless color="green lighten-1" v-if="!livelecture && !feedback">
         <v-card
           flat
           tile
@@ -91,6 +91,9 @@ export default {
     },
     newlecture: function () {
       return this.$route.name === 'New'
+    },
+    feedback: function () {
+      return this.$route.name === 'Feedback'
     }
   },
   watch: {

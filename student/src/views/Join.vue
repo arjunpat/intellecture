@@ -24,8 +24,8 @@
           </div>
         </v-expand-transition>
 
-        <v-card>
-          <v-card-title>Join Room</v-card-title>
+        <v-card class="mt-3">
+          <v-card-title class="font-weight-bold">Join Room</v-card-title>
           <v-card-text align="center">
             <v-form
               v-model="validForm"
