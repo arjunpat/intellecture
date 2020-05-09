@@ -22,10 +22,36 @@
       </v-card>
 
       <v-card class="mt-12" v-if="classes != []">
-        <v-card-title style="background-color: #ECEFF1;" class="card-title">LECTURES</v-card-title>
+        <v-card-title style="background-color: #ECEFF1;" class="card-title">LECTURES
+          <v-spacer></v-spacer>
+          <v-text-field
+          v-model="search"
+          append-icon="mdi-magnify"
+          label="Search"
+          color="green lighten-1"
+          filled
+          rounded=""
+          single-line
+          hide-details
+        ></v-text-field></v-card-title>
+        
         <v-divider></v-divider>
         <v-card-text align="center">
-          {{lectures}}
+          <v-data-table
+            :headers="headers"
+            :items="(lectures==null) ? skeleton : lectures"
+            :items-per-page="5"
+            :search="search"
+            class="elevation-1"
+          >
+             <template v-slot:item.created_at="{ item }">
+               <div>{{formatUnix(item.created_at)}}</div>
+            </template>
+             <template v-slot:item.start_time="{ item }">
+               <div>{{formatUnix(item.start_time)}}</div>
+            </template>
+          </v-data-table>
+          Note: The console will error out until I figure out what time format that's stored in.
         </v-card-text>
       </v-card>
 
@@ -45,10 +71,29 @@ export default {
   },
   data () {
     return {
-      authUser: null
+      authUser: null,
+      search: "",
+      skeleton:[{"uid":"WAIT","created_at":"Loading","name":"Please wait.","start_time":"Loading  ","className":"Loading Data"}],
+      headers: [
+        {
+          text: 'Class Name',
+          align: 'start',
+          sortable: true,
+          value: 'className',
+        },
+        { text: 'Created Time', value: 'created_at' },
+        { text: 'Start Time', value: 'start_time' },
+        { text: 'Student List', value: "" },
+        { text: 'Code', value: 'uid' },
+        ],
     }
   },
   methods: {
+    formatUnix(unix_timestamp) {
+      let date = new Date(unix_timestamp * 1000);
+      const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: '2-digit',hour: "numeric", minute:"numeric" }) 
+      return  dtf.format(date);
+    }
   },
   mounted () {
     get('/auth/profile').then((response) => {
