@@ -46,14 +46,14 @@ export function signInGoogle() {
 
 export function logIn(user) {
   return user.getIdToken(true).then((idToken) => {
-    return post('/auth/login', {
+    return post('/auth/signin', {
       firebase_token: idToken
     })
   })
 }
 
 export function logOut() {
-  return get('/auth/logout').then((result) => {
+  return get('/auth/signout').then((result) => {
     if (!result.success)
       throw result.error
     store.commit('setAuthUser', null)

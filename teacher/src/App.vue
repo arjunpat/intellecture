@@ -40,7 +40,7 @@
           class="green lighten-1 text-center"
         >
           <v-card-text class="white--text">
-                {{ new Date().getFullYear() }} <strong>Intellecture, All rights reserved.</strong>
+            {{ new Date().getFullYear() }} <strong>Intellecture, All rights reserved.</strong>
           </v-card-text>
         </v-card>
     </v-footer>
