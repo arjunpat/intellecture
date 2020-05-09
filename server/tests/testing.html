@@ -133,17 +133,10 @@
     }).then(res => res.json()).then(res => console.log(res));
   }
 
-  let ws
-  function wsStart(lecture_id) {
-    ws = new WebSocket(`ws://${host}/lecture/live/${lecture_id}?access_token=` + encodeURIComponent(token));
-    ws.onmessage = msg => {
-      ws.onjson(JSON.parse(msg.data));
-    }
-
-    ws.onjson = obj => {
-      console.log(obj);
-    }
-
-    ws.json = obj => ws.send(JSON.stringify(obj));
+  function getStudents(lecture_uid) {
+    fetch(hostp + '/analytics/lecture/students/' + lecture_uid, {
+      ...postStuff,
+      method: 'GET'
+    }).then(res => res.json()).then(res => console.log(res));
   }
 </script>

@@ -5,16 +5,17 @@ const responses = require('../lib/responses');
 
 const db = require('../models');
 
-req.use('/lecture/', async (req, res) => {
+async function lecturePerms(req, res, next) {
   let { lecture_uid } = req.params;
+  console.log(lecture_uid);
 
   let lecture = await db.lectures.getLecture(lecture_uid);
   if (lecture.owner_uid === req.uid)
-    next();
+    return next();
   return res.send(responses.error('permissions'));
-});
+}
 
-router.get('/lecture/students/:lecture_uid', async (req, res) => {
+router.get('/lecture/students/:lecture_uid', mw.auth, lecturePerms, async (req, res) => {
   let { lecture_uid } = req.params;
 
   res.send(responses.success(await db.lectures.getStudents(lecture_uid)));

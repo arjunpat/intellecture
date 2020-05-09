@@ -32,6 +32,7 @@ app.use('/auth', require('./routes/auth'));
 app.use('/lectures', require('./routes/lectures'));
 app.use('/classes', require('./routes/classes'));
 app.use('/feedback', require('./routes/feedback'));
+app.use('/analytics', require('./routes/analytics'));
 
 app.all('*', (req, res) => {
   res.send({
