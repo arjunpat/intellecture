@@ -84,7 +84,7 @@
     <template v-else>
       <div class="display-2 font-weight-light mb-2">Thank you so much for your feedback! We really appreciate it.</div>
       <img
-        src="@/assets/logo.svg"
+        src="@/assets/img/logo.svg"
       >
     </template>
   </v-container>
