@@ -5,14 +5,18 @@
         <div v-show="overallRating === 0" class="display-2 mt-8" style="position: absolute; top: 0; left: 0; right: 0;">{{ message }}</div>
       </v-fade-transition>
 
-      <div 
+      <v-col
+        cols="12"
+        sm="8"
+        md="6"
+        lg="4"
         class="mt-8 mx-auto" 
         :style="{
           position: 'absolute', 
           top: overallTop, 
           left: '0', 
           right: '0',
-          transition: 'top .3s ease-in-out',
+          transition: 'top .3s',
         }"
       >
         <div class="display-2 font-weight-light mb-2">How was your experience?</div>
@@ -35,7 +39,7 @@
               <div class="display-1 font-weight-light mb-2">{{ question.text }}</div>
               <v-rating 
                 v-model="questionsState[i].rating"
-                @input="question.handler(questionsState[i].rating, feedbackId)"
+                @input="question.handler(questionsState[i].rating)"
                 hover
                 :size="ratingSize"
                 color="yellow darken-1"  
@@ -78,13 +82,13 @@
             </v-btn>
           </div>
         </v-fade-transition>
-      </div>
+      </v-col>
     </template>
     
     <template v-else>
       <div class="display-2 font-weight-light mb-2">Thank you so much for your feedback! We really appreciate it.</div>
       <img
-        src="@/assets/logo.svg"
+        src="@/assets/img/logo.svg"
       >
     </template>
   </v-container>
@@ -100,9 +104,8 @@ export default {
   name: 'FeedbackForm',
 
   props: {
-    message: {type: String}, // TODO: display "how was your experience" at the center of the screen if no message
+    message: {type: String},
     questions: {type: Array, required: true},
-    feedbackId: {type: Number}
   },
 
   created() {
@@ -145,13 +148,13 @@ export default {
 
   methods: {
     changeOverallRating() {
-      this.$emit('changeOverallRating', this.overallRating)
+      this.$emit('updateOverallRating', this.overallRating)
     },
     submitTechDiff() {
-      this.$emit('submitTechDiff', this.techDiff)
+      this.$emit('updateTechDiff', this.techDiffText)
     },
     submitAdditionalInfo() {
-      this.$emit('submitAdditionalInfo', this.additionalInfoText)
+      this.$emit('updateAdditionalInfo', this.additionalInfoText)
     },
     submit() {
       this.submitted = true

@@ -108,7 +108,7 @@ export default {
     signOut () {
       get('/auth/logout').then((result) => {
         if (!result.success)
-          throw result.error
+          throw result
         store.commit('setAuthUser', null)
         this.$router.replace({ name: 'Landing' })
       })

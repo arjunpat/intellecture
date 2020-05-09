@@ -42,12 +42,12 @@ export function signInGoogle() {
     return logIn(result.user)
   }).then((result) => {
     if (!result.success)
-      throw result.error
+      throw result
 
     return get('/auth/profile')   
   }).then((result) => {
     if (!result.success)
-      throw result.error
+      throw result
 
     store.commit('setAuthUser', result.data)
   })
@@ -56,7 +56,7 @@ export function signInGoogle() {
 export function logOut() {
   return get('/auth/logout').then((result) => {
     if (!result.success)
-      throw result.error
+      throw result
 
     store.commit('setAuthUser', null)
   })
