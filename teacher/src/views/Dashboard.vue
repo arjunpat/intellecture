@@ -25,7 +25,7 @@
         <v-card-title style="background-color: #ECEFF1;" class="card-title">LECTURES</v-card-title>
         <v-divider></v-divider>
         <v-card-text align="center">
-          
+          {{lectures}}
         </v-card-text>
       </v-card>
 
@@ -60,7 +60,8 @@ export default {
     });
   },
   computed: {
-    ...mapState(['classes'])
+    ...mapState(['classes']),
+    ...mapState(['lectures'])
   },
   watch: {
   }

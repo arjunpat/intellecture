@@ -70,3 +70,17 @@ export function getClasses() {
     store.commit('setClasses', result.data)
   })
 }
+export function setLectures() {
+  get('/classes/mine').then((result) => {
+      if(!result.success)
+        throw result.error
+      for (let indexClass of result.data) {
+        get(`/lectures/get/${indexClass.uid}`).then((data)=>{
+          for (let item of data.data) {
+            item.className=indexClass.name;
+          }
+          store.commit("setLectures",data.data);
+        });
+      }
+  })
+}
