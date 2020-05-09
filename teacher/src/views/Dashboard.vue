@@ -30,7 +30,7 @@
           label="Search"
           color="green lighten-1"
           filled
-          rounded=""
+          rounded
           single-line
           hide-details
         ></v-text-field></v-card-title>
@@ -90,7 +90,7 @@ export default {
   },
   methods: {
     formatUnix(unix_timestamp) {
-      let date = new Date(unix_timestamp * 1000);
+      let date = new Date(unix_timestamp);
       const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: '2-digit',hour: "numeric", minute:"numeric" }) 
       return  dtf.format(date);
     }
