@@ -10,7 +10,7 @@
                 <v-btn color="light-green lighten-2" style="color: #424242;" x-large>Sign Up Today</v-btn>
             </v-col>
             <v-col align="center" class="carasoul">
-                <img src="@/assets/logo.svg" class="logo">
+                <img src="@/assets/img/logo.svg" class="logo">
             </v-col>
         </v-row>
     </v-container>
