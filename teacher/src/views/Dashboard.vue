@@ -44,8 +44,8 @@
             :search="search"
             class="elevation-1"
           >
-             <template v-slot:item.created_at="{ item }">
-               <div>{{formatUnix(item.created_at)}}</div>
+             <template v-slot:item.end_time="{ item }">
+               <div>{{formatUnix(item.end_time)}}</div>
             </template>
              <template v-slot:item.start_time="{ item }">
                <div>{{formatUnix(item.start_time)}}</div>
@@ -73,7 +73,7 @@ export default {
     return {
       authUser: null,
       search: "",
-      skeleton:[{"uid":"WAIT","created_at":"Loading","name":"Please wait.","start_time":"Loading  ","className":"Loading Data"}],
+      skeleton:[{"uid":"WAIT","end_time":1589049106,"name":"Please wait.","start_time":1589049106,"className":"Loading Data"}],
       headers: [
         {
           text: 'Class Name',
@@ -81,8 +81,9 @@ export default {
           sortable: true,
           value: 'className',
         },
-        { text: 'Created Time', value: 'created_at' },
+        { text: 'End Time', value: 'end_time' },
         { text: 'Start Time', value: 'start_time' },
+        {text:"Lecture Name", value: `name`},
         { text: 'Student List', value: "" },
         { text: 'Code', value: 'uid' },
         ],
@@ -90,6 +91,10 @@ export default {
   },
   methods: {
     formatUnix(unix_timestamp) {
+      console.log(unix_timestamp)
+      if (unix_timestamp==undefined) {
+        return "";
+      }
       let date = new Date(unix_timestamp);
       const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: '2-digit',hour: "numeric", minute:"numeric" }) 
       return  dtf.format(date);
