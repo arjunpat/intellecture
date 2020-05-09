@@ -5,7 +5,11 @@
         <div v-show="overallRating === 0" class="display-2 mt-8" style="position: absolute; top: 0; left: 0; right: 0;">{{ message }}</div>
       </v-fade-transition>
 
-      <div 
+      <v-col
+        cols="12"
+        sm="8"
+        md="6"
+        lg="4"
         class="mt-8 mx-auto" 
         :style="{
           position: 'absolute', 
@@ -78,13 +82,13 @@
             </v-btn>
           </div>
         </v-fade-transition>
-      </div>
+      </v-col>
     </template>
     
     <template v-else>
       <div class="display-2 font-weight-light mb-2">Thank you so much for your feedback! We really appreciate it.</div>
       <img
-        src="@/assets/logo.svg"
+        src="@/assets/img/logo.svg"
       >
     </template>
   </v-container>
