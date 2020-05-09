@@ -33,7 +33,7 @@
   function signIn() {
     let provider = new firebase.auth.GoogleAuthProvider();
     firebase.auth().signInWithPopup(provider).then(res => {
-      fetch(hostp + '/auth/login', {
+      fetch(hostp + '/auth/signin', {
         ...postStuff,
         body: JSON.stringify({
           firebase_token: res.user.xa
@@ -56,7 +56,7 @@
   }
 
   function logout() {
-    fetch(hostp + '/auth/logout', {
+    fetch(hostp + '/auth/signout', {
       ...postStuff,
       method: 'GET'
     });

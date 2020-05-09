@@ -22,7 +22,7 @@ const cookieOpts = {
   secure: (NODE_ENV === 'production') ? true : undefined
 }
 
-router.post('/login', async (req, res) => {
+router.post('/signin', async (req, res) => {
   let { firebase_token } = req.body;
   let uid;
 
@@ -62,7 +62,7 @@ router.get('/profile', mw.auth, async (req, res) => {
   res.send(responses.success(await db.accounts.getBasicInfo(req.uid)));
 });
 
-router.get('/logout', mw.auth, (req, res) => {
+router.get('/signout', mw.auth, (req, res) => {
   // remove cookie
   res.cookie('intell_', 'old', {
     maxAge: 0
