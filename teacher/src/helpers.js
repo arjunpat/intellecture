@@ -32,7 +32,7 @@ export function signInGoogle() {
   let provider = new firebase.auth.GoogleAuthProvider()
   return firebase.auth().signInWithPopup(provider).then((result) => {
     console.log(result.user);
-    return logIn(result.user)
+    return signIn(result.user)
   }).then((result) => {
     if (!result.success)
       throw result
@@ -44,16 +44,16 @@ export function signInGoogle() {
   })
 }
 
-export function logIn(user) {
+export function signIn(user) {
   return user.getIdToken(true).then((idToken) => {
-    return post('/auth/login', {
+    return post('/auth/signin', {
       firebase_token: idToken
     })
   })
 }
 
-export function logOut() {
-  return get('/auth/logout').then((result) => {
+export function signOut() {
+  return get('/auth/signout').then((result) => {
     if (!result.success)
       throw result
     store.commit('setAuthUser', null)

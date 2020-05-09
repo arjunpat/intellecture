@@ -49,7 +49,7 @@
 
 <script>
 import store from './store'
-import { post, get, getClasses, setLectures, logOut } from '@/helpers.js'
+import { post, get, getClasses, setLectures, signOut } from '@/helpers.js'
 import { mapState } from 'vuex'
 
 export default {
@@ -106,7 +106,7 @@ export default {
   },
   methods: {
     signOut () {
-      logOut().then(() => {
+      signOut().then(() => {
         this.$router.replace({ name: 'Landing' })
       })
     },

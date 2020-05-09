@@ -28,9 +28,9 @@ export function post(url, json) {
   }).then(res => res.json());
 }
 
-export function logIn(user) {
+export function signIn(user) {
   return user.getIdToken(true).then((idToken) => {
-    return post('/auth/login', {
+    return post('/auth/signin', {
       firebase_token: idToken
     })
   })
@@ -39,7 +39,7 @@ export function logIn(user) {
 export function signInGoogle() {
   let provider = new firebase.auth.GoogleAuthProvider()
   return firebase.auth().signInWithPopup(provider).then((result) => {
-    return logIn(result.user)
+    return signIn(result.user)
   }).then((result) => {
     if (!result.success)
       throw result
@@ -53,8 +53,8 @@ export function signInGoogle() {
   })
 }
 
-export function logOut() {
-  return get('/auth/logout').then((result) => {
+export function signOut() {
+  return get('/auth/signout').then((result) => {
     if (!result.success)
       throw result
 

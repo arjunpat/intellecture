@@ -52,7 +52,7 @@ import 'firebase/auth'
 import { mapState } from 'vuex'
 import UserAvatarContent from '@/components/UserAvatarContent'
 import ErrorSnackbar from '@/components/ErrorSnackbar'
-import { get, logOut } from '@/helpers'
+import { get, signOut } from '@/helpers'
 
 export default {
   name: 'App',
@@ -98,7 +98,7 @@ export default {
 
   methods: {
     signOut() {
-      logOut().catch((err) => {
+      signOut().catch((err) => {
         this.error = "There was an error signing out!"
       })
     },

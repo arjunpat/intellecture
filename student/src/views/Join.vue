@@ -144,7 +144,7 @@ import ButtonWithImage from '@/components/ButtonWithImage'
 import ErrorSnackbar from '@/components/ErrorSnackbar'
 import { mapState } from 'vuex'
 import { colors } from '@/constants'
-import { get, setTokenForUser, signInGoogle, logOut } from '@/helpers'
+import { get, setTokenForUser, signInGoogle, signOut } from '@/helpers'
 
 export default {
   name: 'Join',
@@ -248,7 +248,7 @@ export default {
       })
     },
     signOut() {
-      logOut().catch((err) => {
+      signOut().catch((err) => {
         this.currentError = 'There was an error signing out!'
       })
     }
