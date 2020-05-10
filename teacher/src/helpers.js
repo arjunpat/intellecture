@@ -52,7 +52,7 @@ export function logIn(user) {
   })
 }
 
-export function logOut() {
+export function signOut() {
   return get('/auth/signout').then((result) => {
     if (!result.success)
       throw result.error
