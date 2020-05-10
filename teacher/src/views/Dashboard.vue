@@ -62,7 +62,7 @@
 
 <script>
 import ModalForm from '@/components/ModalForm'
-import { post, get } from '@/helpers.js'
+import { post, get, getClasses, setLectures } from '@/helpers.js'
 import { mapState } from 'vuex'
 
 export default {
@@ -83,7 +83,7 @@ export default {
         },
         { text: 'End Time', value: 'end_time' },
         { text: 'Start Time', value: 'start_time' },
-        {text:"Lecture Name", value: `name`},
+        { text:"Lecture Name", value: `name`},
         { text: 'Student List', value: "" },
         { text: 'Code', value: 'uid' },
         ],
@@ -97,7 +97,7 @@ export default {
       }
       let date = new Date(unix_timestamp);
       const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: '2-digit',hour: "numeric", minute:"numeric" }) 
-      return  dtf.format(date);
+      return dtf.format(date);
     }
   },
   mounted () {
@@ -106,6 +106,9 @@ export default {
         this.authUser = null;
       } else {
         this.authUser = response.data;
+        if(!this.classes) {
+          getClasses().then(()=>{setLectures()});
+        }
       }
     });
   },

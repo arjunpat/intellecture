@@ -70,6 +70,7 @@ export function getClasses() {
     store.commit('setClasses', result.data)
   })
 }
+
 export function setLectures() {
   get('/classes/mine').then((result) => {
       if(!result.success)

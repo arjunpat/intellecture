@@ -8,7 +8,7 @@ export default new Vuex.Store({
     endLecture: false,
     authUser: null,
     classes: null,
-    lectures:null,
+    lectures: null,
   },
   mutations: {
     setEndLecture(state, endLecture) {
