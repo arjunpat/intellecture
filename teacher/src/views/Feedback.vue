@@ -1,5 +1,3 @@
-<!-- TODO: Only allow navigation to this page if from lecture_ended -->
-
 <template>
   <span>
     <AutoSnackbar
@@ -9,6 +7,7 @@
     <FeedbackForm 
       message="The lecture has ended"
       :questions="questions"
+      redirectToPage="Dashboard"
       @updateOverallRating="updateOverallRating"
       @updateTechDiff="updateTechDiff"
       @updateAdditionalInfo="updateAdditionalInfo"
@@ -25,13 +24,19 @@ import { mapState } from 'vuex'
 export default {
   name: 'Feedback',
 
+  props: {
+    fromLectureEnd: {type: Boolean, default: false}
+  },
+
   components: {
     AutoSnackbar,
     FeedbackForm,
   },
 
   created() {
-    // TODO: catch if user did not navigate here from /room/:id
+    if (!this.fromLectureEnd) {
+      this.$router.replace({ name: 'Dashboard' })
+    }
   },
 
   data() {
@@ -46,7 +51,7 @@ export default {
           },
         },
         {
-          text: 'How helpful was it to your learning?',
+          text: 'How helpful was it to your teaching?',
           handler: (rating) => {
             this.updateHelpfulnessRating(rating)
           },

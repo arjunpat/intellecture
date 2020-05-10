@@ -196,9 +196,7 @@ export default {
           } else if (data.type === 'lecture_info') {
             this.lectureInfo = {...data}
           } else if (data.type === 'end_lecture') {
-            // TODO: show a "lecture ended" screen, with a place to rate their experience/give feedback
-            console.log('teacher ended lecture')
-            this.$router.replace({ name: 'Feedback' })
+            this.$router.replace({ name: 'Feedback', params: { fromLectureEnd: true } })
           }
         }
         this.socket.onclose = (event) => {

@@ -31,7 +31,7 @@
         </template>
         <v-list>
           <v-list-item>
-            <v-list-item-title><strong>{{ authUser.displayName }}</strong></v-list-item-title>
+            <v-list-item-title><strong>{{ `${authUser.first_name} ${authUser.last_name}` }}</strong></v-list-item-title>
           </v-list-item>
           <v-divider></v-divider>
           <v-list-item @click="signOut">
