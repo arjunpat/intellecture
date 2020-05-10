@@ -1,8 +1,13 @@
 <template>
   <v-container fluid class="fill-height _green overflow">
-    <ErrorSnackbar
-      :error="currentError"
-    ></ErrorSnackbar>
+    <AutoSnackbar
+      :text="currentError"
+      color="error"
+    />
+    <AutoSnackbar
+      :text="currentInfo"
+      color="info"
+    />
     <v-row
       justify="center"
     >
@@ -141,21 +146,22 @@
 import firebase from 'firebase/app'
 import 'firebase/auth'
 import ButtonWithImage from '@/components/ButtonWithImage'
-import ErrorSnackbar from '@/components/ErrorSnackbar'
+import AutoSnackbar from '@/components/AutoSnackbar'
 import { mapState } from 'vuex'
 import { colors } from '@/constants'
-import { get, setTokenForUser, signInGoogle, logOut } from '@/helpers'
+import { get, setTokenForUser, signInGoogle, signOut } from '@/helpers'
 
 export default {
   name: 'Join',
 
   props: {
     error: {type: String, default: ''},
+    info: {type: String, default: ''},
   },
 
   components: {
     ButtonWithImage,
-    ErrorSnackbar,
+    AutoSnackbar,
   },
 
   watch: {
@@ -188,6 +194,7 @@ export default {
       ],
       snackbar: false,
       currentError: '',
+      currentInfo: '',
     }
   },
 
@@ -196,6 +203,7 @@ export default {
     setTimeout(() => {this.show = true}, 100)
 
     this.currentError = this.error
+    this.currentInfo = this.info
   },
 
   computed: {
@@ -248,7 +256,7 @@ export default {
       })
     },
     signOut() {
-      logOut().catch((err) => {
+      signOut().catch((err) => {
         this.currentError = 'There was an error signing out!'
       })
     }

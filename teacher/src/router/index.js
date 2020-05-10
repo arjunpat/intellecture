@@ -39,7 +39,8 @@ const routes = [
   {
     path: '/feedback',
     name: 'Feedback',
-    component: Feedback
+    component: Feedback,
+    props: true,
   }
 ]
 

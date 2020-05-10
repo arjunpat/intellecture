@@ -1,98 +1,148 @@
-<!-- TODO: Only allow navigation to this page if from lecture_ended -->
-
 <template>
-  <FeedbackForm 
-    message="The lecture has ended"
-    :questions="questions"
-    :feedbackId="id"
-    @changeOverallRating="changeOverallRating"
-    @submitTechDiff="submitTechDiff"
-    @submitAdditionalInfo="submitAdditionalInfo"
-  />
+  <span>
+    <AutoSnackbar
+      :text="error"
+      color="error"
+    ></AutoSnackbar>
+    <FeedbackForm 
+      message="The lecture has ended"
+      :questions="questions"
+      redirectToPage="Dashboard"
+      @updateOverallRating="updateOverallRating"
+      @updateTechDiff="updateTechDiff"
+      @updateAdditionalInfo="updateAdditionalInfo"
+    />
+  </span>
 </template>
 
 <script>
 import FeedbackForm from '@/components/FeedbackForm'
+import AutoSnackbar from '@/components/AutoSnackbar'
 import { post } from '@/helpers.js'
+import { mapState } from 'vuex'
 
 export default {
   name: 'Feedback',
 
+  props: {
+    fromLectureEnd: {type: Boolean, default: false}
+  },
+
   components: {
+    AutoSnackbar,
     FeedbackForm,
+  },
+
+  created() {
+    if (!this.fromLectureEnd) {
+      this.$router.replace({ name: 'Dashboard' })
+    }
   },
 
   data() {
     return {
+      error: '',
+      id: 0,
       questions: [
         {
           text: 'How easy was it to use Intellecture?',
-          handler(rating, feedbackId) {
-            console.log('change ease of use rating to ', rating)
-            post('/feedback/update', {
-                id: feedbackId,
-                diff_stars: rating
-            }).then((result) => {
-                console.log(result);
-            })
+          handler: (rating) => {
+            this.updateEaseOfUseRating(rating)
           },
         },
         {
-          text: 'How helpful was it to your learning?',
-          handler(rating, feedbackId) {
-            console.log('change helpfulness rating to ', rating)
-            post('/feedback/update', {
-                id: feedbackId,
-                helpful_stars: rating
-            }).then((result) => {
-                console.log(result);
-            })
+          text: 'How helpful was it to your teaching?',
+          handler: (rating) => {
+            this.updateHelpfulnessRating(rating)
           },
         },
       ],
-      id: 0
     }
   },
 
+  computed: {
+    ...mapState(['authUser']),
+  },
+
   methods: {
-    changeOverallRating(rating) {
-        console.log('change overall rating to ', rating)
-        var self = this;
-        if(this.id == '') {
-            post('/feedback/create', {
-                stars: rating
-            }).then((result) => {
-                self.id = result.data.id;
-                console.log(self.id + " posted");
-            })
-        } else {
-            post('/feedback/update', {
-                id: self.id,
-                stars: rating
-            }).then((result) => {
-                console.log(result);
-            })
-        }
-    },
-    submitTechDiff(techDiff) {
-        console.log('change tech diff to ', techDiff)
-        var self = this;
-        post('/feedback/update', {
-            id: self.id,
-            tech_comments: techDiff
+    updateOverallRating(rating) {
+      console.log('change overall rating to ', rating)
+      this.error = ''
+      if(this.id == '') {
+        post('/feedback/create', {
+          stars: rating
         }).then((result) => {
-            console.log(result);
+          if (!result.success)
+            throw result
+
+          this.id = result.data.id;
+          console.log(this.id + " posted");
+        }).catch((err) => {
+          this.error = 'There was a problem trying to submit your feedback'
         })
-    },
-    submitAdditionalInfo(additionalInfo) {
-        console.log('change additional info to ', additionalInfo)
-        var self = this;
+      } else {
         post('/feedback/update', {
-            id: self.id,
-            comments: additionalInfo
+          id: this.id,
+          stars: rating
         }).then((result) => {
-            console.log(result);
+          if (!result.success)
+            throw result
+        }).catch((err) => {
+          this.error = 'There was a problem trying to submit your feedback'
         })
+      }
+    },
+    updateEaseOfUseRating(rating) {
+      console.log('change ease of use rating to ', rating)
+      this.error = ''
+      post('/feedback/update', {
+        id: this.id,
+        diff_stars: rating
+      }).then((result) => {
+        if (!result.success)
+          throw result
+      }).catch((err) => {
+        this.error = 'There was a problem trying to submit your feedback'
+      })
+    },
+    updateHelpfulnessRating(rating) {
+      console.log('change helpfulness rating to ', rating)
+      this.error = ''
+      post('/feedback/update', {
+        id: this.id,
+        helpful_stars: rating
+      }).then((result) => {
+        if (!result.success)
+          throw result
+      }).catch((err) => {
+        this.error = 'There was a problem trying to submit your feedback'
+      })
+    },
+    updateTechDiff(techDiff) {
+      console.log('change tech diff to ', techDiff)
+      this.error = ''
+      post('/feedback/update', {
+        id: this.id,
+        tech_comments: techDiff
+      }).then((result) => {
+        if (!result.success)
+          throw result
+      }).catch((err) => {
+        this.error = 'There was a problem trying to submit your feedback'
+      })
+    },
+    updateAdditionalInfo(additionalInfo) {
+      console.log('change additional info to ', additionalInfo)
+      this.error = ''
+      post('/feedback/update', {
+        id: this.id,
+        comments: additionalInfo
+      }).then((result) => {
+        if (!result.success)
+          throw result
+      }).catch((err) => {
+        this.error = 'There was a problem trying to submit your feedback'
+      })
     },
   },
 }

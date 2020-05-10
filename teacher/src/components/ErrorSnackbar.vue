@@ -32,8 +32,12 @@ export default {
     error: {
       immediate: true,
       handler(error) {
-        if (error)
+        if (error) {
+          console.log(`Error is '${error}'`)
           this.show = true
+        } else {
+          this.show = false
+        }
       },
     },
   },

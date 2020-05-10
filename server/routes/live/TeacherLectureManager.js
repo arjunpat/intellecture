@@ -1,5 +1,5 @@
 const db = require('../../models');
-const { getUnderstandingScore } = require('../../lib/helpers');
+const { genUnderstandingScore } = require('../../lib/helpers');
 
 class TeacherLectureManager {
   constructor(lecture_uid) {
@@ -75,7 +75,7 @@ class TeacherLectureManager {
   updateTeachers() {
     this.sendToTeachers({
       type: 'us_update',
-      value: getUnderstandingScore(Object.values(this.scores))
+      value: genUnderstandingScore(Object.values(this.scores))
     });
   }
 

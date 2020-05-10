@@ -340,7 +340,7 @@ export default {
         this.socket.close();
         post(`/lectures/live/teacher/${this.id}/end`);
         console.log("Ending lecture");
-        this.$router.push({ path: '/dashboard' })
+        this.$router.replace({ name: 'Feedback', params: { fromLectureEnd: true } })
         store.commit("setEndLecture", false)
       }
     },

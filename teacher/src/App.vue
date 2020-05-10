@@ -9,7 +9,7 @@
       flat
       style="position: fixed; left: 0px; top: 0px;"
     >
-      <img src="@/assets/logo.svg" width="35px" class="pointer">
+      <img src="@/assets/img/logo.svg" width="35px" class="pointer">
 
       <v-toolbar-title @click="homeRedirect()"><span id="main-logo" class="pointer">INTELLECTURE</span> Teacher</v-toolbar-title>
 
@@ -106,16 +106,14 @@ export default {
   },
   methods: {
     signOut () {
-      get('/auth/logout').then((result) => {
-        if (!result.success)
-          throw result.error
-        store.commit('setAuthUser', null)
+      signOut().then(() => {
         this.$router.replace({ name: 'Landing' })
       })
     },
     redirectAuthUser () {
       // Redirects based on the state of authUser
-      const authRoutes = ['Dashboard', 'New', 'Lecture']
+      // All redirecting based on authUser should be placed here
+      const authRoutes = ['Dashboard', 'New', 'Lecture', 'Feedback']
       const noAuthRoutes = ['Landing', 'SignIn']
 
       if (this.authUser) {

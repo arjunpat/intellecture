@@ -1,8 +1,9 @@
 <template>
   <div class="fill-height">
-    <ErrorSnackbar
-      :error="error"
-    ></ErrorSnackbar>
+    <AutoSnackbar
+      :text="error"
+      color="error"
+    ></AutoSnackbar>
     <v-overlay :value="!authUser" opacity="0.7" :dark="false">
       <NotSignedIn></NotSignedIn>
     </v-overlay>
@@ -94,7 +95,7 @@
 <script>
 import UnderstandingSlider from '@/components/UnderstandingSlider'
 import NotSignedIn from '@/components/NotSignedIn'
-import ErrorSnackbar from '@/components/ErrorSnackbar'
+import AutoSnackbar from '@/components/AutoSnackbar'
 import AskQuestionDialog from '@/components/AskQuestionDialog'
 import UserAvatarContent from '@/components/UserAvatarContent'
 import { mapState } from 'vuex'
@@ -159,7 +160,7 @@ export default {
   components: {
     UnderstandingSlider,
     NotSignedIn,
-    ErrorSnackbar,
+    AutoSnackbar,
     AskQuestionDialog,
     UserAvatarContent,
   },
@@ -195,9 +196,7 @@ export default {
           } else if (data.type === 'lecture_info') {
             this.lectureInfo = {...data}
           } else if (data.type === 'end_lecture') {
-            // TODO: show a "lecture ended" screen, with a place to rate their experience/give feedback
-            console.log('teacher ended lecture')
-            this.$router.replace({ name: 'Feedback' })
+            this.$router.replace({ name: 'Feedback', params: { fromLectureEnd: true } })
           }
         }
         this.socket.onclose = (event) => {
