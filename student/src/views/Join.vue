@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="fill-height _green overflow">
+  <v-container fluid class="fill-height _green">
     <AutoSnackbar
       :text="currentError"
       color="error"
@@ -10,6 +10,8 @@
     />
     <v-row
       justify="center"
+      align="center"
+      class="fill-height"
     >
       <v-col
         cols="12"
@@ -18,15 +20,12 @@
         lg="4"
       >
         <v-expand-transition>
-          <div class="display-2 white--text mb-4 text-center" style="display:inline-block" v-show="show">
-            <v-row class="bufferUp text-center mx-auto justify-contents-center align-center">
-              <img
-                src="@/assets/img/logo.svg"
-                id="logo"
-              >
-              <div id="logo-text">INTELLECTURE</div>
-            </v-row>
-          </div>
+          <img
+            src="@/assets/img/logo_text.svg"
+            v-show="show"
+            id="logo"
+            @dragstart="e => e.preventDefault()"
+          >
         </v-expand-transition>
 
         <v-card class="mt-3">
@@ -73,72 +72,18 @@
   .v-text-field {
     transition: margin-bottom 0.3s;
   }
-  .overflow {
-    overflow:hidden;
-  }
-  #element::-webkit-scrollbar {
-    display: none;
-  }
 
   .v-btn {
     width: 100%;
     height: 3em !important;
   }
-  .bufferUp {
-    transform:translateY(-160%);
-    align-content: center;
-  }
+  
   .row {
-    width: 100%;
-    position: absolute;
-    top: 30%;
+    max-width: unset !important;
   }
 
   #logo {
-    width: 1.6em;
-    height: 1.6em;
-    display: inline-block;
-  }
-
-  #logo-text {
-    font-family: 'Noto Sans', sans-serif;
-    font-size: 3.8vw;
-    font-weight: 600;
-    display: inline-block;
-    position: relative;
-    bottom: 0px;
-  }
-  @media only screen and (max-width: 1600px) {
-    #logo-text {
-      font-size: 3.5vw;
-    }
-  }
-  @media only screen and (max-width: 1260px) {
-    #logo-text {
-      font-size: 5.5vw;
-    }
-  }
-  @media only screen and (max-width: 950px) {
-    #logo-text {
-      font-size: 8vw;
-    }
-  }
-  @media only screen and (max-width: 600px) {
-    #logo-text {
-      font-size: 10vw;
-    }
-  }
-  @media only screen and (max-width: 440px) {
-    #logo-text {
-      font-size: 13vw;
-    }
-    #logo {
-    width: 0em;
-    height: 0em;
-     }
-    .bufferUp {
-      transform:translateY(-200%);
-    }
+    width: 100%;
   }
 </style>
 
@@ -169,7 +114,7 @@ export default {
       immediate: true,
       handler(authUser) {
         if (authUser) {
-          this.btnText = `Continue as ${authUser.first_name} ${authUser.last_name}`
+          this.btnText = `Continue as ${authUser.first_name}`
           this.btnImageSrc = authUser.photo
         } else {
           this.btnText = 'Continue with Google'
