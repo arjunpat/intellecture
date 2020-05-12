@@ -10,7 +10,9 @@
         <v-divider></v-divider>
         <v-card-text align="center">
           <ul style="list-style-type: none">
-            <h1 v-if="!classes">No classes</h1>
+            <li v-if="classes == [] && classses == null">
+              <div class="noshow">No classes to show</div>
+            </li>
             <li v-for="cla in classes" v-bind:key="cla.id">
             <v-banner style="font-family: 'Poppins';">
               {{cla.name}}
@@ -21,7 +23,7 @@
         </v-card-text>
       </v-card>
 
-      <v-card class="mt-12" v-if="classes != []">
+      <v-card class="mt-12 mb-12" v-if="classes != [] && classes">
         <v-card-title style="background-color: #ECEFF1;" class="card-title">LECTURES
           <v-spacer></v-spacer>
           <v-text-field
@@ -33,6 +35,7 @@
           rounded
           single-line
           hide-details
+          dense
         ></v-text-field></v-card-title>
         
         <v-divider></v-divider>
@@ -44,14 +47,13 @@
             :search="search"
             class="elevation-1"
           >
-             <template v-slot:item.end_time="{ item }">
+            <template v-slot:item.end_time="{ item }">
                <div>{{formatUnix(item.end_time)}}</div>
             </template>
              <template v-slot:item.start_time="{ item }">
                <div>{{formatUnix(item.start_time)}}</div>
             </template>
           </v-data-table>
-          Note: The console will error out until I figure out what time format that's stored in.
         </v-card-text>
       </v-card>
 
@@ -73,7 +75,7 @@ export default {
     return {
       authUser: null,
       search: "",
-      skeleton:[{"uid":"WAIT","end_time":1589049106,"name":"Please wait.","start_time":1589049106,"className":"Loading Data"}],
+      skeleton:[{"uid":"","end_time":null,"name":"","start_time":null,"className":""}],
       headers: [
         {
           text: 'Class Name',
@@ -140,6 +142,15 @@ export default {
 
 h1 {
   font-size: 40px;
+}
+
+.noshow {
+  font-family: var(--main-font);
+  font-size: 20px;
+  text-align: left;
+  height: 40px;
+  line-height: 40px;
+  color: #757575;
 }
 
 </style>

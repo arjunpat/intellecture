@@ -52,7 +52,7 @@
                 </v-row>
               </v-form>
               <div class="text-center">
-                <v-btn @click="create" style="font-family: var(--main-font)" large>Create</v-btn>
+                <v-btn @click="create" style="font-family: var(--main-font)" large dark color="light-green lighten-2">Create</v-btn>
               </div>
               <br>
                 <v-row align="center" justify="center">

@@ -78,9 +78,9 @@ export function setLectures() {
       for (let indexClass of result.data) {
         get(`/lectures/get/${indexClass.uid}`).then((data)=>{
           for (let item of data.data) {
-            item.className=indexClass.name;
+            item.className = indexClass.name;
           }
-          store.commit("setLectures",data.data);
+          store.commit("setLectures", data.data);
         });
       }
   })

@@ -33,21 +33,14 @@
             min-height="75vh"
             class="pt-3 pb-3"
           >
-            <v-row align="center" justify="center">
+            <v-row align="center" justify="center" style="margin-top: 20px;">
                 <v-card width="30%" height="60vh">
                     <v-card-text style="text-align: center;">
                         <span style="font-size: 23px; color: black; font-weight: bold;"><span style="background: red; padding: 2px 5px; color: white; border-radius: 3px; font-weight: normal;">LIVE</span> UNDERSTANDING SCORE</span>
                         <br><br><br><br><br><br><br><br>
-                        <span class="text--primary font-weight-black" style="margin-top: 40px; text-align: center; font-size: 180px; background: #ddd; border-radius: 7px; padding: 4px 20px;">{{ understandingScore }}%</span>
+                        <span class="text--primary font-weight-black" style="margin-top: 40px; text-align: center; font-size: 180px; background: #E0E0E0; border-radius: 10px; padding: 4px 20px;">{{ understandingScore }}%</span>
                         <br><br><br><br>
                         <div style="width: 335px; display: inline-block;"><v-progress-linear :value="understandingScore" :color="progressColor" rounded></v-progress-linear></div>
-                        <!--
-                        <span class="text--primary data-text">Average Understanding: </span>
-                        <span class="text--primary font-weight-black" style="font-size: 20px; background: #ddd; padding: 2px 4px; border-radius: 3px;">{{ averageUnderstanding }}</span>
-                        <div style="height: 5px;"></div>
-                        <span class="text--primary data-text">Understanding Range: </span>
-                        <span class="text--primary font-weight-black" style="font-size: 20px; background: #ddd; padding: 2px 4px; border-radius: 3px;">{{ range }}</span>
-                        <br>-->
                     </v-card-text>
                 </v-card>
                 <v-card width="60%" height="60vh" align="center" justify="center">
@@ -57,12 +50,13 @@
                   <v-btn style="float: none;" class="" @click="shortened = !shortened">{{ shortentext }}</v-btn>
                 </v-card>
             </v-row>
+            <!-- TOPICS WILL ADD LATER -->
             <v-row class="mt-1" align="center" justify="center">
               <v-card width="90%" min-height="70px" style="padding: 5px 10px;">
                 <v-row>
                   <v-col align="left">
                   <div
-                      v-for="n in 3"
+                      v-for="n in 4"
                       v-bind:key="n"
                       style="float: left; background-color: #EEEEEE; margin-bottom: 7px; border-radius: 10px; padding: 5px 7px; height: 5vh; text-align: center;"
                       class="mr-3"
@@ -92,11 +86,12 @@
                     class="mx-auto"
                     max-width="400"
                     tile
+                    style="font-family: var(--main-font);"
                 >
-                    <v-card-title>Keywords</v-card-title>
+                    <v-card-title style="font-weight: bold;">Key Topics</v-card-title>
                     <v-card-text>
                     <v-list-item
-                        v-for="n in 3"
+                        v-for="n in 4"
                         v-bind:key="n"
                     >
                         <v-list-item-content>
@@ -108,7 +103,7 @@
                 </v-col>
 
                 <v-col cols="8">
-                <ul style="list-style-type: none">
+                <ul style="list-style-type: none; font-family: var(--main-font);">
                     <li v-for="question in questions" v-bind:key="question.id" v-show="!question.dismiss">
                     <v-banner>
                         {{question.text}}
@@ -133,6 +128,17 @@
             height="75vh"
           >
           <v-row align="center" justify="center">
+            <v-row align="center" justify="center" style="width: 100vw;">
+              <div v-if="students.length == 0">
+                <v-progress-circular
+                  :width="3"
+                  :size="60"
+                  color="black"
+                  indeterminate
+                  style="margin-left: 35px; margin-top: 40px;"
+                ></v-progress-circular>
+              </div>
+            </v-row>
             <v-row align="center" justify="center">
                 <v-col cols="8">
                 <ul style="list-style-type: none">
@@ -160,38 +166,14 @@
 
       </v-tabs-items>
     </v-card>
-
-      <!-- <v-row align="center" justify="center">
-        <v-col cols="12" sm="6" align="center">
-          <v-card>
-            <span>People in Lecture</span><br>
-            <span v-for="person in peopleList" v-bind:key="person" style="display: block;">{{ person }}</span>
-          </v-card>
-        </v-col>
-      </v-row> -->
-
     </v-container>
-<!--
-    <v-footer
-      fixed
-      color="green lighten-3"
-      class="font-weight-medium"
-    >
-      <v-col
-        class="text-center"
-        cols="12"
-        sm="8"
-      >
-        <span style="font-size: 28px;">Give your students the join code: <span class="text--primary font-weight-black" style="background: #ddd; border-radius: 7px; padding: 4px 10px;">{{ id }}</span></span>
-      </v-col>
-    </v-footer>-->
   </v-content>
 </template>
 
 <script>
 import LineChart from '../components/Chart'
 import { mapState } from 'vuex'
-import { post, get } from '@/helpers.js'
+import { post, get, setLectures } from '@/helpers.js'
 import store from '@/store'
 
 export default {
@@ -210,16 +192,16 @@ export default {
       understandingScore: '--',
       averageUnderstanding: '--',
       range: '--',
-      questions: [/* { text: 'What is a Gaussian surface?', id: 0, dismiss: false },
+      questions: [ { text: 'What is a Gaussian surface?', id: 0, dismiss: false },
         { text: 'How do you calculate voltage?', id: 1, dismiss: false },
         { text: 'How do you make a Gaussian surface??', id: 2, dismiss: false },
         { text: 'Is a Gaussian surface a real physical object?', id: 3, dismiss: false},
         { text: "What's the formula for flux?", id: 4, dismiss: false },
         { text: 'How do you used a closed surface integral to calculate flux?', id: 5, dismiss: false },
-        { text: 'What is the relationship between voltage and a Gaussian surface?', id: 6, dismiss: false }*/],
+        { text: 'What is the relationship between voltage and a Gaussian surface?', id: 6, dismiss: false }],
       students: [],
       whatever: "awefawef",
-      keywords: /* hardcoded data */ [{ word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }, { word: 'gaussian surface', count: 6 }, { word: 'electric flux', count: 4 }, { word: 'voltage', count: 3 }],
+      keywords: /* hardcoded data */ [{ word: 'topics', count: 6 }, { word: 'coming', count: 6 }, { word: 'soon to', count: 4 }, { word: 'intellecture', count: 4 }],
       currentTab: 0,
       tab: null,
       items: [
@@ -342,6 +324,7 @@ export default {
         console.log("Ending lecture");
         this.$router.replace({ name: 'Feedback', params: { fromLectureEnd: true } })
         store.commit("setEndLecture", false)
+        setLectures()
       }
     },
     shortened(val) {

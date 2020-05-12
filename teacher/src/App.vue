@@ -32,7 +32,7 @@
     <v-content>
       <router-view v-on:startlecture="starting" v-on:nonexistant="started = false" />
     </v-content>
-    <v-footer padless color="green lighten-1" v-if="!livelecture && !feedback">
+    <v-footer padless color="green lighten-1" v-if="landing || dashboard || signin">
         <v-card
           flat
           tile
