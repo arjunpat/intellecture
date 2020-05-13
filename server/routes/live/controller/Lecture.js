@@ -1,10 +1,10 @@
 const db = require('../../../models');
+const pub = db.redis.conn;
 const { genUnderstandingScore, toStudent, toTeacher } = require('../helpers');
 
 class Lecture {
   constructor(lecture_uid, pub) {
     this.lecture_uid = lecture_uid;
-    this.pub = pub;
 
     this.questions = [];
     this.scores = {};
@@ -148,11 +148,11 @@ class Lecture {
   }
 
   sendToTeachers(obj) {
-    this.pub.publish(toTeacher(this.lecture_uid), JSON.stringify(obj));
+    pub.publish(toTeacher(this.lecture_uid), JSON.stringify(obj));
   }
 
   sendToStudents(obj) {
-    this.pub.publish(toStudent(this.lecture_uid), JSON.stringify(obj));
+    pub.publish(toStudent(this.lecture_uid), JSON.stringify(obj));
   }
 }
 

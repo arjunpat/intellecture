@@ -12,6 +12,9 @@ const LectureLog = require('./LectureLog');
 const LectureQs = require('./LectureQs');
 const LectureUs = require('./LectureUs');
 
+const Redis = require('../lib/Redis');
+const redis = new Redis();
+
 const mysql = new MySQL(
   MYSQL_USER,
   MYSQL_PASS,
@@ -21,11 +24,12 @@ const mysql = new MySQL(
 mysql.init(fs.readFileSync(__dirname + '/../schema.sql').toString());
 
 module.exports = {
-  lectures: new Lectures(mysql),
   classes: new Classes(mysql),
   feedback: new Feedback(mysql),
   accounts: new Accounts(mysql),
+  lectures: new Lectures(mysql, redis),
   lectureLog: new LectureLog(mysql),
   lectureQs: new LectureQs(mysql),
-  lectureUs: new LectureUs(mysql)
+  lectureUs: new LectureUs(mysql),
+  redis
 }

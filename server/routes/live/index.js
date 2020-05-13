@@ -2,7 +2,6 @@ const router = require('express').Router();
 const WebSocket = require('ws');
 const redis = require('redis');
 
-const pub = redis.createClient(process.env.REDIS_URL);
 const responses = require('../../lib/responses');
 const mw = require('../../middleware');
 const wss = new WebSocket.Server({ noServer: true });
@@ -11,7 +10,7 @@ const { handleUpgrade, toController } = require('./helpers');
 const db = require('../../models');
 
 function publish(lecture_uid, obj) {
-  pub.publish(toController(lecture_uid), JSON.stringify(obj));
+  db.redis.conn.publish(toController(lecture_uid), JSON.stringify(obj));
 }
 
 const handleTeacher = require('./teacher/');

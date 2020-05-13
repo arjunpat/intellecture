@@ -1,5 +1,6 @@
 const redis = require('redis');
-const pub = redis.createClient(process.env.REDIS_URL);
+const db = require('../../../models');
+const pub = db.redis.conn;
 const sub = redis.createClient(process.env.REDIS_URL);
 
 const { toController, toStudent, toLectureUid } = require('../helpers');
