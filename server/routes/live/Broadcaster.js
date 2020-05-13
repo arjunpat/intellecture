@@ -1,17 +1,21 @@
 const db = require('../../models');
 
-class StudentLectureManager {
+class Broadcaster {
   constructor(lecture_uid) {
     this.lecture_uid = lecture_uid;
     this.sockets = [];
     this.init();
   }
 
+  async readLectureInfo() {
+    let data = await db.lectures.getLecture(this.lecture_uid);
+    data.creator = await db.accounts.getBasicInfo(a.owner_uid);
+    return data;
+  }
+
   async init() {
-    let lectureInfo = await db.lectures.getLecture(this.lecture_uid);
-    lectureInfo.creator = await db.accounts.getBasicInfo(lectureInfo.owner_uid);
-    this.lectureInfo = lectureInfo;
-    this.sendToStudents(this.getLectureInfo());
+    this.lectureInfo = await this.readLectureInfo();
+    this.sendAll(this.getLectureInfo());
   }
 
   getLectureInfo() {
@@ -26,7 +30,7 @@ class StudentLectureManager {
     }
   }
 
-  addStudent(socket) {
+  add(socket) {
     socket.on('pong', () => socket.isAlive = true);
     socket.isAlive = true;
     this.sockets.push(socket);
@@ -34,19 +38,24 @@ class StudentLectureManager {
       socket.json(this.getLectureInfo());
   }
 
-  sendToStudents(obj) {
+  sendAll(txt) {
     for (let s of this.sockets) {
       if (s.readyState === 1) {
-        s.json(obj);
+        s.send(txt);
       }
     }
   }
 
+  static old(socket) {
+    return socket.readyState === 2 || socket.readyState === 3 || !socket.isAlive;
+  }
+
+  // this method is called (at max) every 10 seconds
   prune() {
     for (let i = 0; i < this.sockets.length; i++) {
       let socket = this.sockets[i];
 
-      if (socket.readyState === 2 || socket.readyState === 3 || !socket.isAlive) {
+      if (this.old(socket)) {
         console.log('(s) removing', socket.uid);
         socket.terminate();
         this.sockets.splice(i, 1);
@@ -56,17 +65,15 @@ class StudentLectureManager {
         socket.ping(() => {});
       }
     }
+  }
 
-    this.done = this.sockets.length === 0;
+  isEmpty() {
+    return this.sockets.length === 0;
   }
 
   end() {
-    this.sendToStudents({
-      type: 'end_lecture'
-    });
-
     for (let s of this.sockets) s.close();
   }
 }
 
-module.exports = StudentLectureManager;
+module.exports = Broadcaster;

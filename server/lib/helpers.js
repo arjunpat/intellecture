@@ -8,10 +8,5 @@ module.exports = {
       id += options[Math.floor(Math.random() * options.length)];
 
     return id;
-  },
-  genUnderstandingScore(arr) {
-    let sum = 0;
-    for (let each of arr) sum += each;
-    return (sum / arr.length) * 10;
   }
 }
