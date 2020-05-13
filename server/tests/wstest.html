@@ -50,7 +50,7 @@
 
   let wsT, wsS;
   async function startWS(lecture_uid, secs = 5) {
-    console.log('Conencting to teacher');
+    console.log('Connecting to teacher');
     wsT = new WebSocket(`ws://${host}/lectures/live/teacher/${lecture_uid}`);
     jsonify(wsT, 'teacher');
 

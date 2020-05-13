@@ -1,11 +1,13 @@
 const redis = require('redis');
-const Lecture = require('./Lecture');
+const Lecture = require('./Lecture.js');
 const { toLectureUid, toController } = require('../helpers');
 
 const sub = redis.createClient(process.env.REDIS_URL);
 const pub = redis.createClient(process.env.REDIS_URL);
 
 const lectures = {};
+
+const MAX_IDLE_MS = 10 * 60 * 1000; // 10 minutes
 
 function removeLecture(lecture_uid) {
   console.log('(c) removing lecture', lecture_uid);
@@ -14,9 +16,18 @@ function removeLecture(lecture_uid) {
 }
 
 setTimeout(() => {
-  for (let lecture_uid in lectures)
-    if (lectures[lecture_uid].ended)
+  const now = Date.now();
+
+  for (let lecture_uid in lectures) {
+    let lecture = lectures[lecture_uid];
+
+    if (lecture.ended) {
       removeLecture(lecture_uid);
+    } else if (now - lecture.last > MAX_IDLE_MS) {
+      lecture.end();
+    }
+    
+  }
 }, 10000);
 
 sub.on('message', (channel, msg) => {
@@ -27,8 +38,10 @@ sub.on('message', (channel, msg) => {
 });
 
 async function initLecture(lecture_uid) {
-  lectures[lecture_uid] = new Lecture(lecture_uid, pub);
-  await lectures[lecture_uid].init();
+  let lecture = new Lecture(lecture_uid, pub);
+  await lecture.init();
+
+  lectures[lecture_uid] = lecture;
   sub.subscribe(toController(lecture_uid));
 }
 

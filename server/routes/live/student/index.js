@@ -5,7 +5,7 @@ const sub = redis.createClient(process.env.REDIS_URL);
 const { toController, toStudent, toLectureUid } = require('../helpers');
 
 const lectures = {};
-const LectureManager = require('../LectureManager');
+const Broadcaster = require('../Broadcaster');
 
 function publish(lecture_uid, obj) {
   pub.publish(toController(lecture_uid), JSON.stringify(obj));
@@ -41,22 +41,22 @@ sub.on('message', (channel, msg) => {
 async function handleStudent(lecture_uid, student_uid, socket) {
   socket.uid = student_uid;
   socket.on('close', () => {
-    publish(toController(lecture_uid), {
+    publish(lecture_uid, {
       type: 'sl', // student leave
       student_uid
     });
   });
 
-  publish(toController(lecture_uid), {
+  publish(lecture_uid, {
     type: 'sj', // student join
     student_uid
   });
 
   if (!lectures[lecture_uid]) {
-    lectures[lecture_uid] = new LectureManager(lecture_uid);
+    lectures[lecture_uid] = new Broadcaster(lecture_uid);
     sub.subscribe(toStudent(lecture_uid));
   }
-  lectures[lecture_uid].addStudent(socket);
+  lectures[lecture_uid].add(socket);
 }
 
 module.exports = handleStudent;

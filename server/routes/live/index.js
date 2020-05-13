@@ -10,6 +10,10 @@ const wss = new WebSocket.Server({ noServer: true });
 const { handleUpgrade, toController } = require('./helpers');
 const db = require('../../models');
 
+function publish(lecture_uid, obj) {
+  pub.publish(toController(lecture_uid), JSON.stringify(obj));
+}
+
 const handleTeacher = require('./teacher/');
 const initLecture = require('./controller');
 router.get('/teacher/:lecture_uid', mw.websocket, mw.auth, async (req, res) => {
@@ -92,11 +96,11 @@ router.post('/student/:lecture_uid/score', mw.auth, async (req, res) => {
     return res.send(responses.error());
   }
 
-  pub.publish(toController(lecture_uid), JSON.stringify({
+  publish(lecture_uid, {
     type: 'ssu', // student score update
     student_uid: req.uid,
     score: req.body.score
-  }));
+  });
 
   res.send(responses.success());
 });
@@ -115,11 +119,11 @@ router.post('/student/:lecture_uid/question', mw.auth, async (req, res) => {
   )
     return res.send(responses.error());
 
-  pub.publish(toController(lecture_uid), JSON.stringify({
+  publish(lecture_uid, {
     type: 'q', // question
     student_uid: req.uid,
     q: req.body.question
-  }));
+  });
 
   res.send(responses.success());
 });
@@ -129,10 +133,10 @@ router.post('/teacher/:lecture_uid/end', mw.auth, async (req, res) => {
 
   let lecture = await db.lectures.getLecture(lecture_uid);
   if (lecture.owner_uid !== req.uid) {
-    res.send(responses.error('permissions'));
+    return res.send(responses.error('permissions'));
   }
 
-  pub.publish(lecture_uid, JSON.stringify({ type: 'end' }));
+  publish(lecture_uid, { type: 'end' });
   res.send(responses.success());
 });
 
