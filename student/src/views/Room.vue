@@ -93,6 +93,7 @@
     </v-container>
   </div>
 </template>
+
 <style scoped>
   #understanding {
     transition: all 0.4s;
@@ -127,6 +128,7 @@
     justify-content: flex-start;
   }
 </style>
+
 <script>
 import UnderstandingSlider from '@/components/UnderstandingSlider'
 import NotSignedIn from '@/components/NotSignedIn'
@@ -140,7 +142,7 @@ import { get, post } from '@/helpers'
 
 export default {
   name: 'Room',
-
+  
   props: {
     id: {type: String},
   },
@@ -213,7 +215,7 @@ export default {
       return index < 0 ? '' : this.levels[index]
     },
   },
-
+  
   methods: {
     setUpSocketConnection() {
       // Set up socket stuff
@@ -226,7 +228,6 @@ export default {
         this.socket.onmessage = (event) => {
           console.log('GOT MESSAGE', event.data)
           const data = JSON.parse(event.data)
-
           if (data.type === 'error') {
             if (!this.testing)
               this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join does not exist!' } })

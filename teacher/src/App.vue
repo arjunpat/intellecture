@@ -39,8 +39,8 @@
           width="100%"
           class="green lighten-1 text-center"
         >
-          <v-card-text class="white--text">
-            {{ new Date().getFullYear() }} <strong>Intellecture, All rights reserved.</strong>
+          <v-card-text class="white--text" style="font-family: var(--main-font);">
+            © {{ new Date().getFullYear() }} <strong>INTELLECTURE | ALL RIGHTS RESERVED</strong>
           </v-card-text>
         </v-card>
     </v-footer>
@@ -55,7 +55,6 @@ import { mapState } from 'vuex'
 export default {
   name: 'App',
   created: function () {
-    window.onbeforeunload = function() {}
     get('/auth/profile').then((result) => {
       if (result.success) {
         this.$store.commit('setAuthUser', result.data)

@@ -135,7 +135,7 @@
                   :size="60"
                   color="black"
                   indeterminate
-                  style="margin-left: 35px; margin-top: 40px;"
+                  style="margin-left: 40px; margin-top: 40px;"
                 ></v-progress-circular>
               </div>
             </v-row>
@@ -192,13 +192,13 @@ export default {
       understandingScore: '--',
       averageUnderstanding: '--',
       range: '--',
-      questions: [ { text: 'What is a Gaussian surface?', id: 0, dismiss: false },
+      questions: [/* { text: 'What is a Gaussian surface?', id: 0, dismiss: false },
         { text: 'How do you calculate voltage?', id: 1, dismiss: false },
         { text: 'How do you make a Gaussian surface??', id: 2, dismiss: false },
         { text: 'Is a Gaussian surface a real physical object?', id: 3, dismiss: false},
         { text: "What's the formula for flux?", id: 4, dismiss: false },
         { text: 'How do you used a closed surface integral to calculate flux?', id: 5, dismiss: false },
-        { text: 'What is the relationship between voltage and a Gaussian surface?', id: 6, dismiss: false }],
+        { text: 'What is the relationship between voltage and a Gaussian surface?', id: 6, dismiss: false }*/],
       students: [],
       whatever: "awefawef",
       keywords: /* hardcoded data */ [{ word: 'topics', count: 6 }, { word: 'coming', count: 6 }, { word: 'soon to', count: 4 }, { word: 'intellecture', count: 4 }],
@@ -251,6 +251,7 @@ export default {
         }
     },
     endLectureMethod() {
+      window.onbeforeunload = function() {}
       this.socket.send(JSON.stringify({ type: "end_lecture" })); 
       this.socket.close();
       post(`/lectures/live/teacher/${this.id}/end`);
