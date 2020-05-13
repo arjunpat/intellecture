@@ -7,10 +7,15 @@ const responses = require('../../lib/responses');
 const mw = require('../../middleware');
 const wss = new WebSocket.Server({ noServer: true });
 
-const { handleUpgrade } = require('./helpers');
+const { handleUpgrade, toController } = require('./helpers');
 const db = require('../../models');
 
-const handleTeacher = require('./teacher');
+function publish(lecture_uid, obj) {
+  pub.publish(toController(lecture_uid), JSON.stringify(obj));
+}
+
+const handleTeacher = require('./teacher/');
+const initLecture = require('./controller');
 router.get('/teacher/:lecture_uid', mw.websocket, mw.auth, async (req, res) => {
   let { lecture_uid } = req.params;
 
@@ -33,11 +38,11 @@ router.get('/teacher/:lecture_uid', mw.websocket, mw.auth, async (req, res) => {
     return socket.close();
   }
 
-  await db.lectures.startLecture(lecture_uid, Date.now());
+  await initLecture(lecture_uid);
   handleTeacher(lecture_uid, req.uid, socket);
 });
 
-const handleStudent = require('./student');
+const handleStudent = require('./student/');
 router.get('/student/:lecture_uid', mw.websocket, mw.auth, async (req, res) => {
   let { lecture_uid } = req.params;
 
@@ -68,46 +73,8 @@ router.get('/student/:lecture_uid', mw.websocket, mw.auth, async (req, res) => {
     return socket.close();
   }
 
-  // handle case that lecture ends before student initialized
+  // TODO handle case that lecture ends before student initialized
   handleStudent(lecture_uid, req.uid, socket);
-});
-
-router.post('/teacher/:lecture_uid/end', mw.auth, async (req, res) => {
-  let { lecture_uid } = req.params;
-
-  let lecture = await db.lectures.getLecture(lecture_uid);
-  if (lecture.owner_uid !== req.uid) {
-    res.send(responses.error('permissions'));
-  }
-
-  pub.publish(lecture_uid, JSON.stringify({ type: 'end' }));
-  await db.lectures.endLecture(lecture_uid, Date.now());
-
-  res.send(responses.success());
-});
-
-router.post('/student/:lecture_uid/question', mw.auth, async (req, res) => {
-  let { lecture_uid } = req.params;
-  let lecture = await db.lectures.getLecture(lecture_uid);
-
-  if (
-    !lecture
-    || typeof lecture.start_time !== 'number'
-    || typeof lecture.end_time === 'number'
-    || typeof req.body.question !== 'string'
-  )
-    return res.send(responses.error());
-
-  let elapsed = Date.now() - lecture.start_time;
-  await db.lectureQs.add(lecture_uid, elapsed, req.uid, req.body.question);
-
-  pub.publish(lecture_uid, JSON.stringify({
-    type: 'q', // question
-    student_uid: req.uid,
-    q: req.body.question
-  }));
-
-  res.send(responses.success());
 });
 
 function isValidScore(value) {
@@ -116,6 +83,8 @@ function isValidScore(value) {
 
 router.post('/student/:lecture_uid/score', mw.auth, async (req, res) => {
   let { lecture_uid } = req.params;
+
+  // TODO consider removing this
   let lecture = await db.lectures.getLecture(lecture_uid);
 
   if (
@@ -127,20 +96,47 @@ router.post('/student/:lecture_uid/score', mw.auth, async (req, res) => {
     return res.send(responses.error());
   }
 
-  let { start_time } = lecture;
-  await db.lectureLog.recordScoreChange(
-    lecture_uid,
-    Date.now() - start_time,
-    req.uid,
-    req.body.score
-  );
-
-  pub.publish(lecture_uid, JSON.stringify({
+  publish(lecture_uid, {
     type: 'ssu', // student score update
     student_uid: req.uid,
     score: req.body.score
-  }));
+  });
 
+  res.send(responses.success());
+});
+
+router.post('/student/:lecture_uid/question', mw.auth, async (req, res) => {
+  let { lecture_uid } = req.params;
+
+  // TODO consider removing this
+  let lecture = await db.lectures.getLecture(lecture_uid);
+
+  if (
+    !lecture
+    || typeof lecture.start_time !== 'number'
+    || typeof lecture.end_time === 'number'
+    || typeof req.body.question !== 'string'
+  )
+    return res.send(responses.error());
+
+  publish(lecture_uid, {
+    type: 'q', // question
+    student_uid: req.uid,
+    q: req.body.question
+  });
+
+  res.send(responses.success());
+});
+
+router.post('/teacher/:lecture_uid/end', mw.auth, async (req, res) => {
+  let { lecture_uid } = req.params;
+
+  let lecture = await db.lectures.getLecture(lecture_uid);
+  if (lecture.owner_uid !== req.uid) {
+    return res.send(responses.error('permissions'));
+  }
+
+  publish(lecture_uid, { type: 'end' });
   res.send(responses.success());
 });
 

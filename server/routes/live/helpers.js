@@ -17,4 +17,34 @@ function handleUpgrade(wss, req) {
   });
 }
 
-module.exports = { handleUpgrade, jsonifySocket };
+function toController(lecture_uid) {
+  return lecture_uid + ':ctl';
+}
+
+function toStudent(lecture_uid) {
+  return lecture_uid + ':s';
+}
+
+function toTeacher(lecture_uid) {
+  return lecture_uid + ':t'
+}
+
+function toLectureUid(channel) {
+  return channel.split(':')[0];
+}
+
+function genUnderstandingScore(arr) {
+  let sum = 0;
+  for (let each of arr) sum += each;
+  return (sum / arr.length) * 10;
+}
+
+module.exports = {
+  handleUpgrade,
+  jsonifySocket,
+  toController,
+  toStudent,
+  toTeacher,
+  toLectureUid,
+  genUnderstandingScore
+}
