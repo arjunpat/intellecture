@@ -8,21 +8,23 @@
       dark
       :class="{ 'disabled': disabled }"
     >
-      <v-icon>{{ showDialog ? 'mdi-send' : 'mdi-comment-question' }}</v-icon>
+      <v-icon>{{ value ? 'mdi-send' : 'mdi-comment-question' }}</v-icon>
     </v-btn>
 
     <v-expand-transition>
-      <v-card v-show="showDialog" color="#aed581ff" dark>
+      <v-card v-show="value" color="#aed581ff">
         <v-card-text>
         <form @submit="askQuestion">
           <v-text-field
             ref="textField"
             v-model="question"
+            @blur="onBlur"
             label="Ask a question"
             hide-details="true"
             autocomplete="off"
             solo-inverted
-            @blur="onBlur"
+            clearable
+            dark
           ></v-text-field>
         </form>
         </v-card-text>
@@ -49,6 +51,7 @@
 
   .ask-question-container {
     position: relative;
+    min-height: 1px;
   }
 </style>
 
@@ -56,28 +59,31 @@
 export default {
   name: 'AskQuestionDialog',
 
+  props: {
+    value: {type: Boolean, required: true},
+  },
+
   data() {
     return {
       question: '',
-      showDialog: false,
     }
   },
 
   computed: {
     disabled() {
-      return this.showDialog && !this.question
+      return this.value && !this.question
     },
   },
 
   methods: {
     onBlur(e) {
-      if (!this.question && this.showDialog)
-        this.showDialog = false 
+      if (!this.question && this.value)
+        this.$emit('input', false)
     },
     click(e) {
-      if (!this.showDialog) {
+      if (!this.value) {
         // Open dialog
-        this.showDialog = true 
+        this.$emit('input', true)
         this.$nextTick(() => this.$refs.textField.focus())
       } else {
         // Send question
@@ -90,7 +96,7 @@ export default {
       if (this.question) {
         this.$emit('askQuestion', this.question)
         this.question = ''
-        this.showDialog = false
+        this.$emit('input', false)
       }
     },
   },

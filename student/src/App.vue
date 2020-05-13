@@ -1,5 +1,5 @@
 <template>
-  <v-app scroll="no" :style="{overflow:scroll}" class="no_overflow">
+  <v-app>
     <AutoSnackbar
       :text="error"
       color="error"
@@ -140,9 +140,6 @@ export default {
 .pointer:hover {
   cursor: pointer;
 }
-.overflow {
-    overflow:hidden;
-  }
 
 #main-logo {
   font-family: 'Noto Sans', sans-serif;

@@ -9,52 +9,87 @@
     </v-overlay>
 
     <v-container style="padding-top: 10vh !important;" fluid class="fill-height">
-      <v-col
-        cols="12"
-        sm="8"
-        md="6"
-        lg="4"
-        class="ma-auto pa-0 fill-height"
-      > 
-        <div id="flex-container" class="fill-height">
-          <!-- TODO: make class name font size smaller when the name is longer -->
-          <div v-if="lectureInfo !== null">
-            <div class="display-2 font-weight-regular mb-2">{{ lectureInfo.class_name }}</div>
-            <div style="border-left-style: solid; border-left-width: 2px; position: relative;" class="ml-2 mb-4">
-              <div class="headline ml-2 font-weight-light">{{ lectureInfo.lecture_name }}</div>
-              <div class="overline ml-4">{{ lectureStartTime }}</div>
-              <v-tooltip left>
-                <template v-slot:activator="{ on }">
-                  <v-avatar v-on="on" style="position: absolute; right: 0; top: 0;">
-                    <UserAvatarContent :user="lectureInfo.creator"/>
-                  </v-avatar>
-                </template>
-                <span>{{ `${lectureInfo.creator.first_name} ${lectureInfo.creator.last_name}` }}</span>
-              </v-tooltip>
-            </div>
+      <v-row class="fill-height" justify="center">
+        <v-col
+          cols="12"
+          sm="8"
+          md="6"
+          lg="4"
+          class="fill-height"
+        > 
+          <div id="flex-container" class="fill-height">
+            <!-- TODO: make class name font size smaller when the name is longer -->
+            <TutorialDisplay :show="showTutorial == 0" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" bottom>
+              <template v-slot:title>
+                Lecture Info
+              </template>
+              <template v-slot:explanation>
+                This displays information about the lecture you are currently in.
+              </template>
+
+              <LectureInfo v-if="lectureInfo !== null" :lectureInfo="lectureInfo" />
+            </TutorialDisplay>
+
+            <TutorialDisplay :show="showTutorial == 1" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" bottom>
+              <template v-slot:title>
+                Understanding Score
+              </template>
+              <template v-slot:explanation>
+                Move this slider to rate how well you understand the content being presented.
+              </template>
+
+              <div id="understanding" class="text-center headline mb-2" style="height: 2em;" :style="{color: color}">
+                <div id="understandingText">{{ understanding }}</div>
+                <img v-if="!understanding" :src="require('@/assets/img/sad.svg')" style="width: 2em; height: 2em" />
+              </div>
+
+              <UnderstandingSlider
+                @updateUnderstanding="updateUnderstanding"
+                v-model="sliderValue"
+                :min="0"
+                :max="sliderMax"
+                :throttleDelay="throttleDelay"
+                class="mb-4"
+              />
+            </TutorialDisplay>
+
+            <TutorialDisplay :show="showTutorial == 2" backgroundColor="unset" @next="showTutorial++" @cancel="showTutorial = -1">
+              <template v-slot:title>
+                Ask questions
+              </template>
+              <template v-slot:explanation>
+                Click here to ask questions.
+              </template>
+
+              <AskQuestionDialog
+                v-model="showQuestionDialog"
+                @askQuestion="askQuestion"
+                class="mt-8 mb-8"
+              />
+            </TutorialDisplay>
+
+            <v-spacer></v-spacer>
+
+            <TutorialDisplay :show="showTutorial == 3" backgroundColor="white" @next="showTutorial = -1" @cancel="showTutorial = -1" top>
+              <template v-slot:title>
+                Help
+              </template>
+              <template v-slot:explanation>
+                Click here to view this tutorial again.
+              </template>
+              <v-btn
+                bottom
+                text
+                block
+                color="info"
+                @click="showTutorial = 0"
+              >
+              Help!
+              </v-btn>
+            </TutorialDisplay>
           </div>
-
-          <div>
-            <div id="understanding" class="text-center headline mb-2" style="height: 2em;" :style="{color: color}">
-              <div id="understandingText">{{ understanding }}</div>
-              <img v-if="!understanding" :src="require('@/assets/img/sad.svg')" style="width: 2em; height: 2em" />
-            </div>
-
-            <UnderstandingSlider
-              @updateUnderstanding="updateUnderstanding"
-              v-model="sliderValue"
-              :min="0"
-              :max="sliderMax"
-              :throttleDelay="throttleDelay"
-              class="mb-12"
-            />
-          </div>
-
-          <AskQuestionDialog
-            @askQuestion="askQuestion"
-          />
-        </div>
-      </v-col>
+        </v-col>
+      </v-row>
     </v-container>
   </div>
 </template>
@@ -98,6 +133,8 @@ import NotSignedIn from '@/components/NotSignedIn'
 import AutoSnackbar from '@/components/AutoSnackbar'
 import AskQuestionDialog from '@/components/AskQuestionDialog'
 import UserAvatarContent from '@/components/UserAvatarContent'
+import TutorialDisplay from '@/components/TutorialDisplay'
+import LectureInfo from '@/components/LectureInfo'
 import { mapState } from 'vuex'
 import { get, post } from '@/helpers'
 
@@ -116,9 +153,10 @@ export default {
       levels: ['I\'m lost', 'I\'m confused', 'I kinda get it', 'I think I get it', 'I completely understand'],
       colors: ['rgb(240, 53, 36)', 'rgb(255, 183, 0)', 'rgb(250, 225, 0)', 'rgb(126, 196, 4)', '#B2FF59'],
       color: '',
-      question: '',
       socket: null,
       lectureInfo: null,
+      showQuestionDialog: false,
+      showTutorial: -1,
       error: '',
       testLectureInfo: {
         type:"lecture_info",
@@ -163,6 +201,8 @@ export default {
     AutoSnackbar,
     AskQuestionDialog,
     UserAvatarContent,
+    TutorialDisplay,
+    LectureInfo,
   },
 
   computed: {
@@ -172,10 +212,6 @@ export default {
       this.color = index < 0 ? 'rgb(0,0,0)' : this.colors[index]
       return index < 0 ? '' : this.levels[index]
     },
-    lectureStartTime() {
-      const date = new Date(this.lectureInfo.start_time)
-      return date.toLocaleString()
-    }
   },
 
   methods: {
@@ -192,7 +228,8 @@ export default {
           const data = JSON.parse(event.data)
 
           if (data.type === 'error') {
-            this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join does not exist!' } })
+            if (!this.testing)
+              this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join does not exist!' } })
           } else if (data.type === 'lecture_info') {
             this.lectureInfo = {...data}
           } else if (data.type === 'end_lecture') {
