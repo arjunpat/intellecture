@@ -99,6 +99,9 @@ export default {
   },
   watch: {
     $route: function (to, from) {
+      if(to.name == "Dashboard") {
+        this.started = false;
+      }
       this.redirectAuthUser()
     },
     authUser: function(val) {

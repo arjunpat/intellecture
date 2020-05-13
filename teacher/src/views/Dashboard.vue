@@ -68,8 +68,12 @@ import { post, get, getClasses, setLectures } from '@/helpers.js'
 import { mapState } from 'vuex'
 
 export default {
+  name: "Dashboard",
   components: {
     ModalForm
+  },
+  props: {
+    fromLectureEnd: {type: Boolean, default: false}
   },
   data () {
     return {

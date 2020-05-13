@@ -80,7 +80,7 @@ export function setLectures() {
           for (let item of data.data) {
             item.className = indexClass.name;
           }
-          store.commit("setLectures", data.data);
+          store.commit("addLectures", data.data);
         });
       }
   })
