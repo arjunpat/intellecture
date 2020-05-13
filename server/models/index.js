@@ -5,10 +5,12 @@ const MySQL = require('../lib/MySQL');
 
 const Lectures = require('./Lectures');
 const Classes = require('./Classes');
-const LectureLog = require('./LectureLog');
 const Accounts = require('./Accounts');
-const LectureQs = require('./LectureQs');
 const Feedback = require('./Feedback');
+
+const LectureLog = require('./LectureLog');
+const LectureQs = require('./LectureQs');
+const LectureUs = require('./LectureUs');
 
 const mysql = new MySQL(
   MYSQL_USER,
@@ -21,8 +23,9 @@ mysql.init(fs.readFileSync(__dirname + '/../schema.sql').toString());
 module.exports = {
   lectures: new Lectures(mysql),
   classes: new Classes(mysql),
-  lectureLog: new LectureLog(mysql),
+  feedback: new Feedback(mysql),
   accounts: new Accounts(mysql),
+  lectureLog: new LectureLog(mysql),
   lectureQs: new LectureQs(mysql),
-  feedback: new Feedback(mysql)
+  lectureUs: new LectureUs(mysql)
 }

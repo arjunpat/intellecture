@@ -68,8 +68,12 @@ import { post, get, getClasses, setLectures } from '@/helpers.js'
 import { mapState } from 'vuex'
 
 export default {
+  name: "Dashboard",
   components: {
     ModalForm
+  },
+  props: {
+    fromLectureEnd: {type: Boolean, default: false}
   },
   data () {
     return {
@@ -93,7 +97,6 @@ export default {
   },
   methods: {
     formatUnix(unix_timestamp) {
-      console.log(unix_timestamp)
       if (unix_timestamp==undefined) {
         return "";
       }

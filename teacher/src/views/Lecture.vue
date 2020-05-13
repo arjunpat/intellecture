@@ -234,6 +234,8 @@ export default {
         x.push(data[i].timestamp);
         y.push(data[i].score);
       }
+      console.log(x);
+      console.log(y);
       this.fillData(x, y);
     },
     fillData (x, y) {
@@ -247,6 +249,14 @@ export default {
             }
           ]
         }
+    },
+    endLectureMethod() {
+      this.socket.send(JSON.stringify({ type: "end_lecture" })); 
+      this.socket.close();
+      post(`/lectures/live/teacher/${this.id}/end`);
+      console.log("Ending lecture");
+      store.commit("setEndLecture", false)
+      setLectures()
     }
   },
   mounted () {
@@ -277,14 +287,14 @@ export default {
             return obj.uid !== data.uid
         });
       } else if(data.type == "us_update") {
-        if(data.value != null) {
+        if(data.score != null) {
           var d = (Date.now() - self.start)/1000;
           self.understandingData.push({
             timestamp: new Date(),
-            score: data.value
+            score: data.score
           })
-          self.understandingScore = data.value
-          self.initChart();
+          self.understandingScore = data.score
+          self.initChart()
         }
       } else if(data.type == "new_question") {
         self.questions.push({
@@ -292,6 +302,9 @@ export default {
           id: self.questions.length,
           dismiss: false
         })
+      } else if(data.type == "error") {
+        self.endLectureMethod()
+        self.$router.replace({ name: 'Dashboard'})
       }
     }
   },
@@ -318,13 +331,8 @@ export default {
   watch: {
     endLecture(val) {
       if(this.endLecture) {
-        this.socket.send(JSON.stringify({ type: "end_lecture" })); 
-        this.socket.close();
-        post(`/lectures/live/teacher/${this.id}/end`);
-        console.log("Ending lecture");
+        this.endLectureMethod();
         this.$router.replace({ name: 'Feedback', params: { fromLectureEnd: true } })
-        store.commit("setEndLecture", false)
-        setLectures()
       }
     },
     shortened(val) {

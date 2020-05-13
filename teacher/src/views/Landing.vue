@@ -1,15 +1,15 @@
 <template>
   <v-content class="fullscreen">
-    <v-container ><!-- Opening Page -->
+    <v-container class="section"><!-- Opening Page -->
         <v-row align="center" class="page">
-            <v-col align="center" class="title"> 
-                <h1>Meet <div class="hat" style="background-color: #aed581">Intellecture</div>, corny phrase.</h1>
+            <v-col align="center" class="title" cols="7"> 
+                <h1 style="font-size: 70px;">Meet <div class="hat" style="background-color: #aed581">Intellecture</div>,<br> corny phrase.</h1>
                 <br/>
                 <h3>It's worth noting that this description here will likely be somewhat long and rather worthless. That's why I've left all of this negative space on the page-- this needs to be filled!</h3>
                 <br/>
-                <v-btn color="light-green lighten-2" style="color: #424242;" x-large>Sign Up Today</v-btn>
+                <v-btn color="light-green lighten-2" style="color: #424242;" x-large @click="$router.push({ path: '/signin' })">Sign Up Today</v-btn>
             </v-col>
-            <v-col align="center" class="carasoul">
+            <v-col align="center" class="carasoul pl-12" cols="5">
                 <img src="@/assets/img/logo.svg" class="logo">
             </v-col>
         </v-row>
@@ -85,8 +85,14 @@ export default {
 
 <style scoped lang="scss">
 
+h3 {
+  font-family: var(--main-font);
+}
+.section {
+  min-height: 100vh;
+}
 .container {
-  display:flex;
+  //display:flex;
 }
 .blurbs {
   justify-content: space-evenly;
