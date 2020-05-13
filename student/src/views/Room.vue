@@ -3,9 +3,9 @@
     <AutoSnackbar
       :text="error"
       color="error"
-    ></AutoSnackbar>
+    />
     <v-overlay :value="!authUser" opacity="0.7" :dark="false">
-      <NotSignedIn></NotSignedIn>
+      <NotSignedIn />
     </v-overlay>
 
     <v-container style="padding-top: 10vh !important;" fluid class="fill-height">

@@ -1,50 +1,52 @@
 <template>
-  <v-app>
-    <AutoSnackbar
-      :text="error"
-      color="error"
-    ></AutoSnackbar>
+  <div>
+    <v-app v-if="loaded">
+      <AutoSnackbar
+        :text="error"
+        color="error"
+      ></AutoSnackbar>
+        <v-app-bar
+          v-if="$route.path !== '/'"
+          app
+          color="green lighten-1"
+          dark
+        >
+            <img src="@/assets/img/logo.svg" width="35px" class="pointer">
 
-    <v-app-bar
-      v-if="$route.path !== '/'"
-      app
-      color="green lighten-1"
-      dark
-    >
-        <img src="@/assets/img/logo.svg" width="35px" class="pointer">
+            <v-toolbar-title @click="homeRedirect" style="font-family: 'Roboto';"><span id="main-logo" class="pointer">INTELLECTURE</span> Student</v-toolbar-title>
 
-        <v-toolbar-title @click="homeRedirect" style="font-family: 'Roboto';"><span id="main-logo" class="pointer">INTELLECTURE</span> Student</v-toolbar-title>
+          <v-spacer></v-spacer>
 
-      <v-spacer></v-spacer>
+          <v-menu
+            v-if="authUser"
+            offset-y
+            :close-on-content-click="false"
+          >
+            <template v-slot:activator="{ on }">
+              <v-btn icon v-on="on">
+                <v-avatar>
+                  <UserAvatarContent :user="authUser" />
+                </v-avatar>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item>
+                <v-list-item-title><strong>{{ `${authUser.first_name} ${authUser.last_name}` }}</strong></v-list-item-title>
+              </v-list-item>
+              <v-divider></v-divider>
+              <v-list-item @click="signOut">
+                <v-list-item-title class="red--text">Sign Out</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-app-bar>
 
-      <v-menu
-        v-if="authUser"
-        offset-y
-        :close-on-content-click="false"
-      >
-        <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on">
-            <v-avatar>
-              <UserAvatarContent :user="authUser" />
-            </v-avatar>
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-item>
-            <v-list-item-title><strong>{{ `${authUser.first_name} ${authUser.last_name}` }}</strong></v-list-item-title>
-          </v-list-item>
-          <v-divider></v-divider>
-          <v-list-item @click="signOut">
-            <v-list-item-title class="red--text">Sign Out</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-    </v-app-bar>
-
-    <v-content>
-      <router-view/>
-    </v-content>
-  </v-app>
+        <v-content>
+          <router-view/>
+        </v-content>
+    </v-app>
+    <LoadingScreen :show="!loaded" />
+  </div>
 </template>
 
 <script>
@@ -53,6 +55,7 @@ import 'firebase/auth'
 import { mapState } from 'vuex'
 import UserAvatarContent from '@/components/UserAvatarContent'
 import AutoSnackbar from '@/components/AutoSnackbar'
+import LoadingScreen from '@/components/LoadingScreen'
 import { get, signOut } from '@/helpers'
 
 export default {
@@ -61,7 +64,7 @@ export default {
   data() {
     return {
       error: '',
-      scroll:"hidden",
+      loaded: false,
     }
   },
 
@@ -73,19 +76,22 @@ export default {
         this.$store.commit('setAuthUser', null)
       }
       this.redirectAuthUser()
+      this.loaded = true
     }).catch((err) => {
-      // This error should really never be thrown
+      this.$store.commit('setAuthUser', null)
+      this.redirectAuthUser()
+      this.loaded = true
     })
   },
 
   components: {
     UserAvatarContent,
     AutoSnackbar,
+    LoadingScreen,
   },
 
   watch: {
     $route: function(val) {
-      this.scroll="visible";
       this.redirectAuthUser()
     },
     authUser: function(val) {
