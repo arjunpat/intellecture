@@ -20,7 +20,7 @@
       <v-btn v-if="!started && dashboard" @click="$router.push({ path: '/new' })">Start Lecture</v-btn>
       <v-btn v-if="newlecture" @click="$router.push({ path: '/dashboard' })">Back</v-btn>
       <v-btn class="red" v-if="started && livelecture" @click="endlecture()">End Lecture</v-btn>
-      <v-btn class="ml-1 deep-orange accent-2" v-if="!started && !landing && !signin && authUser" @click="signOut()">Sign out <img id="avt-img" class="ml-2" v-bind:src="authUser.photo" width="25px"></v-btn>
+      <v-btn class="ml-1 deep-orange accent-2" v-if="!started && !landing && !signin && authUser" @click="signOutAuth()">Sign out <img id="avt-img" class="ml-2" v-bind:src="authUser.photo" width="25px"></v-btn>
       <div v-if="started && livelecture" class="ml-3" style="background-color: #AED581; padding: 5px 8px; border-radius: 7px;">
         <span class="mr-1 font-weight-medium" style="font-size: 20px;">ROOM:</span> <span class="text--primary font-weight-black" style="background: #ddd; border-radius: 7px; padding: 2px 10px; font-size: 25px;">{{id}}</span>
       </div>
@@ -63,6 +63,7 @@ export default {
       } else {
         this.$store.commit('setAuthUser', null)
         this.$store.commit('setClasses', null)
+        this.$store.commit('setLectures', null)
       }
       this.redirectAuthUser()
     }).catch((err) => {
@@ -76,7 +77,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['authUser']),
+    ...mapState(['authUser', 'lectures']),
     landing: function () {
       return this.$route.name === 'Landing'
     },
@@ -98,6 +99,9 @@ export default {
   },
   watch: {
     $route: function (to, from) {
+      if(to.name == "Dashboard") {
+        this.started = false;
+      }
       this.redirectAuthUser()
     },
     authUser: function(val) {
@@ -105,7 +109,7 @@ export default {
     }
   },
   methods: {
-    signOut () {
+    signOutAuth () {
       signOut().then(() => {
         this.$router.replace({ name: 'Landing' })
       })

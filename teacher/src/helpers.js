@@ -31,7 +31,6 @@ export function post(url, json) {
 export function signInGoogle() {
   let provider = new firebase.auth.GoogleAuthProvider()
   return firebase.auth().signInWithPopup(provider).then((result) => {
-    console.log(result.user);
     return signIn(result.user)
   }).then((result) => {
     if (!result.success)
@@ -58,6 +57,7 @@ export function signOut() {
       throw result
     store.commit('setAuthUser', null)
     store.commit('setClasses', null)
+    store.commit('setLectures', null)
   })
 }
 
@@ -80,7 +80,7 @@ export function setLectures() {
           for (let item of data.data) {
             item.className = indexClass.name;
           }
-          store.commit("setLectures", data.data);
+          store.commit("addLectures", data.data);
         });
       }
   })
