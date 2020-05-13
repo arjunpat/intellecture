@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS accounts (
 );
 
 CREATE TABLE IF NOT EXISTS classes (
-  uid VARCHAR(15) PRIMARY KEY,
+  uid VARCHAR(20) PRIMARY KEY,
   created_at BIGINT UNSIGNED,
   owner_uid VARCHAR(36),
   name VARCHAR(50),
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS classes (
 );
 
 CREATE TABLE IF NOT EXISTS lectures (
-  uid VARCHAR(15) PRIMARY KEY,
+  uid VARCHAR(20) PRIMARY KEY,
   created_at BIGINT UNSIGNED,
   class_uid VARCHAR(15),
   name VARCHAR(50),
@@ -27,23 +27,26 @@ CREATE TABLE IF NOT EXISTS lectures (
 );
 
 CREATE TABLE IF NOT EXISTS lecture_log (
-  db_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, 
-  lecture_uid VARCHAR(10),
-  elapsed BIGINT UNSIGNED,
+  lecture_uid VARCHAR(20),
   account_uid VARCHAR(36),
-  value SMALLINT,
-  INDEX(lecture_uid),
-  INDEX(account_uid)
+  elapsed BIGINT UNSIGNED,
+  score SMALLINT,
+  CONSTRAINT PRIMARY KEY (lecture_uid, account_uid, elapsed)
 );
 
 CREATE TABLE IF NOT EXISTS lecture_qs (
-  db_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, 
-  lecture_uid VARCHAR(10),
-  elapsed BIGINT UNSIGNED,
+  lecture_uid VARCHAR(20),
   account_uid VARCHAR(36),
+  elapsed BIGINT UNSIGNED,
   question TINYTEXT,
-  INDEX(lecture_uid),
-  INDEX(account_uid)
+  CONSTRAINT PRIMARY KEY (lecture_uid, account_uid, elapsed)
+);
+
+CREATE TABLE IF NOT EXISTS lecture_us (
+  lecture_uid VARCHAR(20),
+  elapsed BIGINT UNSIGNED,
+  score SMALLINT,
+  CONSTRAINT PRIMARY KEY (lecture_uid, elapsed) 
 );
 
 CREATE TABLE IF NOT EXISTS feedback (

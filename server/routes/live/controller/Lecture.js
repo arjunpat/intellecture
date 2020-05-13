@@ -9,7 +9,7 @@ class Lecture {
     this.questions = [];
     this.scores = {};
 
-    this.last = Date.now();
+    this.initTimings();
   }
 
   async readLectureInfo() {
@@ -27,7 +27,7 @@ class Lecture {
     if (this.ended)
       return;
 
-    this.last = Date.now();
+    this.timing.lastMsg = Date.now();
     
     switch (data.type) {
       case 'ssu': // student score update
@@ -58,7 +58,7 @@ class Lecture {
   async addQuestion(creator_uid, question) {
     await db.lectureQs.add(
       this.lecture_uid,
-      Date.now() - this.lectureInfo.start_time,
+      this.elapsed(),
       creator_uid,
       question
     );
@@ -94,7 +94,7 @@ class Lecture {
   async updateStudentScore(student_uid, score) {
     await db.lectureLog.recordScoreChange(
       this.lecture_uid,
-      Date.now() - this.lectureInfo.start_time,
+      this.elapsed(),
       student_uid,
       score
     );
@@ -103,10 +103,47 @@ class Lecture {
   }
 
   updateTeachers() {
+    // wait before updating the teacher
+    if (typeof this.timeout === 'number') return;
+
+    let now = Date.now();
+    let lastUpdate = now - this.timing.lastTeacherUpdate;
+    if (lastUpdate < 1000) {
+      this.timeout = setTimeout(() => {
+        this.timeout = undefined;
+        this.updateTeachers()
+      }, 1100 - lastUpdate);
+      return;
+    }
+
+    let score = this.getScore();
+    db.lectureUs.recordScoreChange(this.lecture_uid, this.elapsed(now), score);
     this.sendToTeachers({
       type: 'us_update',
-      score: genUnderstandingScore(Object.values(this.scores))
+      score
     });
+    
+    // recordkeeping / stats
+    this.timing.lastTeacherUpdate = Date.now();
+  }
+
+  getScore() {
+    return Math.round(genUnderstandingScore(Object.values(this.scores)));
+  }
+
+  elapsed(now = Date.now()) {
+    return now - this.lectureInfo.start_time;
+  }
+
+  idleTime(now = Date.now()) {
+    return now - this.timing.lastMsg;
+  }
+
+  initTimings(now = Date.now()) {
+    this.timing = {
+      lastMsg: now,
+      lastTeacherUpdate: now
+    }
   }
 
   sendToTeachers(obj) {

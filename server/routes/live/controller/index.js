@@ -23,7 +23,7 @@ setInterval(() => {
 
     if (lecture.ended) {
       removeLecture(lecture_uid);
-    } else if (now - lecture.last > MAX_IDLE_MS) {
+    } else if (lecture.idleTime(now) > MAX_IDLE_MS) {
       lecture.end();
     }
     
