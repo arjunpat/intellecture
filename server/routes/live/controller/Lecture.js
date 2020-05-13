@@ -104,7 +104,7 @@ class Lecture {
 
   updateTeachers() {
     // wait before updating the teacher
-    if (typeof this.timeout === 'number') return;
+    if (this.timeout) return;
 
     let now = Date.now();
     let lastUpdate = now - this.timing.lastTeacherUpdate;
@@ -128,7 +128,8 @@ class Lecture {
   }
 
   getScore() {
-    return Math.round(genUnderstandingScore(Object.values(this.scores)));
+    let score = Math.round(genUnderstandingScore(Object.values(this.scores)));
+    return isNaN(score) ? null : score;
   }
 
   elapsed(now = Date.now()) {

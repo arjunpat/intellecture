@@ -77,7 +77,7 @@
   }
 
   async function updateScore(score) {
-    fetch(hostp + '/lectures/live/student/' + lecture_uid + '/score', {
+    return fetch(hostp + '/lectures/live/student/' + lecture_uid + '/score', {
       ...postStuff,
       body: JSON.stringify({
         score

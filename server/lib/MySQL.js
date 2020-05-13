@@ -34,6 +34,7 @@ class MySQL {
   }
 
   query(sql, vals) {
+    // let loggable = sql.replace(/\r?\n|\r|\t|\s+/g, ' ');
     return new Promise((resolve, reject) => {
       this.conn.query(sql, vals, (err, res) => {
         if (err)
