@@ -20,12 +20,14 @@ export default new Vuex.Store({
     setClasses(state, classes) {
       state.classes = classes
     },
-    setLectures(state,lectures) {
+    setLectures(state, lectures) {
+      /*
       let priorlect=state.lectures;
       if (priorlect==null) {
         priorlect=[];
       }
-      state.lectures=priorlect.concat(lectures);
+      state.lectures=priorlect.concat(lectures);*/
+      state.lectures = lectures;
     }
   },
   actions: {

@@ -93,7 +93,6 @@ export default {
   },
   methods: {
     formatUnix(unix_timestamp) {
-      console.log(unix_timestamp)
       if (unix_timestamp==undefined) {
         return "";
       }
