@@ -15,7 +15,7 @@ function removeLecture(lecture_uid) {
   delete lectures[lecture_uid];
 }
 
-setTimeout(() => {
+setInterval(() => {
   const now = Date.now();
 
   for (let lecture_uid in lectures) {
