@@ -56,12 +56,12 @@
                 <v-row>
                   <v-col align="left">
                   <div
-                      v-for="n in 4"
+                      v-for="n in topics.length"
                       v-bind:key="n"
-                      style="float: left; background-color: #EEEEEE; margin-bottom: 7px; border-radius: 10px; padding: 5px 7px; height: 5vh; text-align: center;"
-                      class="mr-3"
+                      style="float: left; margin-bottom: 7px; height: 5vh;"
+                      class="mr-3 topic"
                   >
-                      <h1 style="font-size: 20px;">{{ keywords[n-1].word }} </h1>
+                      <h1 style="font-size: 20px;">{{ topics[n-1].value }} </h1>
                   </div>
                   </v-col>
                 </v-row>
@@ -88,14 +88,14 @@
                     tile
                     style="font-family: var(--main-font);"
                 >
-                    <v-card-title style="font-weight: bold;">Key Topics</v-card-title>
+                    <v-card-title style="font-weight: bold;">Key Topics <v-btn @click="displayQuestions = questions" v-show="questions.length != displayQuestions.length" text color="primary" style="position: absolute; right: 10px;">Show all</v-btn></v-card-title>
                     <v-card-text>
                     <v-list-item
-                        v-for="n in 4"
+                        v-for="n in topics.length"
                         v-bind:key="n"
                     >
                         <v-list-item-content>
-                        <v-list-item-title>{{ keywords[n-1].word }}</v-list-item-title>
+                        <v-list-item-title><div style="display: inline-block; font-size: 20px;" class="topic" @click="showCategory(n-1)">{{ topics[n-1].value }}</div></v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
                     </v-card-text>
@@ -104,9 +104,9 @@
 
                 <v-col cols="8">
                 <ul style="list-style-type: none; font-family: var(--main-font);">
-                    <li v-for="question in questions" v-bind:key="question.id" v-show="!question.dismiss">
+                    <li v-for="question in displayQuestions" v-bind:key="question.question_uid" v-show="!question.dismiss">
                     <v-banner>
-                        {{question.text}}
+                        {{question.question}}
                         <template v-slot:actions>
                         <v-btn text color="primary" v-on:click="dismiss(question)">Dismiss</v-btn>
                         </template>
@@ -192,16 +192,87 @@ export default {
       understandingScore: '--',
       averageUnderstanding: '--',
       range: '--',
-      questions: [/* { text: 'What is a Gaussian surface?', id: 0, dismiss: false },
-        { text: 'How do you calculate voltage?', id: 1, dismiss: false },
-        { text: 'How do you make a Gaussian surface??', id: 2, dismiss: false },
-        { text: 'Is a Gaussian surface a real physical object?', id: 3, dismiss: false},
-        { text: "What's the formula for flux?", id: 4, dismiss: false },
-        { text: 'How do you used a closed surface integral to calculate flux?', id: 5, dismiss: false },
-        { text: 'What is the relationship between voltage and a Gaussian surface?', id: 6, dismiss: false }*/],
+      questions: [/*{
+  "type":"new_question",
+  "question_uid":"jDuw6QJmDQiRfJo",
+  "creator_uid":"rUJyP317iuZErNlhrn2",
+  "question":"What is the relationship between voltage and a Gaussian surface?"
+},
+{
+  "type":"new_question",
+  "question_uid":"X8udiUQ8fN6F27C",
+  "creator_uid":"rUJyP317iuZErNlhrn2",
+  "question":"What is the relationship between voltage and a Gaussian surface?"
+},
+{
+  "type":"new_question",
+  "question_uid":"74i74G1UUuJJ13H",
+  "creator_uid":"rUJyP317iuZErNlhrn2",
+  "question":"What is the relationship between voltage and a Gaussian surface?"
+},
+{
+  "type":"new_question",
+  "question_uid":"mwZPFrIykOY8ZlZ",
+  "creator_uid":"rUJyP317iuZErNlhrn2",
+  "question":"What is the relationship between voltage and a Gaussian surface?"
+}*/],
+      displayQuestions: [],
       students: [],
-      whatever: "awefawef",
-      keywords: /* hardcoded data */ [{ word: 'topics', count: 6 }, { word: 'coming', count: 6 }, { word: 'soon to', count: 4 }, { word: 'intellecture', count: 4 }],
+      topics: [/*
+    {
+      "type":"keyphrase",
+      "value":"gaussian surface",
+      "questions":[
+        "jDuw6QJmDQiRfJo",
+        "T9JpRo4NuTSKOJH",
+        "74i74G1UUuJJ13H",
+        "X8udiUQ8fN6F27C"
+      ],
+      "score":1,
+      "weight":8
+    },
+    {
+      "type":"keyword",
+      "value":"surface",
+      "questions":[
+        "jDuw6QJmDQiRfJo",
+        "T9JpRo4NuTSKOJH",
+        "74i74G1UUuJJ13H",
+        "mwZPFrIykOY8ZlZ",
+        "X8udiUQ8fN6F27C"
+      ],
+      "score":1
+    },
+    {
+      "type":"keyword",
+      "value":"gaussian",
+      "questions":[
+        "jDuw6QJmDQiRfJo",
+        "T9JpRo4NuTSKOJH",
+        "74i74G1UUuJJ13H",
+        "X8udiUQ8fN6F27C"
+      ],
+      "score":0.8
+    },
+    {
+      "type":"keyword",
+      "value":"voltage",
+      "questions":[
+        "mopv0qoAZDgScCB",
+        "X8udiUQ8fN6F27C"
+      ],
+      "score":0.4
+    },
+    {
+      "type":"keyword",
+      "value":"flux",
+      "questions":[
+        "r87LkYcgqyOFmCF",
+        "mwZPFrIykOY8ZlZ"
+      ],
+      "score":0.4
+    }*/
+],
       currentTab: 0,
       tab: null,
       items: [
@@ -234,8 +305,6 @@ export default {
         x.push(data[i].timestamp);
         y.push(data[i].score);
       }
-      console.log(x);
-      console.log(y);
       this.fillData(x, y);
     },
     fillData (x, y) {
@@ -252,26 +321,21 @@ export default {
     },
     endLectureMethod() {
       window.onbeforeunload = function() {}
-      this.socket.send(JSON.stringify({ type: "end_lecture" })); 
-      this.socket.close();
-      post(`/lectures/live/teacher/${this.id}/end`);
-      console.log("Ending lecture");
+      this.socket.send(JSON.stringify({ type: "end_lecture" }))
+      this.socket.close()
+      post(`/lectures/live/teacher/${this.id}/end`)
+      console.log("Ending lecture")
       store.commit("setEndLecture", false)
       setLectures()
+    },
+    showCategory(index) {
+      this.displayQuestions = [...this.questions]
+      const q = this.topics[index].questions
+      this.displayQuestions = this.displayQuestions.filter(question => q.includes(question.question_uid))
     }
   },
   mounted () {
     this.$emit('startlecture', this.id);
-
-    get(`/lectures/exists/${this.id}`).then((response) => {
-      if(response.success) {
-        if(!response.data.exists) {
-          console.log("Lecture doesn't exist")
-          //this.$router.push({ path: '/dashboard' });
-          //this.$emit('nonexistant');
-        }
-      }
-    });
 
     this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.id}`);
     var self = this;
@@ -299,13 +363,17 @@ export default {
         }
       } else if(data.type == "new_question") {
         self.questions.push({
-          text: data.question,
-          id: self.questions.length,
+          question_uid: data.question_uid,
+          creator_uid: data.creator_uid,
+          question: data.question,
           dismiss: false
         })
+        self.displayQuestions = [...self.questions]
+      } else if(data.type == "ques_categor") {
+        self.topics = data.categories
       } else if(data.type == "error") {
         self.endLectureMethod()
-        self.$router.replace({ name: 'Dashboard'})
+        //self.$router.replace({ name: 'Dashboard'})
       }
     }
   },
@@ -379,5 +447,16 @@ html {
 
 span {
   font-family: var(--main-font);
+}
+
+.topic {
+  background-color: #EEEEEE;
+  border-radius: 10px; 
+  padding: 5px 7px; 
+  text-align: center;
+}
+
+.topic:hover {
+  cursor: pointer;
 }
 </style>

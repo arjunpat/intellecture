@@ -29,7 +29,7 @@
                 <v-row align="center" justify="center">
                     <v-col  cols="12" sm="6">
                         <v-select
-                            :items="(classes.length > 0) ? classes : ['No classes to show']"
+                            :items="(classes && classes.length > 0) ? classes : ['No classes to show']"
                             item-value="uid"
                             item-text="name"
                             label="Class name"
@@ -92,6 +92,7 @@ export default {
           class_uid: this.chosenClass,
           name: this.lectureName
         }).then((data) => {
+          console.log(data);
           this.$router.push({ path: '/lecture/' + data.data.lecture_uid })
         });
       } else {

@@ -77,6 +77,7 @@ export function setLectures() {
         throw result
       for (let indexClass of result.data) {
         get(`/lectures/get/${indexClass.uid}`).then((data)=>{
+          store.commit("setLectures", null);
           for (let item of data.data) {
             item.className = indexClass.name;
           }
