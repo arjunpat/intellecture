@@ -105,16 +105,25 @@ router.post('/student/:lecture_uid/score', mw.auth, async (req, res) => {
 });
 
 router.post('/student/:lecture_uid/question', mw.auth, async (req, res) => {
-  let { lecture_uid } = req.params;
+  // basic question test stuff
+  let { question } = req.body;
 
-  // TODO consider removing this
+  if (typeof question !== 'string') {
+    return res.send(responses.error());
+  }
+
+  if (/(\r\n|\r|\n)/.test(question)) {
+    return res.send(responses.error('newline_not_allowed'));
+  }
+  
+  // actual db stuff now that question is good
+  let { lecture_uid } = req.params;
   let lecture = await db.lectures.getLecture(lecture_uid);
 
   if (
     !lecture
     || typeof lecture.start_time !== 'number'
     || typeof lecture.end_time === 'number'
-    || typeof req.body.question !== 'string'
   )
     return res.send(responses.error());
 

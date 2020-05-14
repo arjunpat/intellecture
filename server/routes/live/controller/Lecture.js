@@ -1,6 +1,7 @@
 const db = require('../../../models');
 const pub = db.redis.conn;
 const { genUnderstandingScore, toStudent, toTeacher } = require('../helpers');
+const extract = require('./extract');
 
 class Lecture {
   constructor(lecture_uid, pub) {
@@ -64,13 +65,16 @@ class Lecture {
     );
     this.questions.push({
       creator_uid,
-      question
+      question,
+      // temp UID
+      uid: Math.round(Math.random() * 10e9) + ''
     });
     this.sendToTeachers({
       type: 'new_question',
       creator_uid,
       question
     });
+    this.updateTeachersQuestions();
   }
 
   async addStudent(student_uid) {
@@ -125,6 +129,11 @@ class Lecture {
     
     // recordkeeping / stats
     this.timing.lastTeacherUpdate = Date.now();
+  }
+
+  updateTeachersQuestions() {
+    let result = extract(this.questions);
+    console.log(result);
   }
 
   getScore() {
