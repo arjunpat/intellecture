@@ -18,6 +18,9 @@
     "mysql": "^2.18.1",
     "nodemon": "^2.0.3",
     "redis": "^3.0.2",
+    "retext": "^7.0.1",
+    "retext-keywords": "^6.0.0",
+    "retext-pos": "^3.0.0",
     "ws": "^7.2.3"
   }
 }

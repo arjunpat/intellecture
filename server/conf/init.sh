@@ -24,3 +24,4 @@ setenforce Permissive
 
 echo "1. run sudo mysql_secure_installation and setup"
 echo "2. add nginx config file and restart nginx"
+echo "3. disable snapshotting"

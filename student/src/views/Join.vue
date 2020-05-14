@@ -173,10 +173,11 @@ export default {
         this.redirectToRoom()
       } else {
         // Sign user in if not already signed in
+        this.currentError = ''
         signInGoogle().then((result) => {
           this.redirectToRoom()
         }).catch((err) => {
-          this.currentError = 'There was an error signing in!'
+          this.currentError = 'There was an error signing in! Please try again later.'
         })
       }
     },
@@ -184,6 +185,7 @@ export default {
       // Check if room exists
       this.validRoomCode = true
       this.$refs['form'].validate()
+      this.currentError = ''
       get(`/lectures/exists/${this.roomCode}`).then((response) => {
         if (!response.success)
           throw response.error
@@ -201,6 +203,7 @@ export default {
       })
     },
     signOut() {
+      this.currentError = ''
       signOut().catch((err) => {
         this.currentError = 'There was an error signing out!'
       })

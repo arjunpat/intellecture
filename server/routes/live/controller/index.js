@@ -2,8 +2,9 @@ const redis = require('redis');
 const Lecture = require('./Lecture.js');
 const { toLectureUid, toController } = require('../helpers');
 
+const db = require('../../../models');
+const pub = db.redis.conn;
 const sub = redis.createClient(process.env.REDIS_URL);
-const pub = redis.createClient(process.env.REDIS_URL);
 
 const lectures = {};
 

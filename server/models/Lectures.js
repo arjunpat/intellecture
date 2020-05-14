@@ -1,7 +1,8 @@
 
 class Lectures {
-  constructor(mysql) {
+  constructor(mysql, redis) {
     this.mysql = mysql;
+    this.redis = redis;
   }
 
   createLecture(lecture_uid, class_uid, name) {
@@ -13,8 +14,11 @@ class Lectures {
     });
   }
 
-  getLecture(lecture_uid) {
-    return this.mysql.query(
+  async getLecture(lecture_uid) {
+    let d = await this.redis.getLecture(lecture_uid);
+    if (d) return d;
+
+    d = await this.mysql.query(
       `SELECT
         a.uid,
         a.created_at,
@@ -31,33 +35,32 @@ class Lectures {
       ON
         a.class_uid = b.uid`,
       [lecture_uid]
-    ).then(d => d.length === 1 && d[0]);
+    );
+
+    if (d.length === 1) {
+      await this.redis.setLecture(lecture_uid, d[0]);
+      return d[0];
+    }
+    return false;
   }
 
-  startLecture(uid, start_time) {
-    return this.mysql.update('lectures', {
+  async startLecture(lecture_uid, start_time) {
+    await this.mysql.update('lectures', {
       start_time
     }, {
-      uid
+      uid: lecture_uid
     });
+    await this.redis.delLecture(lecture_uid);
   }
 
-  endLecture(uid, end_time) {
-    return this.mysql.update('lectures', {
-      end_time
-    }, {
-      uid
-    });
-  }
-
-  endLecture(lecture_uid, end_time) {
-    return this.mysql.update('lectures', {
+  async endLecture(lecture_uid, end_time) {
+    await this.mysql.update('lectures', {
       end_time
     }, {
       uid: lecture_uid
     });
+    await this.redis.delLecture(lecture_uid);
   }
-
 
   // analytics/aggregation
   getClassLectures(class_uid) {
@@ -78,13 +81,6 @@ class Lectures {
         accounts b
       ON
         a.account_uid = b.uid`,
-      [lecture_uid]
-    );
-  }
-
-  getFullLog(lecture_uid) {
-    return this.mysql.query(
-      'SELECT elapsed AS ts, account_uid AS uid, value AS val FROM lecture_log WHERE lecture_uid = ?',
       [lecture_uid]
     );
   }

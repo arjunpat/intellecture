@@ -35,11 +35,13 @@ CREATE TABLE IF NOT EXISTS lecture_log (
 );
 
 CREATE TABLE IF NOT EXISTS lecture_qs (
+  uid VARCHAR(20) PRIMARY KEY,
   lecture_uid VARCHAR(20),
   account_uid VARCHAR(36),
   elapsed BIGINT UNSIGNED,
   question TINYTEXT,
-  CONSTRAINT PRIMARY KEY (lecture_uid, account_uid, elapsed)
+  INDEX(lecture_uid),
+  INDEX(account_uid)
 );
 
 CREATE TABLE IF NOT EXISTS lecture_us (
