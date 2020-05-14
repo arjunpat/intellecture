@@ -1,7 +1,11 @@
 const db = require('../../../models');
 const pub = db.redis.conn;
 const { genUnderstandingScore, toStudent, toTeacher } = require('../helpers');
+const { genId } = require('../../../lib/helpers');
 const extract = require('./extract');
+
+const SCORE_UPDATE_MAX_INTERVAL = 1000;
+const QUESTION_CAT_MAX_INTERVAL = 10000;
 
 class Lecture {
   constructor(lecture_uid, pub) {
@@ -57,7 +61,9 @@ class Lecture {
   }
 
   async addQuestion(creator_uid, question) {
+    let uid = genId(15);
     await db.lectureQs.add(
+      uid,
       this.lecture_uid,
       this.elapsed(),
       creator_uid,
@@ -66,11 +72,11 @@ class Lecture {
     this.questions.push({
       creator_uid,
       question,
-      // temp UID
-      uid: Math.round(Math.random() * 10e9) + ''
+      uid
     });
     this.sendToTeachers({
       type: 'new_question',
+      question_uid: uid,
       creator_uid,
       question
     });
@@ -108,15 +114,15 @@ class Lecture {
 
   updateTeachers() {
     // wait before updating the teacher
-    if (this.timeout) return;
+    if (this.timeoutScore) return;
 
     let now = Date.now();
     let lastUpdate = now - this.timing.lastTeacherUpdate;
-    if (lastUpdate < 1000) {
-      this.timeout = setTimeout(() => {
-        this.timeout = undefined;
+    if (lastUpdate < SCORE_UPDATE_MAX_INTERVAL) {
+      this.timeoutScore = setTimeout(() => {
+        this.timeoutScore = undefined;
         this.updateTeachers()
-      }, 1100 - lastUpdate);
+      }, SCORE_UPDATE_MAX_INTERVAL + 100 - lastUpdate);
       return;
     }
 
@@ -131,9 +137,27 @@ class Lecture {
     this.timing.lastTeacherUpdate = Date.now();
   }
 
-  updateTeachersQuestions() {
-    let result = extract(this.questions);
-    console.log(result);
+  async updateTeachersQuestions() {
+    // need at least 10 questions
+    if (this.questions.length < 5 || this.timeoutQs) return;
+
+    let now = Date.now();
+    let lastUpdate = now - this.timing.lastQuesCategorization;
+    if (lastUpdate < QUESTION_CAT_MAX_INTERVAL) {
+      this.timeoutQs = setTimeout(() => {
+        this.timeoutQs = undefined;
+        this.updateTeachersQuestions()
+      }, QUESTION_CAT_MAX_INTERVAL + 100 - lastUpdate);
+      return;
+    }
+
+    let result = await extract(this.questions);
+    this.sendToTeachers({
+      type: 'ques_categor',
+      categories: result.slice(0, 5)
+    });
+
+    this.timing.lastQuesCategorization = Date.now();
   }
 
   getScore() {
@@ -152,7 +176,8 @@ class Lecture {
   initTimings(now = Date.now()) {
     this.timing = {
       lastMsg: now,
-      lastTeacherUpdate: now
+      lastTeacherUpdate: now,
+      lastQuesCategorization: now
     }
   }
 
