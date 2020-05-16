@@ -21,7 +21,7 @@ router.get('/teacher/:lecture_uid', mw.websocket, mw.auth, async (req, res) => {
   let socket = await handleUpgrade(wss, req);
 
   let lecture = await db.lectures.getLecture(lecture_uid);
-  if (lecture.owner_uid !== req.uid) {
+  if (lecture.account_uid !== req.uid) {
     socket.json({
       type: 'error',
       error: 'permissions'
@@ -76,35 +76,40 @@ router.get('/student/:lecture_uid', mw.websocket, mw.auth, async (req, res) => {
   handleStudent(lecture_uid, req.uid, socket);
 });
 
+
+async function attachLecture(req, res, next) {
+  let { lecture_uid } = req.params;
+  let lecture = await db.lectures.getLecture(lecture_uid);
+
+  if (
+    lecture
+    && typeof lecture.start_time === 'number'
+    && typeof lecture.end_time !== 'number'
+  ) {
+    req.lecture = lecture;
+    return next();
+  }
+  res.send(responses.error());
+}
+
 function isValidScore(value) {
   return typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 10;
 }
 
-router.post('/student/:lecture_uid/score', mw.auth, async (req, res) => {
-  let { lecture_uid } = req.params;
-
-  // TODO consider removing this
-  let lecture = await db.lectures.getLecture(lecture_uid);
-
-  if (
-    !lecture
-    || typeof lecture.start_time !== 'number'
-    || typeof lecture.end_time === 'number'
-    || !isValidScore(req.body.score)
-  ) {
+router.post('/student/:lecture_uid/score', mw.auth, attachLecture, async (req, res) => {
+  if (!isValidScore(req.body.score))
     return res.send(responses.error());
-  }
 
-  publish(lecture_uid, {
+  publish(req.params.lecture_uid, {
     type: 'ssu', // student score update
     student_uid: req.uid,
     score: req.body.score
   });
 
-  res.send(responses.success());
+  res.send(responses.received());
 });
 
-router.post('/student/:lecture_uid/question', mw.auth, async (req, res) => {
+router.post('/student/:lecture_uid/question', mw.auth, attachLecture, async (req, res) => {
   // basic question test stuff
   let { question } = req.body;
 
@@ -115,37 +120,36 @@ router.post('/student/:lecture_uid/question', mw.auth, async (req, res) => {
   if (/(\r\n|\r|\n)/.test(question)) {
     return res.send(responses.error('newline_not_allowed'));
   }
-  
-  // actual db stuff now that question is good
-  let { lecture_uid } = req.params;
-  let lecture = await db.lectures.getLecture(lecture_uid);
 
-  if (
-    !lecture
-    || typeof lecture.start_time !== 'number'
-    || typeof lecture.end_time === 'number'
-  )
-    return res.send(responses.error());
-
-  publish(lecture_uid, {
+  publish(req.params.lecture_uid, {
     type: 'q', // question
     student_uid: req.uid,
     q: req.body.question
   });
 
-  res.send(responses.success());
+  res.send(responses.received());
 });
 
-router.post('/teacher/:lecture_uid/end', mw.auth, async (req, res) => {
-  let { lecture_uid } = req.params;
+router.post('/student/:lecture_uid/upvote', mw.auth, attachLecture, async (req, res) => {
+  if (!req.body.question_uid)
+    return res.send(responses.error());
+  
+  publish(req.params.lecture_uid, {
+    type: 'qu', // question upvote
+    student_uid: req.uid,
+    question_uid: req.body.question_uid
+  });
+  
+  res.send(responses.received());
+});
 
-  let lecture = await db.lectures.getLecture(lecture_uid);
-  if (lecture.owner_uid !== req.uid) {
+router.post('/teacher/:lecture_uid/end', mw.auth, attachLecture, async (req, res) => {
+  if (req.lecture.account_uid !== req.uid) {
     return res.send(responses.error('permissions'));
   }
 
-  publish(lecture_uid, { type: 'end' });
-  res.send(responses.success());
+  publish(req.params.lecture_uid, { type: 'end' });
+  res.send(responses.received());
 });
 
 module.exports = router;

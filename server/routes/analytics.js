@@ -10,7 +10,7 @@ async function lecturePerms(req, res, next) {
   console.log(lecture_uid);
 
   let lecture = await db.lectures.getLecture(lecture_uid);
-  if (lecture.owner_uid === req.uid)
+  if (lecture.account_uid === req.uid)
     return next();
   return res.send(responses.error('permissions'));
 }
