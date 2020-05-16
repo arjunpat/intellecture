@@ -69,7 +69,7 @@ class Lecture {
       return; // concerning??
 
     try {
-      await db.LectureQUpvotes.add(question_uid, suid, this.elapsed());
+      await db.lectureQUpvotes.add(question_uid, suid, this.elapsed());
       
       // db will error if already upvoted
       this.sendToTeachers({
@@ -101,12 +101,18 @@ class Lecture {
       creator_uid,
       question
     });
+    this.sendToStudents({
+      type: 'new_question',
+      question_uid: uid,
+      question
+    });
     this.updateTeachersQuestions();
   }
 
   async addStudent(student_uid) {
     this.sendToTeachers({
       type: 'student_join',
+      ts: Date.now(),
       uid: student_uid,
       ...await db.accounts.getBasicInfo(student_uid)
     });
@@ -117,6 +123,7 @@ class Lecture {
     delete this.scores[student_uid];
     this.sendToTeachers({
       type: 'student_leave',
+      ts: Date.now(),
       uid: student_uid
     });
     this.updateTeachers()

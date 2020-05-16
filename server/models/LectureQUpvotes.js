@@ -11,6 +11,25 @@ class LectureQUpvotes {
       elapsed
     });
   }
+
+  // analytics/aggregation
+  getStudents(question_uid) {
+    return this.mysql.query(
+      `SELECT
+        a.account_uid,
+        b.email,
+        b.first_name,
+        b.last_name,
+        b.photo
+      FROM
+        (SELECT account_uid, elapsed FROM lecture_q_upvotes WHERE question_uid = ?) a
+      LEFT JOIN
+        accounts b
+      ON
+        a.account_uid = b.uid`,
+      [question_uid]
+    );
+  }
 }
 
 module.exports = LectureQUpvotes;

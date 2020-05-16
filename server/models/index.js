@@ -32,6 +32,6 @@ module.exports = {
   lectureLog: new LectureLog(mysql),
   lectureQs: new LectureQs(mysql),
   lectureUs: new LectureUs(mysql),
-  LectureQUpvotes: new LectureQUpvotes(mysql),
+  lectureQUpvotes: new LectureQUpvotes(mysql),
   redis
 }

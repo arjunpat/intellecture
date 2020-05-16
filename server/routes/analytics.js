@@ -15,10 +15,16 @@ async function lecturePerms(req, res, next) {
   return res.send(responses.error('permissions'));
 }
 
-router.get('/lecture/students/:lecture_uid', mw.auth, lecturePerms, async (req, res) => {
+router.get('/lecture/:lecture_uid/students', mw.auth, lecturePerms, async (req, res) => {
   let { lecture_uid } = req.params;
 
   res.send(responses.success(await db.lectures.getStudents(lecture_uid)));
+});
+
+router.get('/lecture/:lecture_uid/question/:question_uid/upvotes', async (req, res) => {
+  let { question_uid } = req.params;
+
+  res.send(responses.success(await db.lectureQUpvotes.getStudents(question_uid)));
 });
 
 module.exports = router;
