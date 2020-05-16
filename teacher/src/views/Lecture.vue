@@ -95,7 +95,7 @@
                         v-bind:key="n"
                     >
                         <v-list-item-content>
-                        <v-list-item-title><div style="display: inline-block; font-size: 20px;" class="topic" @click="showCategory(n-1)">{{ topics[n-1].value }}</div></v-list-item-title>
+                        <v-list-item-title><div style="display: inline-block; font-size: 20px;" class="topic" @click="showCategory(n-1)">{{ topics[n-1].value }}</div><div id="topic-quantity" class="ml-3">{{ topics[n-1].questions.length }}</div></v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
                     </v-card-text>
@@ -373,7 +373,7 @@ export default {
         self.topics = data.categories
       } else if(data.type == "error") {
         self.endLectureMethod()
-        //self.$router.replace({ name: 'Dashboard'})
+        self.$router.replace({ name: 'Dashboard'})
       }
     }
   },
@@ -458,5 +458,14 @@ span {
 
 .topic:hover {
   cursor: pointer;
+}
+
+#topic-quantity {
+  display: inline-block; 
+  font-size: 20px;
+  background-color: #E1F5FE;
+  border-radius: 10px; 
+  padding: 5px 7px; 
+  text-align: center;
 }
 </style>
