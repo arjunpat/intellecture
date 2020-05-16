@@ -6,22 +6,22 @@ class Classes {
 
   ownsClass(class_uid, user_uid) {
     return this.mysql.query(
-      'SELECT uid FROM classes WHERE uid = ? AND owner_uid = ?',
+      'SELECT uid FROM classes WHERE uid = ? AND account_uid = ?',
       [class_uid, user_uid]
     ).then(d => d.length === 1);
   }
 
-  createClass(class_uid, owner_uid, name) {
+  createClass(class_uid, account_uid, name) {
     return this.mysql.insert('classes', {
       uid: class_uid,
       created_at: Date.now(),
-      owner_uid,
+      account_uid,
       name
     });
   }
 
-  getUserClasses(owner_uid) {
-    return this.mysql.query('SELECT uid, created_at, name FROM classes WHERE owner_uid = ?', [owner_uid]);
+  getUserClasses(account_uid) {
+    return this.mysql.query('SELECT uid, created_at, name FROM classes WHERE account_uid = ?', [account_uid]);
   }
 }
 

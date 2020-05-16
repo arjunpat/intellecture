@@ -21,7 +21,7 @@ router.get('/teacher/:lecture_uid', mw.websocket, mw.auth, async (req, res) => {
   let socket = await handleUpgrade(wss, req);
 
   let lecture = await db.lectures.getLecture(lecture_uid);
-  if (lecture.owner_uid !== req.uid) {
+  if (lecture.account_uid !== req.uid) {
     socket.json({
       type: 'error',
       error: 'permissions'
@@ -140,7 +140,7 @@ router.post('/teacher/:lecture_uid/end', mw.auth, async (req, res) => {
   let { lecture_uid } = req.params;
 
   let lecture = await db.lectures.getLecture(lecture_uid);
-  if (lecture.owner_uid !== req.uid) {
+  if (lecture.account_uid !== req.uid) {
     return res.send(responses.error('permissions'));
   }
 

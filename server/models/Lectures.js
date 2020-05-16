@@ -26,7 +26,7 @@ class Lectures {
         a.name as lecture_name,
         a.start_time,
         a.end_time,
-        b.owner_uid,
+        b.account_uid,
         b.name as class_name
       FROM
         (SELECT uid, created_at, class_uid, name, start_time, end_time FROM lectures WHERE uid = ?) a
