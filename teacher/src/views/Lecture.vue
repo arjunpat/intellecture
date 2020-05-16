@@ -105,11 +105,26 @@
                 <v-col cols="8">
                 <ul style="list-style-type: none; font-family: var(--main-font);">
                     <li v-for="question in displayQuestions" v-bind:key="question.question_uid" v-show="!question.dismiss">
+                    
                     <v-banner>
-                        {{question.question}}
-                        <template v-slot:actions>
-                        <v-btn text color="primary" v-on:click="dismiss(question)">Dismiss</v-btn>
+                      <v-tooltip right>
+                        <template v-slot:activator="{ on }">
+                         <span v-on="on">{{question.question}}</span>
                         </template>
+                        <span>
+                          {{ getStudentById(question.creator_uid).first_name }} {{ getStudentById(question.creator_uid).last_name }}
+                          <v-avatar size="20px" class="ml-1">
+                          <img
+                            alt="Avatar"
+                            :src="getStudentById(question.creator_uid).photo"
+                            style="background-color: #F5F5F5;"
+                          >
+                          </v-avatar>
+                        </span>
+                      </v-tooltip>
+                      <template v-slot:actions>
+                        <v-btn text color="primary" v-on:click="dismiss(question)">Dismiss</v-btn>
+                      </template>
                     </v-banner>
                     </li>
                 </ul>
@@ -332,6 +347,9 @@ export default {
       this.displayQuestions = [...this.questions]
       const q = this.topics[index].questions
       this.displayQuestions = this.displayQuestions.filter(question => q.includes(question.question_uid))
+    },
+    getStudentById(id) {
+      return this.students.find(student => student.uid == id)
     }
   },
   mounted () {
@@ -373,7 +391,7 @@ export default {
         self.topics = data.categories
       } else if(data.type == "error") {
         self.endLectureMethod()
-        self.$router.replace({ name: 'Dashboard'})
+        //self.$router.replace({ name: 'Dashboard'})
       }
     }
   },
