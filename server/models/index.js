@@ -3,14 +3,15 @@ const { MYSQL_USER, MYSQL_PASS, MYSQL_HOST, MYSQL_DB } = process.env;
 
 const MySQL = require('../lib/MySQL');
 
-const Lectures = require('./Lectures');
 const Classes = require('./Classes');
 const Accounts = require('./Accounts');
 const Feedback = require('./Feedback');
+const Lectures = require('./Lectures');
 
 const LectureLog = require('./LectureLog');
 const LectureQs = require('./LectureQs');
 const LectureUs = require('./LectureUs');
+const LectureQUpvotes = require('./LectureQUpvotes');
 
 const Redis = require('../lib/Redis');
 const redis = new Redis();
@@ -31,5 +32,6 @@ module.exports = {
   lectureLog: new LectureLog(mysql),
   lectureQs: new LectureQs(mysql),
   lectureUs: new LectureUs(mysql),
+  LectureQUpvotes: new LectureQUpvotes(mysql),
   redis
 }

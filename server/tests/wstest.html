@@ -85,6 +85,15 @@
     });
   }
 
+  async function upvoteQuestion(question_uid) {
+    return fetch(hostp + '/lectures/live/student/' + lecture_uid + '/upvote', {
+      ...postStuff,
+      body: JSON.stringify({
+        question_uid
+      })
+    });
+  }
+
   async function endLecture() {
     fetch(hostp + '/lectures/live/teacher/' + lecture_uid + '/end', {
       ...postStuff,

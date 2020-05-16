@@ -2,8 +2,6 @@ const redis = require('redis');
 const Lecture = require('./Lecture.js');
 const { toLectureUid, toController } = require('../helpers');
 
-const db = require('../../../models');
-const pub = db.redis.conn;
 const sub = redis.createClient(process.env.REDIS_URL);
 
 const lectures = {};
@@ -39,7 +37,7 @@ sub.on('message', (channel, msg) => {
 });
 
 async function initLecture(lecture_uid) {
-  let lecture = new Lecture(lecture_uid, pub);
+  let lecture = new Lecture(lecture_uid);
   await lecture.init();
 
   lectures[lecture_uid] = lecture;

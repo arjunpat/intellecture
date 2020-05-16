@@ -8,10 +8,11 @@ const SCORE_UPDATE_MAX_INTERVAL = 1000;
 const QUESTION_CAT_MAX_INTERVAL = 10000;
 
 class Lecture {
-  constructor(lecture_uid, pub) {
+  constructor(lecture_uid) {
     this.lecture_uid = lecture_uid;
 
     this.questions = [];
+    this.questionUpvotes = {};
     this.scores = {};
 
     this.initTimings();
@@ -47,6 +48,9 @@ class Lecture {
       case 'q': // question
         this.addQuestion(data.student_uid, data.q);
         break;
+      case 'qu': // question upvote
+        this.upvoteQuestion(data.question_uid, data.student_uid);
+        break;
       case 'end': // end lecture
         this.end();
         break;
@@ -58,6 +62,22 @@ class Lecture {
     this.sendToTeachers({ type: 'end_lecture' });
     this.sendToStudents({ type: 'end_lecture' });
     this.ended = true;
+  }
+
+  async upvoteQuestion(question_uid, suid) {
+    if (typeof this.questionUpvotes[question_uid] !== 'number')
+      return; // concerning??
+
+    try {
+      await db.LectureQUpvotes.add(question_uid, suid, this.elapsed());
+      
+      // db will error if already upvoted
+      this.sendToTeachers({
+        type: 'question_update',
+        question_uid,
+        upvotes: ++this.questionUpvotes[question_uid]
+      });
+    } catch (e) {}
   }
 
   async addQuestion(creator_uid, question) {
@@ -74,6 +94,7 @@ class Lecture {
       question,
       uid
     });
+    this.questionUpvotes[uid] = 0;
     this.sendToTeachers({
       type: 'new_question',
       question_uid: uid,
