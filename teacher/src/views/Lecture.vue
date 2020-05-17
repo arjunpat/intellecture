@@ -4,6 +4,16 @@
       fluid
     >
       <v-card>
+
+      <transition name="fade">
+        <div
+          v-show="snackbar"
+          id="snackbar"
+        >
+        {{ snackbarMessage }}
+        </div>
+      </transition>
+
       <v-card-title>
         <h1 class="display-1">Lecture: <strong><span style="font-family: 'Noto Sans'">{{ lectureName }}</span></strong></h1>
       </v-card-title>
@@ -158,7 +168,7 @@
                 <v-col cols="8">
                 <ul style="list-style-type: none">
                     <li v-for="student in students" v-bind:key="student.id">
-                    <v-banner>
+                    <v-banner style="font-family: var(--main-font);">
                         <v-avatar
                           size="42px"
                           class="mr-3"
@@ -169,7 +179,10 @@
                             style="background-color: #F5F5F5;"
                           >
                         </v-avatar>
-                      {{student.first_name}} {{student.last_name}}
+                      {{ student.first_name }} {{ student.last_name }}
+                      <template v-slot:actions>
+                        <span style="font-size: 15px; color: #BDBDBD;">Joined {{ formatUnix(student.ts) }}</span>
+                      </template>
                     </v-banner>
                     </li>
                 </ul>
@@ -286,8 +299,7 @@ export default {
         "mwZPFrIykOY8ZlZ"
       ],
       "score":0.4
-    }*/
-],
+    }*/],
       currentTab: 0,
       tab: null,
       items: [
@@ -297,7 +309,10 @@ export default {
       understandingData: [],
       socketdata: "",
       shortened: false,
-      shortentext: "Shorten"
+      shortentext: "Shorten",
+      snackbar: false,
+      timeout: 1000,
+      snackbarMessage: ''
     }
   },
   methods: {
@@ -350,6 +365,20 @@ export default {
     },
     getStudentById(id) {
       return this.students.find(student => student.uid == id)
+    },
+    showSnackBar(message) {
+      this.snackbarMessage = message;
+      this.snackbar = true;
+      setTimeout(() => {
+        this.snackbar = false;
+      }, this.timeout);
+    },
+    formatUnix(unix_timestamp) {
+      if (unix_timestamp==undefined) {
+        return "";
+      }
+      let date = new Date(unix_timestamp);
+      return date.toLocaleTimeString();
     }
   },
   mounted () {
@@ -365,7 +394,10 @@ export default {
         self.lectureName = data.lecture_name
       } else if(data.type == "student_join") {
         self.students.push(data)
+        self.showSnackBar(`${ self.students[self.students.length-1].first_name } ${ self.students[self.students.length-1].last_name } joined`)
       } else if(data.type == "student_leave") {
+        const left = self.students.find(student => student.uid == data.uid)
+        self.showSnackBar(`${ left.first_name } ${ left.last_name } left`)
         self.students = self.students.filter(function( obj ) {
             return obj.uid !== data.uid
         });
@@ -485,5 +517,22 @@ span {
   border-radius: 10px; 
   padding: 5px 7px; 
   text-align: center;
+}
+
+#snackbar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .3s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>
