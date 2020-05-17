@@ -9,7 +9,7 @@ import { toController, toStudent, toLectureUid } from '../helpers';
 import { Socket } from '../../../types';
 
 const lectures = {};
-const Broadcaster = require('../Broadcaster');
+import Broadcaster from '../Broadcaster';
 
 function publish(lecture_uid: string, obj: object) {
   pub.publish(toController(lecture_uid), JSON.stringify(obj));

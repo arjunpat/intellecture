@@ -98,7 +98,6 @@
 
                   <v-btn
                     @click="submit"
-                    block
                   >
                     I'm done
                   </v-btn>

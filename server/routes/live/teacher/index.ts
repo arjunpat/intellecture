@@ -7,7 +7,7 @@ import { toTeacher, toLectureUid } from '../helpers';
 import { Socket } from '../../../types';
 
 const lectures = {};
-const Broadcaster = require('../Broadcaster');
+import Broadcaster from '../Broadcaster';
 
 function removeLecture(lecture_uid: string) {
   console.log('(t) removing lecture', lecture_uid);

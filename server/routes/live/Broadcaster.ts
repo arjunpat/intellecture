@@ -10,7 +10,7 @@ class Broadcaster {
   private sockets: Socket[];
   private lectureInfo;
 
-  constructor(lecture_uid) {
+  constructor(lecture_uid: string) {
     this.lecture_uid = lecture_uid;
     this.sockets = [];
     this.init();
@@ -72,7 +72,7 @@ class Broadcaster {
     }
   }
 
-  isEmpty() {
+  isEmpty(): boolean {
     return this.sockets.length === 0;
   }
 
@@ -81,4 +81,4 @@ class Broadcaster {
   }
 }
 
-module.exports = Broadcaster;
+export default Broadcaster;

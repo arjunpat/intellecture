@@ -133,6 +133,19 @@
                         </span>
                       </v-tooltip>
                       <template v-slot:actions>
+                        <v-tooltip top>
+                          <template v-slot:activator="{ on }">
+                            <div v-on="on" id="upvotes">{{question.upvotes}}</div>
+                          </template>
+                          <span>
+                            <div v-if="question.upvotedStudents.length > 0">
+                              <div v-for="student in question.upvotedStudents" v-bind:key="student.account_uid">
+                                {{student.first_name}} {{student.last_name}}
+                              </div>
+                            </div>
+                            <div v-else>No upvotes</div>
+                          </span>
+                        </v-tooltip>
                         <v-btn text color="primary" v-on:click="dismiss(question)">Dismiss</v-btn>
                       </template>
                     </v-banner>
@@ -224,25 +237,75 @@ export default {
   "type":"new_question",
   "question_uid":"jDuw6QJmDQiRfJo",
   "creator_uid":"rUJyP317iuZErNlhrn2",
-  "question":"What is the relationship between voltage and a Gaussian surface?"
+  "question":"What is the relationship between voltage and a Gaussian surface?",
+          upvotes: 20,
+          upvotedStudents: [
+            {
+      "account_uid":"4qZpEpLkqFgUMdiyjuwWt8lY6Hy2",
+      "email":"100021830@mvla.net",
+      "first_name":"Arjun",
+      "last_name":"Patrawala",
+      "photo":"https://lh3.googleusercontent.com/a-/AOh14GipzqLNsIg"
+    },
+    {
+      "account_uid":"rUJyP317iuZErNlhrnnyn8eT7uY2",
+      "email":"ajpat1234@gmail.com",
+      "first_name":"Arjun",
+      "last_name":"Patrawala",
+      "photo":"https://lh3.googleusercontent.com/a-/AOh14Gh1hi7LxPF0wFC8OM1j2xg"
+    } ]
 },
 {
   "type":"new_question",
   "question_uid":"X8udiUQ8fN6F27C",
   "creator_uid":"rUJyP317iuZErNlhrn2",
-  "question":"What is the relationship between voltage and a Gaussian surface?"
+  "question":"What is the relationship between voltage and a Gaussian surface?",
+          upvotes: 12,
+          upvotedStudents: [{
+      "account_uid":"4qZpEpLkqFgUMdiyjuwWt8lY6Hy2",
+      "email":"100021830@mvla.net",
+      "first_name":"Arjun",
+      "last_name":"Patrawala",
+      "photo":"https://lh3.googleusercontent.com/a-/AOh14GipzqLNsIg"
+    },
+    {
+      "account_uid":"rUJyP317iuZErNlhrnnyn8eT7uY2",
+      "email":"ajpat1234@gmail.com",
+      "first_name":"Arjun",
+      "last_name":"Patrawala",
+      "photo":"https://lh3.googleusercontent.com/a-/AOh14Gh1hi7LxPF0wFC8OM1j2xg"
+    }]
+
 },
 {
   "type":"new_question",
   "question_uid":"74i74G1UUuJJ13H",
   "creator_uid":"rUJyP317iuZErNlhrn2",
-  "question":"What is the relationship between voltage and a Gaussian surface?"
+  "question":"What is the relationship between voltage and a Gaussian surface?",
+          upvotes: 5,
+          upvotedStudents: [{
+      "account_uid":"4qZpEpLkqFgUMdiyjuwWt8lY6Hy2",
+      "email":"100021830@mvla.net",
+      "first_name":"Arjun",
+      "last_name":"Patrawala",
+      "photo":"https://lh3.googleusercontent.com/a-/AOh14GipzqLNsIg"
+    },
+    {
+      "account_uid":"rUJyP317iuZErNlhrnnyn8eT7uY2",
+      "email":"ajpat1234@gmail.com",
+      "first_name":"Arjun",
+      "last_name":"Patrawala",
+      "photo":"https://lh3.googleusercontent.com/a-/AOh14Gh1hi7LxPF0wFC8OM1j2xg"
+    }]
+
 },
 {
   "type":"new_question",
   "question_uid":"mwZPFrIykOY8ZlZ",
   "creator_uid":"rUJyP317iuZErNlhrn2",
-  "question":"What is the relationship between voltage and a Gaussian surface?"
+  "question":"What is the relationship between voltage and a Gaussian surface?",
+          upvotes: 0,
+          upvotedStudents: []
 }*/],
       displayQuestions: [],
       students: [],
@@ -379,10 +442,21 @@ export default {
       }
       let date = new Date(unix_timestamp);
       return date.toLocaleTimeString();
+    },
+    getUpvoteStudents(question_uid) {
+      var students = get(`/analytics/lecture/${this.id}/question/${question_uid}/upvotes`).then(result => {
+        if(result.success) {
+          return result.data
+        } else {
+          return new Array()
+        }
+      })
     }
   },
   mounted () {
     this.$emit('startlecture', this.id);
+
+    //this.displayQuestions = this.questions;
 
     this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.id}`);
     var self = this;
@@ -416,14 +490,21 @@ export default {
           question_uid: data.question_uid,
           creator_uid: data.creator_uid,
           question: data.question,
-          dismiss: false
+          dismiss: false,
+          upvotes: 0,
+          upvotedStudents: []
         })
         self.displayQuestions = [...self.questions]
       } else if(data.type == "ques_categor") {
         self.topics = data.categories
-      } else if(data.type == "error") {
+      } else if(data.type == "question_update") {
+        var question = self.questions.find(question => question.question_uid == data.question_uid)
+        question.upvotes++
+        question.upvotedStudents = getUpvoteStudents(data.question_uid)
+        self.questions.sort((a, b) => (a.upvotes > b.upvotes) ? 1 : -1)
+      }else if(data.type == "error") {
         self.endLectureMethod()
-        //self.$router.replace({ name: 'Dashboard'})
+        self.$router.replace({ name: 'Dashboard'})
       }
     }
   },
@@ -532,7 +613,16 @@ span {
 .fade-enter-active, .fade-leave-active {
   transition: opacity .3s;
 }
+
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
+}
+
+#upvotes {
+  display: inline-block;
+  background-color: #DCEDC8;
+  padding: 0px 5px;
+  border-radius: 5px;
+  font-size: 20px;
 }
 </style>

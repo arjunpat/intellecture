@@ -74,9 +74,7 @@ export default {
         }).then((result) => {
           if (!result.success)
             throw result
-
           this.id = result.data.id;
-          console.log(this.id + " posted");
         }).catch((err) => {
           this.error = 'There was a problem trying to submit your feedback'
         })
