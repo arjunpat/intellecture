@@ -1,9 +1,10 @@
-const router = require('express').Router();
+import { Router } from 'express';
+const router = Router();
 
-const mw = require('../middleware');
-const responses = require('../lib/responses');
+import * as mw from '../middleware';
+import  * as responses from '../lib/responses';
 
-const db = require('../models');
+import db from '../models';
 
 async function lecturePerms(req, res, next) {
   let { lecture_uid } = req.params;
@@ -26,4 +27,4 @@ router.get('/lecture/:lecture_uid/question/:question_uid/upvotes', mw.auth, lect
   res.send(responses.success(await db.lectureQUpvotes.getStudents(question_uid)));
 });
 
-module.exports = router;
+export default router;

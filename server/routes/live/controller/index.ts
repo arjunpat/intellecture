@@ -1,14 +1,13 @@
-const redis = require('redis');
-const Lecture = require('./Lecture.js');
-const { toLectureUid, toController } = require('../helpers');
+import redis from 'redis';
+import Lecture from './Lecture.js';
+import { toLectureUid, toController } from '../helpers';
+import { REDIS_URL } from '../../../lib/config';
 
-const sub = redis.createClient(process.env.REDIS_URL);
-
+const sub = redis.createClient(REDIS_URL);
+const MAX_IDLE_MS = 10 * 60 * 1000; // 10 minutes
 const lectures = {};
 
-const MAX_IDLE_MS = 10 * 60 * 1000; // 10 minutes
-
-function removeLecture(lecture_uid) {
+function removeLecture(lecture_uid: string) {
   console.log('(c) removing lecture', lecture_uid);
   sub.unsubscribe(toController(lecture_uid));
   delete lectures[lecture_uid];
@@ -36,12 +35,10 @@ sub.on('message', (channel, msg) => {
   lectures[lecture_uid].dispatch(data);
 });
 
-async function initLecture(lecture_uid) {
+export default async function initLecture(lecture_uid) {
   let lecture = new Lecture(lecture_uid);
   await lecture.init();
 
   lectures[lecture_uid] = lecture;
   sub.subscribe(toController(lecture_uid));
 }
-
-module.exports = initLecture;

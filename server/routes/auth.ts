@@ -1,22 +1,25 @@
-const router = require('express').Router();
+import { Router } from 'express';
+const router = Router();
 
-const responses = require('../lib/responses');
-const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = process.env;
+import * as responses from '../lib/responses';
+import jwt from 'jsonwebtoken';
+import { JWT_SECRET } from '../lib/config';
 
-const db = require('../models');
-const mw = require('../middleware');
+import db from '../models';
+import * as mw from '../middleware';
 
-const admin = require('firebase-admin');
+import { Request } from '../types';
+
+import admin from 'firebase-admin';
 admin.initializeApp({
-  credential: admin.credential.cert(require('../credentials/firebase.json')),
+  credential: admin.credential.cert(require('../../credentials/firebase.json')),
   databaseURL: 'https://intellecture-6b3e6.firebaseio.com'
 });
 // admin.auth().listUsers().then(res => console.log(JSON.parse(JSON.stringify(res)).users[2]))
 
 const { NODE_ENV } = process.env;
 
-const cookieOpts = {
+const cookieOpts: any = {
   maxAge: 3 * (24 * 60 * 60 * 1000), // 3 days
   sameSite: (NODE_ENV === 'production') ? 'None' : undefined,
   secure: (NODE_ENV === 'production') ? true : undefined
@@ -32,13 +35,13 @@ router.post('/signin', async (req, res) => {
     return res.send(responses.error('bad_token'));
   }
   
-  let user = await admin.auth().getUser(uid);
+  let user: admin.auth.UserRecord = await admin.auth().getUser(uid);
   await db.accounts.createOrUpdate(
     uid,
-    user.email,
-    user.displayName.split(' ')[0],
-    user.displayName.split(' ')[1],
-    user.photoURL
+    user.email || '',
+    user.displayName?.split(' ')[0] || 'First Name',
+    user.displayName?.split(' ')[1] || 'Last Name',
+    user.photoURL || ''
   );
 
   let token = jwt.sign({
@@ -51,7 +54,7 @@ router.post('/signin', async (req, res) => {
   res.send(responses.success());
 });
 
-router.get('/profile', mw.auth, async (req, res) => {
+router.get('/profile', mw.auth, async (req: Request, res) => {
   let token = jwt.sign({
     iat: Date.now(),
     uid: req.uid
@@ -71,4 +74,4 @@ router.get('/signout', mw.auth, (req, res) => {
   res.send(responses.success());
 });
 
-module.exports = router;
+export default router;

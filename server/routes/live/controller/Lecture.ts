@@ -1,19 +1,32 @@
-const db = require('../../../models');
+import db from '../../../models';
 const pub = db.redis.conn;
-const { genUnderstandingScore, toStudent, toTeacher } = require('../helpers');
-const { genId } = require('../../../lib/helpers');
-const extract = require('./extract');
+import { genUnderstandingScore, toStudent, toTeacher } from '../helpers';
+import { genId } from '../../../lib/helpers';
+import extract from './extract';
 
 const SCORE_UPDATE_MAX_INTERVAL = 1000;
 const QUESTION_CAT_MAX_INTERVAL = 10000;
 
-class Lecture {
-  constructor(lecture_uid) {
-    this.lecture_uid = lecture_uid;
+interface Question {
+  uid: string,
+  creator_uid: string,
+  question: string
+}
 
-    this.questions = [];
-    this.questionUpvotes = {};
-    this.scores = {};
+export default class Lecture {
+  private lecture_uid: string;
+  private questions: Question[] = [];
+  private questionUpvotes: object = {};
+  private scores: object = {};
+  private lectureInfo: any;
+  private timing: any;
+  private ended: boolean = false;
+
+  private timeoutScore: NodeJS.Timer | undefined;
+  private timeoutQs: NodeJS.Timer | undefined;
+
+  constructor(lecture_uid: string) {
+    this.lecture_uid = lecture_uid;
 
     this.initTimings();
   }
@@ -29,7 +42,7 @@ class Lecture {
     this.lectureInfo = await this.readLectureInfo();
   }
 
-  dispatch(data) {
+  dispatch(data: any) {
     if (this.ended)
       return;
 
@@ -64,7 +77,7 @@ class Lecture {
     this.ended = true;
   }
 
-  async upvoteQuestion(question_uid, suid) {
+  async upvoteQuestion(question_uid: string, suid: string) {
     if (typeof this.questionUpvotes[question_uid] !== 'number')
       return; // concerning??
 
@@ -80,7 +93,7 @@ class Lecture {
     } catch (e) {}
   }
 
-  async addQuestion(creator_uid, question) {
+  async addQuestion(creator_uid: string, question: string) {
     let uid = genId(15);
     await db.lectureQs.add(
       uid,
@@ -129,7 +142,7 @@ class Lecture {
     this.updateTeachers()
   }
   
-  async updateStudentScore(student_uid, score) {
+  async updateStudentScore(student_uid: string, score: number) {
     await db.lectureLog.recordScoreChange(
       this.lecture_uid,
       this.elapsed(),
@@ -217,5 +230,3 @@ class Lecture {
     pub.publish(toStudent(this.lecture_uid), JSON.stringify(obj));
   }
 }
-
-module.exports = Lecture;

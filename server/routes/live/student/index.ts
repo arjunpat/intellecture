@@ -1,18 +1,21 @@
-const redis = require('redis');
-const db = require('../../../models');
-const pub = db.redis.conn;
-const sub = redis.createClient(process.env.REDIS_URL);
+import redis from 'redis';
+import db from '../../../models';
+import { REDIS_URL } from '../../../lib/config';
 
-const { toController, toStudent, toLectureUid } = require('../helpers');
+const pub = db.redis.conn;
+const sub = redis.createClient(REDIS_URL);
+
+import { toController, toStudent, toLectureUid } from '../helpers';
+import { Socket } from '../../../types';
 
 const lectures = {};
 const Broadcaster = require('../Broadcaster');
 
-function publish(lecture_uid, obj) {
+function publish(lecture_uid: string, obj: object) {
   pub.publish(toController(lecture_uid), JSON.stringify(obj));
 }
 
-function removeLecture(lecture_uid) {
+function removeLecture(lecture_uid: string) {
   console.log('(s) removing lecture', lecture_uid);
   sub.unsubscribe(toStudent(lecture_uid));
   delete lectures[lecture_uid];
@@ -28,7 +31,7 @@ setInterval(() => {
   }
 }, 10000);
 
-sub.on('message', (channel, msg) => {
+sub.on('message', (channel: string, msg: string) => {
   let lecture_uid = toLectureUid(channel);
   lectures[lecture_uid].sendAll(msg);
   
@@ -39,7 +42,7 @@ sub.on('message', (channel, msg) => {
   }
 });
 
-async function handleStudent(lecture_uid, student_uid, socket) {
+export default async function handleStudent(lecture_uid: string, student_uid: string, socket: Socket) {
   socket.uid = student_uid;
   socket.on('close', () => {
     publish(lecture_uid, {
@@ -59,5 +62,3 @@ async function handleStudent(lecture_uid, student_uid, socket) {
   }
   lectures[lecture_uid].add(socket);
 }
-
-module.exports = handleStudent;

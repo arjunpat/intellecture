@@ -1,10 +1,13 @@
+import MySQL from '../lib/MySQL';
 
-class LectureQUpvotes {
-  constructor(mysql) {
+export default class LectureQUpvotes {
+  private mysql: MySQL;
+
+  constructor(mysql: MySQL) {
     this.mysql = mysql;
   }
 
-  add(question_uid, account_uid, elapsed) {
+  add(question_uid: string, account_uid: string, elapsed: number) {
     return this.mysql.insert('lecture_q_upvotes', {
       question_uid,
       account_uid,
@@ -13,7 +16,7 @@ class LectureQUpvotes {
   }
 
   // analytics/aggregation
-  getStudents(question_uid) {
+  getStudents(question_uid: string): object {
     return this.mysql.query(
       `SELECT
         a.account_uid,
@@ -31,5 +34,3 @@ class LectureQUpvotes {
     );
   }
 }
-
-module.exports = LectureQUpvotes;

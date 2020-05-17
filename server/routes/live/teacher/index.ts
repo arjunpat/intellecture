@@ -1,12 +1,15 @@
-const redis = require('redis');
-const sub = redis.createClient(process.env.REDIS_URL);
+import redis from 'redis';
+import { REDIS_URL } from '../../../lib/config';
 
-const { toTeacher, toLectureUid } = require('../helpers');
+const sub = redis.createClient(REDIS_URL);
+
+import { toTeacher, toLectureUid } from '../helpers';
+import { Socket } from '../../../types';
 
 const lectures = {};
 const Broadcaster = require('../Broadcaster');
 
-function removeLecture(lecture_uid) {
+function removeLecture(lecture_uid: string) {
   console.log('(t) removing lecture', lecture_uid);
   sub.unsubscribe(toTeacher(lecture_uid));
   delete lectures[lecture_uid];
@@ -22,7 +25,7 @@ setInterval(() => {
   }
 }, 10000);
 
-sub.on('message', (channel, msg) => {
+sub.on('message', (channel: string, msg: string) => {
   let lecture_uid = toLectureUid(channel);
   lectures[lecture_uid].sendAll(msg);
   
@@ -33,7 +36,7 @@ sub.on('message', (channel, msg) => {
   }
 });
 
-async function handleTeacher(lecture_uid, teacher_uid, socket) {
+export default async function handleTeacher(lecture_uid: string, teacher_uid: string, socket: Socket) {
   // init socket
   socket.uid = teacher_uid;
 
@@ -43,5 +46,3 @@ async function handleTeacher(lecture_uid, teacher_uid, socket) {
   }
   lectures[lecture_uid].add(socket);
 }
-
-module.exports = handleTeacher;

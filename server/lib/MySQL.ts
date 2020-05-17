@@ -1,7 +1,9 @@
-const mysql = require('mysql');
+import mysql from 'mysql';
 
-class MySQL {
-  constructor(user, password, database, host) {
+export default class MySQL {
+  private conn: mysql.Connection;
+
+  constructor(user: string, password: string, database: string, host: string) {
     this.conn = mysql.createConnection({
       user,
       password,
@@ -17,14 +19,14 @@ class MySQL {
     }); */
   }
 
-  init(sql) {
-    sql = sql.split(';').map(e => e.trim());
+  init(sql: string) {
+    let split: string[] = sql.split(';').map(e => e.trim());
 
-    for (let i = 0; i < sql.length; i++) {
-      if (!sql[i])
+    for (let i = 0; i < split.length; i++) {
+      if (!split[i])
         continue;
 
-      this.query(sql[i], []).then(val => {
+      this.query(split[i], []).then(val => {
         // console.log(val)
       }).catch(err => {
         console.log(err);
@@ -33,10 +35,10 @@ class MySQL {
     }
   }
 
-  query(sql, vals) {
+  query(sql: string, vals: any[]): Promise<any> {
     // let loggable = sql.replace(/\r?\n|\r|\t|\s+/g, ' ');
     return new Promise((resolve, reject) => {
-      this.conn.query(sql, vals, (err, res) => {
+      this.conn.query(sql, vals, (err, res: any) => {
         if (err)
           reject(err);
 
@@ -45,8 +47,8 @@ class MySQL {
     });
   }
 
-  insert(table, obj) {
-    let values = [];
+  insert(table: string, obj: object) {
+    let values: string[] = [];
     let questions = '';
     let keys = '';
 
@@ -62,8 +64,8 @@ class MySQL {
     return this.query(`INSERT INTO ${table} (${keys}) VALUES (${questions})`, values);
   }
 
-  update(table, set, where) {
-    let values = [];
+  update(table: string, set: object, where: object) {
+    let values: string[] = [];
     let setString = '';
     let whereString = '';
 
@@ -83,6 +85,3 @@ class MySQL {
     return this.query(`UPDATE ${table} SET ${setString} WHERE ${whereString}`, values);
   }
 }
-
-
-module.exports = MySQL;

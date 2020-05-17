@@ -1,21 +1,23 @@
-const router = require('express').Router();
-const WebSocket = require('ws');
-const redis = require('redis');
+import { Router } from 'express';
+import WebSocket from 'ws';
+const router = Router();
 
-const responses = require('../../lib/responses');
-const mw = require('../../middleware');
+import * as responses from '../../lib/responses';
+import * as mw from '../../middleware';
 const wss = new WebSocket.Server({ noServer: true });
 
-const { handleUpgrade, toController } = require('./helpers');
-const db = require('../../models');
+import { handleUpgrade, toController } from './helpers';
+import { Request } from '../../types';
 
-function publish(lecture_uid, obj) {
+import db from '../../models';
+
+function publish(lecture_uid: string, obj: object) {
   db.redis.conn.publish(toController(lecture_uid), JSON.stringify(obj));
 }
 
-const handleTeacher = require('./teacher/');
-const initLecture = require('./controller');
-router.get('/teacher/:lecture_uid', mw.websocket, mw.auth, async (req, res) => {
+import handleTeacher from './teacher/';
+import initLecture from './controller';
+router.get('/teacher/:lecture_uid', mw.websocket, mw.auth, async (req: Request, res) => {
   let { lecture_uid } = req.params;
 
   let socket = await handleUpgrade(wss, req);
@@ -41,8 +43,8 @@ router.get('/teacher/:lecture_uid', mw.websocket, mw.auth, async (req, res) => {
   handleTeacher(lecture_uid, req.uid, socket);
 });
 
-const handleStudent = require('./student/');
-router.get('/student/:lecture_uid', mw.websocket, mw.auth, async (req, res) => {
+import handleStudent from './student/';
+router.get('/student/:lecture_uid', mw.websocket, mw.auth, async (req: Request, res) => {
   let { lecture_uid } = req.params;
 
   let socket = await handleUpgrade(wss, req);
@@ -96,7 +98,7 @@ function isValidScore(value) {
   return typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 10;
 }
 
-router.post('/student/:lecture_uid/score', mw.auth, attachLecture, async (req, res) => {
+router.post('/student/:lecture_uid/score', mw.auth, attachLecture, async (req: Request, res) => {
   if (!isValidScore(req.body.score))
     return res.send(responses.error());
 
@@ -109,7 +111,7 @@ router.post('/student/:lecture_uid/score', mw.auth, attachLecture, async (req, r
   res.send(responses.received());
 });
 
-router.post('/student/:lecture_uid/question', mw.auth, attachLecture, async (req, res) => {
+router.post('/student/:lecture_uid/question', mw.auth, attachLecture, async (req: Request, res) => {
   // basic question test stuff
   let { question } = req.body;
 
@@ -130,7 +132,7 @@ router.post('/student/:lecture_uid/question', mw.auth, attachLecture, async (req
   res.send(responses.received());
 });
 
-router.post('/student/:lecture_uid/upvote', mw.auth, attachLecture, async (req, res) => {
+router.post('/student/:lecture_uid/upvote', mw.auth, attachLecture, async (req: Request, res) => {
   if (!req.body.question_uid)
     return res.send(responses.error());
   
@@ -143,7 +145,7 @@ router.post('/student/:lecture_uid/upvote', mw.auth, attachLecture, async (req, 
   res.send(responses.received());
 });
 
-router.post('/teacher/:lecture_uid/end', mw.auth, attachLecture, async (req, res) => {
+router.post('/teacher/:lecture_uid/end', mw.auth, attachLecture, async (req: Request, res) => {
   if (req.lecture.account_uid !== req.uid) {
     return res.send(responses.error('permissions'));
   }
@@ -152,4 +154,4 @@ router.post('/teacher/:lecture_uid/end', mw.auth, attachLecture, async (req, res
   res.send(responses.received());
 });
 
-module.exports = router;
+export default router;

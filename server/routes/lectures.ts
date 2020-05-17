@@ -1,11 +1,13 @@
-const router = require('express').Router();
+import { Router } from 'express';
+const router = Router();
 
-const mw = require('../middleware');
-const responses = require('../lib/responses');
+import * as mw from '../middleware';
+import * as responses from '../lib/responses';
+import { Request } from '../types';
 
-const db = require('../models');
+import db from '../models';
 
-function genLectureId(length) {
+function genLectureId(length: number): string {
   let options = 'abcdefghijklmnopqrstuvwxyz';
   let id = '';
 
@@ -15,9 +17,10 @@ function genLectureId(length) {
   return id;
 }
 
-router.use('/live', require('./live/'));
+import live from './live/';
+router.use('/live', live);
 
-router.post('/create', mw.auth, async (req, res) => {
+router.post('/create', mw.auth, async (req: Request, res) => {
   let { name, class_uid } = req.body;
 
   let resp = await db.classes.ownsClass(class_uid, req.uid);
@@ -45,8 +48,4 @@ router.get('/exists/:lecture_uid', mw.auth, async (req, res) => {
   }));
 });
 
-router.get('/testing', (req, res) => {
-  res.sendFile(__dirname + '/testing.html');
-});
-
-module.exports = router;
+export default router;

@@ -1,10 +1,15 @@
-const db = require('../../models');
+import db from '../../models';
+import { Socket } from '../../types';
 
-function old(socket) {
+function old(socket: Socket): boolean {
   return socket.readyState === 2 || socket.readyState === 3 || !socket.isAlive;
 }
 
 class Broadcaster {
+  private lecture_uid: string;
+  private sockets: Socket[];
+  private lectureInfo;
+
   constructor(lecture_uid) {
     this.lecture_uid = lecture_uid;
     this.sockets = [];
@@ -34,7 +39,7 @@ class Broadcaster {
     }
   }
 
-  add(socket) {
+  add(socket: Socket) {
     socket.on('pong', () => socket.isAlive = true);
     socket.isAlive = true;
     this.sockets.push(socket);
@@ -42,7 +47,7 @@ class Broadcaster {
       socket.json(this.getLectureInfo());
   }
 
-  sendAll(txt) {
+  sendAll(txt: string) {
     for (let s of this.sockets) {
       if (s.readyState === 1) {
         s.send(txt);

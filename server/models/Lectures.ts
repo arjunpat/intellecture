@@ -1,11 +1,16 @@
+import MySQL from '../lib/MySQL';
+import Redis from '../lib/Redis';
 
-class Lectures {
-  constructor(mysql, redis) {
+export default class Lectures {
+  private mysql: MySQL;
+  private redis: Redis;
+
+  constructor(mysql: MySQL, redis: Redis) {
     this.mysql = mysql;
     this.redis = redis;
   }
 
-  createLecture(lecture_uid, class_uid, name) {
+  createLecture(lecture_uid: string, class_uid: string, name: string) {
     return this.mysql.insert('lectures', {
       uid: lecture_uid,
       created_at: Date.now(),
@@ -14,8 +19,8 @@ class Lectures {
     });
   }
 
-  async getLecture(lecture_uid) {
-    let d = await this.redis.getLecture(lecture_uid);
+  async getLecture(lecture_uid: string) {
+    let d: any = await this.redis.getLecture(lecture_uid);
     if (d) return d;
 
     d = await this.mysql.query(
@@ -44,7 +49,7 @@ class Lectures {
     return false;
   }
 
-  async startLecture(lecture_uid, start_time) {
+  async startLecture(lecture_uid: string, start_time: number) {
     await this.mysql.update('lectures', {
       start_time
     }, {
@@ -53,7 +58,7 @@ class Lectures {
     await this.redis.delLecture(lecture_uid);
   }
 
-  async endLecture(lecture_uid, end_time) {
+  async endLecture(lecture_uid: string, end_time: number) {
     await this.mysql.update('lectures', {
       end_time
     }, {
@@ -63,11 +68,11 @@ class Lectures {
   }
 
   // analytics/aggregation
-  getClassLectures(class_uid) {
+  getClassLectures(class_uid: string) {
     return this.mysql.query('SELECT uid, name, start_time, end_time FROM lectures WHERE class_uid = ?', [ class_uid ]);
   }
 
-  getStudents(lecture_uid) {
+  getStudents(lecture_uid: string): object {
     return this.mysql.query(
       `SELECT
         a.account_uid,
@@ -85,5 +90,3 @@ class Lectures {
     );
   }
 }
-
-module.exports = Lectures;

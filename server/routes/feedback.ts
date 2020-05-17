@@ -1,16 +1,17 @@
-const router = require('express').Router();
+import { Router } from 'express';
+const router = Router();
 
-const mw = require('../middleware');
-const helpers = require('../lib/helpers');
-const responses = require('../lib/responses');
+import * as mw from '../middleware';
+import * as responses from '../lib/responses';
+import { Request } from '../types';
 
-const db = require('../models');
+import db from '../models';
 
-function isValidStars(value) {
+function isValidStars(value: number): boolean {
   return typeof value === 'number' && Number.isInteger(value) && value > 0 && value <= 5;
 }
 
-router.post('/create', mw.auth, async (req, res) => {
+router.post('/create', mw.auth, async (req: Request, res) => {
   let { stars } = req.body;
 
   if (!isValidStars(stars))
@@ -22,7 +23,7 @@ router.post('/create', mw.auth, async (req, res) => {
   res.send(responses.success({ id }));
 });
 
-router.post('/update', mw.auth, async (req, res) => {
+router.post('/update', mw.auth, async (req: Request, res) => {
   let { id, stars, comments, tech_comments, diff_stars, helpful_stars } = req.body;
 
   if (typeof id !== 'number' || Date.now() - id > 30 * 60 * 1000) // 30 minutes
@@ -41,4 +42,4 @@ router.post('/update', mw.auth, async (req, res) => {
   res.send(responses.success());
 });
 
-module.exports = router;
+export default router;

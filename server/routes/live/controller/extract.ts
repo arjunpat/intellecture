@@ -1,13 +1,13 @@
-const retext = require('retext')
-const pos = require('retext-pos')
-const keywords = require('retext-keywords')
+import retext from 'retext';
+import pos from 'retext-pos';
+import keywords from 'retext-keywords';
 
 function prepareQuestions(questions) {
   return questions.length > 0 && questions.map(e => e.question.trim()).join('\n').toLowerCase().replace(/\?/g, '');
 }
 
-function processResult(questions, res) {
-  let result = [];
+function processResult(questions, res): QuestionCategory[] {
+  let result: QuestionCategory[] = [];
 
   // keyphrases
   for (let each of res.data.keyphrases) {
@@ -30,7 +30,7 @@ function processResult(questions, res) {
     }
 
     // iterate through the rest of matches to categorize
-    let lines = new Set();
+    let lines = new Set<string>();
     for (let match of each.matches) {
       for (let node of match.nodes) {
         lines.add(
@@ -54,7 +54,7 @@ function processResult(questions, res) {
 
     let key = each.matches[0].node.children[0].value;
 
-    let lines = new Set();
+    let lines = new Set<string>();
     for (let match of each.matches) {
       lines.add(
         questions[match.node.position.start.line - 1].uid
@@ -74,7 +74,7 @@ function processResult(questions, res) {
   return result;
 }
 
-function consolidate(result) {
+function consolidate(result: QuestionCategory[]): QuestionCategory[] {
   let map = {};
 
   for (let each of result) {
@@ -90,7 +90,15 @@ function consolidate(result) {
   return Object.values(map);
 }
 
-function extract(questions) {
+export interface QuestionCategory {
+  type: string,
+  value: string,
+  questions: string[],
+  score: number,
+  weight?: number
+}
+
+export default function extract(questions: object[]): Promise<object[]> {
   return new Promise((resolve, reject) => {
     console.time('extract');
     let input = prepareQuestions(questions);
@@ -102,4 +110,3 @@ function extract(questions) {
   });
 }
 
-module.exports = extract;

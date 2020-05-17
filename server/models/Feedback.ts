@@ -1,17 +1,20 @@
+import MySQL from '../lib/MySQL';
 
-class Accounts {
-  constructor(mysql) {
+export default class Accounts {
+  private mysql: MySQL;
+
+  constructor(mysql: MySQL) {
     this.mysql = mysql;
   }
 
-  create(account_uid, ts, stars) {
+  create(account_uid: string, ts: number, stars: number) {
     return this.mysql.query(
       'INSERT INTO feedback (account_uid, ts, stars) VALUES (?, ?, ?)',
       [account_uid, ts, stars]
     );
   }
 
-  update(account_uid, ts, stars, comments, tech_comments, diff_stars, helpful_stars) {
+  update(account_uid: string, ts: number, stars: number | null, comments: string | null, tech_comments: string | null, diff_stars: number | null, helpful_stars: number | null) {
     return this.mysql.query(
       `UPDATE
         feedback
@@ -28,4 +31,3 @@ class Accounts {
   }
 }
 
-module.exports = Accounts;
