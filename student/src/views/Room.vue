@@ -67,10 +67,38 @@
                 class="mt-8 mb-8"
               />
             </TutorialDisplay>
+            
+            <TutorialDisplay :show="showTutorial == 3" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" bottom>
+              <template v-slot:title>
+                Questions list
+              </template>
+              <template v-slot:explanation>
+                Questions asked by other students will appear here. Click the up arrow button on the right to upvote the question, indicating you have the same question. 
+              </template>
+              
+              <v-list>
+                <template v-for="(q, i) in displayedQuestions">
+                  <v-divider v-if="i !== 0" :key="`divider-${i}`" />
+                  <v-list-item
+                    :key="i"
+                  >
+                    <v-list-item-content>
+                      {{ q.question }}
+                    </v-list-item-content>
+
+                    <v-list-item-action>
+                      <v-btn icon @click="upvoteQuestion(i)" :color="q.upvoted ? 'green lighten-3' : ''">
+                        <v-icon>{{ q.upvoted ? 'mdi-arrow-up-bold' : 'mdi-arrow-up-bold-outline' }}</v-icon>
+                      </v-btn>
+                    </v-list-item-action>
+                  </v-list-item>
+                </template>
+              </v-list>
+            </TutorialDisplay>
 
             <v-spacer></v-spacer>
 
-            <TutorialDisplay :show="showTutorial == 3" backgroundColor="white" @next="showTutorial = -1" @cancel="showTutorial = -1" top>
+            <TutorialDisplay :show="showTutorial == 4" backgroundColor="white" @next="showTutorial = -1" @cancel="showTutorial = -1" top>
               <template v-slot:title>
                 Help
               </template>
@@ -157,9 +185,17 @@ export default {
       color: '',
       socket: null,
       lectureInfo: null,
+      questions: [],
       showQuestionDialog: false,
       showTutorial: -1,
       error: '',
+      tutorialQuestions: [
+        {
+          "type":"new_question",
+          "question_uid":"tutorial",
+          "question":"Why is the sky blue?"
+        }
+      ],
       testLectureInfo: {
         type:"lecture_info",
         uid:"cqywa",
@@ -173,7 +209,39 @@ export default {
           photo:"https://lh3.googleusercontent.com/a-/AOh14GhLdwXOcIH2W9KoJdVZTTDkxu-TCJesb3_HRqDOpQ"
         }
       },
-      testing: false,
+      testQuestions: [
+        {
+          "type":"new_question",
+          "question_uid":"X8udiUQ8fN6F27C",
+          "question":"What is the relationship between voltage and a Gaussian surface?",
+          upvoted: false,
+        },
+        {
+          "type":"new_question",
+          "question_uid":"asdf",
+          "question":"What is 10 + 10?",
+          upvoted: false,
+        },
+        {
+          "type":"new_question",
+          "question_uid":"asdf",
+          "question":"Why?",
+          upvoted: false,
+        },
+        {
+          "type":"new_question",
+          "question_uid":"asdf",
+          "question":"Why not?",
+          upvoted: false,
+        },
+        {
+          "type":"new_question",
+          "question_uid":"asdf",
+          "question":"How do you ask a question?",
+          upvoted: false,
+        },
+      ],
+      testing: true,
     }
   },
 
@@ -189,8 +257,10 @@ export default {
 
   created() {
     // FOR TESTING: 
-    if (this.testing)
+    if (this.testing) {
       this.lectureInfo = this.testLectureInfo
+      this.questions = this.testQuestions
+    }
   },
 
   destroyed() {
@@ -214,6 +284,11 @@ export default {
       this.color = index < 0 ? 'rgb(0,0,0)' : this.colors[index]
       return index < 0 ? '' : this.levels[index]
     },
+    displayedQuestions() {
+      if (this.showTutorial === 3) 
+        return this.tutorialQuestions
+      return this.questions
+    }
   },
   
   methods: {
@@ -228,13 +303,20 @@ export default {
         this.socket.onmessage = (event) => {
           console.log('GOT MESSAGE', event.data)
           const data = JSON.parse(event.data)
-          if (data.type === 'error') {
-            if (!this.testing)
-              this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join does not exist!' } })
-          } else if (data.type === 'lecture_info') {
-            this.lectureInfo = {...data}
-          } else if (data.type === 'end_lecture') {
-            this.$router.replace({ name: 'Feedback', params: { fromLectureEnd: true } })
+          switch (data.type) {
+            case 'error':
+              if (!this.testing)
+                this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join does not exist!' } })
+              break;
+            case 'lecture_info':
+              this.lectureInfo = data
+              break;
+            case 'new_question':
+              this.questions.push({...data, upvoted: false})
+              break;
+            case 'end_lecture':
+              this.$router.replace({ name: 'Feedback', params: { fromLectureEnd: true } })
+              break;
           }
         }
         this.socket.onclose = (event) => {
@@ -249,20 +331,36 @@ export default {
       const score = this.sliderValue
       if (this.socket.readyState === this.socket.OPEN) {
         post(`/lectures/live/student/${this.id}/score`, {
-          score: score
+          score
         }).catch((err) => {
           console.log('ERROR WHEN SENDING SCORE: ', err)
+          this.error = 'There was an error when updating your score!'
         })
       }
     },
     askQuestion(question) {
       post(`/lectures/live/student/${this.id}/question`, {
-        question: question
+        question
       }).then(() => {
         // TODO: display success message when message sent
       }).catch((err) => {
         console.log('ERROR WHEN SENDING QUESTION: ', err)
+        this.error = 'There was an error when submitting your question!'
       })
+    },
+    upvoteQuestion(i) {
+      const question_uid = this.questions[i].question_uid
+      if (!this.questions[i].upvoted) {
+        post(`/lectures/live/student/${this.id}/upvote`, {
+          question_uid
+        }).then(() => {
+          console.log('UPVOTED!')
+          this.questions[i].upvoted = true
+        }).catch((err) => {
+          console.log('ERROR WHEN UPVOTING QUESTION: ', err)
+          this.error = 'There was an error when upvoting the question!'
+        })
+      }
     },
   },
 }
