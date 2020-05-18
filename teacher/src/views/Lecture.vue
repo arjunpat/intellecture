@@ -121,7 +121,7 @@
                         <template v-slot:activator="{ on }">
                          <span v-on="on">{{question.question}}</span>
                         </template>
-                        <span>
+                        <span><!--
                           {{ getStudentById(question.creator_uid).first_name }} {{ getStudentById(question.creator_uid).last_name }}
                           <v-avatar size="20px" class="ml-1">
                           <img
@@ -129,7 +129,7 @@
                             :src="getStudentById(question.creator_uid).photo"
                             style="background-color: #F5F5F5;"
                           >
-                          </v-avatar>
+                          </v-avatar>-->
                         </span>
                       </v-tooltip>
                       <template v-slot:actions>
@@ -238,7 +238,7 @@ export default {
   "question_uid":"jDuw6QJmDQiRfJo",
   "creator_uid":"rUJyP317iuZErNlhrn2",
   "question":"What is the relationship between voltage and a Gaussian surface?",
-          upvotes: 20,
+          upvotes: 5,
           upvotedStudents: [
             {
       "account_uid":"4qZpEpLkqFgUMdiyjuwWt8lY6Hy2",
@@ -443,20 +443,17 @@ export default {
       let date = new Date(unix_timestamp);
       return date.toLocaleTimeString();
     },
-    getUpvoteStudents(question_uid) {
-      var students = get(`/analytics/lecture/${this.id}/question/${question_uid}/upvotes`).then(result => {
-        if(result.success) {
-          return result.data
-        } else {
-          return new Array()
-        }
-      })
+    sortQuestions() {
+      this.questions.sort((a, b) => (a.upvotes < b.upvotes) ? 1 : -1)
+      this.displayQuestions.sort((a, b) => (a.upvotes < b.upvotes) ? 1 : -1)
     }
   },
   mounted () {
     this.$emit('startlecture', this.id);
 
     //this.displayQuestions = this.questions;
+    
+    //this.questions.sort((a, b) => (a.upvotes < b.upvotes) ? 1 : -1)
 
     this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.id}`);
     var self = this;
@@ -500,8 +497,13 @@ export default {
       } else if(data.type == "question_update") {
         var question = self.questions.find(question => question.question_uid == data.question_uid)
         question.upvotes++
-        question.upvotedStudents = getUpvoteStudents(data.question_uid)
-        self.questions.sort((a, b) => (a.upvotes > b.upvotes) ? 1 : -1)
+        get(`/analytics/lecture/${self.id}/question/${data.question_uid}/upvotes`).then(result => {
+          if(result.success) {
+            question.upvotedStudents = result.data
+            self.sortQuestions()
+            console.log(self.questions)
+          }
+        })
       }else if(data.type == "error") {
         self.endLectureMethod()
         self.$router.replace({ name: 'Dashboard'})
@@ -513,6 +515,7 @@ export default {
     window.onbeforeunload = function() {
         return "Reloading the page will end your lecture";
     }
+    
   },
   computed: {
     ...mapState(['endLecture']),
