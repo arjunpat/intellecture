@@ -86,7 +86,7 @@
             v-show="currentTab === 1"
             flat
             class="pt-3"
-            height="75vh"
+            style="min-height: 75vh;"
           >
           <v-row align="center" justify="center">
             <v-col align="center">
