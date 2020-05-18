@@ -5,26 +5,44 @@ function old(socket: Socket): boolean {
   return socket.readyState === 2 || socket.readyState === 3 || !socket.isAlive;
 }
 
+interface Question {
+  question_uid: string,
+  creator_uid: string,
+  question: string
+}
+
 class Broadcaster {
   private lecture_uid: string;
-  private sockets: Socket[];
+  private sockets: Socket[] = [];
+  private questions: Question[] = [];
   private lectureInfo;
 
   constructor(lecture_uid: string) {
     this.lecture_uid = lecture_uid;
-    this.sockets = [];
     this.init();
-  }
-
-  async readLectureInfo() {
-    let data = await db.lectures.getLecture(this.lecture_uid);
-    data.creator = await db.accounts.getBasicInfo(data.account_uid);
-    return data;
   }
 
   async init() {
     this.lectureInfo = await this.readLectureInfo();
+    await this.readQuestions();
     this.sendAll(JSON.stringify(this.getLectureInfo()));
+  }
+
+  dispatch(msg: any): string | void {
+    this.sendAll(msg);
+  
+    let data = JSON.parse(msg);
+    switch (data.type) {
+      case 'new_question':
+        this.questions.push({
+          question_uid: data.question_uid,
+          creator_uid: data.creator_uid,
+          question: data.question
+        });
+        break;
+      case 'end_lecture':
+        return 'end';
+    }
   }
 
   getLectureInfo() {
@@ -35,7 +53,8 @@ class Broadcaster {
       start_time,
       class_name,
       lecture_name,
-      creator
+      creator,
+      questions: this.questions
     }
   }
 
@@ -70,6 +89,25 @@ class Broadcaster {
         socket.ping(() => {});
       }
     }
+  }
+
+  async readLectureInfo() {
+    let data = await db.lectures.getLecture(this.lecture_uid);
+    data.creator = await db.accounts.getBasicInfo(data.account_uid);
+    return data;
+  }
+
+  async readQuestions() {
+    let qs = await db.lectureQs.getQuestions(this.lecture_uid);
+    qs = qs.map(({ account_uid, uid, question }) => {
+      return {
+        creator_uid: account_uid,
+        question_uid: uid,
+        question
+      }
+    });
+
+    this.questions = [...this.questions, ...qs]; // in case already has questions
   }
 
   isEmpty(): boolean {

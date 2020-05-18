@@ -27,10 +27,9 @@ setInterval(() => {
 
 sub.on('message', (channel: string, msg: string) => {
   let lecture_uid = toLectureUid(channel);
-  lectures[lecture_uid].sendAll(msg);
-  
-  let data = JSON.parse(msg);
-  if (data.type === 'end_lecture') {
+  let res = lectures[lecture_uid].dispatch(msg);
+
+  if (res === 'end') {
     lectures[lecture_uid].end();
     removeLecture(lecture_uid);
   }

@@ -16,4 +16,12 @@ export default class LectureQs {
       question
     });
   }
+
+  // specific methods
+  getQuestions(lecture_uid: string) {
+    return this.mysql.query(
+      'SELECT uid, account_uid, elapsed, question FROM lecture_qs WHERE lecture_uid = ?',
+      [lecture_uid]
+    );
+  }
 }
