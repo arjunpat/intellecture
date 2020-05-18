@@ -72,8 +72,7 @@ export default class Lecture {
 
   async end() {
     await db.lectures.endLecture(this.lecture_uid, Date.now());
-    this.sendToTeachers({ type: 'end_lecture' });
-    this.sendToStudents({ type: 'end_lecture' });
+    this.blast({ type: 'end_lecture' });
     this.ended = true;
   }
 
@@ -108,15 +107,10 @@ export default class Lecture {
       uid
     });
     this.questionUpvotes[uid] = 0;
-    this.sendToTeachers({
+    this.blast({
       type: 'new_question',
       question_uid: uid,
       creator_uid,
-      question
-    });
-    this.sendToStudents({
-      type: 'new_question',
-      question_uid: uid,
       question
     });
     this.updateTeachersQuestions();
@@ -220,6 +214,11 @@ export default class Lecture {
       lastTeacherUpdate: now,
       lastQuesCategorization: now
     }
+  }
+
+  blast(obj) {
+    this.sendToStudents(obj);
+    this.sendToTeachers(obj);
   }
 
   sendToTeachers(obj) {

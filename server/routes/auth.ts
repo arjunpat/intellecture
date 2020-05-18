@@ -62,7 +62,10 @@ router.get('/profile', mw.auth, async (req: Request, res) => {
 
   res.cookie('intell_', token, cookieOpts);
 
-  res.send(responses.success(await db.accounts.getBasicInfo(req.uid)));
+  res.send(responses.success({
+    uid: req.uid,
+    ...await db.accounts.getBasicInfo(req.uid),
+  }));
 });
 
 router.get('/signout', mw.auth, (req, res) => {
