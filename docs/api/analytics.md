@@ -8,22 +8,23 @@ Get all the students who ever joined a lecture.
 
 ```javascript
 {
-    "success": true,
-    "data": [{
-            "account_uid": "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2",
-            "email": "100021830@mvla.net",
-            "first_name": "Arjun",
-            "last_name": "Patrawala",
-            "photo": "https://lh3.googleusercontent.com/a-/AOh14GipzqLNsIg"
-        },
-        {
-            "account_uid": "rUJyP317iuZErNlhrnnyn8eT7uY2",
-            "email": "ajpat1234@gmail.com",
-            "first_name": "Arjun",
-            "last_name": "Patrawala",
-            "photo": "https://lh3.googleusercontent.com/a-/AOh14Gh1hi7LxPF0wFC8OM1j2xg"
-        }
-    ]
+  "success": true,
+  "data": [
+    {
+      "account_uid": "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2",
+      "email": "100021830@mvla.net",
+      "first_name": "Arjun",
+      "last_name": "Patrawala",
+      "photo": "https://lh3.googleusercontent.com/a-/AOh14GipzqLNsIg"
+    },
+    {
+      "account_uid": "rUJyP317iuZErNlhrnnyn8eT7uY2",
+      "email": "ajpat1234@gmail.com",
+      "first_name": "Arjun",
+      "last_name": "Patrawala",
+      "photo": "https://lh3.googleusercontent.com/a-/AOh14Gh1hi7LxPF0wFC8OM1j2xg"
+    }
+  ]
 }
 ```
 
@@ -35,21 +36,22 @@ Get all students who upvoted a question.
 
 ```javascript
 {
-    "success": true,
-    "data": [{
-            "account_uid": "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2",
-            "email": "100021830@mvla.net",
-            "first_name": "Arjun",
-            "last_name": "Patrawala",
-            "photo": "https://lh3.googleusercontent.com/a-/AOh14GipzBIV1Z_CibwcQGhgliehct5g"
-        },
-        {
-            "account_uid": "rUJyP317iuZErNlhrnnyn8eT7uY2",
-            "email": "ajpat1234@gmail.com",
-            "first_name": "Arjun",
-            "last_name": "Patrawala",
-            "photo": "https://lh3.googleusercontent.com/a-/AOh14Gh1hi7LxPFPyWG2xg"
-        }
-    ]
+  "success": true,
+  "data": [
+    {
+      "account_uid": "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2",
+      "email": "100021830@mvla.net",
+      "first_name": "Arjun",
+      "last_name": "Patrawala",
+      "photo": "https://lh3.googleusercontent.com/a-/AOh14GipzBIV1Z_CibwcQGhgliehct5g"
+    },
+    {
+      "account_uid": "rUJyP317iuZErNlhrnnyn8eT7uY2",
+      "email": "ajpat1234@gmail.com",
+      "first_name": "Arjun",
+      "last_name": "Patrawala",
+      "photo": "https://lh3.googleusercontent.com/a-/AOh14Gh1hi7LxPFPyWG2xg"
+    }
+  ]
 }
 ```

@@ -10,7 +10,7 @@ Create a new class.
 
 ```javascript
 {
-    "name": "AP Physics C"
+  "name": "AP Physics C"
 }
 ```
 
@@ -18,10 +18,10 @@ Create a new class.
 
 ```javascript
 {
-    "success": true,
-    "data": {
-        "class_uid": "GsF2nERLrwvLe0T" // this API generates a class and returns UID
-    }
+  "success": true,
+  "data": {
+    "class_uid": "GsF2nERLrwvLe0T" // this API generates a class and returns UID
+  }
 }
 ```
 
@@ -33,23 +33,24 @@ View all of the users classes.
 
 ```javascript
 {
-    "success": true,
-    "data": [{
-            "uid": "GsF2nERLrwvLe0T",
-            "created_at": 1587439054817,
-            "name": "AP Physics C"
-        },
-        {
-            "uid": "j3fmOXvJyq5Dlww",
-            "created_at": 1587439080846,
-            "name": "History"
-        },
-        {
-            "uid": "YaneS98ttCj7ErF",
-            "created_at": 1587439072263,
-            "name": "English"
-        }
-    ]
+  "success": true,
+  "data": [
+    {
+      "uid": "GsF2nERLrwvLe0T",
+      "created_at": 1587439054817,
+      "name": "AP Physics C"
+    },
+    {
+      "uid": "j3fmOXvJyq5Dlww",
+      "created_at": 1587439080846,
+      "name": "History"
+    },
+    {
+      "uid": "YaneS98ttCj7ErF",
+      "created_at": 1587439072263,
+      "name": "English"
+    }
+  ]
 }
 ```
 
@@ -61,8 +62,8 @@ Create a new lecture in a class.
 
 ```javascript
 {
-    "class_uid": "GsF2nERLrwvLe0T",
-    "name": "Electric Fields"
+  "class_uid": "GsF2nERLrwvLe0T",
+  "name": "Electric Fields"
 }
 ```
 
@@ -70,10 +71,10 @@ Create a new lecture in a class.
 
 ```javascript
 {
-    "success": true,
-    "data": {
-        "lecture_uid": "qnmuf"
-    }
+  "success": true,
+  "data": {
+    "lecture_uid": "qnmuf"
+  }
 }
 ```
 
@@ -85,26 +86,27 @@ Get all the lectures from a particular class
 
 ```javascript
 {
-    "success": true,
-    "data": [{
-            "uid": "fdrxl",
-            "name": "Circuits",
-            "start_time": null,
-            "end_time": null
-        },
-        {
-            "uid": "qnmuf",
-            "name": "Electric Fields",
-            "start_time": null,
-            "end_time": null
-        },
-        {
-            "uid": "xinya",
-            "name": "Flux",
-            "start_time": null,
-            "end_time": null
-        }
-    ]
+  "success": true,
+  "data": [
+    {
+      "uid": "fdrxl",
+      "name": "Circuits",
+      "start_time": null,
+      "end_time": null
+    },
+    {
+      "uid": "qnmuf",
+      "name": "Electric Fields",
+      "start_time": null,
+      "end_time": null
+    },
+    {
+      "uid": "xinya",
+      "name": "Flux",
+      "start_time": null,
+      "end_time": null
+    }
+  ]
 }
 ```
 
@@ -116,9 +118,9 @@ Check if lecture exists.
 
 ```javascript
 {
-    "success": true,
-    "data": {
-        "exists": true // or false
-    }
+  "success": true,
+  "data": {
+    "exists": true // or false
+  }
 }
 ```

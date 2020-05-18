@@ -10,7 +10,7 @@ Use to signin to account after Firebase Auth.
 
 ```javascript
 {
-    firebase_token: "asSDFfasdfasdf...." // this is provided by Firebase when you log in
+  firebase_token: "asSDFfasdfasdf...." // this is provided by Firebase when you log in
 }
 ```
 
@@ -21,7 +21,7 @@ If the firebase token is good, it will set a cookie in the browser that lasts fo
 
 ```javascript
 {
-    success: true
+  success: true
 }
 ```
 
@@ -33,14 +33,14 @@ Use to check whether you are logged in, and, if you are, give you profile data a
 
 ```javascript
 {
-    "success": true,
-    "data": {
-        "uid": "AfjklD7sFfsdfjkl88sSs",
-        "email": "ajpat1234@gmail.com",
-        "first_name": "Arjun",
-        "last_name": "Patrawala",
-        "photo": "https://lh3.googleusercontent.com/a-/AOhM1jwL40TIT2tuQk5JLPyWG2xg"
-    }
+  "success": true,
+  "data": {
+    "uid": "AfjklD7sFfsdfjkl88sSs",
+    "email": "ajpat1234@gmail.com",
+    "first_name": "Arjun",
+    "last_name": "Patrawala",
+    "photo": "https://lh3.googleusercontent.com/a-/AOhM1jwL40TIT2tuQk5JLPyWG2xg"
+  }
 }
 ```
 
@@ -48,8 +48,8 @@ Use to check whether you are logged in, and, if you are, give you profile data a
 
 ```javascript
 {
-    success: false,
-    error: "cookie"
+  success: false,
+  error: "cookie"
 }
 ```
 
@@ -61,6 +61,6 @@ Will log the user out of the application (make their cookie expire).
 
 ```javascript
 {
-    "success": false
+  "success": false
 }
 ```

@@ -10,7 +10,7 @@ Create a new feedback and returns an id to that specific feedback.
 
 ```javascript
 {
-    stars: 4
+  stars: 4
 }
 ```
 
@@ -18,10 +18,10 @@ Create a new feedback and returns an id to that specific feedback.
 
 ```javascript
 {
-    success: true,
-    data: {
-        id: 4567898768982
-    }
+  success: true,
+  data: {
+    id: 4567898768982
+  }
 }
 ```
 
@@ -33,12 +33,12 @@ Update that same feedback object from by using the id you recieved.
 
 ```javascript
 {
-    id: 4567898768982,
-    stars: 5 // same field as before; can be updated if the user changed their answer
-    comments: "this app is so amazing",
-    tech_comments: "bad", // technical difficulties
-    diff_stars: 3 // experience using the app (higher is better)
-    helpful_stars: 5 // how helpful the app is to learning
+  id: 4567898768982,
+  stars: 5 // same field as before; can be updated if the user changed their answer
+  comments: "this app is so amazing",
+  tech_comments: "bad", // technical difficulties
+  diff_stars: 3 // experience using the app (higher is better)
+  helpful_stars: 5 // how helpful the app is to learning
 }
 ```
 
