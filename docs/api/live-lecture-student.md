@@ -22,7 +22,19 @@ Wait for this message before loading the UI, sending anything, or allowing the s
     "first_name": "Arjun",
     "last_name": "Patrawala",
     "photo": "https://wF...."
-  }
+  },
+  "questions": [
+    {
+      "question_uid": "X8udiUQ8fN6F27C",
+      "creator_uid": "rUJyP317iuZErNlhrn2",
+      "question": "What is the relationship between voltage and a Gaussian surface?"
+    },
+    {
+      "question_uid": "DFjksdjf78234hDF",
+      "creator_uid": "aljwewrkSI99234j",
+      "question": "What's your favorite color?"
+    }
+  ]
 }
 ```
 
