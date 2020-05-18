@@ -121,7 +121,7 @@
                         <template v-slot:activator="{ on }">
                          <span v-on="on">{{question.question}}</span>
                         </template>
-                        <span><!--
+                        <span>
                           {{ getStudentById(question.creator_uid).first_name }} {{ getStudentById(question.creator_uid).last_name }}
                           <v-avatar size="20px" class="ml-1">
                           <img
@@ -129,7 +129,7 @@
                             :src="getStudentById(question.creator_uid).photo"
                             style="background-color: #F5F5F5;"
                           >
-                          </v-avatar>-->
+                          </v-avatar>
                         </span>
                       </v-tooltip>
                       <template v-slot:actions>
