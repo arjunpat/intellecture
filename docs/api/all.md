@@ -317,7 +317,7 @@ Get all students who upvoted a question.
 
 Join a lecture as a teacher.
 
-##### lecture_info
+#### lecture_info
 
 As soon as client joins, they get this message from server.
 Gives basic info about the lecture.
@@ -339,7 +339,7 @@ Wait for this message before loading the UI, sending anything, etc.</td>
 }
 ```
 
-##### student_join
+#### student_join
 
 As the lecture progresses, teacher will get this message when student joins.
 
@@ -355,7 +355,7 @@ As the lecture progresses, teacher will get this message when student joins.
 }
 ```
 
-##### student_leave
+#### student_leave
 
 As lecture progresses, teacher will get this message when student leaves lecture.
 
@@ -367,7 +367,7 @@ As lecture progresses, teacher will get this message when student leaves lecture
 }
 ```
 
-##### new_question
+#### new_question
 
 As lecture progresses, teacher will get this message when question is asked.</td>
 
@@ -380,7 +380,7 @@ As lecture progresses, teacher will get this message when question is asked.</td
 }
 ```
 
-##### ques_categor
+#### ques_categor
 
 As the lecture progresses, teacher will get this message at max every 10 seconds.
 
@@ -444,7 +444,7 @@ As the lecture progresses, teacher will get this message at max every 10 seconds
 }
 ```
 
-##### question_update
+#### question_update
 
 As the lecture progresses, teacher will receive this message when student upvotes.
 
@@ -456,7 +456,7 @@ As the lecture progresses, teacher will receive this message when student upvote
 }
 ```
 
-##### us_update
+#### us_update
 
 As lecture progresses, teacher will get this message when new understanding score as students move their sliders.
 
@@ -467,7 +467,7 @@ As lecture progresses, teacher will get this message when new understanding scor
 }
 ```
 
-##### end_lecture
+#### end_lecture
 
 When lecture done, the teacher will receive this message.
 
@@ -491,7 +491,7 @@ End lecture.
 
 Join a lecture as a student.
 
-##### lecture_info
+#### lecture_info
 
 As soon as client joins, they get this message from the server.
 Gives basic info about the lecture.
@@ -513,7 +513,7 @@ Wait for this message before loading the UI, sending anything, or allowing the s
 }
 ```
 
-##### new_question
+#### new_question
 
 When another student asks a question, it gets sent here.
 
@@ -526,7 +526,7 @@ When another student asks a question, it gets sent here.
 }
 ```
 
-##### end_lecture
+#### end_lecture
 
 When teacher ends lecture, server will send client this message.
 
