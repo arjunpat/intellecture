@@ -64,7 +64,7 @@
               <AskQuestionDialog
                 v-model="showQuestionDialog"
                 @askQuestion="askQuestion"
-                class="mt-8 mb-8"
+                class="mt-8 mb-12"
               />
             </TutorialDisplay>
             
@@ -73,27 +73,46 @@
                 Questions list
               </template>
               <template v-slot:explanation>
-                Questions asked by other students will appear here. Click the up arrow button on the right to upvote the question, indicating you have the same question. 
+                Questions asked by other students will appear here. Use the buttons on the right to indicate whether or not you have the same question. 
               </template>
               
-              <v-list>
-                <template v-for="(q, i) in displayedQuestions">
-                  <v-divider v-if="i !== 0" :key="`divider-${i}`" />
-                  <v-list-item
-                    :key="i"
-                  >
-                    <v-list-item-content>
-                      {{ q.question }}
-                    </v-list-item-content>
+              <v-expand-transition>
+                <v-card tile v-if="displayedQuestions.length !== 0">
+                  <v-list dense subheader>
+                    <v-subheader>
+                      Questions asked by others
+                      <v-btn 
+                        text 
+                        rounded
+                        absolute 
+                        color="error"
+                        style="right: 0;"
+                        @click="dismissAllQuestions"
+                      >Dismiss All</v-btn>
+                    </v-subheader>
+                    <transition-group :name="listAction">
+                      <v-list-item
+                        :key="q.question_uid"
+                        v-for="(q, i) in displayedQuestions"
+                      >
+                        <!-- TODO: catch for the case when you have a super duper long word -->
+                        <v-list-item-content>
+                          {{ q.question }}
+                        </v-list-item-content>
 
-                    <v-list-item-action>
-                      <v-btn icon @click="upvoteQuestion(i)" :color="q.upvoted ? 'green lighten-3' : ''">
-                        <v-icon>{{ q.upvoted ? 'mdi-arrow-up-bold' : 'mdi-arrow-up-bold-outline' }}</v-icon>
-                      </v-btn>
-                    </v-list-item-action>
-                  </v-list-item>
-                </template>
-              </v-list>
+                        <v-list-item-action>
+                          <v-btn icon @click="upvoteQuestion(i)" :color="q.upvoted ? 'green lighten-3' : ''" class="mr-1">
+                            <v-icon>{{ q.upvoted ? 'mdi-arrow-up-bold' : 'mdi-arrow-up-bold-outline' }}</v-icon>
+                          </v-btn>
+                          <v-btn icon @click="dismissQuestion(i)" :color="q.dismissed ? 'error' : ''">
+                            <v-icon>mdi-close-thick</v-icon>
+                          </v-btn>
+                        </v-list-item-action>
+                      </v-list-item>
+                    </transition-group>
+                  </v-list>
+                </v-card>
+              </v-expand-transition>
             </TutorialDisplay>
 
             <v-spacer></v-spacer>
@@ -146,6 +165,10 @@
     max-width: unset !important;
   }
 
+  .v-list-item__action--stack {
+    flex-direction: row;
+  }
+
   #flex-container {
     /* 
     Currently does not do anything,
@@ -154,6 +177,21 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+  }
+
+  .list-upvote-enter-active, .list-upvote-leave-active,
+  .list-dismiss-enter-active, .list-dismiss-leave-active {
+    transition: all .3s ease;
+  }
+
+  .list-upvote-enter, .list-upvote-leave-to {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+
+  .list-dismiss-enter, .list-dismiss-leave-to {
+    transform: translateX(10px);
+    opacity: 0;
   }
 </style>
 
@@ -188,6 +226,7 @@ export default {
       questions: [],
       showQuestionDialog: false,
       showTutorial: -1,
+      listAction: 'list-dismiss',
       error: '',
       tutorialQuestions: [
         {
@@ -285,7 +324,7 @@ export default {
       return index < 0 ? '' : this.levels[index]
     },
     displayedQuestions() {
-      if (this.showTutorial === 3) 
+      if (this.showTutorial === 3 && this.questions.length === 0) 
         return this.tutorialQuestions
       return this.questions
     }
@@ -301,7 +340,6 @@ export default {
           this.updateUnderstanding()
         }
         this.socket.onmessage = (event) => {
-          console.log('GOT MESSAGE', event.data)
           const data = JSON.parse(event.data)
           switch (data.type) {
             case 'error':
@@ -312,7 +350,8 @@ export default {
               this.lectureInfo = data
               break;
             case 'new_question':
-              this.questions.push({...data, upvoted: false})
+              this.listAction = 'list-dismiss'
+              this.questions.push({...data, upvoted: false, dismissed: false})
               break;
             case 'end_lecture':
               this.$router.replace({ name: 'Feedback', params: { fromLectureEnd: true } })
@@ -320,10 +359,8 @@ export default {
           }
         }
         this.socket.onclose = (event) => {
-          console.log('Socket connection was closed')
         }
         this.socket.onerror = (error) => {
-          console.log('Websocket error: ', error)
         }
       }
     },
@@ -333,8 +370,7 @@ export default {
         post(`/lectures/live/student/${this.id}/score`, {
           score
         }).catch((err) => {
-          console.log('ERROR WHEN SENDING SCORE: ', err)
-          this.error = 'There was an error when updating your score!'
+          this.error = 'There was an error updating your score!'
         })
       }
     },
@@ -344,8 +380,7 @@ export default {
       }).then(() => {
         // TODO: display success message when message sent
       }).catch((err) => {
-        console.log('ERROR WHEN SENDING QUESTION: ', err)
-        this.error = 'There was an error when submitting your question!'
+        this.error = 'There was an error submitting your question!'
       })
     },
     upvoteQuestion(i) {
@@ -354,14 +389,26 @@ export default {
         post(`/lectures/live/student/${this.id}/upvote`, {
           question_uid
         }).then(() => {
-          console.log('UPVOTED!')
           this.questions[i].upvoted = true
+          this.listAction = 'list-upvote'
+          setTimeout(() => {
+            this.questions.splice(i, 1)
+          }, 150)
         }).catch((err) => {
-          console.log('ERROR WHEN UPVOTING QUESTION: ', err)
-          this.error = 'There was an error when upvoting the question!'
+          this.error = 'There was an error upvoting the question!'
         })
       }
     },
+    dismissQuestion(i) {
+      this.questions[i].dismissed = true
+      this.listAction = 'list-dismiss'
+      setTimeout(() => {
+        this.questions.splice(i, 1)
+      }, 150)
+    },
+    dismissAllQuestions() {
+      this.questions = []
+    }
   },
 }
 </script>
