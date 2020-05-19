@@ -61,7 +61,7 @@
                 </v-card>
             </v-row>
             <!-- TOPICS WILL ADD LATER -->
-            <v-row class="mt-1" align="center" justify="center">
+            <v-row class="mt-1" align="center" justify="center" v-if="topics.length > 0">
               <v-card width="90%" min-height="70px" style="padding: 5px 10px;">
                 <v-row>
                   <v-col align="left">
@@ -105,7 +105,7 @@
                         v-bind:key="n"
                     >
                         <v-list-item-content>
-                        <v-list-item-title><div style="display: inline-block; font-size: 20px;" class="topic" @click="showCategory(n-1)">{{ topics[n-1].value }}</div><div id="topic-quantity" class="ml-3">{{ topics[n-1].questions.length }}</div></v-list-item-title>
+                        <v-list-item-title><div style="display: inline-block; font-size: 20px;" class="topic" @click="showCategory(n-1)"><span v-if="topics[n-1].value.length > 20">{{ topics[n-1].value.substring(0, 20) }}...</span><span v-else>{{ topics[n-1].value }}</span></div><div id="topic-quantity" class="ml-3">{{ topics[n-1].questions.length }}</div></v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
                     </v-card-text>
