@@ -90,7 +90,7 @@ export default {
         { text: 'End Time', value: 'end_time' },
         { text: 'Start Time', value: 'start_time' },
         { text:"Lecture Name", value: `name`},
-        { text: 'Student List', value: "" },
+        //{ text: 'Student List', value: "" }, TODO
         { text: 'Code', value: 'uid' },
         ],
     }
