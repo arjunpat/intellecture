@@ -71,9 +71,11 @@ export default class Lecture {
   }
 
   async end() {
-    await db.lectures.endLecture(this.lecture_uid, Date.now());
+    let now = Date.now();
     this.blast({ type: 'end_lecture' });
     this.ended = true;
+    await db.lectureStudentLog.leaveBulk(this.lecture_uid, Object.keys(this.scores), this.elapsed(now));
+    await db.lectures.endLecture(this.lecture_uid, now);
   }
 
   async upvoteQuestion(question_uid: string, suid: string) {
@@ -116,7 +118,8 @@ export default class Lecture {
     this.updateTeachersQuestions();
   }
 
-  async addStudent(student_uid) {
+  async addStudent(student_uid: string) {
+    await db.lectureStudentLog.join(this.lecture_uid, student_uid, this.elapsed());
     this.sendToTeachers({
       type: 'student_join',
       ts: Date.now(),
@@ -126,7 +129,8 @@ export default class Lecture {
     this.scores[student_uid] = 5;
   }
 
-  removeStudent(student_uid) {
+  async removeStudent(student_uid: string) {
+    await db.lectureStudentLog.leave(this.lecture_uid, student_uid, this.elapsed());
     delete this.scores[student_uid];
     this.sendToTeachers({
       type: 'student_leave',

@@ -94,6 +94,13 @@
     });
   }
 
+  function getPreviousQuestions() {
+    return fetch(hostp + '/lectures/live/student/' + lecture_uid + '/questions', {
+      ...postStuff,
+      method: 'GET'
+    });
+  }
+  
   async function endLecture() {
     fetch(hostp + '/lectures/live/teacher/' + lecture_uid + '/end', {
       ...postStuff,
