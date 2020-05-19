@@ -309,6 +309,7 @@ export default {
 }*/],
       displayQuestions: [],
       students: [],
+      totalStudents: [],
       topics: [/*
     {
       "type":"keyphrase",
@@ -427,7 +428,7 @@ export default {
       this.displayQuestions = this.displayQuestions.filter(question => q.includes(question.question_uid))
     },
     getStudentById(id) {
-      return this.students.find(student => student.uid == id)
+      return this.totalStudents.find(student => student.uid == id)
     },
     showSnackBar(message) {
       this.snackbarMessage = message;
@@ -465,6 +466,7 @@ export default {
         self.lectureName = data.lecture_name
       } else if(data.type == "student_join") {
         self.students.push(data)
+        self.totalStudents.push(data)
         self.showSnackBar(`${ self.students[self.students.length-1].first_name } ${ self.students[self.students.length-1].last_name } joined`)
       } else if(data.type == "student_leave") {
         const left = self.students.find(student => student.uid == data.uid)
@@ -481,6 +483,8 @@ export default {
           })
           self.understandingScore = data.score
           self.initChart()
+        } else {
+          self.understandingScore = '--'
         }
       } else if(data.type == "new_question") {
         self.questions.push({
