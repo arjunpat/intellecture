@@ -116,9 +116,10 @@ Update score.
 }
 ```
 
-## GET /lectures/live/student/:lecture_uid/questions
+## GET /lectures/live/student/:lecture_uid/questions?after={elapsed_ms}
 
 Can be used to get all the past questions during a lecture.
+`elapsed_ms` is basically `Date.now() - lecture_info.start_time`
 
 ###### Example response:
 ```javascript

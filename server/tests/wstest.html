@@ -94,8 +94,8 @@
     });
   }
 
-  function getPreviousQuestions() {
-    return fetch(hostp + '/lectures/live/student/' + lecture_uid + '/questions', {
+  function getPreviousQuestions(after) {
+    return fetch(hostp + '/lectures/live/student/' + lecture_uid + '/questions?after=' + after, {
       ...postStuff,
       method: 'GET'
     });

@@ -133,7 +133,15 @@ router.post('/student/:lecture_uid/score', mw.auth, attachLecture, joinedLecture
 });
 
 router.get('/student/:lecture_uid/questions', mw.auth, attachLecture, joinedLecture, async (req: Request, res) => {
-  let qs = await db.lectureQs.getQuestions(req.params.lecture_uid);
+  if (typeof req.query.after !== 'string')
+    return res.send(responses.error());
+
+  let elapsed = parseInt(req.query.after)
+  
+  if (isNaN(elapsed) || elapsed < 0)
+    return res.send(responses.error());
+  
+  let qs = await db.lectureQs.getQuestionsAfter(req.params.lecture_uid, elapsed);
 
   res.send(responses.success(qs.map(({ account_uid, uid, question }) => {
     return {
