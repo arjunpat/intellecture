@@ -44,16 +44,24 @@
             class="pt-3 pb-3"
           >
             <v-row align="center" justify="center" style="margin-top: 20px;">
-                <v-card width="30%" height="60vh">
+                <v-card :width="understandingWidth" height="60vh">
                     <v-card-text style="text-align: center;">
                         <span style="font-size: 23px; color: black; font-weight: bold;"><span style="background: red; padding: 2px 5px; color: white; border-radius: 3px; font-weight: normal;">LIVE</span> UNDERSTANDING SCORE</span>
                         <br><br><br><br><br><br><br><br>
-                        <span class="text--primary font-weight-black" style="margin-top: 40px; text-align: center; font-size: 180px; background: #E0E0E0; border-radius: 10px; padding: 4px 20px;">{{ understandingScore }}%</span>
+                        <span class="text--primary font-weight-black" style="margin-top: 40px; text-align: center; font-size: 180px; background: #E0E0E0; border-radius: 10px; padding: 4px 20px;" :style="{ fontSize: understandingFontSize }">{{ understandingScore }}%</span>
                         <br><br><br><br>
                         <div style="width: 335px; display: inline-block;"><v-progress-linear :value="understandingScore" :color="progressColor" rounded></v-progress-linear></div>
                     </v-card-text>
                 </v-card>
-                <v-card width="60%" height="60vh" align="center" justify="center">
+                <v-card width="60%" height="60vh" align="center" justify="center" v-if="!smallScreen">
+                    <div style="max-width: 900px; margin-top: 3%;">
+                        <line-chart :chart-data="datacollection"></line-chart>
+                    </div>
+                  <v-btn style="float: none;" class="" @click="shortened = !shortened">{{ shortentext }}</v-btn>
+                </v-card>
+            </v-row>
+            <v-row align="center" justify="center" v-if="smallScreen">
+                <v-card width="90%" height="60vh" align="center" justify="center">
                     <div style="max-width: 900px; margin-top: 3%;">
                         <line-chart :chart-data="datacollection"></line-chart>
                     </div>
@@ -451,10 +459,9 @@ export default {
   },
   mounted () {
     this.$emit('startlecture', this.id);
+    console.log(this.$vuetify.breakpoint)
 
     //this.displayQuestions = this.questions;
-    
-    //this.questions.sort((a, b) => (a.upvotes < b.upvotes) ? 1 : -1)
 
     this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.id}`);
     var self = this;
@@ -505,7 +512,6 @@ export default {
           if(result.success) {
             question.upvotedStudents = result.data
             self.sortQuestions()
-            console.log(self.questions)
           }
         })
       }else if(data.type == "error") {
@@ -532,6 +538,31 @@ export default {
         return 'error'
       } else {
         return 'warning'
+      }
+    },
+    understandingFontSize () {
+      switch (this.$vuetify.breakpoint.name) {
+        case 'xs': return '180px'
+        case 'sm': return '180px'
+        case 'md': return '130px'
+        case 'lg': return '180px'
+        case 'xl': return '180px'
+      }
+    },
+    smallScreen () {
+      switch (this.$vuetify.breakpoint.name) {
+        case 'xs': return true
+        case 'sm': return true
+        case 'md': return false
+        case 'lg': return false
+        case 'xl': return false
+      }
+    },
+    understandingWidth () {
+      if(!this.smallScreen) {
+        return '30%'
+      } else {
+        return '90%'
       }
     }
   },

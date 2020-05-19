@@ -9,7 +9,7 @@
         justify="center"
       >
         <v-col
-          cols="6"
+          :cols="width"
           sm="8"
           md="8"
         >
@@ -107,6 +107,15 @@ export default {
   },
   computed: {
     ...mapState(['classes']),
+    width () {
+      switch (this.$vuetify.breakpoint.name) {
+        case 'xs': return '12'
+        case 'sm': return '12'
+        case 'md': return '12'
+        case 'lg': return '6'
+        case 'xl': return '6'
+      }
+    }
   }
 }
 
