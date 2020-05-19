@@ -74,3 +74,13 @@ CREATE TABLE IF NOT EXISTS lecture_q_upvotes (
   FOREIGN KEY (question_uid) REFERENCES lecture_qs(uid),
   FOREIGN KEY (account_uid) REFERENCES accounts(uid)
 );
+
+CREATE TABLE IF NOT EXISTS lecture_student_log (
+  lecture_uid VARCHAR(20),
+  account_uid VARCHAR(36),
+  elapsed BIGINT UNSIGNED,
+  status VARCHAR(1), -- j for join, l for leave
+  CONSTRAINT PRIMARY KEY (lecture_uid, account_uid, elapsed),
+  FOREIGN KEY (lecture_uid) REFERENCES lectures(uid),
+  FOREIGN KEY (account_uid) REFERENCES accounts(uid)
+);

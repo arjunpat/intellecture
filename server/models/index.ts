@@ -12,6 +12,7 @@ import LectureLog from './LectureLog';
 import LectureQs from './LectureQs';
 import LectureUs from './LectureUs';
 import LectureQUpvotes from './LectureQUpvotes';
+import LectureStudentLog from './LectureStudentLog';
 
 import Redis from '../lib/Redis';
 const redis = new Redis();
@@ -33,5 +34,6 @@ export default {
   lectureQs: new LectureQs(mysql),
   lectureUs: new LectureUs(mysql),
   lectureQUpvotes: new LectureQUpvotes(mysql),
+  lectureStudentLog: new LectureStudentLog(mysql),
   redis
 }

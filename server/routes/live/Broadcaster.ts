@@ -14,7 +14,6 @@ interface Question {
 class Broadcaster {
   private lecture_uid: string;
   private sockets: Socket[] = [];
-  private questions: Question[] = [];
   private lectureInfo;
 
   constructor(lecture_uid: string) {
@@ -24,7 +23,6 @@ class Broadcaster {
 
   async init() {
     this.lectureInfo = await this.readLectureInfo();
-    await this.readQuestions();
     this.sendAll(JSON.stringify(this.getLectureInfo()));
   }
 
@@ -33,13 +31,7 @@ class Broadcaster {
   
     let data = JSON.parse(msg);
     switch (data.type) {
-      case 'new_question':
-        this.questions.push({
-          question_uid: data.question_uid,
-          creator_uid: data.creator_uid,
-          question: data.question
-        });
-        break;
+      // ... more cases could be included
       case 'end_lecture':
         return 'end';
     }
@@ -53,8 +45,7 @@ class Broadcaster {
       start_time,
       class_name,
       lecture_name,
-      creator,
-      questions: this.questions
+      creator
     }
   }
 
@@ -95,19 +86,6 @@ class Broadcaster {
     let data = await db.lectures.getLecture(this.lecture_uid);
     data.creator = await db.accounts.getBasicInfo(data.account_uid);
     return data;
-  }
-
-  async readQuestions() {
-    let qs = await db.lectureQs.getQuestions(this.lecture_uid);
-    qs = qs.map(({ account_uid, uid, question }) => {
-      return {
-        creator_uid: account_uid,
-        question_uid: uid,
-        question
-      }
-    });
-
-    this.questions = [...this.questions, ...qs]; // in case already has questions
   }
 
   isEmpty(): boolean {

@@ -74,6 +74,15 @@ router.get('/student/:lecture_uid', mw.websocket, mw.auth, async (req: Request, 
     return socket.close();
   }
 
+  let status = await db.lectureStudentLog.getStudentStatus(lecture_uid, req.uid);
+  if (status && status === 'j') {
+    socket.json({
+      type: 'error',
+      error: 'already_joined'
+    });
+    return socket.close();
+  }
+
   // TODO handle case that lecture ends before student initialized
   handleStudent(lecture_uid, req.uid, socket);
 });
@@ -94,15 +103,27 @@ async function attachLecture(req, res, next) {
   res.send(responses.error());
 }
 
+async function joinedLecture(req, res, next) {
+  let { lecture_uid } = req.params;
+
+  let status = await db.lectureStudentLog.getStudentStatus(lecture_uid, req.uid);
+  if (!status || status === 'l')
+    return res.send(responses.error('not_joined_lecture'));
+  
+  next();
+}
+
 function isValidScore(value) {
   return typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 10;
 }
 
-router.post('/student/:lecture_uid/score', mw.auth, attachLecture, async (req: Request, res) => {
+router.post('/student/:lecture_uid/score', mw.auth, attachLecture, joinedLecture, async (req: Request, res) => {
+  let { lecture_uid } = req.params;
+  
   if (!isValidScore(req.body.score))
     return res.send(responses.error());
 
-  publish(req.params.lecture_uid, {
+  publish(lecture_uid, {
     type: 'ssu', // student score update
     student_uid: req.uid,
     score: req.body.score
@@ -111,7 +132,27 @@ router.post('/student/:lecture_uid/score', mw.auth, attachLecture, async (req: R
   res.send(responses.received());
 });
 
-router.post('/student/:lecture_uid/question', mw.auth, attachLecture, async (req: Request, res) => {
+router.get('/student/:lecture_uid/questions', mw.auth, attachLecture, joinedLecture, async (req: Request, res) => {
+  if (typeof req.query.after !== 'string')
+    return res.send(responses.error());
+
+  let elapsed = parseInt(req.query.after)
+  
+  if (isNaN(elapsed) || elapsed < 0)
+    return res.send(responses.error());
+  
+  let qs = await db.lectureQs.getQuestionsAfter(req.params.lecture_uid, elapsed);
+
+  res.send(responses.success(qs.map(({ account_uid, uid, question }) => {
+    return {
+      creator_uid: account_uid,
+      question_uid: uid,
+      question
+    }
+  })));
+});
+
+router.post('/student/:lecture_uid/question', mw.auth, attachLecture, joinedLecture, async (req: Request, res) => {
   // basic question test stuff
   let { question } = req.body;
 
@@ -132,7 +173,7 @@ router.post('/student/:lecture_uid/question', mw.auth, attachLecture, async (req
   res.send(responses.received());
 });
 
-router.post('/student/:lecture_uid/upvote', mw.auth, attachLecture, async (req: Request, res) => {
+router.post('/student/:lecture_uid/upvote', mw.auth, attachLecture, joinedLecture, async (req: Request, res) => {
   if (!req.body.question_uid)
     return res.send(responses.error());
   

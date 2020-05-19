@@ -10,8 +10,6 @@ As soon as client joins, they get this message from server.
 Gives basic info about the lecture.
 Wait for this message before loading the UI, sending anything, etc.
 
-Questions will probably be empty for teachers most of the time.
-
 ```javascript
 {
   "type": "lecture_info",
@@ -24,19 +22,7 @@ Questions will probably be empty for teachers most of the time.
     "first_name": "Arjun",
     "last_name": "Patrawala",
     "photo": "https://wF...."
-  },
-  "questions": [
-    {
-      "question_uid": "X8udiUQ8fN6F27C",
-      "creator_uid": "rUJyP317iuZErNlhrn2",
-      "question": "What is the relationship between voltage and a Gaussian surface?"
-    },
-    {
-      "question_uid": "DFjksdjf78234hDF",
-      "creator_uid": "aljwewrkSI99234j",
-      "question": "What's your favorite color?"
-    }
-  ]
+  }
 }
 ```
 
