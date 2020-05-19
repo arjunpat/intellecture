@@ -18,20 +18,29 @@
         <h1 class="display-1">Lecture: <strong><span style="font-family: 'Noto Sans'">{{ lectureName }}</span></strong></h1>
       </v-card-title>
 
-      <v-tabs
-        v-model="tab"
-        background-color="transparent"
-        grow
-      >
-        <v-tab
-          v-for="(item, index) in items"
-          :class="{active: currentTab === index}"
-          @click="currentTab = index"
-          :key="item"
+      <TutorialDisplay :show="showTutorial == 3" backgroundColor="white" @next="showTutorial++; clickTab(1)" @cancel="showTutorial = -1" bottom>
+        <template v-slot:title>
+          Tabs
+        </template>
+        <template v-slot:explanation>
+          Click on these tabs to switch between the understanding, questions, and student view.
+        </template>
+        <v-tabs
+          v-model="tab"
+          background-color="transparent"
+          grow
         >
-          {{ item }}
-        </v-tab>
-      </v-tabs>
+          <v-tab
+            v-for="(item, index) in items"
+            :class="{active: currentTab === index}"
+            @click="currentTab = index"
+            :key="item"
+            :ref="getTabId(index)"
+          >
+            {{ item }}
+          </v-tab>
+        </v-tabs>
+      </TutorialDisplay>
 
       <v-tabs-items v-model="tab">
 
@@ -44,21 +53,37 @@
             class="pt-3 pb-3"
           >
             <v-row align="center" justify="center" style="margin-top: 20px;">
-                <v-card :width="understandingWidth" height="60vh">
+                <TutorialDisplay :show="showTutorial == 0" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" bottom>
+                  <template v-slot:title>
+                    Understanding Score
+                  </template>
+                  <template v-slot:explanation>
+                    The aggregated understanding score from your students will show up here.
+                  </template>
+                  <v-card :width="understandingWidth" height="60vh">
                     <v-card-text style="text-align: center;">
-                        <span style="font-size: 23px; color: black; font-weight: bold;"><span style="background: red; padding: 2px 5px; color: white; border-radius: 3px; font-weight: normal;">LIVE</span> UNDERSTANDING SCORE</span>
-                        <br><br><br><br><br><br><br><br>
-                        <span class="text--primary font-weight-black" style="margin-top: 40px; text-align: center; font-size: 180px; background: #E0E0E0; border-radius: 10px; padding: 4px 20px;" :style="{ fontSize: understandingFontSize }">{{ understandingScore }}%</span>
-                        <br><br><br><br>
-                        <div style="width: 335px; display: inline-block;"><v-progress-linear :value="understandingScore" :color="progressColor" rounded></v-progress-linear></div>
+                      <span style="font-size: 23px; color: black; font-weight: bold;"><span style="background: red; padding: 2px 5px; color: white; border-radius: 3px; font-weight: normal;">LIVE</span> UNDERSTANDING SCORE</span>
+                      <br><br><br><br><br><br><br><br>
+                      <span class="text--primary font-weight-black" style="margin-top: 40px; text-align: center; font-size: 180px; background: #E0E0E0; border-radius: 10px; padding: 4px 20px;" :style="{ fontSize: understandingFontSize }">{{ understandingScore }}%</span>
+                      <br><br><br><br>
+                      <div style="width: 335px; display: inline-block;"><v-progress-linear :value="understandingScore" :color="progressColor" rounded></v-progress-linear></div>
                     </v-card-text>
-                </v-card>
-                <v-card width="60%" height="60vh" align="center" justify="center" v-if="!smallScreen">
-                    <div style="max-width: 900px; margin-top: 3%;">
-                        <line-chart :chart-data="datacollection"></line-chart>
-                    </div>
-                  <v-btn style="float: none;" class="" @click="shortened = !shortened">{{ shortentext }}</v-btn>
-                </v-card>
+                  </v-card>
+                </TutorialDisplay>
+                <TutorialDisplay :show="showTutorial == 1" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" bottom>
+                  <template v-slot:title>
+                    Understanding Graph
+                  </template>
+                  <template v-slot:explanation>
+                    This is a graph of the understanding score over the duration of your lecture. Click the shorten button to only show the last 5 minutes of data.
+                  </template>
+                  <v-card width="60vw" height="60vh" align="center" justify="center" v-if="!smallScreen">
+                      <div style="max-width: 900px; padding-top: 3%;">
+                          <line-chart :chart-data="datacollection"></line-chart>
+                      </div>
+                    <v-btn style="float: none;" class="" @click="shortened = !shortened">{{ shortentext }}</v-btn>
+                  </v-card>
+                </TutorialDisplay>
             </v-row>
             <v-row align="center" justify="center" v-if="smallScreen">
                 <v-card width="90%" height="60vh" align="center" justify="center">
@@ -68,24 +93,57 @@
                   <v-btn style="float: none;" class="" @click="shortened = !shortened">{{ shortentext }}</v-btn>
                 </v-card>
             </v-row>
-            <!-- TOPICS WILL ADD LATER -->
-            <v-row class="mt-1" align="center" justify="center" v-if="topics.length > 0">
-              <v-card width="90%" min-height="70px" style="padding: 5px 10px;">
-                <v-row>
-                  <v-col align="left">
-                  <div
-                      v-for="n in topics.length"
-                      v-bind:key="n"
-                      style="float: left; margin-bottom: 7px; height: 5vh;"
-                      class="mr-3 topic"
-                  >
-                      <h1 style="font-size: 20px;">{{ topics[n-1].value }} </h1>
-                  </div>
-                  </v-col>
-                </v-row>
-              </v-card>
-            </v-row>
 
+            <v-row class="mt-1" align="center" justify="center" v-if="topics.length > 0 || showTutorial == 2">
+              <TutorialDisplay :show="showTutorial == 2" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" top>
+                <template v-slot:title>
+                  Topics
+                </template>
+                <template v-slot:explanation>
+                  This is where the main topics of the questions asked by your students will show up.
+                </template>
+                <v-expand-transition>
+                    <v-card width="90vw" min-height="70px" style="padding: 5px 10px;">
+                      <v-row>
+                        <v-col align="left">
+                        <div
+                            v-for="n in topics.length"
+                            v-bind:key="n"
+                            style="float: left; margin-bottom: 7px; height: 5vh;"
+                            class="mr-3 topic"
+                        >
+                            <h1 style="font-size: 20px;">{{ topics[n-1].value }} </h1>
+                        </div>
+                        <v-expand-transition>
+                          <div
+                              style="float: left; margin-bottom: 7px; height: 5vh;"
+                              class="mr-3 topic"
+                              v-if="showTutorial == 2"
+                          >
+                              <h1 style="font-size: 20px;">This is a topic</h1>
+                          </div>
+                        </v-expand-transition>
+                        </v-col>
+                      </v-row>
+                    </v-card>
+                </v-expand-transition>
+              </TutorialDisplay>
+            </v-row>
+            <div style="text-align: right; position: absolute; right: 10px; bottom: 10px; width: 400px;"> 
+              <TutorialDisplay style="text-align: left;" :show="showTutorial == 7" backgroundColor="white" @next="showTutorial = -1" @cancel="showTutorial = -1" top last>
+                <template v-slot:title>
+                  Help
+                </template>
+                <template v-slot:explanation>
+                  Click here to view this tutorial again. 
+                </template>
+                <div style="text-align: right;">
+                  <v-btn style="display: inline-block;" color="green" bottom @click="showTutorial = 0" fab dark small>
+                    <v-icon>mdi-help</v-icon>
+                  </v-btn>
+                </div>
+              </TutorialDisplay>
+            </div>
         </v-card>
           <!-- End of Understanding tab -->
 
@@ -116,7 +174,23 @@
                         <v-list-item-title><div style="display: inline-block; font-size: 20px;" class="topic" @click="showCategory(n-1)"><span v-if="topics[n-1].value.length > 20">{{ topics[n-1].value.substring(0, 20) }}...</span><span v-else>{{ topics[n-1].value }}</span></div><div id="topic-quantity" class="ml-3">{{ topics[n-1].questions.length }}</div></v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
-                    </v-card-text>
+                    <!-- EXAMPLE TOPIC -->
+                    <TutorialDisplay :show="showTutorial == 4" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" bottom>
+                      <template v-slot:title>
+                        Topics
+                      </template>
+                      <template v-slot:explanation>
+                        This shows the key topics from the questions and the number of questions that fall under that category.
+                      </template>
+                      <v-expand-transition>
+                        <v-list-item v-if="showTutorial == 4">
+                            <v-list-item-content>
+                            <v-list-item-title><div style="display: inline-block; font-size: 20px;" class="topic">This is a topic</div><div id="topic-quantity" class="ml-3">{{ 5 }}</div></v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                      </v-expand-transition>
+                    </TutorialDisplay>
+                  </v-card-text>
                 </v-card>
                 </v-col>
 
@@ -158,6 +232,26 @@
                       </template>
                     </v-banner>
                     </li>
+                    <!-- EXAMPLE QUESTION -->
+                    <TutorialDisplay :show="showTutorial == 5" backgroundColor="white" @next="showTutorial++; clickTab(2);" @cancel="showTutorial = -1" bottom>
+                      <template v-slot:title>
+                        Questions
+                      </template>
+                      <template v-slot:explanation>
+                        Questions from the students will show up here along with the number of upvotes they get by the students (on the right). You can dismiss the question by clicking the dismiss button.
+                      </template>
+                      <v-expand-transition>
+                        <li>
+                          <v-banner v-show="showTutorial == 5">
+                            This is a question
+                            <template v-slot:actions>
+                              <div id="upvotes">5</div>
+                              <v-btn text color="primary">Dismiss</v-btn>
+                            </template>
+                          </v-banner>
+                        </li>
+                      </v-expand-transition>
+                    </TutorialDisplay>
                 </ul>
                 </v-col>
             </v-row>
@@ -175,7 +269,7 @@
           >
           <v-row align="center" justify="center">
             <v-row align="center" justify="center" style="width: 100vw;">
-              <div v-if="students.length == 0">
+              <div v-if="students.length == 0 && showTutorial != 6">
                 <v-progress-circular
                   :width="3"
                   :size="60"
@@ -189,7 +283,7 @@
                 <v-col cols="8">
                 <ul style="list-style-type: none">
                     <li v-for="student in students" v-bind:key="student.id">
-                    <v-banner style="font-family: var(--main-font);">
+                      <v-banner style="font-family: var(--main-font);">
                         <v-avatar
                           size="42px"
                           class="mr-3"
@@ -200,12 +294,41 @@
                             style="background-color: #F5F5F5;"
                           >
                         </v-avatar>
-                      {{ student.first_name }} {{ student.last_name }}
-                      <template v-slot:actions>
-                        <span style="font-size: 15px; color: #BDBDBD;">Joined {{ formatUnix(student.ts) }}</span>
-                      </template>
-                    </v-banner>
+                        {{ student.first_name }} {{ student.last_name }}
+                        <template v-slot:actions>
+                          <span style="font-size: 15px; color: #BDBDBD;">Joined {{ formatUnix(student.ts) }}</span>
+                        </template>
+                      </v-banner>
                     </li>
+                    <!-- EXAMPLE QUESTION -->
+                    <TutorialDisplay :show="showTutorial == 6" backgroundColor="white" @next="showTutorial++; clickTab(0)" @cancel="showTutorial = -1" bottom>
+                      <template v-slot:title>
+                        Students
+                      </template>
+                      <template v-slot:explanation>
+                        Here, you can see a list of all the students that have joined your lecture.
+                      </template>
+                      <v-expand-transition>
+                        <li>
+                          <v-banner style="font-family: var(--main-font);">
+                            <v-avatar
+                              size="42px"
+                              class="mr-3"
+                            ><!-- CHANGE LATER -->
+                              <img
+                                alt="Avatar"
+                                src="https://i.imgur.com/4Wj8Wz2.jpg"
+                                style="background-color: #F5F5F5;"
+                              >
+                            </v-avatar>
+                            Joe Smoe
+                            <template v-slot:actions>
+                              <span style="font-size: 15px; color: #BDBDBD;">Joined 8:00 AM</span>
+                            </template>
+                          </v-banner>
+                        </li>
+                      </v-expand-transition>
+                    </TutorialDisplay>
                 </ul>
                 </v-col>
             </v-row>
@@ -214,6 +337,7 @@
           <!-- End of Students tab -->
 
       </v-tabs-items>
+      
     </v-card>
     </v-container>
   </v-content>
@@ -221,13 +345,15 @@
 
 <script>
 import LineChart from '../components/Chart'
+import TutorialDisplay from '@/components/TutorialDisplay'
 import { mapState } from 'vuex'
 import { post, get, setLectures } from '@/helpers.js'
 import store from '@/store'
 
 export default {
   components: {
-    LineChart
+    LineChart,
+    TutorialDisplay,
   },
   props: {
     id: { type: String }
@@ -384,7 +510,8 @@ export default {
       shortentext: "Shorten",
       snackbar: false,
       timeout: 1000,
-      snackbarMessage: ''
+      snackbarMessage: '',
+      showTutorial: -1,
     }
   },
   methods: {
@@ -455,6 +582,16 @@ export default {
     sortQuestions() {
       this.questions.sort((a, b) => (a.upvotes < b.upvotes) ? 1 : -1)
       this.displayQuestions.sort((a, b) => (a.upvotes < b.upvotes) ? 1 : -1)
+    },
+    getTabId(index) {
+      return "tab" + index
+    },
+    clickTab(index) {
+      if(index == 1) {
+        //console.log(this.$refs.tab2[0])
+        //this.$refs.tab2[0].click(); IM BEING STUPID TODO IMPLEMENT LATER
+      }
+      this.currentTab = index
     }
   },
   mounted () {
@@ -516,7 +653,7 @@ export default {
         })
       }else if(data.type == "error") {
         self.endLectureMethod()
-        self.$router.replace({ name: 'Dashboard'})
+        //self.$router.replace({ name: 'Dashboard'})
       }
     }
   },
@@ -560,9 +697,9 @@ export default {
     },
     understandingWidth () {
       if(!this.smallScreen) {
-        return '30%'
+        return '30vw'
       } else {
-        return '90%'
+        return '90vw'
       }
     }
   },
@@ -662,5 +799,13 @@ span {
   padding: 0px 5px;
   border-radius: 5px;
   font-size: 20px;
+}
+
+html::-webkit-scrollbar {
+    display: none;
+}
+
+html {
+    -ms-overflow-style: none;
 }
 </style>
