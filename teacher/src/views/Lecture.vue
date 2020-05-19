@@ -511,7 +511,14 @@ export default {
   mounted () {
     this.$emit('startlecture', this.id);
     this.$refs["start-window"].requestFullscreen();
-
+    document.addEventListener('fullscreenchange', (event) => {
+      // document.fullscreenElement will point to the element that
+      // is in fullscreen mode if there is one. If there isn't one,
+      // the value of the property is null.
+      if (!document.fullscreenElement) {
+        this.firstLaunch=false;
+      }
+    });
 
     //this.questions.sort((a, b) => (a.upvotes < b.upvotes) ? 1 : -1)
 
