@@ -105,7 +105,10 @@ export default {
 
   methods: {
     signOut() {
-      signOut().catch((err) => {
+      signOut().then(() => {
+        if (this.$route.name === 'Room')
+          this.$router.replace({ name: 'Join' })
+      }).catch((err) => {
         this.error = "There was an error signing out!"
       })
     },

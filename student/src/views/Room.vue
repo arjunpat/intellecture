@@ -8,7 +8,7 @@
       <NotSignedIn />
     </v-overlay>
 
-    <v-container style="padding-top: 10vh !important;" fluid class="fill-height">
+    <v-container v-if="lectureInfo" style="padding-top: 10vh !important;" fluid class="fill-height">
       <v-row class="fill-height" justify="center">
         <v-col
           cols="12"
@@ -360,7 +360,8 @@ export default {
               this.updateUnderstanding()
 
               // Get previously asked questions
-              get(`/lectures/live/student/${this.id}/questions`).then((result) => {
+              const elapsedMs = 0
+              get(`/lectures/live/student/${this.id}/questions?after=${elapsedMs}`).then((result) => {
                 if (!result.success)
                   throw result
 
