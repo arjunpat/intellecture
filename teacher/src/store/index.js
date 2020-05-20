@@ -9,6 +9,7 @@ export default new Vuex.Store({
     authUser: null,
     classes: null,
     lectures: null,
+    showCode: true
   },
   mutations: {
     setEndLecture(state, endLecture) {
@@ -29,6 +30,9 @@ export default new Vuex.Store({
         priorlect=[];
       }
       state.lectures=priorlect.concat(lectures);
+    },
+    setShowCode(state, showCode) {
+      state.showCode = showCode
     }
   },
   actions: {

@@ -72,6 +72,7 @@
 </template>
 
 <script>
+import store from '@/store'
 import { mapState } from 'vuex'
 import { post, get } from '@/helpers.js'
 
@@ -104,6 +105,7 @@ export default {
     }
   },
   mounted() {
+    store.commit("setShowCode", true)
   },
   computed: {
     ...mapState(['classes']),

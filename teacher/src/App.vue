@@ -21,7 +21,7 @@
       <v-btn v-if="newlecture" @click="$router.push({ path: '/dashboard' })">Back</v-btn>
       <v-btn class="red" v-if="started && livelecture" @click="endlecture()">End Lecture</v-btn>
       <v-btn class="ml-1 deep-orange accent-2" v-if="!started && !landing && !signin && authUser" @click="signOutAuth()">Sign out <img id="avt-img" class="ml-2" v-bind:src="authUser.photo" width="25px"></v-btn>
-      <div v-if="started && livelecture" class="ml-3" style="background-color: #AED581; padding: 5px 8px; border-radius: 7px;">
+      <div v-if="started && livelecture" class="ml-3" style="background-color: #AED581; padding: 5px 8px; border-radius: 7px;" @click="showCode()">
         <span class="mr-1 font-weight-medium" style="font-size: 20px;">ROOM:</span> <span class="text--primary font-weight-black" style="background: #ddd; border-radius: 7px; padding: 2px 10px; font-size: 25px;">{{id}}</span>
       </div>
 
@@ -138,13 +138,16 @@ export default {
         this.$router.push({ path: '/' })
       }
     },
-    endlecture: function() {
+    endlecture() {
       store.commit("setEndLecture", true)
       this.started = false
     },
-    starting: function(e) {
+    starting(e) {
       this.id = e;
       this.started = true;
+    },
+    showCode() {
+      store.commit('setShowCode', true)
     }
   }
 }

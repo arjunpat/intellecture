@@ -1,6 +1,6 @@
 <template>
   <v-content>
-    <v-container fluid v-if="firstLaunch" class="window roomContainer" ref="start-window">
+    <v-container fluid v-show="showCode" class="window roomContainer" ref="start-window">
       <v-col>
        <v-row  class="close">
           <v-icon x-large class="xsign" @keydown.native.escape="exitFS()" @click.native="exitFS()" >{{ svgPath }}</v-icon>
@@ -22,7 +22,7 @@
       
       </v-col>
     </v-container>
-    <v-container v-else
+    <v-container v-show="!showCode"
       fluid
     >
       <v-card>
@@ -108,9 +108,10 @@
                 </TutorialDisplay>
             </v-row>
             <v-row align="center" justify="center" v-if="smallScreen">
-                <v-card width="90%" height="60vh" align="center" justify="center">                    <div style="max-width: 900px; margin-top: 3%;">
-                        <line-chart :chart-data="datacollection"></line-chart>
-                    </div>
+                <v-card width="90%" height="60vh" align="center" justify="center">                    
+                  <div style="max-width: 900px; margin-top: 3%;">
+                      <line-chart :chart-data="datacollection"></line-chart>
+                  </div>
                   <v-btn style="float: none;" class="" @click="shortened = !shortened">{{ shortentext }}</v-btn>
                 </v-card>
             </v-row>
@@ -390,7 +391,6 @@ export default {
       averageUnderstanding: '--',
       range: '--',
       svgPath: mdiCloseThick,
-      firstLaunch:true,
       questions: [/*{
   "type":"new_question",
   "question_uid":"jDuw6QJmDQiRfJo",
@@ -543,7 +543,6 @@ export default {
     },
     exitFS() {
       document.exitFullscreen()
-      this.firstLaunch=false;
     },
     initChart () {
       var x = new Array();
@@ -625,15 +624,10 @@ export default {
     this.$emit('startlecture', this.id);
     this.$refs["start-window"].requestFullscreen();
     document.addEventListener('fullscreenchange', (event) => {
-      // document.fullscreenElement will point to the element that
-      // is in fullscreen mode if there is one. If there isn't one,
-      // the value of the property is null.
       if (!document.fullscreenElement) {
-        this.firstLaunch=false;
+        store.commit("setShowCode", false)
       }
     });
-
-    //this.questions.sort((a, b) => (a.upvotes < b.upvotes) ? 1 : -1)
 
     this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.id}`);
     var self = this;
@@ -681,7 +675,6 @@ export default {
           if(result.success) {
             question.upvotedStudents = result.data
             self.sortQuestions()
-            console.log(self.questions)
           }
         })
       }else if(data.type == "error") {
@@ -698,7 +691,7 @@ export default {
     
   },
   computed: {
-    ...mapState(['endLecture']),
+    ...mapState(['endLecture', 'showCode']),
     progressColor () {
       if(this.understandingScore == '--') {
         return 'primary'
@@ -746,6 +739,13 @@ export default {
     shortened(val) {
       this.initChart();
       this.shortentext = this.shortened ? "Entire" : "Shorten";
+    },
+    showCode(val) {
+      if(this.showCode) {
+        this.$refs["start-window"].requestFullscreen();
+      } else if(document.fullScreen){
+        this.exitFS();
+      }
     }
   }
 }
