@@ -74,7 +74,9 @@ export default class Lecture {
     let now = Date.now();
     this.blast({ type: 'end_lecture' });
     this.ended = true;
-    await db.lectureStudentLog.leaveBulk(this.lecture_uid, Object.keys(this.scores), this.elapsed(now));
+    let remainingStudents = Object.keys(this.scores);
+    if (remainingStudents.length > 0)
+      await db.lectureStudentLog.leaveBulk(this.lecture_uid, remainingStudents, this.elapsed(now));
     await db.lectures.endLecture(this.lecture_uid, now);
   }
 

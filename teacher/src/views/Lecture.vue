@@ -1,6 +1,28 @@
 <template>
   <v-content>
-    <v-container
+    <v-container fluid v-if="firstLaunch" class="window roomContainer" ref="start-window">
+      <v-col>
+       <v-row  class="close">
+          <v-icon x-large class="xsign" @keydown.native.escape="exitFS()" @click.native="exitFS()" >{{ svgPath }}</v-icon>
+       </v-row>
+       <v-row>
+        <div class="mx-auto">
+          <h1 class="joinMessage">
+               Head to <b>join.intellecture.app</b> to join!
+          </h1>
+        </div>
+      </v-row>
+      <v-row>
+        <div class="mx-auto">
+          <h1 class="roomcode">
+            {{this.$route.params.id}}
+          </h1>
+        </div>
+      </v-row>
+      
+      </v-col>
+    </v-container>
+    <v-container v-else
       fluid
     >
       <v-card>
@@ -86,8 +108,7 @@
                 </TutorialDisplay>
             </v-row>
             <v-row align="center" justify="center" v-if="smallScreen">
-                <v-card width="90%" height="60vh" align="center" justify="center">
-                    <div style="max-width: 900px; margin-top: 3%;">
+                <v-card width="90%" height="60vh" align="center" justify="center">                    <div style="max-width: 900px; margin-top: 3%;">
                         <line-chart :chart-data="datacollection"></line-chart>
                     </div>
                   <v-btn style="float: none;" class="" @click="shortened = !shortened">{{ shortentext }}</v-btn>
@@ -344,6 +365,7 @@
 </template>
 
 <script>
+import { mdiCloseThick } from '@mdi/js';
 import LineChart from '../components/Chart'
 import TutorialDisplay from '@/components/TutorialDisplay'
 import { mapState } from 'vuex'
@@ -367,6 +389,8 @@ export default {
       understandingScore: '--',
       averageUnderstanding: '--',
       range: '--',
+      svgPath: mdiCloseThick,
+      firstLaunch:true,
       questions: [/*{
   "type":"new_question",
   "question_uid":"jDuw6QJmDQiRfJo",
@@ -443,7 +467,6 @@ export default {
 }*/],
       displayQuestions: [],
       students: [],
-      totalStudents: [],
       topics: [/*
     {
       "type":"keyphrase",
@@ -515,8 +538,37 @@ export default {
     }
   },
   methods: {
+     understandingFontSize () {
+      switch (this.$vuetify.breakpoint.name) {
+        case 'xs': return '180px'
+        case 'sm': return '180px'
+        case 'md': return '130px'
+        case 'lg': return '180px'
+        case 'xl': return '180px'
+      }
+    },
+    smallScreen () {
+      switch (this.$vuetify.breakpoint.name) {
+        case 'xs': return true
+        case 'sm': return true
+        case 'md': return false
+        case 'lg': return false
+        case 'xl': return false
+      }
+    },
+    understandingWidth () {
+      if(!this.smallScreen) {
+        return '30%'
+      } else {
+        return '90%'
+      }
+    },
     dismiss(question) {
       question.dismiss = true;
+    },
+    exitFS() {
+      document.exitFullscreen()
+      this.firstLaunch=false;
     },
     initChart () {
       var x = new Array();
@@ -563,7 +615,7 @@ export default {
       this.displayQuestions = this.displayQuestions.filter(question => q.includes(question.question_uid))
     },
     getStudentById(id) {
-      return this.totalStudents.find(student => student.uid == id)
+      return this.students.find(student => student.uid == id)
     },
     showSnackBar(message) {
       this.snackbarMessage = message;
@@ -596,9 +648,17 @@ export default {
   },
   mounted () {
     this.$emit('startlecture', this.id);
-    console.log(this.$vuetify.breakpoint)
+    this.$refs["start-window"].requestFullscreen();
+    document.addEventListener('fullscreenchange', (event) => {
+      // document.fullscreenElement will point to the element that
+      // is in fullscreen mode if there is one. If there isn't one,
+      // the value of the property is null.
+      if (!document.fullscreenElement) {
+        this.firstLaunch=false;
+      }
+    });
 
-    //this.displayQuestions = this.questions;
+    //this.questions.sort((a, b) => (a.upvotes < b.upvotes) ? 1 : -1)
 
     this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.id}`);
     var self = this;
@@ -610,7 +670,6 @@ export default {
         self.lectureName = data.lecture_name
       } else if(data.type == "student_join") {
         self.students.push(data)
-        self.totalStudents.push(data)
         self.showSnackBar(`${ self.students[self.students.length-1].first_name } ${ self.students[self.students.length-1].last_name } joined`)
       } else if(data.type == "student_leave") {
         const left = self.students.find(student => student.uid == data.uid)
@@ -627,8 +686,6 @@ export default {
           })
           self.understandingScore = data.score
           self.initChart()
-        } else {
-          self.understandingScore = '--'
         }
       } else if(data.type == "new_question") {
         self.questions.push({
@@ -649,6 +706,7 @@ export default {
           if(result.success) {
             question.upvotedStudents = result.data
             self.sortQuestions()
+            console.log(self.questions)
           }
         })
       }else if(data.type == "error") {
@@ -718,7 +776,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang='scss'>
 html {
   scroll-behavior: smooth;
 }
@@ -726,11 +784,55 @@ html {
 #arrow-btn {
   transition: all 0.3s;
 }
+.roomContainer {
+      background-color: #DCEDC8;
+    height: 100%;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+.close {
+  position: absolute;
+  top:0;
+  left:10;
+}
+.xsign {
+  margin-top:40%;
+  margin-left:20%;
+  cursor:pointer;
+  transform: scale(2);
+}
+.joinMessage{
+  margin-top:-7vw;
+  height:120px;
+  font-size: 2vw;
+  font-weight: 900;
+  width:100%;
+  margin-bottom: 10vw;
+  transform: scale(2);
+}
+.roomcode {
+  background-color: white;
+  height:100px;
+  border-radius: 15px;
+  justify-content: center;
+  text-align: center;
+  font-size: 500%;
+  line-height: 120%;
+  padding-right:20px;
+  padding-left:20px;
 
+  width:100%;
+  transform: scale(3);
+}
 #arrow-btn:hover {
   font-size: 20px;
 }
-
 .blink {
   animation: blink-animation 1s steps(5, start) infinite;
   -webkit-animation: blink-animation 1s steps(5, start) infinite;
