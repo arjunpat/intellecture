@@ -5,17 +5,8 @@ import * as mw from '../middleware';
 import * as responses from '../lib/responses';
 import { Request } from '../types';
 
+import { genLectureJoinCode } from '../lib/helpers';
 import db from '../models';
-
-function genLectureId(length: number): string {
-  let options = 'abcdefghijklmnopqrstuvwxyz';
-  let id = '';
-
-  for (let i = 0; i < length; i++)
-    id += options[Math.floor(Math.random() * options.length)];
-
-  return id;
-}
 
 import live from './live/';
 router.use('/live', live);
@@ -28,7 +19,7 @@ router.post('/create', mw.auth, async (req: Request, res) => {
   if (!resp)
     return res.send(responses.error());
   
-  let lecture_uid = genLectureId(5);
+  let lecture_uid = genLectureJoinCode();
   await db.lectures.createLecture(lecture_uid, class_uid, name || 'Untitled Lecture');
 
   res.send(responses.success({
