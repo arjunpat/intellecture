@@ -1,4 +1,5 @@
 const badWords = require('./bad_words.json');
+import badWords from '../../lib/bad_words.json';
 
 export function genId(len: number): string {
   let options = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
