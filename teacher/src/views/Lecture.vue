@@ -330,7 +330,7 @@
                         Here, you can see a list of all the students that have joined your lecture.
                       </template>
                       <v-expand-transition>
-                        <li>
+                        <li v-if="showTutorial == 6">
                           <v-banner style="font-family: var(--main-font);">
                             <v-avatar
                               size="42px"
@@ -538,31 +538,6 @@ export default {
     }
   },
   methods: {
-     understandingFontSize () {
-      switch (this.$vuetify.breakpoint.name) {
-        case 'xs': return '180px'
-        case 'sm': return '180px'
-        case 'md': return '130px'
-        case 'lg': return '180px'
-        case 'xl': return '180px'
-      }
-    },
-    smallScreen () {
-      switch (this.$vuetify.breakpoint.name) {
-        case 'xs': return true
-        case 'sm': return true
-        case 'md': return false
-        case 'lg': return false
-        case 'xl': return false
-      }
-    },
-    understandingWidth () {
-      if(!this.smallScreen) {
-        return '30%'
-      } else {
-        return '90%'
-      }
-    },
     dismiss(question) {
       question.dismiss = true;
     },
@@ -785,7 +760,7 @@ html {
   transition: all 0.3s;
 }
 .roomContainer {
-      background-color: #DCEDC8;
+    background-color: #DCEDC8;
     height: 100%;
     display: -webkit-box;
     display: -moz-box;
@@ -794,7 +769,6 @@ html {
     display: flex;
     align-items: center;
     justify-content: center;
-    
 }
 .close {
   position: absolute;
