@@ -2,7 +2,7 @@
   <v-content>
     <v-container fluid v-show="showCode" class="window roomContainer" ref="start-window">
       <v-col>
-       <v-row  class="close">
+       <v-row class="close">
           <v-icon x-large class="xsign" @keydown.native.escape="exitFS()" @click.native="exitFS()" >{{ svgPath }}</v-icon>
        </v-row>
        <v-row>
@@ -22,7 +22,7 @@
       
       </v-col>
     </v-container>
-    <v-container v-show="!showCode"
+    <v-container
       fluid
     >
       <v-card>
@@ -108,10 +108,10 @@
                 </TutorialDisplay>
             </v-row>
             <v-row align="center" justify="center" v-if="smallScreen">
-                <v-card width="90%" height="60vh" align="center" justify="center">                    
-                  <div style="max-width: 900px; margin-top: 3%;">
+                <v-card width="90%" style="min-height: 60vh" class="pb-3" align="center" justify="center">                    
+                    <div style="max-width: 900px; margin-top: 3%;">
                       <line-chart :chart-data="datacollection"></line-chart>
-                  </div>
+                    </div>
                   <v-btn style="float: none;" class="" @click="shortened = !shortened">{{ shortentext }}</v-btn>
                 </v-card>
             </v-row>
@@ -297,7 +297,7 @@
                   :size="60"
                   color="black"
                   indeterminate
-                  style="margin-left: 40px; margin-top: 40px;"
+                  style="margin-top: 40px; margin-left: 65px;"
                 ></v-progress-circular>
               </div>
             </v-row>
