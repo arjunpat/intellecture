@@ -41,7 +41,7 @@
                 <div v-if="overallRating <= 2" :class="[$vuetify.breakpoint.smAndUp ? 'display-1' : 'headline']">We're sorry to hear that :(</div>
                 <div v-else :class="[$vuetify.breakpoint.smAndUp ? 'display-1' : 'headline']">Thank you for your feedback.</div>
                 <div :class="[$vuetify.breakpoint.smAndUp ? 'display-1' : 'headline']">Care to tell us more?</div>
-                <div class="subtitle-1 mb-8" >Fill out as little or as much as you want</div>
+                <div class="headline mb-8 mt-3" >Fill out as little or as much as you want</div>
                 
                 <!-- have an expand thing showing the rest of it, and a no thanks link at the bottom-->
                 <!--<v-card outlined class="mb-4">-->
