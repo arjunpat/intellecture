@@ -36,6 +36,6 @@ export default class LectureQs {
     return this.mysql.query(
       `SELECT lecture_uid FROM lecture_qs WHERE uid = ?`,
       [question_uid]
-    );
+    ).then(d => d && d[0].lecture_uid)
   }
 }
