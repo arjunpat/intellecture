@@ -22,9 +22,12 @@ router.get('/lecture/:lecture_uid/students', mw.auth, lecturePerms, async (req, 
 });
 
 router.get('/lecture/:lecture_uid/question/:question_uid/upvotes', mw.auth, lecturePerms, async (req, res) => {
-  let { question_uid } = req.params;
+  let { question_uid, lecture_uid } = req.params;
 
-  res.send(responses.success(await db.lectureQUpvotes.getStudents(question_uid)));
+  if (await db.lectureQs.getLectureUid(question_uid) === lecture_uid)
+    return res.send(responses.success(await db.lectureQUpvotes.getStudents(question_uid)));
+
+  res.send(responses.error('permissions'));
 });
 
 export default router;
