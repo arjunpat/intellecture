@@ -35,6 +35,19 @@
         {{ snackbarMessage }}
         </div>
       </transition>
+      <div style="width: 300px; position: absolute; top: 0px; right: 0px;">
+      <TutorialDisplay style="text-align: left;" :show="showTutorial == 7" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" bottom>
+        <template v-slot:title>
+          Room Code
+        </template>
+        <template v-slot:explanation>
+          This is your room code, share it with your students so they can join the lecture. You can click on it to copy the room link or show a join screen.
+        </template>
+        <div style="position: absolute; top: 0px; right: 0px;">
+          
+        </div>
+      </TutorialDisplay>
+      </div>
 
       <v-card-title>
         <h1 class="display-1">Lecture: <strong><span style="font-family: 'Noto Sans'">{{ lectureName }}</span></strong></h1>
@@ -152,7 +165,7 @@
               </TutorialDisplay>
             </v-row>
             <div style="text-align: right; position: absolute; right: 10px; bottom: 10px; width: 400px;"> 
-              <TutorialDisplay style="text-align: left;" :show="showTutorial == 7" backgroundColor="white" @next="showTutorial = -1" @cancel="showTutorial = -1" top last>
+              <TutorialDisplay style="text-align: left;" :show="showTutorial == 8" backgroundColor="white" @next="showTutorial = -1" @cancel="showTutorial = -1" top last>
                 <template v-slot:title>
                   Help
                 </template>

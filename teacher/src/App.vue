@@ -21,13 +21,43 @@
       <v-btn v-if="newlecture" @click="$router.push({ path: '/dashboard' })">Back</v-btn>
       <v-btn class="red" v-if="started && livelecture" @click="endlecture()">End Lecture</v-btn>
       <v-btn class="ml-1 deep-orange accent-2" v-if="!started && !landing && !signin && authUser" @click="signOutAuth()">Sign out <img id="avt-img" class="ml-2" v-bind:src="authUser.photo" width="25px"></v-btn>
-      <div v-if="started && livelecture" class="ml-3" style="background-color: #AED581; padding: 5px 8px; border-radius: 7px;" @click="showCode()">
-        <span class="mr-1 font-weight-medium" style="font-size: 20px;">ROOM:</span> <span class="text--primary font-weight-black" style="background: #ddd; border-radius: 7px; padding: 2px 10px; font-size: 25px;">{{id}}</span>
-      </div>
+      <v-menu
+        v-if="started && livelecture"
+        offset-y
+        :close-on-content-click="false"
+        transition="slide-y-transition"
+      >
+        <template v-slot:activator="{ on }">
+          <div v-on="on" class="ml-3" id="roomCode">
+            <span class="mr-1 font-weight-medium" style="font-size: 20px;">ROOM:</span> <span class="text--primary font-weight-black" style="background: #ddd; border-radius: 7px; padding: 2px 10px; font-size: 25px;">{{id}}</span>
+          </div>
+        </template>
+        <v-list>
+          <v-list-item @click="showCode()">
+            <v-list-item-title>Show code</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="copyLink()">
+            <v-list-item-title>Copy link</v-list-item-title>
+            <input type="hidden" id="linkToCopy" :value="linkToRoom">
+          </v-list-item>
+        </v-list>
+      </v-menu>
+      
 
     </v-app-bar>
 
     <div style="height: 64px;"></div>
+
+    <v-snackbar
+      v-model="snackbar"
+      timeout="1000"
+      top
+      color="light-green lighten-2"
+      style="font-family: var(--main-font);"
+
+    >
+      {{message}}<v-icon style="color: white">mdi-clipboard</v-icon>  
+    </v-snackbar>
 
     <v-content>
       <router-view v-on:startlecture="starting" v-on:nonexistant="started = false" />
@@ -72,7 +102,10 @@ export default {
     return {
       started: false,
       imageurl: 'https://tonyxin-8bae2.firebaseapp.com/images/tonyxin2.png',
-      id: ''
+      id: '',
+      error: '',
+      snackbar: false,
+      message: ''
     }
   },
   computed: {
@@ -94,17 +127,24 @@ export default {
     },
     feedback: function () {
       return this.$route.name === 'Feedback'
+    },
+    linkToRoom: function () {
+      return "https://join.intellecture.app/room/" + this.id
     }
   },
   watch: {
     $route: function (to, from) {
       if(to.name == "Dashboard") {
-        this.started = false;
+        this.started = false
       }
       this.redirectAuthUser()
     },
     authUser: function(val) {
-      this.redirectAuthUser();
+      this.redirectAuthUser()
+    },
+    error: function(val) {
+      this.message = this.error
+      this.snackbar = true
     }
   },
   methods: {
@@ -148,6 +188,23 @@ export default {
     },
     showCode() {
       store.commit('setShowCode', true)
+    },
+    copyLink() {
+      let codeToCopy = document.querySelector('#linkToCopy')
+      codeToCopy.setAttribute('type', 'text') 
+      codeToCopy.select()
+
+      try {
+        var successful = document.execCommand('copy')
+        this.message = "Room link copied to clipboard"
+        this.snackbar = true
+      } catch (err) {
+        this.error = 'There was an error copying the link'
+      }
+
+      /* unselect the range */
+      codeToCopy.setAttribute('type', 'hidden')
+      window.getSelection().removeAllRanges()
     }
   }
 }
@@ -160,11 +217,15 @@ export default {
 @import url('https://fonts.googleapis.com/css?family=Poppins&display=swap');
 
 :root {
-  --main-font: 'Poppins';
+  --main-font: 'Poppins', 'Roboto', 'Sans-serif';
 }
 
 h1 {
   font-family: var(--main-font);
+}
+
+html {
+  overflow-y: auto !important;
 }
 </style>
 
@@ -189,11 +250,13 @@ h1 {
   cursor: pointer;
 }
 
-</style>
+#roomCode {
+  background-color: #AED581;
+  padding: 5px 8px;
+  border-radius: 7px;
+}
 
-
-<style>
-html {
-  overflow-y: auto !important;
+#roomCode:hover {
+  cursor: pointer;
 }
 </style>
