@@ -50,7 +50,7 @@
 
     <v-snackbar
       v-model="snackbar"
-      timeout="1000"
+      :timeout="timeout"
       top
       color="light-green lighten-2"
       style="font-family: var(--main-font);"
@@ -105,7 +105,8 @@ export default {
       id: '',
       error: '',
       snackbar: false,
-      message: ''
+      message: '',
+      timeout: 1000
     }
   },
   computed: {
