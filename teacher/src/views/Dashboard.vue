@@ -118,8 +118,7 @@ export default {
     });
   },
   computed: {
-    ...mapState(['classes']),
-    ...mapState(['lectures'])
+    ...mapState(['classes', 'lectures'])
   },
   watch: {
   }

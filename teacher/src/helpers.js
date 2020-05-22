@@ -73,11 +73,11 @@ export function getClasses() {
 
 export function setLectures() {
   get('/classes/mine').then((result) => {
+      store.commit("setLectures", null);
       if(!result.success)
         throw result
       for (let indexClass of result.data) {
         get(`/lectures/get/${indexClass.uid}`).then((data)=>{
-          store.commit("setLectures", null);
           for (let item of data.data) {
             item.className = indexClass.name;
           }
