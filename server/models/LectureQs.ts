@@ -31,4 +31,11 @@ export default class LectureQs {
       [lecture_uid, elapsed]
     );
   }
+
+  getLectureUid(question_uid: string) {
+    return this.mysql.query(
+      `SELECT lecture_uid FROM lecture_qs WHERE uid = ?`,
+      [question_uid]
+    ).then(d => d && d[0].lecture_uid)
+  }
 }
