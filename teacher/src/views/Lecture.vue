@@ -112,7 +112,7 @@
                   <template v-slot:explanation>
                     This is a graph of the understanding score over the duration of your lecture. Click the shorten button to only show the last 5 minutes of data.
                   </template>
-                  <v-card width="60vw" height="60vh" align="center" justify="center" v-if="!smallScreen">
+                  <v-card width="60vw" style="min-height: 60vh;" align="center" justify="center" v-if="!smallScreen">
                       <div style="max-width: 900px; padding-top: 3%;">
                           <line-chart :chart-data="datacollection"></line-chart>
                       </div>
