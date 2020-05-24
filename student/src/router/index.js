@@ -5,6 +5,7 @@ import Room from '@/views/Room'
 import Feedback from '@/views/Feedback'
 
 Vue.use(VueRouter)
+const isProd = process.env.NODE_ENV === 'production'
 
 const routes = [
   {
@@ -32,7 +33,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: isProd ? 'hash' : 'history',
   base: process.env.BASE_URL,
   routes,
 })

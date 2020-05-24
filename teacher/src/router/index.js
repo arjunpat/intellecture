@@ -8,6 +8,7 @@ import SignIn from '@/views/SignIn.vue'
 import Feedback from '@/views/Feedback.vue'
 
 Vue.use(VueRouter)
+const isProd = process.env.NODE_ENV === 'production'
 
 const routes = [
   {
@@ -45,7 +46,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: isProd ? 'hash' : 'history',
   base: process.env.BASE_URL,
   routes
 })
