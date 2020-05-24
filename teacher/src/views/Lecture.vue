@@ -696,7 +696,7 @@ export default {
         })
       }else if(data.type == "error") {
         self.endLectureMethod()
-        //self.$router.replace({ name: 'Dashboard'})
+        self.$router.replace({ name: 'Dashboard'})
       }
     }
   },
