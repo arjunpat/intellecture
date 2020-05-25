@@ -12,8 +12,6 @@ echo " --- join-intellecture-app"
 echo " --- intellecture-app"
 echo ""
 echo ""
-echo "You have 10 seconds to cancel this script -- it will cause damage if your directory structure does not look like this"
-sleep 10
 
 # checks to not break ur file structure
 cd ..
