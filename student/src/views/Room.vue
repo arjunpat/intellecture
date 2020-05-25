@@ -97,7 +97,7 @@
                       >
                         <!-- TODO: catch for the case when you have a super duper long word -->
                         <v-list-item-content>
-                          {{ q.question }}
+                          {{ decodeURIComponent(q.question) }}
                         </v-list-item-content>
 
                         <v-list-item-action>
@@ -411,7 +411,7 @@ export default {
     askQuestion(question) {
       this.error = ''
       post(`/lectures/live/student/${this.id}/question`, {
-        question
+        question: encodeURIComponent(question)
       }).then(() => {
         // TODO: display success message when message sent
       }).catch((err) => {
