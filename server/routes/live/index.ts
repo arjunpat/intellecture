@@ -140,8 +140,17 @@ router.get('/student/:lecture_uid/questions', mw.auth, attachLecture, joinedLect
   
   if (isNaN(elapsed) || elapsed < 0)
     return res.send(responses.error());
+  
+  let qs = await db.lectureQs.getQuestionsAfter(req.params.lecture_uid, elapsed);
 
-  res.send(responses.success(await db.lectureQs.getQuestionsAfter(req.params.lecture_uid, elapsed)));
+  res.send(responses.success(qs.map(({ account_uid, uid, question, elapsed }) => {	
+    return {	
+      creator_uid: account_uid,
+      question_uid: uid,
+      question,
+      elapsed
+    }	
+  })));
 });
 
 router.post('/student/:lecture_uid/question', mw.auth, attachLecture, joinedLecture, async (req: Request, res) => {
