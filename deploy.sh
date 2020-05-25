@@ -31,12 +31,14 @@ git pull
 echo "Making sure the two sibling repos are also up-to-date"
 cd ../join-intellecture-app
 git pull
+git reset --hard origin/master
 rm -rf */
 find . -maxdepth 1 ! -name 'CNAME' -type f -exec rm -v {} +
 cd ..
 
 cd intellecture-app
 git pull
+git reset --hard origin/master
 rm -rf */
 find . -maxdepth 1 ! -name 'CNAME' -type f -exec rm -v {} +
 cd ..
@@ -45,11 +47,13 @@ cd $currentDir
 
 echo "Building teacher application..."
 cd teacher
+npm install
 npm run build
 cd ..
 
 echo "Building student application..."
 cd student
+npm install
 npm run build
 cd ..
 
