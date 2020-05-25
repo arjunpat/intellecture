@@ -63,7 +63,8 @@ As lecture progresses, teacher will get this message when question is asked.</td
   "type": "new_question",
   "question_uid": "X8udiUQ8fN6F27C",
   "creator_uid": "rUJyP317iuZErNlhrn2",
-  "question": "What is the relationship between voltage and a Gaussian surface?"
+  "question": "What is the relationship between voltage and a Gaussian surface?",
+  "elapsed": 1829
 }
 ```
 

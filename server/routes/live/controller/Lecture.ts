@@ -98,10 +98,11 @@ export default class Lecture {
 
   async addQuestion(creator_uid: string, question: string) {
     let uid = genId(15);
+    let elapsed = this.elapsed();
     await db.lectureQs.add(
       uid,
       this.lecture_uid,
-      this.elapsed(),
+      elapsed,
       creator_uid,
       question
     );
@@ -115,7 +116,8 @@ export default class Lecture {
       type: 'new_question',
       question_uid: uid,
       creator_uid,
-      question
+      question,
+      elapsed
     });
     this.updateTeachersQuestions();
   }
