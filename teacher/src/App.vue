@@ -130,7 +130,8 @@ export default {
       return this.$route.name === 'Feedback'
     },
     linkToRoom: function () {
-      return "https://join.intellecture.app/room/" + this.id
+      const isProd = process.env.NODE_ENV === 'production';
+      return `https://join.intellecture.app/${ isProd ? '#/' : ''}room/${this.id}`
     }
   },
   watch: {
