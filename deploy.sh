@@ -15,6 +15,17 @@ echo ""
 echo "You have 10 seconds to cancel this script -- it will cause damage if your directory structure does not look like this"
 sleep 10
 
+# checks to not break ur file structure
+cd ..
+if ! [ -d intellecture-app ] || ! [ -d join-intellecture-app ]
+then
+  echo "FAILED!"
+  echo "Error: You need to first clone the directories mentioned above"
+  exit 1
+fi
+
+cd $currentDir
+
 echo "Starting deployment"
 echo "Getting the latest changes from origin/master..."
 git pull
