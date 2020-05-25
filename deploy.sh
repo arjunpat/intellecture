@@ -64,7 +64,6 @@ cp -r $currentDir/student/dist/* join-intellecture-app
 
 echo "Deploying updates to GitHub..."
 cd intellecture-app
-ls -A
 git add -A
 git commit -am 'deploy'
 git push
