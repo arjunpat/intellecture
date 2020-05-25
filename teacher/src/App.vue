@@ -131,7 +131,7 @@ export default {
     },
     linkToRoom: function () {
       const isProd = process.env.NODE_ENV === 'production';
-      return `https://join.intellecture.app/${ isProd ? '#/' : ''}room/${this.id}`
+      return `https://join.intellecture.app/${ isProd ? '#/' : '' }room/${this.id}`
     }
   },
   watch: {
