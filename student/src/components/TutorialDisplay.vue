@@ -77,7 +77,6 @@ export default {
 
   data() {
     return {
-      isMounted: false,
       tutorialCardBottom: 0,
     }
   },
@@ -94,13 +93,6 @@ export default {
         this.tutorialCardBottom = 0
       }
     },
-  },
-
-  mounted() {
-    this.isMounted = true
-  },
-
-  computed: {
   },
 }
 </script>

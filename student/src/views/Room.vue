@@ -92,8 +92,8 @@
                     </v-subheader>
                     <transition-group :name="listAction">
                       <v-list-item
+                        v-for="q in displayedQuestions"
                         :key="q.question_uid"
-                        v-for="(q, i) in displayedQuestions"
                       >
                         <!-- TODO: catch for the case when you have a super duper long word -->
                         <v-list-item-content>
@@ -101,10 +101,10 @@
                         </v-list-item-content>
 
                         <v-list-item-action>
-                          <v-btn icon @click="upvoteQuestion(i)" :color="q.upvoted ? 'green lighten-3' : ''" class="mr-1">
+                          <v-btn icon @click="upvoteQuestion(q.question_uid)" :color="q.upvoted ? 'green lighten-3' : ''" class="mr-1">
                             <v-icon>{{ q.upvoted ? 'mdi-arrow-up-bold' : 'mdi-arrow-up-bold-outline' }}</v-icon>
                           </v-btn>
-                          <v-btn icon @click="dismissQuestion(i)" :color="q.dismissed ? 'error' : ''">
+                          <v-btn icon @click="dismissQuestion(q.question_uid)" :color="q.dismissed ? 'error' : ''">
                             <v-icon>mdi-close-thick</v-icon>
                           </v-btn>
                         </v-list-item-action>
@@ -128,6 +128,7 @@
                 bottom
                 text
                 block
+                class="mt-4"
                 color="info"
                 @click="showTutorial = 0"
               >
@@ -223,18 +224,19 @@ export default {
       color: '',
       socket: null,
       lectureInfo: null,
-      questions: [],
+      questions: {},
+      lastQuestionElapsed: 0,
       showQuestionDialog: false,
       showTutorial: -1,
       listAction: 'list-dismiss',
       error: '',
-      tutorialQuestions: [
-        {
+      tutorialQuestions: {
+        tutorial: {
           "type":"new_question",
           "question_uid":"tutorial",
           "question":"Why is the sky blue?"
-        }
-      ],
+        },
+      },
       testLectureInfo: {
         type:"lecture_info",
         uid:"cqywa",
@@ -292,6 +294,9 @@ export default {
           this.setUpSocketConnection()
       },
     },
+    questions(questions) {
+      window.localStorage.setItem('questions', `${this.id};${this.lastQuestionElapsed};${JSON.stringify(questions)}`)
+    },
   },
 
   created() {
@@ -324,9 +329,9 @@ export default {
       return index < 0 ? '' : this.levels[index]
     },
     displayedQuestions() {
-      if (this.showTutorial === 3 && this.questions.length === 0) 
-        return this.tutorialQuestions
-      return this.questions
+      if (this.showTutorial === 3 && Object.keys(this.questions).length === 0) 
+        return Object.values(this.tutorialQuestions)
+      return Object.values(this.questions).sort((a,b) => (a.elapsed > b.elapsed) ? 1 : -1)
     }
   },
   
@@ -360,14 +365,21 @@ export default {
               this.updateUnderstanding()
 
               // Get previously asked questions
-              const elapsedMs = 0
-              get(`/lectures/live/student/${this.id}/questions?after=${elapsedMs}`).then((result) => {
+              const questionDataString = window.localStorage.getItem('questions')
+              if (questionDataString === null || questionDataString.split(';')[0] !== this.id) {
+                this.questions = {}
+              } else {
+                const questionData = questionDataString.split(';')
+                this.lastQuestionElapsed = parseInt(questionData[1]);
+                this.questions = JSON.parse(questionData[2])
+              }
+              
+              get(`/lectures/live/student/${this.id}/questions?after=${this.lastQuestionElapsed}`).then((result) => {
                 if (!result.success)
                   throw result
 
                 this.updateQuestions(result.data)
               }).catch((err) => {
-                console.log(err)
                 this.error = 'There was an error fetching questions!'
               })
               break;
@@ -376,6 +388,7 @@ export default {
               this.pushQuestion(data)
               break;
             case 'end_lecture':
+              window.localStorage.removeItem('questions')
               this.$router.replace({ name: 'Feedback', params: { fromLectureEnd: true } })
               break;
           }
@@ -396,6 +409,7 @@ export default {
       }
     },
     askQuestion(question) {
+      this.error = ''
       post(`/lectures/live/student/${this.id}/question`, {
         question
       }).then(() => {
@@ -404,39 +418,42 @@ export default {
         this.error = 'There was an error submitting your question!'
       })
     },
-    upvoteQuestion(i) {
-      const question_uid = this.questions[i].question_uid
-      if (!this.questions[i].upvoted) {
+    upvoteQuestion(uid) {
+      this.error = ''
+      if (!this.questions[uid].upvoted) {
         post(`/lectures/live/student/${this.id}/upvote`, {
-          question_uid
+          question_uid: uid
         }).then(() => {
-          this.questions[i].upvoted = true
+          this.$set(this.questions[uid], 'upvoted', true)
           this.listAction = 'list-upvote'
           setTimeout(() => {
-            this.questions.splice(i, 1)
+            this.$delete(this.questions, uid)
           }, 150)
         }).catch((err) => {
           this.error = 'There was an error upvoting the question!'
         })
       }
     },
-    dismissQuestion(i) {
-      this.questions[i].dismissed = true
+    dismissQuestion(uid) {
+      this.$set(this.questions[uid], 'dismissed', true)
       this.listAction = 'list-dismiss'
       setTimeout(() => {
-        this.questions.splice(i, 1)
+        this.$delete(this.questions, uid)
       }, 150)
     },
     dismissAllQuestions() {
-      this.questions = []
+      this.questions = {}
     },
-    updateQuestions(questions) {
-      for (let question of questions)
+    updateQuestions(questionsArray) {
+      for (let question of questionsArray)
         this.pushQuestion(question)
     },
     pushQuestion(question) {
-      if (question.creator_uid !== this.authUser.uid)
-        this.questions.push({...question, upvoted: false, dismissed: false})
+      if (question.creator_uid !== this.authUser.uid) {
+        if (question.elapsed > this.lastQuestionElapsed)
+          this.lastQuestionElapsed = question.elapsed;
+        this.$set(this.questions, question.question_uid, {...question, upvoted: false, dismissed: false})
+      }
     },
   },
 }
