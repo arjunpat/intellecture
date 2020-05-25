@@ -22,11 +22,17 @@ then
   exit 1
 fi
 
+printf "\n\n\n"
+read -p "Does everything above look correct? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+
 cd $currentDir
 
 echo "Starting deployment"
 echo "Getting the latest changes from origin/master..."
 git pull
+
+printf "\n\n\n"
+read -p "Was it able to pull the latest changes from the repo w/ no errors? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
 echo "Making sure the two sibling repos are also up-to-date"
 cd ../join-intellecture-app
@@ -51,11 +57,17 @@ npm install
 npm run build
 cd ..
 
+printf "\n\n\n"
+read -p "Did it successfully build the teacher application? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+
 echo "Building student application..."
 cd student
 npm install
 npm run build
 cd ..
+
+printf "\n\n\n"
+read -p "Did it successfully build the student application? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
 cd ..
 echo "Copying teacher files..."
@@ -63,6 +75,9 @@ cp -r $currentDir/teacher/dist/* intellecture-app
 
 echo "Copying student files..."
 cp -r $currentDir/student/dist/* join-intellecture-app
+
+printf "\n\n\n"
+read -p "Did the above copy step go flawlessly? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
 echo "Deploying updates to GitHub..."
 cd intellecture-app
