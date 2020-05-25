@@ -4,6 +4,10 @@
       :text="error"
       color="error"
     />
+    <AutoSnackbar
+      :text="info"
+      color="info"
+    />
     <v-overlay :value="!authUser" opacity="0.7" :dark="false">
       <NotSignedIn />
     </v-overlay>
@@ -230,6 +234,7 @@ export default {
       showTutorial: -1,
       listAction: 'list-dismiss',
       error: '',
+      info: '',
       tutorialQuestions: {
         tutorial: {
           "type":"new_question",
@@ -410,10 +415,11 @@ export default {
     },
     askQuestion(question) {
       this.error = ''
+      this.info = ''
       post(`/lectures/live/student/${this.id}/question`, {
         question: encodeURIComponent(question)
       }).then(() => {
-        // TODO: display success message when message sent
+        this.info = 'Question submitted!'
       }).catch((err) => {
         this.error = 'There was an error submitting your question!'
       })
