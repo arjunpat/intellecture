@@ -130,22 +130,26 @@ Can be used to get all the past questions during a lecture.
     {
       "creator_uid": "rUJyP317iuZErNlhrnnyn8eT7uY2",
       "question_uid": "I5ckf6MSYFV3p1N",
-      "question": "What is your favorite color?"
+      "question": "What is your favorite color?",
+      "elapsed": 1829
     },
     {
       "creator_uid": "rUJyP317iuZErNlhrnnyn8eT7uY2",
       "question_uid": "VwLwyg8ngizW94a",
-      "question": "Where do you live?"
+      "question": "Where do you live?",
+      "elapsed": 2429
     },
     {
       "creator_uid": "rUJyP317iuZErNlhrnnyn8eT7uY2",
       "question_uid": "wc7McnXuzHWKHK4",
-      "question": "How old are you?"
+      "question": "How old are you?",
+      "elapsed": 3784
     },
     {
       "creator_uid": "rUJyP317iuZErNlhrnnyn8eT7uY2",
       "question_uid": "yaPz6kebHUJ8gL3",
-      "question": "Is this working as expected?"
+      "question": "Is this working as expected?",
+      "elapsed": 4892
     }
   ]
 }
