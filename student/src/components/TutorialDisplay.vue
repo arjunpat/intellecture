@@ -1,22 +1,15 @@
 <template>
   <div>
     <div style="position: relative;">
-      <div :style="{ 
-        'background-color': show ? backgroundColor : 'unset',
-        'z-index': show ? 4 : 0,
-        position: show ? 'relative' : 'static',
-        'border-radius': show ? '5px': '0px',
-        'pointer-events': show ? 'none': 'unset',
-      }">
-        <slot></slot>
-      </div>
-      <v-card 
-        v-if="show" 
+      <v-card
+        ref="tutorialCard"
+        id="tutorialCard" 
         class="tutorial-card" 
         raised
         :style="{
           top: bottom ? `calc(100% + ${spacing})` : 'unset',
           bottom: top ? `calc(100% + ${spacing})` : 'unset',
+          display: show ? 'block' : 'none',
         }"
       >
         <v-card-title>
@@ -30,8 +23,25 @@
           <v-btn @click="$emit('next')" text color="info">Next</v-btn>
         </v-card-actions>
       </v-card>
+
+      <div :style="{ 
+        'background-color': show ? backgroundColor : 'unset',
+        'z-index': show ? 4 : 0,
+        position: show ? 'relative' : 'static',
+        'border-radius': show ? '5px': '0px',
+        'pointer-events': show ? 'none': 'unset',
+      }">
+        <slot></slot>
+      </div>
     </div>
-    <div v-if="show" class="tutorial-overlay"></div>
+    <div 
+      v-if="show" 
+      class="tutorial-overlay"
+      :style="{
+        height: `${tutorialCardBottom}px`,
+        transition: 'height 0.2s',
+      }"
+    ></div>
   </div>
 </template>
 
@@ -41,7 +51,7 @@
     background: rgba(51,51,51,0.7);
     z-index: 3;
     width: 100%;
-    height: 100%;
+    min-height: 100%;
     left: 0;
     top: 0;
   }
@@ -63,6 +73,34 @@ export default {
     spacing: { type: String, default: '10px' },
     bottom: { type: Boolean, default: false },
     top: { type: Boolean, default: false },
+  },
+
+  data() {
+    return {
+      isMounted: false,
+      tutorialCardBottom: 0,
+    }
+  },
+
+  watch: {
+    show(show) {
+      if (show) {
+        setTimeout(() => {
+          const tutorialCard = this.$refs['tutorialCard'].$el
+          tutorialCard.style.display = 'block'
+          this.tutorialCardBottom = document.documentElement.scrollTop + tutorialCard.getBoundingClientRect().bottom
+        }, 150)
+      } else {
+        this.tutorialCardBottom = 0
+      }
+    },
+  },
+
+  mounted() {
+    this.isMounted = true
+  },
+
+  computed: {
   },
 }
 </script>
