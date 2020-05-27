@@ -589,7 +589,7 @@ export default {
         }
     },
     endLectureMethod() {
-      window.onbeforeunload = function() {}
+      //window.onbeforeunload = function() {}
       this.socket.send(JSON.stringify({ type: "end_lecture" }))
       this.socket.close()
       post(`/lectures/live/teacher/${this.id}/end`)
@@ -702,9 +702,9 @@ export default {
   },
   created () {
     this.initChart()
-    window.onbeforeunload = function() {
-        return "Reloading the page will end your lecture";
-    }
+    // window.onbeforeunload = function() {
+    //     return "Reloading the page will end your lecture";
+    // }
     
   },
   computed: {
@@ -763,6 +763,15 @@ export default {
       } else if(document.fullScreen){
         this.exitFS();
       }
+    }
+  },
+  beforeRouteLeave (to, from, next) {
+    const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
+    if (answer) {
+      this.endLectureMethod()
+      next()
+    } else {
+      next(false)
     }
   }
 }
