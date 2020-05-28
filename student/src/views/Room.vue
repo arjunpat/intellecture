@@ -101,7 +101,7 @@
                       >
                         <!-- TODO: catch for the case when you have a super duper long word -->
                         <v-list-item-content>
-                          {{ decodeURIComponent(q.question) }}
+                          {{ q.question }}
                         </v-list-item-content>
 
                         <v-list-item-action>
@@ -300,7 +300,12 @@ export default {
       },
     },
     questions(questions) {
-      window.localStorage.setItem('questions', `${this.id};${this.lastQuestionElapsed};${JSON.stringify(questions)}`)
+      const questionData = {
+        lectureId: this.id, 
+        lastQuestionElapsed: this.lastQuestionElapsed, 
+        questions: questions,
+      };
+      window.localStorage.setItem('questionData', JSON.stringify(questionData))
     },
   },
 
@@ -370,13 +375,12 @@ export default {
               this.updateUnderstanding()
 
               // Get previously asked questions
-              const questionDataString = window.localStorage.getItem('questions')
-              if (questionDataString === null || questionDataString.split(';')[0] !== this.id) {
+              const questionData = JSON.parse(window.localStorage.getItem('questionData'))
+              if (questionData === null || questionData.lectureId !== this.id) {
                 this.questions = {}
               } else {
-                const questionData = questionDataString.split(';')
-                this.lastQuestionElapsed = parseInt(questionData[1]);
-                this.questions = JSON.parse(questionData[2])
+                this.lastQuestionElapsed = questionData.lastQuestionElapsed;
+                this.questions = questionData.questions
               }
               
               get(`/lectures/live/student/${this.id}/questions?after=${this.lastQuestionElapsed}`).then((result) => {
@@ -393,7 +397,7 @@ export default {
               this.pushQuestion(data)
               break;
             case 'end_lecture':
-              window.localStorage.removeItem('questions')
+              window.localStorage.removeItem('questionData')
               this.$router.replace({ name: 'Feedback', params: { fromLectureEnd: true } })
               break;
           }
@@ -417,7 +421,7 @@ export default {
       this.error = ''
       this.info = ''
       post(`/lectures/live/student/${this.id}/question`, {
-        question: encodeURIComponent(question)
+        question
       }).then(() => {
         this.info = 'Question submitted!'
       }).catch((err) => {
