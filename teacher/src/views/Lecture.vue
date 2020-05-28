@@ -95,7 +95,7 @@
                   <template v-slot:explanation>
                     The aggregated understanding score from your students will show up here.
                   </template>
-                  <v-card :width="understandingWidth" height="60vh">
+                  <v-card :width="understandingWidth" height="65vh">
                     <v-card-text style="text-align: center;">
                       <span style="font-size: 23px; color: black; font-weight: bold;"><span style="background: red; padding: 2px 5px; color: white; border-radius: 3px; font-weight: normal;">LIVE</span> UNDERSTANDING SCORE</span>
                       <br><br><br><br><br><br><br><br>
@@ -112,11 +112,11 @@
                   <template v-slot:explanation>
                     This is a graph of the understanding score over the duration of your lecture. Click the shorten button to only show the last 5 minutes of data.
                   </template>
-                  <v-card width="60vw" style="min-height: 60vh;" align="center" justify="center" v-if="!smallScreen">
-                      <div style="max-width: 80%; padding-top: 3%;">
+                  <v-card width="60vw" style="height: 65vh;" align="center" justify="center" v-if="!smallScreen">
+                      <div style="max-width: 90%; padding-top: 3%;">
                           <line-chart :chart-data="datacollection"></line-chart>
+                          <v-btn style="float: none;" class="" @click="shortened = !shortened">{{ shortentext }}</v-btn>
                       </div>
-                    <v-btn style="float: none;" class="" @click="shortened = !shortened">{{ shortentext }}</v-btn>
                   </v-card>
                 </TutorialDisplay>
             </v-row>
@@ -705,7 +705,7 @@ export default {
   created () {
     this.initChart()
     window.onbeforeunload = function() {
-      return "Reloading the page will end your lecture";
+      return "Reloading the page will end your lecture"
     }
     
   },
