@@ -549,6 +549,7 @@ export default {
       timeout: 1000,
       snackbarMessage: '',
       showTutorial: -1,
+      endCalled: false,
     }
   },
   methods: {
@@ -589,7 +590,8 @@ export default {
         }
     },
     endLectureMethod() {
-      //window.onbeforeunload = function() {}
+      window.onbeforeunload = function() {}
+      this.endCalled = true
       this.socket.send(JSON.stringify({ type: "end_lecture" }))
       this.socket.close()
       post(`/lectures/live/teacher/${this.id}/end`)
@@ -702,9 +704,9 @@ export default {
   },
   created () {
     this.initChart()
-    // window.onbeforeunload = function() {
-    //     return "Reloading the page will end your lecture";
-    // }
+    window.onbeforeunload = function() {
+      return "Reloading the page will end your lecture";
+    }
     
   },
   computed: {
@@ -749,8 +751,9 @@ export default {
   watch: {
     endLecture(val) {
       if(this.endLecture) {
-        this.endLectureMethod();
+        this.endLectureMethod()
         this.$router.replace({ name: 'Feedback', params: { fromLectureEnd: true } })
+        console.log("done")
       }
     },
     shortened(val) {
@@ -766,12 +769,16 @@ export default {
     }
   },
   beforeRouteLeave (to, from, next) {
-    const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
-    if (answer) {
-      this.endLectureMethod()
-      next()
+    if(!this.endCalled) {
+      const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
+      if (answer) {
+        this.endLectureMethod()
+        next()
+      } else {
+        next(false)
+      }
     } else {
-      next(false)
+      next()
     }
   }
 }
