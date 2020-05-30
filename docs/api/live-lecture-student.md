@@ -154,3 +154,26 @@ Can be used to get all the past questions during a lecture.
   ]
 }
 ```
+
+## GET /lectures/live/student/:lecture_uid/questions/mine
+
+###### Example response:
+```javascript
+{
+  "success": true,
+  "data": [
+    {
+      "question_uid": "0vT5JNELN4oGH4l",
+      "elapsed": 11496,
+      "question": "What is your favorite color?",
+      "upvotes": 10
+    },
+    {
+      "question_uid": "AwofCYbjfajYxHT",
+      "elapsed": 7572,
+      "question": "Hello",
+      "upvotes": 98
+    }
+  ]
+}
+```
