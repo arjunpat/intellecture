@@ -303,16 +303,12 @@
             height="75vh"
           >
           <v-row align="center" justify="center">
-            <v-row align="center" justify="center" style="width: 100vw;">
-              <div v-if="students.length == 0 && showTutorial != 6">
-                <v-progress-circular
-                  :width="3"
-                  :size="60"
-                  color="black"
-                  indeterminate
-                  style="margin-top: 40px; margin-left: 65px;"
-                ></v-progress-circular>
-              </div>
+            <v-row align="center" justify="center">
+              <v-col cols="8">
+                <div v-if="students.length == 0 && showTutorial != 6" style="font-family: var(--main-font); text-align: center;">
+                <h1 style="font-weight: normal;">No students have joined the lecture. Have them go to <a>join.intellecture.app</a> and enter the code <span style="background-color: #ddd; padding: 0px 5px; border-radius: 5px;">{{ id }}</span> to join</h1>
+                </div>
+              </v-col>
             </v-row>
             <v-row align="center" justify="center">
                 <v-col cols="8">
@@ -638,7 +634,6 @@ export default {
   },
   mounted () {
     this.$emit('startlecture', this.id);
-    this.$refs["start-window"].requestFullscreen();
     document.addEventListener('fullscreenchange', (event) => {
       if (!document.fullscreenElement) {
         store.commit("setShowCode", false)
@@ -696,7 +691,7 @@ export default {
             self.sortQuestions()
           }
         })
-      }else if(data.type == "error") {
+      } else if(data.type == "error") {
         self.endLectureMethod()
         self.$router.replace({ name: 'Dashboard'})
       }
@@ -707,7 +702,10 @@ export default {
     window.onbeforeunload = function() {
       return "Reloading the page will end your lecture"
     }
-    
+    if(!localStorage['notfirst']) {
+      this.showTutorial = 0
+      localStorage['notfirst'] = true
+    }
   },
   computed: {
     ...mapState(['endLecture', 'showCode']),
