@@ -201,6 +201,11 @@
                 >
                     <v-card-title style="font-weight: bold;">Key Topics <v-btn @click="displayQuestions = questions" v-show="questions.length != displayQuestions.length" text color="primary" style="position: absolute; right: 10px;">Show all</v-btn></v-card-title>
                     <v-card-text>
+                    <v-list-item v-if="topics.length < 1 && showTutorial != 4">
+                       <v-list-item-content>
+                        <v-list-item-title>At least 5 questions are needed</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
                     <v-list-item
                         v-for="n in topics.length"
                         v-bind:key="n"
@@ -230,6 +235,9 @@
                 </v-col>
 
                 <v-col cols="8">
+                <div v-if="displayQuestions.length < 1 && showTutorial != 5">
+                  <h1 style="font-weight: normal; font-size: 25px;">There are no questions to display</h1>
+                </div>
                 <ul style="list-style-type: none; font-family: var(--main-font);">
                     <li v-for="question in displayQuestions" v-bind:key="question.question_uid" v-show="!question.dismiss">
                     
@@ -303,10 +311,10 @@
             height="75vh"
           >
           <v-row align="center" justify="center">
-            <v-row align="center" justify="center">
+            <v-row align="center" justify="center" v-if="students.length == 0 && showTutorial != 6" >
               <v-col cols="8">
-                <div v-if="students.length == 0 && showTutorial != 6" style="font-family: var(--main-font); text-align: center;">
-                <h1 style="font-weight: normal;">No students have joined the lecture. Have them go to <a>join.intellecture.app</a> and enter the code <span style="background-color: #ddd; padding: 0px 5px; border-radius: 5px;">{{ id }}</span> to join</h1>
+                <div style="font-family: var(--main-font); text-align: center;">
+                <h1 style="font-weight: normal;">No students have joined the lecture. Have them go to <a>join.intellecture.app</a> and enter the code <span style="background-color: #eee; padding: 3px 10px; border-radius: 5px; font-weight: bold;">{{ id }}</span> to join</h1>
                 </div>
               </v-col>
             </v-row>
