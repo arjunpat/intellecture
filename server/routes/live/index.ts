@@ -153,6 +153,19 @@ router.get('/student/:lecture_uid/questions', mw.auth, attachLecture, joinedLect
   })));
 });
 
+router.get('/student/:lecture_uid/questions/mine', mw.auth, attachLecture, joinedLecture, async (req: Request, res) => {
+  let qs = await db.lectureQs.getQuestionsAndUpvotesByUser(req.uid, req.params.lecture_uid);
+
+  res.send(responses.success(qs.map(({ uid, elapsed, question, upvotes }) => {
+    return {
+      question_uid: uid,
+      elapsed,
+      question,
+      upvotes
+    }
+  })));
+});
+
 router.post('/student/:lecture_uid/question', mw.auth, attachLecture, joinedLecture, async (req: Request, res) => {
   // basic question test stuff
   let { question } = req.body;

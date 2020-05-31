@@ -9,7 +9,7 @@ export default new Vuex.Store({
     authUser: null,
     classes: null,
     lectures: null,
-    showCode: true
+    showCode: false
   },
   mutations: {
     setEndLecture(state, endLecture) {

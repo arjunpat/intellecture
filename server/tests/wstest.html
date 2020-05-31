@@ -100,6 +100,13 @@
       method: 'GET'
     });
   }
+
+  function getMyQuestions(uid) {
+    return fetch(hostp + '/lectures/live/student/' + lecture_uid + '/questions/mine', {
+      ...postStuff,
+      method: 'GET'
+    })
+  }
   
   async function endLecture() {
     fetch(hostp + '/lectures/live/teacher/' + lecture_uid + '/end', {

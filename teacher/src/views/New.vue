@@ -105,7 +105,7 @@ export default {
     }
   },
   mounted() {
-    store.commit("setShowCode", true)
+    store.commit("setShowCode", false)
   },
   computed: {
     ...mapState(['classes']),
