@@ -303,6 +303,11 @@ export default {
       this.lectureInfo = this.testLectureInfo
       this.questions = this.testQuestions
     }
+
+    if (window.localStorage.getItem('tutorialShown') == null) {
+      this.showTutorial = 0
+      window.localStorage.setItem('tutorialShown', '')
+    }
   },
 
   destroyed() {
