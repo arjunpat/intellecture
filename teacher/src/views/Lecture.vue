@@ -638,6 +638,13 @@ export default {
         //this.$refs.tab2[0].click(); IM BEING STUPID TODO IMPLEMENT LATER
       }
       this.currentTab = index
+    },
+    displayNotification(subject, message) {
+      if (Notification.permission == 'granted') {
+          var img = 'https://i.imgur.com/lMPcw6k.png';
+          var text = message;
+          var notification = new Notification(subject, { body: text, icon: img });
+      }
     }
   },
   mounted () {
@@ -660,9 +667,11 @@ export default {
         self.students.push(data)
         self.totalStudents.push(data)
         self.showSnackBar(`${ self.students[self.students.length-1].first_name } ${ self.students[self.students.length-1].last_name } joined`)
+        self.displayNotification("Student joined", `${ self.students[self.students.length-1].first_name } ${ self.students[self.students.length-1].last_name } joined`)
       } else if(data.type == "student_leave") {
         const left = self.students.find(student => student.uid == data.uid)
         self.showSnackBar(`${ left.first_name } ${ left.last_name } left`)
+        self.displayNotification("Student left", `${ left.first_name } ${ left.last_name } left`)
         self.students = self.students.filter(function( obj ) {
             return obj.uid !== data.uid
         });
@@ -688,6 +697,7 @@ export default {
           upvotedStudents: []
         })
         self.displayQuestions = [...self.questions]
+        self.displayNotification("New Question", data.question)
       } else if(data.type == "ques_categor") {
         self.topics = data.categories
       } else if(data.type == "question_update") {

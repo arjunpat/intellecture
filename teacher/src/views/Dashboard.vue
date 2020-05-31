@@ -1,7 +1,8 @@
 <template>
   <v-content v-if="authUser">
     <v-container>
-      <div style="height: 10px;"></div>
+      <div style="height: 30px;"></div>
+      <v-btn depressed small v-if="!notification" @click="requestNotifications()" style="position: fixed; top: 70px; left: 10px; z-index: 100;">Enable notifications <v-icon small>mdi-bell</v-icon></v-btn>
       <h1 class="poppins">Hi {{ authUser.first_name }},</h1>
       <br>
 
@@ -78,6 +79,7 @@ export default {
   data () {
     return {
       authUser: null,
+      notification: Notification.permission == 'granted' ? true : false,
       search: "",
       skeleton:[{"uid":"","end_time":null,"name":"","start_time":null,"className":""}],
       headers: [
@@ -103,6 +105,11 @@ export default {
       let date = new Date(unix_timestamp);
       const dtf = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: '2-digit',hour: "numeric", minute:"numeric" }) 
       return dtf.format(date);
+    },
+    requestNotifications() {
+      Notification.requestPermission(function(status) {
+          console.log('Notification permission status:', status);
+      });
     }
   },
   mounted () {
