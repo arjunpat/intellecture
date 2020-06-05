@@ -220,7 +220,7 @@
                         Topics
                       </template>
                       <template v-slot:explanation>
-                        This shows the key topics from the questions and the number of questions that fall under that category.
+                        This shows the key topics from the questions and the number of questions that fall under that category. Click on a topic to see all the questions that fall under it.
                       </template>
                       <v-expand-transition>
                         <v-list-item v-if="showTutorial == 4">

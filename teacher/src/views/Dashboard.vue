@@ -109,6 +109,9 @@ export default {
     requestNotifications() {
       Notification.requestPermission(function(status) {
           console.log('Notification permission status:', status);
+          if(this.status == 'granted') {
+            this.notification = true
+          }
       });
     }
   },
