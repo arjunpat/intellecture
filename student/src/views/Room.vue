@@ -22,123 +22,128 @@
           class="fill-height"
         > 
           <div id="flex-container" class="fill-height">
-            <!-- TODO: make class name font size smaller when the name is longer -->
-            <TutorialDisplay :show="showTutorial == 0" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" bottom>
+            <v-expand-transition>
+              <span v-if="!myQuestionsVisible">
+                <!-- TODO: make class name font size smaller when the name is longer -->
+                <TutorialDisplay :show="showTutorial == 0" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" bottom>
+                  <template v-slot:title>
+                    Lecture Info
+                  </template>
+                  <template v-slot:explanation>
+                    This displays information about the lecture you are currently in.
+                  </template>
+
+                  <LectureInfo v-if="lectureInfo !== null" :lectureInfo="lectureInfo" />
+                </TutorialDisplay>
+
+                <TutorialDisplay :show="showTutorial == 1" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" bottom>
+                  <template v-slot:title>
+                    Understanding Score
+                  </template>
+                  <template v-slot:explanation>
+                    Move this slider to rate how well you understand the content being presented.
+                  </template>
+
+                  <div id="understanding" class="text-center headline mb-2" style="height: 2em;" :style="{color: color}">
+                    <div id="understandingText">{{ understanding }}</div>
+                    <img v-if="!understanding" :src="require('@/assets/img/sad.svg')" style="width: 2em; height: 2em" />
+                  </div>
+
+                  <UnderstandingSlider
+                    @updateUnderstanding="updateUnderstanding"
+                    v-model="sliderValue"
+                    :min="0"
+                    :max="sliderMax"
+                    :throttleDelay="throttleDelay"
+                    class="mb-4"
+                  />
+                </TutorialDisplay>
+
+                <TutorialDisplay :show="showTutorial == 2" backgroundColor="unset" @next="showTutorial++" @cancel="showTutorial = -1">
+                  <template v-slot:title>
+                    Ask questions
+                  </template>
+                  <template v-slot:explanation>
+                    Click here to ask questions.
+                  </template>
+
+                  <AskQuestionDialog
+                    v-model="showQuestionDialog"
+                    @askQuestion="askQuestion"
+                    class="mt-10 mb-12"
+                  />
+                </TutorialDisplay>
+                
+                <TutorialDisplay :show="showTutorial == 3" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" bottom>
+                  <template v-slot:title>
+                    Questions list
+                  </template>
+                  <template v-slot:explanation>
+                    Questions asked by other students will appear here. Use the buttons on the right to indicate whether or not you have the same question. 
+                  </template>
+                  
+                  <QuestionDisplay
+                    header="Questions asked by others" 
+                    :questions="displayedQuestions"
+                    @upvoteQuestion="upvoteQuestion"
+                    @dismissQuestion="dismissQuestion"
+                    @dismissAllQuestions="dismissAllQuestions"
+                  />
+                </TutorialDisplay>
+
+                <v-spacer></v-spacer>
+              </span>
+            </v-expand-transition>
+
+            <TutorialDisplay :show="showTutorial == 4" backgroundColor="white" @next="showTutorial = 5" @cancel="showTutorial = -1" top>
               <template v-slot:title>
-                Lecture Info
+                My questions
               </template>
               <template v-slot:explanation>
-                This displays information about the lecture you are currently in.
-              </template>
-
-              <LectureInfo v-if="lectureInfo !== null" :lectureInfo="lectureInfo" />
-            </TutorialDisplay>
-
-            <TutorialDisplay :show="showTutorial == 1" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" bottom>
-              <template v-slot:title>
-                Understanding Score
-              </template>
-              <template v-slot:explanation>
-                Move this slider to rate how well you understand the content being presented.
-              </template>
-
-              <div id="understanding" class="text-center headline mb-2" style="height: 2em;" :style="{color: color}">
-                <div id="understandingText">{{ understanding }}</div>
-                <img v-if="!understanding" :src="require('@/assets/img/sad.svg')" style="width: 2em; height: 2em" />
-              </div>
-
-              <UnderstandingSlider
-                @updateUnderstanding="updateUnderstanding"
-                v-model="sliderValue"
-                :min="0"
-                :max="sliderMax"
-                :throttleDelay="throttleDelay"
-                class="mb-4"
-              />
-            </TutorialDisplay>
-
-            <TutorialDisplay :show="showTutorial == 2" backgroundColor="unset" @next="showTutorial++" @cancel="showTutorial = -1">
-              <template v-slot:title>
-                Ask questions
-              </template>
-              <template v-slot:explanation>
-                Click here to ask questions.
-              </template>
-
-              <AskQuestionDialog
-                v-model="showQuestionDialog"
-                @askQuestion="askQuestion"
-                class="mt-8 mb-12"
-              />
-            </TutorialDisplay>
-            
-            <TutorialDisplay :show="showTutorial == 3" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" bottom>
-              <template v-slot:title>
-                Questions list
-              </template>
-              <template v-slot:explanation>
-                Questions asked by other students will appear here. Use the buttons on the right to indicate whether or not you have the same question. 
-              </template>
-              
-              <v-expand-transition>
-                <v-card tile v-if="displayedQuestions.length !== 0">
-                  <v-list dense subheader>
-                    <v-subheader>
-                      Questions asked by others
-                      <v-btn 
-                        text 
-                        rounded
-                        absolute 
-                        color="error"
-                        style="right: 0;"
-                        @click="dismissAllQuestions"
-                      >Dismiss All</v-btn>
-                    </v-subheader>
-                    <transition-group :name="listAction">
-                      <v-list-item
-                        v-for="q in displayedQuestions"
-                        :key="q.question_uid"
-                      >
-                        <!-- TODO: catch for the case when you have a super duper long word -->
-                        <v-list-item-content>
-                          {{ q.question }}
-                        </v-list-item-content>
-
-                        <v-list-item-action>
-                          <v-btn icon @click="upvoteQuestion(q.question_uid)" :color="q.upvoted ? 'green lighten-3' : ''" class="mr-1">
-                            <v-icon>{{ q.upvoted ? 'mdi-arrow-up-bold' : 'mdi-arrow-up-bold-outline' }}</v-icon>
-                          </v-btn>
-                          <v-btn icon @click="dismissQuestion(q.question_uid)" :color="q.dismissed ? 'error' : ''">
-                            <v-icon>mdi-close-thick</v-icon>
-                          </v-btn>
-                        </v-list-item-action>
-                      </v-list-item>
-                    </transition-group>
-                  </v-list>
-                </v-card>
-              </v-expand-transition>
-            </TutorialDisplay>
-
-            <v-spacer></v-spacer>
-
-            <TutorialDisplay :show="showTutorial == 4" backgroundColor="white" @next="showTutorial = -1" @cancel="showTutorial = -1" top>
-              <template v-slot:title>
-                Help
-              </template>
-              <template v-slot:explanation>
-                Click here to view this tutorial again.
+                Click here to view the questions you have asked.
               </template>
               <v-btn
-                bottom
                 text
                 block
                 class="mt-4"
-                color="info"
-                @click="showTutorial = 0"
+                :class="myQuestionsVisible ? 'mb-4' : ''"
+                color="#65bb6aff"
+                @click="showMyQuestions"
               >
-              Help!
+                {{ myQuestionsVisible ? 'Go back' : 'My questions' }}
               </v-btn>
+
+              <v-expand-transition>
+                <template v-if="myQuestionsVisible">
+                  <QuestionDisplay
+                    v-if="myQuestions.length > 0"
+                    header="My questions"
+                    :questions="myQuestions"
+                    mine
+                  />
+                  <div class="text-center" v-else>You haven't asked any questions yet.</div>
+                </template>
+              </v-expand-transition>
             </TutorialDisplay>
+
+            <v-fade-transition>
+              <TutorialDisplay v-if="!myQuestionsVisible" :show="showTutorial == 5" backgroundColor="white" @next="showTutorial = -1" @cancel="showTutorial = -1" top>
+                <template v-slot:title>
+                  Help
+                </template>
+                <template v-slot:explanation>
+                  Click here to view this tutorial again.
+                </template>
+                <v-btn
+                  text
+                  block
+                  color="info"
+                  @click="showTutorial = 0"
+                >
+                Help!
+                </v-btn>
+              </TutorialDisplay>
+            </v-fade-transition>
           </div>
         </v-col>
       </v-row>
@@ -170,10 +175,6 @@
     max-width: unset !important;
   }
 
-  .v-list-item__action--stack {
-    flex-direction: row;
-  }
-
   #flex-container {
     /* 
     Currently does not do anything,
@@ -182,21 +183,6 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-  }
-
-  .list-upvote-enter-active, .list-upvote-leave-active,
-  .list-dismiss-enter-active, .list-dismiss-leave-active {
-    transition: all .3s ease;
-  }
-
-  .list-upvote-enter, .list-upvote-leave-to {
-    transform: translateY(-10px);
-    opacity: 0;
-  }
-
-  .list-dismiss-enter, .list-dismiss-leave-to {
-    transform: translateX(10px);
-    opacity: 0;
   }
 </style>
 
@@ -208,6 +194,7 @@ import AskQuestionDialog from '@/components/AskQuestionDialog'
 import UserAvatarContent from '@/components/UserAvatarContent'
 import TutorialDisplay from '@/components/TutorialDisplay'
 import LectureInfo from '@/components/LectureInfo'
+import QuestionDisplay from '@/components/QuestionDisplay'
 import { mapState } from 'vuex'
 import { get, post } from '@/helpers'
 
@@ -229,10 +216,11 @@ export default {
       socket: null,
       lectureInfo: null,
       questions: {},
+      myQuestions: [],
+      myQuestionsVisible: false,
       lastQuestionElapsed: 0,
       showQuestionDialog: false,
       showTutorial: -1,
-      listAction: 'list-dismiss',
       error: '',
       info: '',
       tutorialQuestions: {
@@ -255,38 +243,38 @@ export default {
           photo:"https://lh3.googleusercontent.com/a-/AOh14GhLdwXOcIH2W9KoJdVZTTDkxu-TCJesb3_HRqDOpQ"
         }
       },
-      testQuestions: [
-        {
+      testQuestions: {
+        X8udiUQ8fN6F27C: {
           "type":"new_question",
           "question_uid":"X8udiUQ8fN6F27C",
           "question":"What is the relationship between voltage and a Gaussian surface?",
           upvoted: false,
         },
-        {
+        a: {
           "type":"new_question",
-          "question_uid":"asdf",
+          "question_uid":"a",
           "question":"What is 10 + 10?",
           upvoted: false,
         },
-        {
+        b: {
           "type":"new_question",
-          "question_uid":"asdf",
+          "question_uid":"b",
           "question":"Why?",
           upvoted: false,
         },
-        {
+        c: {
           "type":"new_question",
-          "question_uid":"asdf",
+          "question_uid":"c",
           "question":"Why not?",
           upvoted: false,
         },
-        {
+        d: {
           "type":"new_question",
-          "question_uid":"asdf",
+          "question_uid":"d",
           "question":"How do you ask a question?",
           upvoted: false,
         },
-      ],
+      },
       testing: false,
     }
   },
@@ -315,6 +303,11 @@ export default {
       this.lectureInfo = this.testLectureInfo
       this.questions = this.testQuestions
     }
+
+    if (window.localStorage.getItem('tutorialShown') == null) {
+      this.showTutorial = 0
+      window.localStorage.setItem('tutorialShown', '')
+    }
   },
 
   destroyed() {
@@ -329,6 +322,7 @@ export default {
     UserAvatarContent,
     TutorialDisplay,
     LectureInfo,
+    QuestionDisplay,
   },
 
   computed: {
@@ -393,7 +387,6 @@ export default {
               })
               break;
             case 'new_question':
-              this.listAction = 'list-dismiss'
               this.pushQuestion(data)
               break;
             case 'end_lecture':
@@ -435,7 +428,6 @@ export default {
           question_uid: uid
         }).then(() => {
           this.$set(this.questions[uid], 'upvoted', true)
-          this.listAction = 'list-upvote'
           setTimeout(() => {
             this.$delete(this.questions, uid)
           }, 150)
@@ -446,7 +438,6 @@ export default {
     },
     dismissQuestion(uid) {
       this.$set(this.questions[uid], 'dismissed', true)
-      this.listAction = 'list-dismiss'
       setTimeout(() => {
         this.$delete(this.questions, uid)
       }, 150)
@@ -465,6 +456,21 @@ export default {
         this.$set(this.questions, question.question_uid, {...question, upvoted: false, dismissed: false})
       }
     },
+    showMyQuestions() {
+      if (this.myQuestionsVisible) {
+        this.myQuestionsVisible = false;
+      } else {
+        get(`/lectures/live/student/${this.id}/questions/mine`).then((result) => {
+          if (!result.success)
+            throw result
+
+          this.myQuestions = result.data
+          this.myQuestionsVisible = true
+        }).catch((err) => {
+          this.error = 'There was an error getting your questions!'
+        })
+      }
+    }
   },
 }
 </script>
