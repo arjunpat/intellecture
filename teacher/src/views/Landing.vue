@@ -1,20 +1,21 @@
 <template>
   <v-content class="fullscreen">
-    <v-container class="section"><!-- Opening Page -->
+    <v-container class="section">
         <v-row align="center" class="page">
             <v-col align="center" class="title" cols="7"> 
-                <h1 style="font-size: 70px;">Meet <div class="hat" style="background-color: #aed581">Intellecture</div>,<br> corny phrase.</h1>
+                <h1 style="font-size: 70px; line-height: 110px;">Meet <div class="hat" style="background-color: #aed581; font-size: 100px;">Intellecture</div></h1>
                 <br/>
-                <h3>It's worth noting that this description here will likely be somewhat long and rather worthless. That's why I've left all of this negative space on the page-- this needs to be filled!</h3>
+                <h3>Teach online with confidance</h3>
                 <br/>
-                <v-btn color="light-green lighten-2" style="color: #424242;" x-large @click="$router.push({ path: '/signin' })">Sign Up Today</v-btn>
+                <v-btn color="light-green lighten-2" style="color: #424242;" x-large @click="$router.push({ path: '/signin' })">Request Access</v-btn>
             </v-col>
             <v-col align="center" class="carasoul pl-12" cols="5">
                 <img src="@/assets/img/logo.svg" class="logo">
             </v-col>
         </v-row>
     </v-container>
-    <v-container><!-- Overview Cards -->
+    <!--
+    <v-container>
         <v-row align="center" class="page">
           <v-col align="center"  class="col-8 overview gray">
             <v-col  class="">
@@ -57,18 +58,19 @@
           </v-col>
         </v-row>
     </v-container>
-    <v-container><!-- Overview Blurbs -->
+    <v-container>
         <v-row class="blurbs page container">
           <v-col><p>Here's a cool blurb! Join us to get industry leading something or other.</p></v-col>
           <v-col><p>Here's a cool blurb! Join us to get industry leading something or other.</p></v-col>
           <v-col><p>Here's a cool blurb! Join us to get industry leading something or other.</p></v-col>
         </v-row>
     </v-container>
-    <v-container><!-- Overview Blurbs -->
+    <v-container>
         <v-row class="blurbs page container">
           This space will eventually be used for user feedback. For now, it harbors this text...
         </v-row>
     </v-container>
+  -->
   </v-content>
 </template>
 
