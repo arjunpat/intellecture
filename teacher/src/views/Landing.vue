@@ -1,5 +1,33 @@
 <template>
-  <v-content class="fullscreen">
+  <v-container class="text-center green lighten-2 fill-height p-relative" fluid>
+    <v-row
+      style="padding-top: 10vh; z-index: 4;"
+      class="fill-height"
+    >
+      <v-col
+        cols="12"
+      >
+        <div class="mt-8">
+          <div 
+            class="shadow white--text"
+            :class="$vuetify.breakpoint.smAndUp ? 'text-h1' : 'text-h2'"
+          >Intellecture</div>
+          <div 
+            class="font-weight-light white--text"
+            :class="$vuetify.breakpoint.smAndUp ? 'text-h5' : 'text-h6'"  
+          >Teach online with confidence</div>
+        </div>
+        <v-btn
+          class="mt-8"
+          color="light-green lighten-2" 
+          dark
+        >Request Access</v-btn>
+      </v-col>
+    </v-row>
+    <img src="@/assets/img/logo_pile_left.svg" :style="logoPileStyle" style="position: absolute; left:0; bottom: 0;">
+    <img src="@/assets/img/logo_pile_right.svg" :style="logoPileStyle" style="position: absolute; right:0; bottom: 0;">
+  </v-container>
+  <!--<v-content class="fullscreen">
     <v-container class="section">
         <v-row align="center" class="page">
             <v-col align="center" class="title" cols="7"> 
@@ -14,7 +42,6 @@
             </v-col>
         </v-row>
     </v-container>
-    <!--
     <v-container>
         <v-row align="center" class="page">
           <v-col align="center"  class="col-8 overview gray">
@@ -70,8 +97,7 @@
           This space will eventually be used for user feedback. For now, it harbors this text...
         </v-row>
     </v-container>
-  -->
-  </v-content>
+  </v-content>-->
 </template>
 
 <script>
@@ -81,12 +107,26 @@ export default {
   data () {
     return {
     }
-  }
+  },
+  computed: {
+    logoPileStyle() {
+      let breakpoint = this.$vuetify.breakpoint.name
+      if (breakpoint == 'lg' || breakpoint == 'xl') {
+        return 'width: 40%;'
+      } else if (breakpoint == 'md' || breakpoint == 'sm') {
+        return 'width: 60%;'
+      } else {
+        return 'width: 60%;'
+      }
+    }
+  },
 }
 </script>
 
 <style scoped lang="scss">
-
+.shadow {
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
 h3 {
   font-family: var(--main-font);
 }
@@ -153,7 +193,7 @@ grey {
 .logo {
   animation: up-down 3s  infinite;
   animation-timing-function: easeInOutCirc; 
-  width:25rem;
+  width:20rem;
 }
 .title {
   color:gray; // Please change this at some point. These values are here strictly to keep the styling consistent throughout the code.

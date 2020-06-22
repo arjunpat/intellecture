@@ -1,18 +1,18 @@
 <template>
   <v-app>
     <v-app-bar
+      v-if="$route.path !== '/'"
       :collapse="false"
       :collapse-on-scroll="false"
-      absolute
       color="green lighten-1"
+      app
       dark
       flat
-      style="position: fixed; left: 0px; top: 0px;"
     >
       <img src="@/assets/img/logo.svg" width="35px" class="pointer">
 
       <v-toolbar-title @click="homeRedirect()"><span id="main-logo" class="pointer">INTELLECTURE</span> Teacher</v-toolbar-title>
-
+    
 
       <v-spacer></v-spacer>
 
@@ -42,11 +42,7 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      
-
     </v-app-bar>
-
-    <div style="height: 64px;"></div>
 
     <v-snackbar
       v-model="snackbar"
@@ -59,9 +55,9 @@
       {{message}}<v-icon style="color: white">mdi-clipboard</v-icon>  
     </v-snackbar>
 
-    <v-content>
+    <v-main>
       <router-view v-on:startlecture="starting" v-on:nonexistant="started = false" />
-    </v-content>
+    </v-main>
     <v-footer padless color="green lighten-1" v-if="landing || dashboard || signin">
         <v-card
           flat
@@ -70,7 +66,7 @@
           class="green lighten-1 text-center"
         >
           <v-card-text class="white--text" style="font-family: var(--main-font);">
-            © {{ new Date().getFullYear() }} <strong>INTELLECTURE | ALL RIGHTS RESERVED</strong>
+            © {{ new Date().getFullYear() }} <strong>INTELLECTURE{{$vuetify.breakpoint.smAndUp ? ' | ALL RIGHTS RESERVED' : ''}}</strong>
           </v-card-text>
         </v-card>
     </v-footer>
