@@ -5,7 +5,7 @@
             <v-col align="center" class="title" cols="7"> 
                 <h1 style="font-size: 70px; line-height: 110px;">Meet <div class="hat" style="background-color: #aed581; font-size: 100px;">Intellecture</div></h1>
                 <br/>
-                <h3>Teach online with confidance</h3>
+                <h3>Teach online with confidence</h3>
                 <br/>
                 <v-btn color="light-green lighten-2" style="color: #424242;" x-large @click="$router.push({ path: '/signin' })">Request Access</v-btn>
             </v-col>
