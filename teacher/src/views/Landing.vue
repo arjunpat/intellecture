@@ -17,11 +17,13 @@
             :class="$vuetify.breakpoint.smAndUp ? 'text-h5' : 'text-h6'"  
           >Teach online with confidence</div>
         </div>
+        <a href="https://forms.gle/6TNwin4Jf7ZjQ5P5A" style="text-decoration: none;">
         <v-btn
           class="mt-8"
           color="light-green lighten-2" 
           dark
         >Request Access</v-btn>
+        </a>
       </v-col>
     </v-row>
     <img src="@/assets/img/logo_pile_left.svg" :style="logoPileStyle" style="position: absolute; left:0; bottom: 0;">
