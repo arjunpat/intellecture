@@ -15,17 +15,16 @@
     >
       <v-col
         cols="12"
-        sm="8"
-        md="6"
+        sm="9"
+        md="7"
         lg="4"
       >
         <v-expand-transition>
-          <img
-            src="@/assets/img/logo_text.svg"
+          <div 
+            class="shadow white--text text-center"
+            :class="$vuetify.breakpoint.smAndUp ? 'text-h1' : 'text-h2'"
             v-show="show"
-            id="logo"
-            @dragstart="e => e.preventDefault()"
-          >
+          >Intellecture</div>
         </v-expand-transition>
 
         <v-card class="mt-3">
@@ -69,6 +68,10 @@
 </template>
 
 <style scoped>
+  .shadow {
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  }
+
   .v-text-field {
     transition: margin-bottom 0.3s;
   }
