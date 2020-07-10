@@ -35,6 +35,10 @@ export default class LectureStudentLog {
     });
   }
 
+  getLecture(lecture_uid: string) {
+    return this.mysql.query('SELECT account_uid, elapsed, status FROM lecture_student_log WHERE lecture_uid = ?', [lecture_uid]);
+  }
+
   bulkAdd(lecture_uid: string, account_uids: string[], elapsed: number, status: string) {
     // https://stackoverflow.com/questions/8899802/how-do-i-do-a-bulk-insert-in-mysql-using-node-js
     return this.mysql.query(

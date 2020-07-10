@@ -21,6 +21,12 @@ router.get('/lecture/:lecture_uid/students', mw.auth, lecturePerms, async (req, 
   res.send(responses.success(await db.lectures.getStudents(lecture_uid)));
 });
 
+router.get('/lecture/:lecture_uid/attendance', mw.auth, lecturePerms, async (req, res) => {
+  let  { lecture_uid } = req.params;
+  
+  res.send(responses.success(await db.lectureStudentLog.getLecture(lecture_uid)));
+});
+
 router.get('/lecture/:lecture_uid/question/:question_uid/upvotes', mw.auth, lecturePerms, async (req, res) => {
   let { question_uid, lecture_uid } = req.params;
 
