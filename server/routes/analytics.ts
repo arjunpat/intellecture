@@ -4,14 +4,17 @@ const router = Router();
 import * as mw from '../middleware';
 import  * as responses from '../lib/responses';
 
+import { Request } from '../types';
 import db from '../models';
 
 async function lecturePerms(req, res, next) {
   let { lecture_uid } = req.params;
 
   let lecture = await db.lectures.getLecture(lecture_uid);
-  if (lecture && lecture.account_uid === req.uid)
+  if (lecture && lecture.account_uid === req.uid) {
+    req.lecture = lecture;
     return next();
+  }
   return res.send(responses.error('permissions'));
 }
 
@@ -22,9 +25,13 @@ router.get('/lecture/:lecture_uid/students', mw.auth, lecturePerms, async (req, 
 });
 
 router.get('/lecture/:lecture_uid/attendance', mw.auth, lecturePerms, async (req, res) => {
-  let  { lecture_uid } = req.params;
+  let { lecture_uid } = req.params;
   
   res.send(responses.success(await db.lectureStudentLog.getLecture(lecture_uid)));
+});
+
+router.get('/lecture/:lecture_uid/info', mw.auth, lecturePerms, async (req: Request, res) => {
+  res.send(responses.success(req.lecture)); // added by lecturePerms
 });
 
 router.get('/lecture/:lecture_uid/question/:question_uid/upvotes', mw.auth, lecturePerms, async (req, res) => {
