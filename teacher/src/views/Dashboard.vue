@@ -1,7 +1,6 @@
 <template>
   <v-content v-if="authUser">
     <v-container>
-      <div style="height: 30px;"></div>
       <v-btn depressed small v-if="!notification" @click="requestNotifications()" style="position: fixed; top: 70px; left: 10px; z-index: 100;">Enable notifications <v-icon small>mdi-bell</v-icon></v-btn>
       <h1 class="poppins">Hi {{ authUser.first_name }},</h1>
       <br>
@@ -9,7 +8,7 @@
       <v-card v-if="classes != []">
         <v-card-title style="background-color: #ECEFF1;" class="card-title">CLASSES</v-card-title>
         <v-divider></v-divider>
-        <v-card-text align="center">
+        <v-card-text align="left">
           <ul style="list-style-type: none">
             <li v-if="classes == [] && classses == null">
               <div class="noshow">No classes to show</div>
