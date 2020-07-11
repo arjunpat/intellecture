@@ -43,7 +43,7 @@
           </template>
         </TutorialDisplay>
       </div>
-
+      
       <v-card-title>
         <h2 style="font-family: 'Noto Sans'; font-weight: bold;">{{ lectureName || 'Untitled Lecture' }}</h2>
       </v-card-title>
@@ -80,7 +80,6 @@
           <!-- Start of Understanding tab -->
           <v-card
             v-show="currentTab === 0"
-            color="basil"
             flat
             min-height="75vh"
             class="pt-3 pb-3"
@@ -110,9 +109,9 @@
                   <template v-slot:explanation>
                     This is a graph of the understanding score over the duration of your lecture. Click the shorten button to only show the last 5 minutes of data.
                   </template>
-                  <div style="width: 90%; margin: auto; display: block; positive: relative;">
+                  <div style="width: 90%; margin: auto; display: block; positive: relative;" align="center">
                     <line-chart :chart-data="datacollection"></line-chart>
-                    <v-switch v-model="shortened" label="Shorten"></v-switch>
+                    <v-switch style="display: inline-block;" v-model="shortened" label="Shorten"></v-switch>
                     <!-- <v-btn style="float: right;" class="" @click="shortened = !shortened">{{ shortentext }}</v-btn> -->
                   </div>
                 </TutorialDisplay>
@@ -238,7 +237,7 @@
                 <ul style="list-style-type: none; font-family: var(--main-font);">
                     <li v-for="question in displayQuestions" v-bind:key="question.question_uid" v-show="!question.dismiss">
                     
-                    <v-banner>
+                    <v-banner :style="{ textAlign: 'left', width: questionWidth }">
                       <v-tooltip right>
                         <template v-slot:activator="{ on }">
                          <span v-on="on">{{question.question}}</span>
@@ -706,7 +705,7 @@ export default {
         this.$router.replace({ name: 'Feedback', params: { fromLectureEnd: true } })
       } else if(data.type == "error") {
         this.endLectureMethod()
-        this.$router.replace({ name: 'Dashboard'})
+        //this.$router.replace({ name: 'Dashboard'})
       }
     }
   },
@@ -758,6 +757,11 @@ export default {
         return '30vw'
       } else {
         return '90vw'
+      }
+    },
+    questionWidth() {
+      if(this.smallScreen) {
+        return '80vw';
       }
     }
   },

@@ -11,7 +11,7 @@
     >
       <img src="@/assets/img/logo.svg" width="35px" class="pointer">
 
-      <v-toolbar-title @click="homeRedirect()"><span id="main-logo" class="pointer">INTELLECTURE</span> Teacher</v-toolbar-title>
+      <v-toolbar-title @click="homeRedirect()" v-if="!smallScreen || !livelecture"><span id="main-logo" class="pointer">INTELLECTURE</span> Teacher</v-toolbar-title>
     
 
       <v-spacer></v-spacer>
@@ -127,6 +127,15 @@ export default {
     linkToRoom: function () {
       const isProd = process.env.NODE_ENV === 'production';
       return `https://join.intellecture.app/${ isProd ? '#/' : '' }room/${this.id}`
+    },
+    smallScreen () {
+      switch (this.$vuetify.breakpoint.name) {
+        case 'xs': return true
+        case 'sm': return true
+        case 'md': return false
+        case 'lg': return false
+        case 'xl': return false
+      }
     }
   },
   watch: {
