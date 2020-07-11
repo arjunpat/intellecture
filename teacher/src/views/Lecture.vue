@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-main>
     <v-container fluid v-show="showCode" class="window roomContainer" ref="start-window">
       <v-col>
        <v-row class="close">
@@ -8,7 +8,7 @@
        <v-row>
         <div class="mx-auto">
           <h1 class="joinMessage">
-               Head to <b>join.intellecture.app</b> to join!
+            Head to <b>join.intellecture.app</b> to join!
           </h1>
         </div>
       </v-row>
@@ -25,7 +25,6 @@
     <v-container
       fluid
     >
-
       <transition name="fade">
         <div
           v-show="snackbar"
@@ -46,7 +45,7 @@
       </div>
 
       <v-card-title>
-        <h1 class="display-1" style="font-family: 'Noto Sans'; font-weight: bold;">{{ lectureName }}</h1>
+        <h2 style="font-family: 'Noto Sans'; font-weight: bold;">{{ lectureName || 'Untitled Lecture' }}</h2>
       </v-card-title>
 
       <TutorialDisplay :show="showTutorial == 3" backgroundColor="white" @next="showTutorial++; clickTab(1)" @cancel="showTutorial = -1" bottom>
@@ -59,7 +58,10 @@
         <v-tabs
           v-model="tab"
           background-color="transparent"
+          color="#66bb6a"
           grow
+          class="tabs-bar"
+          :mobile-breakpoint="500"
         >
           <v-tab
             v-for="(item, index) in items"
@@ -83,7 +85,7 @@
             min-height="75vh"
             class="pt-3 pb-3"
           >
-            <v-row align="center" justify="center" style="margin-top: 20px;">
+            <v-row align="center" style="margin: 20px;">
                 <TutorialDisplay :show="showTutorial == 0" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" bottom>
                   <template v-slot:title>
                     Understanding Score
@@ -91,7 +93,7 @@
                   <template v-slot:explanation>
                     The aggregated understanding score from your students will show up here.
                   </template>
-                  <div>
+                  <div style="padding: 10px;">
                     <v-card-text style="text-align: center;">
                       <span style="font-size: 23px; color: black; font-weight: bold;"><span style="background: red; padding: 2px 5px; color: white; border-radius: 3px; font-weight: normal;">LIVE</span> UNDERSTANDING SCORE</span>
                       <br><br><br><br><br><br><br><br>
@@ -101,29 +103,28 @@
                     </v-card-text>
                   </div>
                 </TutorialDisplay>
-                <TutorialDisplay :show="showTutorial == 1" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" bottom>
+                <TutorialDisplay :show="showTutorial == 1" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" bottom style="flex: 1;">
                   <template v-slot:title>
                     Understanding Graph
                   </template>
                   <template v-slot:explanation>
                     This is a graph of the understanding score over the duration of your lecture. Click the shorten button to only show the last 5 minutes of data.
                   </template>
-                  <div v-if="!smallScreen">
-                      <!-- <div style="max-width: 90%; padding-top: 3%;"> -->
-                          <line-chart :chart-data="datacollection"></line-chart>
-                          <v-btn style="float: none;" class="" @click="shortened = !shortened">{{ shortentext }}</v-btn>
-                      <!-- </div> -->
+                  <div style="width: 90%; margin: auto; display: block; positive: relative;">
+                    <line-chart :chart-data="datacollection"></line-chart>
+                    <v-switch v-model="shortened" label="Shorten"></v-switch>
+                    <!-- <v-btn style="float: right;" class="" @click="shortened = !shortened">{{ shortentext }}</v-btn> -->
                   </div>
                 </TutorialDisplay>
             </v-row>
-            <v-row align="center" justify="center" v-if="smallScreen">
+            <!-- <v-row align="center" justify="center" v-if="smallScreen">
                 <v-card width="90%" style="min-height: 60vh" class="pb-3" align="center" justify="center">                    
                     <div style="max-width: 900px; margin-top: 3%;">
                       <line-chart :chart-data="datacollection"></line-chart>
                     </div>
                   <v-btn style="float: none;" class="" @click="shortened = !shortened">{{ shortentext }}</v-btn>
                 </v-card>
-            </v-row>
+            </v-row> -->
 
             <v-row class="mt-1" align="center" justify="center" v-if="topics.length > 0 || showTutorial == 2">
               <TutorialDisplay :show="showTutorial == 2" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" top>
@@ -373,7 +374,7 @@
 
       </v-tabs-items>
     </v-container>
-  </v-content>
+  </v-main>
 </template>
 
 <script>
@@ -547,7 +548,7 @@ export default {
       timeout: 1000,
       snackbarMessage: '',
       showTutorial: -1,
-      endCalled: false,
+      endCalled: false
     }
   },
   methods: {
@@ -642,13 +643,13 @@ export default {
   },
   mounted () {
     this.$emit('startlecture', this.id);
-    /* document.addEventListener('fullscreenchange', (event) => {
+    document.addEventListener('fullscreenchange', (event) => {
       if (!document.fullscreenElement) {
         store.commit("setShowCode", false)
       }
-    }); */
+    });
 
-    this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.id}`);
+    this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.id}`)
     this.socket.onmessage = (event) => {
       const data = JSON.parse(event.data)
       console.log(data);
@@ -733,13 +734,15 @@ export default {
       }
     },
     understandingFontSize () {
-      switch (this.$vuetify.breakpoint.name) {
+      /* switch (this.$vuetify.breakpoint.name) {
         case 'xs': return '180px'
         case 'sm': return '180px'
         case 'md': return '130px'
         case 'lg': return '180px'
         case 'xl': return '180px'
-      }
+      } */
+      let val = Math.min(window.innerWidth / 3.14, 180)
+      return val + 'px'
     },
     smallScreen () {
       switch (this.$vuetify.breakpoint.name) {
@@ -926,5 +929,16 @@ html::-webkit-scrollbar {
 
 html {
     -ms-overflow-style: none;
+}
+
+.tabs-bar {
+  width: 50% !important;
+  margin: auto;
+}
+
+@media screen and (max-width: 500px) {
+  .tabs-bar {
+    width: 100% !important;
+  }
 }
 </style>

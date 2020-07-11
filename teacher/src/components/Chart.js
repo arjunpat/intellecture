@@ -10,7 +10,9 @@ export default {
         scales: {
           yAxes: [{
             ticks: {
-              beginAtZero: true
+              beginAtZero: true,
+              min: 0,
+              max: 100
             },
             gridLines: {
               display: true
@@ -19,7 +21,7 @@ export default {
           xAxes: [{
             type: 'time',
             time: {
-                unit: 'minute'
+              unit: 'minute'
             },
             distribution: 'linear',
             gridLines: {
