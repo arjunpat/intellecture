@@ -404,7 +404,7 @@ export default {
         this.wsInterval = setInterval(() => {
           if (this.socket.readyState === WebSocket.CLOSED)
             this.reconnect()
-        }, 2 * 1000); // 2 seconds
+        }, 5 * 1000); // 2 seconds
       }
     },
     updateUnderstanding() {
