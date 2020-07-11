@@ -342,66 +342,65 @@ export default {
   methods: {
     reconnect() {
       this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/student/${this.id}`)
+      this.socket.onopen = (event) => {}
+
+      this.socket.onmessage = (event) => {
+        const data = JSON.parse(event.data)
+        switch (data.type) {
+          case 'error':
+            if (data.error === 'does_not_exist' || data.error === 'lecture_not_initialized') {
+              if (!this.testing)
+                this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join does not exist!' } })
+            } else if (data.error === 'already_ended') {
+              this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join has already ended!' } })
+            } else if (data.error === 'already_joined') {
+              this.$router.replace({name: 'Join', params: { error: 'You already have that lecture open in another tab!' } })
+            } else {
+              this.$router.replace({name: 'Join', params: { error: 'Could not join lecture!' } })
+            }
+            break;
+          case 'lecture_info':
+            this.lectureInfo = data
+
+            // Send initial slider value
+            this.updateUnderstanding()
+
+            // Get previously asked questions
+            const questionData = JSON.parse(window.localStorage.getItem('questionData'))
+            if (questionData === null || questionData.lectureId !== this.id) {
+              this.questions = {}
+            } else {
+              this.lastQuestionElapsed = questionData.lastQuestionElapsed;
+              this.questions = questionData.questions
+            }
+            
+            get(`/lectures/live/student/${this.id}/questions?after=${this.lastQuestionElapsed}`).then((result) => {
+              if (!result.success)
+                throw result
+
+              this.updateQuestions(result.data)
+            }).catch((err) => {
+              this.error = 'There was an error fetching questions!'
+            })
+            break;
+          case 'new_question':
+            this.pushQuestion(data)
+            break;
+          case 'end_lecture':
+            window.localStorage.removeItem('questionData')
+            this.$router.replace({ name: 'Feedback', params: { fromLectureEnd: true } })
+            clearInterval(this.wsInterval)
+            break;
+        }
+      }
+
+      this.socket.onclose = (event) => {}
+      this.socket.onerror = (error) => {}
     },
     setUpSocketConnection() {
       // Set up socket stuff
       if (!this.socket) {
         this.reconnect()
-
-        this.socket.onopen = (event) => {}
-
-        this.socket.onmessage = (event) => {
-          const data = JSON.parse(event.data)
-          switch (data.type) {
-            case 'error':
-              if (data.error === 'does_not_exist' || data.error === 'lecture_not_initialized') {
-                if (!this.testing)
-                  this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join does not exist!' } })
-              } else if (data.error === 'already_ended') {
-                this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join has already ended!' } })
-              } else if (data.error === 'already_joined') {
-                this.$router.replace({name: 'Join', params: { error: 'You already have that lecture open in another tab!' } })
-              } else {
-                this.$router.replace({name: 'Join', params: { error: 'Could not join lecture!' } })
-              }
-              break;
-            case 'lecture_info':
-              this.lectureInfo = data
-
-              // Send initial slider value
-              this.updateUnderstanding()
-
-              // Get previously asked questions
-              const questionData = JSON.parse(window.localStorage.getItem('questionData'))
-              if (questionData === null || questionData.lectureId !== this.id) {
-                this.questions = {}
-              } else {
-                this.lastQuestionElapsed = questionData.lastQuestionElapsed;
-                this.questions = questionData.questions
-              }
-              
-              get(`/lectures/live/student/${this.id}/questions?after=${this.lastQuestionElapsed}`).then((result) => {
-                if (!result.success)
-                  throw result
-
-                this.updateQuestions(result.data)
-              }).catch((err) => {
-                this.error = 'There was an error fetching questions!'
-              })
-              break;
-            case 'new_question':
-              this.pushQuestion(data)
-              break;
-            case 'end_lecture':
-              window.localStorage.removeItem('questionData')
-              this.$router.replace({ name: 'Feedback', params: { fromLectureEnd: true } })
-              clearInterval(this.wsInterval)
-              break;
-          }
-        }
-
-        this.socket.onclose = (event) => {}
-        this.socket.onerror = (error) => {}
         this.wsInterval = setInterval(() => {
           if (this.socket.readyState === WebSocket.CLOSED)
             this.reconnect()
