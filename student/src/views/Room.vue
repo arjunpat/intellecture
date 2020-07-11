@@ -340,10 +340,13 @@ export default {
   },
   
   methods: {
+    reconnect() {
+      this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/student/${this.id}`)
+    },
     setUpSocketConnection() {
       // Set up socket stuff
       if (!this.socket) {
-        this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/student/${this.id}`)
+        this.reconnect()
 
         this.socket.onopen = (event) => {}
 
@@ -392,12 +395,17 @@ export default {
             case 'end_lecture':
               window.localStorage.removeItem('questionData')
               this.$router.replace({ name: 'Feedback', params: { fromLectureEnd: true } })
+              clearInterval(this.wsInterval)
               break;
           }
         }
 
         this.socket.onclose = (event) => {}
         this.socket.onerror = (error) => {}
+        this.wsInterval = setInterval(() => {
+          if (this.socket.readyState === WebSocket.CLOSED)
+            this.reconnect()
+        }, 2 * 1000); // 2 seconds
       }
     },
     updateUnderstanding() {
