@@ -6,6 +6,7 @@ import Lecture from '@/views/Lecture.vue'
 import New from '@/views/New.vue'
 import SignIn from '@/views/SignIn.vue'
 import Feedback from '@/views/Feedback.vue'
+import LectureAnalytics from '@/views/LectureAnalytics';
 
 Vue.use(VueRouter)
 const isProd = process.env.NODE_ENV === 'production'
@@ -42,6 +43,11 @@ const routes = [
     name: 'Feedback',
     component: Feedback,
     props: true,
+  },
+  {
+    path: '/lecture-analytics/:lecture_uid',
+    name: 'LectureAnalytics',
+    component: LectureAnalytics
   }
 ]
 
