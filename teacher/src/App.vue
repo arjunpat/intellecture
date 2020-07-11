@@ -55,9 +55,8 @@
       {{message}}<v-icon style="color: white">mdi-clipboard</v-icon>  
     </v-snackbar>
 
-    <v-main>
-      <router-view v-on:startlecture="starting" v-on:nonexistant="started = false" />
-    </v-main>
+    <router-view v-on:startlecture="starting" v-on:nonexistant="started = false" />
+
     <v-footer padless color="green lighten-1" v-if="landing || dashboard || signin">
         <v-card
           flat

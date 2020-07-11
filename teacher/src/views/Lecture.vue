@@ -25,7 +25,6 @@
     <v-container
       fluid
     >
-      <v-card>
 
       <transition name="fade">
         <div
@@ -36,21 +35,18 @@
         </div>
       </transition>
       <div style="width: 300px; position: absolute; top: 0px; right: 0px;">
-      <TutorialDisplay style="text-align: left;" :show="showTutorial == 7" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" bottom>
-        <template v-slot:title>
-          Room Code
-        </template>
-        <template v-slot:explanation>
-          This is your room code, share it with your students so they can join the lecture. You can click on it to copy the room link or show a join screen.
-        </template>
-        <div style="position: absolute; top: 0px; right: 0px;">
-          
-        </div>
-      </TutorialDisplay>
+        <TutorialDisplay style="text-align: left;" :show="showTutorial == 7" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" bottom>
+          <template v-slot:title>
+            Room Code
+          </template>
+          <template v-slot:explanation>
+            This is your room code, share it with your students so they can join the lecture. You can click on it to copy the room link or show a join screen.
+          </template>
+        </TutorialDisplay>
       </div>
 
       <v-card-title>
-        <h1 class="display-1">Lecture: <strong><span style="font-family: 'Noto Sans'">{{ lectureName }}</span></strong></h1>
+        <h1 class="display-1" style="font-family: 'Noto Sans'; font-weight: bold;">{{ lectureName }}</h1>
       </v-card-title>
 
       <TutorialDisplay :show="showTutorial == 3" backgroundColor="white" @next="showTutorial++; clickTab(1)" @cancel="showTutorial = -1" bottom>
@@ -95,7 +91,7 @@
                   <template v-slot:explanation>
                     The aggregated understanding score from your students will show up here.
                   </template>
-                  <v-card :width="understandingWidth" height="65vh">
+                  <div>
                     <v-card-text style="text-align: center;">
                       <span style="font-size: 23px; color: black; font-weight: bold;"><span style="background: red; padding: 2px 5px; color: white; border-radius: 3px; font-weight: normal;">LIVE</span> UNDERSTANDING SCORE</span>
                       <br><br><br><br><br><br><br><br>
@@ -103,7 +99,7 @@
                       <br><br><br><br>
                       <div style="width: 335px; display: inline-block;"><v-progress-linear :value="understandingScore" :color="progressColor" rounded></v-progress-linear></div>
                     </v-card-text>
-                  </v-card>
+                  </div>
                 </TutorialDisplay>
                 <TutorialDisplay :show="showTutorial == 1" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" bottom>
                   <template v-slot:title>
@@ -112,12 +108,12 @@
                   <template v-slot:explanation>
                     This is a graph of the understanding score over the duration of your lecture. Click the shorten button to only show the last 5 minutes of data.
                   </template>
-                  <v-card width="60vw" style="height: 65vh;" align="center" justify="center" v-if="!smallScreen">
-                      <div style="max-width: 90%; padding-top: 3%;">
+                  <div v-if="!smallScreen">
+                      <!-- <div style="max-width: 90%; padding-top: 3%;"> -->
                           <line-chart :chart-data="datacollection"></line-chart>
                           <v-btn style="float: none;" class="" @click="shortened = !shortened">{{ shortentext }}</v-btn>
-                      </div>
-                  </v-card>
+                      <!-- </div> -->
+                  </div>
                 </TutorialDisplay>
             </v-row>
             <v-row align="center" justify="center" v-if="smallScreen">
@@ -376,8 +372,6 @@
           <!-- End of Students tab -->
 
       </v-tabs-items>
-      
-    </v-card>
     </v-container>
   </v-content>
 </template>
@@ -594,11 +588,10 @@ export default {
         }
     },
     endLectureMethod() {
-      window.onbeforeunload = function() {}
+      window.onbeforeunload = undefined
       this.endCalled = true
-      this.socket.send(JSON.stringify({ type: "end_lecture" }))
-      this.socket.close()
       post(`/lectures/live/teacher/${this.id}/end`)
+      this.socket.close();
       console.log("Ending lecture")
       store.commit("setEndLecture", false)
       setLectures()
@@ -649,46 +642,45 @@ export default {
   },
   mounted () {
     this.$emit('startlecture', this.id);
-    document.addEventListener('fullscreenchange', (event) => {
+    /* document.addEventListener('fullscreenchange', (event) => {
       if (!document.fullscreenElement) {
         store.commit("setShowCode", false)
       }
-    });
+    }); */
 
     this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.id}`);
-    var self = this;
-    this.socket.onmessage = function (event) {
+    this.socket.onmessage = (event) => {
       const data = JSON.parse(event.data)
       console.log(data);
       if(data.type == "lecture_info") {
-        self.connected = true
-        self.lectureName = data.lecture_name
+        this.connected = true
+        this.lectureName = data.lecture_name
       } else if(data.type == "student_join") {
-        self.students.push(data)
-        self.totalStudents.push(data)
-        self.showSnackBar(`${ self.students[self.students.length-1].first_name } ${ self.students[self.students.length-1].last_name } joined`)
-        self.displayNotification("Student joined", `${ self.students[self.students.length-1].first_name } ${ self.students[self.students.length-1].last_name } joined`)
+        this.students.push(data)
+        this.totalStudents.push(data)
+        this.showSnackBar(`${ this.students[this.students.length-1].first_name } ${ this.students[this.students.length-1].last_name } joined`)
+        this.displayNotification("Student joined", `${ this.students[this.students.length-1].first_name } ${ this.students[this.students.length-1].last_name } joined`)
       } else if(data.type == "student_leave") {
-        const left = self.students.find(student => student.uid == data.uid)
-        self.showSnackBar(`${ left.first_name } ${ left.last_name } left`)
-        self.displayNotification("Student left", `${ left.first_name } ${ left.last_name } left`)
-        self.students = self.students.filter(function( obj ) {
+        const left = this.students.find(student => student.uid == data.uid)
+        this.showSnackBar(`${ left.first_name } ${ left.last_name } left`)
+        this.displayNotification("Student left", `${ left.first_name } ${ left.last_name } left`)
+        this.students = this.students.filter(function( obj ) {
             return obj.uid !== data.uid
         });
       } else if(data.type == "us_update") {
         if(data.score != null) {
-          var d = (Date.now() - self.start)/1000;
-          self.understandingData.push({
+          var d = (Date.now() - this.start)/1000;
+          this.understandingData.push({
             timestamp: new Date(),
             score: data.score
           })
-          self.understandingScore = data.score
-          self.initChart()
+          this.understandingScore = data.score
+          this.initChart()
         } else {
-          self.understandingScore = '--'
+          this.understandingScore = '--'
         }
       } else if(data.type == "new_question") {
-        self.questions.push({
+        this.questions.push({
           question_uid: data.question_uid,
           creator_uid: data.creator_uid,
           question: data.question,
@@ -696,22 +688,24 @@ export default {
           upvotes: 0,
           upvotedStudents: []
         })
-        self.displayQuestions = [...self.questions]
-        self.displayNotification("New Question", data.question)
+        this.displayQuestions = [...this.questions]
+        this.displayNotification("New Question", data.question)
       } else if(data.type == "ques_categor") {
-        self.topics = data.categories
+        this.topics = data.categories
       } else if(data.type == "question_update") {
-        var question = self.questions.find(question => question.question_uid == data.question_uid)
+        var question = this.questions.find(question => question.question_uid == data.question_uid)
         question.upvotes++
-        get(`/analytics/lecture/${self.id}/question/${data.question_uid}/upvotes`).then(result => {
+        get(`/analytics/lecture/${this.id}/question/${data.question_uid}/upvotes`).then(result => {
           if(result.success) {
             question.upvotedStudents = result.data
-            self.sortQuestions()
+            this.sortQuestions()
           }
         })
+      } else if (data.type === 'end_lecture') {
+        this.$router.replace({ name: 'Feedback', params: { fromLectureEnd: true } })
       } else if(data.type == "error") {
-        self.endLectureMethod()
-        self.$router.replace({ name: 'Dashboard'})
+        this.endLectureMethod()
+        this.$router.replace({ name: 'Dashboard'})
       }
     }
   },
