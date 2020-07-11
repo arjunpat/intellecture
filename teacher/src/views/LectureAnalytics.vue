@@ -40,26 +40,26 @@
         </v-list>
       </v-navigation-drawer>
 
-      <div>
-
-        <div>
+      <div style="margin-left: 256px;">
+        <div style="display: flex; justify-content: flex-start; flex-wrap: wrap;">
           <v-card
             class="mx-auto"
-            max-width="344"
+            width="250"
+            height="300"
             v-for="a in students"
             :key="a.account_uid"
+            style="margin-bottom: 30px;"
           >
             <v-img
               :src="a.photo"
-              height="200px"
+              height="150px"
             ></v-img>
             <v-card-title>{{ a.first_name }} {{ a.last_name }}</v-card-title>
             <v-card-subtitle>{{ a.email }}</v-card-subtitle>
+
+            <v-card-text>{{ randInt(1, 5) }} questions<br>{{ getParticipation(a.account_uid) }}% participation</v-card-text>
           </v-card>
         </div>
-
-
-
       </div>
     </v-app>
   </div>
@@ -67,6 +67,7 @@
 
 <script>
 import { post, get } from '@/helpers.js'
+import { mdiAndroidStudio } from '@mdi/js';
 
 export default {
   data() {
@@ -81,9 +82,53 @@ export default {
       students: []
     }
   },
+  methods: {
+    randInt(from, to) {
+      return parseInt(Math.random() * (to - from + 1)) + from;
+    },
+    async init() {
+      let lectureInfo = (await get(`/analytics/lecture/${this.lecture_uid}/info`)).data;
+      let students = (await get(`/analytics/lecture/${this.lecture_uid}/students`)).data;
+      let stuLog = (await get(`/analytics/lecture/${this.lecture_uid}/attendance`)).data;
+
+      let len = lectureInfo.end_time - lectureInfo.start_time;
+      console.log(len);
+
+      // this code calculates how much time they spent on intellecture
+      let time = {}
+      for (let i = 0; i < stuLog.length; i++) {
+        let uid = stuLog[i].account_uid;
+        if (!time[uid]) {
+          time[uid] = [];
+        }
+
+        time[uid].push(stuLog[i].elapsed);
+      }
+
+      for (let each in time) {
+        time[each] = this.sum(this.diff(time[each])) / len;
+      }
+      this.time = time;
+      this.lectureInfo = lectureInfo;
+      this.students = students;
+    },
+    diff(arr) {
+      let res = [];
+      for (let i = 1; i < arr.length; i++)
+        res.push(arr[i] - arr[i - 1]);
+      return res;
+    },
+    sum(arr) {
+      let sum = 0;
+      for (let each of arr) sum += each;
+      return sum;
+    },
+    getParticipation(uid) {
+      return Math.round(this.time[uid] * 100);
+    }
+  },
   mounted() {
-    get(`/analytics/lecture/${this.lecture_uid}/info`).then(d => this.lectureInfo = d.data)
-    get(`/analytics/lecture/${this.lecture_uid}/students`).then(d => this.students = d.data)
+    this.init();
   }
 }
 </script>

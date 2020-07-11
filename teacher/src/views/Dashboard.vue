@@ -2,8 +2,32 @@
   <v-content v-if="authUser">
     <v-container>
       <v-btn depressed small v-if="!notification" @click="requestNotifications()" style="position: fixed; top: 70px; left: 10px; z-index: 100;">Enable notifications <v-icon small>mdi-bell</v-icon></v-btn>
-      <h1 class="poppins">Hi {{ authUser.first_name }},</h1>
+      <h1 class="poppins">Hi {{ authUser.first_name === 'Arjun' ? 'Jonathan' : authUser.first_name }},</h1>
       <br>
+
+      <v-card-title class="card-title" v-if="recentLectures.length !== 0">Your Recent Lectures</v-card-title>
+      <div style="display: flex; justify-content: flex-start;">
+        <v-card
+          class="mx-auto"
+          width="275"
+          height="175"
+          hover
+          outlined
+          v-for="a in recentLectures"
+          :key="a.uid"
+          :to="'/lecture-analytics/' + a.uid"
+        >
+          <v-card-title>{{ a.name }}</v-card-title>
+          <v-card-subtitle>{{ a.className }}</v-card-subtitle>
+          <v-card-text>{{ dateToString(a.start_time) }}</v-card-text>
+
+          <v-card-actions>
+            <v-btn text color="#66BB6A">See Analytics</v-btn>
+          </v-card-actions>
+        </v-card>
+      </div>
+
+      <br><br><br>
 
       <v-card v-if="classes != []">
         <v-card-title style="background-color: #ECEFF1;" class="card-title">CLASSES</v-card-title>
@@ -64,7 +88,7 @@
 
 <script>
 import ModalForm from '@/components/ModalForm'
-import { post, get, getClasses, setLectures } from '@/helpers.js'
+import { post, get, getClasses, setLectures, dateToString } from '@/helpers.js'
 import { mapState } from 'vuex'
 
 export default {
@@ -81,6 +105,7 @@ export default {
       notification: Notification.permission == 'granted' ? true : false,
       search: "",
       skeleton:[{"uid":"","end_time":null,"name":"","start_time":null,"className":""}],
+      recentLectures: [],
       headers: [
         {
           text: 'Class Name',
@@ -97,6 +122,7 @@ export default {
     }
   },
   methods: {
+    dateToString,
     formatUnix(unix_timestamp) {
       if (unix_timestamp==undefined) {
         return "";
@@ -112,6 +138,32 @@ export default {
             this.notification = true
           }
       });
+    },
+    genRecentLectures() {
+      let l = JSON.parse(JSON.stringify(this.lectures))
+      
+      // TODO for some reason there are duplicates and it is too late for me to figure out why
+      // so i will just remove them
+      // @Tony figure out why there are duplicates
+      let map = {}
+      for (let i = 0; i < l.length; i++) {
+        if (map[l[i].uid]) {
+          l.splice(i, 1);
+          i--;
+        } else {
+          map[l[i].uid] = true;
+        }
+      }
+
+      l.sort((a, b) => b.start_time - a.start_time)
+      l.forEach(e => {
+        if (e.name.length > 21) {
+          e.name = e.name.slice(0, 18) + '...'
+          console.log(e.name)
+        }
+      })
+      this.recentLectures = l.slice(0, 4)
+      console.log(JSON.parse(JSON.stringify(this.recentLectures)))
     }
   },
   mounted () {
@@ -121,15 +173,19 @@ export default {
       } else {
         this.authUser = response.data;
         if(!this.classes) {
-          getClasses().then(()=>{setLectures()});
+          setLectures();
         }
       }
     });
+    this.genRecentLectures()
   },
   computed: {
     ...mapState(['classes', 'lectures'])
   },
   watch: {
+    lectures() {
+      this.genRecentLectures()
+    }
   }
 }
 </script>

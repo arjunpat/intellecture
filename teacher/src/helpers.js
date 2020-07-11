@@ -65,8 +65,7 @@ export function getClasses() {
   return get('/classes/mine').then((result) => {
     if(!result.success)
       throw result
-    var classes = [...result.data];
-    classes.sort((a, b) => (a.name > b.name) ? 1 : -1)
+    result.data.sort((a, b) => (a.name > b.name) ? 1 : -1)
     store.commit('setClasses', result.data)
   })
 }
@@ -76,6 +75,10 @@ export function setLectures() {
       store.commit("setLectures", null);
       if(!result.success)
         throw result
+      
+      result.data.sort((a, b) => (a.name > b.name) ? 1 : -1)
+      store.commit('setClasses', result.data)
+
       for (let indexClass of result.data) {
         get(`/lectures/get/${indexClass.uid}`).then((data)=>{
           for (let item of data.data) {
@@ -85,4 +88,23 @@ export function setLectures() {
         });
       }
   })
+}
+
+export function dateToString(date) {
+  let now = Date.now();
+
+  let distance = Date.now() - date;
+
+  if (3600000 > distance && distance > 0) {
+    return Math.round(distance / 60000) + ' minutes ago';
+  } else if (86400000 > distance && distance > 0) {
+    return Math.round((now - date) / 3600000) + ' hours ago';
+  }
+
+  return new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'America/Los_Angeles'
+  });
 }
