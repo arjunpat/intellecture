@@ -52,7 +52,7 @@
     height: 80%;
     background-color: #eee;
     border-radius: 5px;
-    box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.4);
+    /* box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.4); */
     margin: auto;
     position: absolute;
     top: 0;
