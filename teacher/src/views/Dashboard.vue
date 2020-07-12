@@ -10,7 +10,7 @@
         <v-card
           class="mx-auto"
           width="275"
-          height="175"
+          min-height="175"
           hover
           outlined
           v-for="a in recentLectures"

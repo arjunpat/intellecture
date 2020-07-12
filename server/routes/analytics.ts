@@ -52,6 +52,11 @@ router.get('/lecture/:lecture_uid/participation', mw.auth, lecturePerms, async (
   res.send(responses.success(result));
 });
 
+router.get('/lecture/:lecture_uid/question-count', mw.auth, lecturePerms, async (req: Request, res) => {
+  let { lecture_uid } = req.params;
+  res.send(responses.success(await db.lectureQs.getQuestionCountsByLectureUid(lecture_uid)));
+});
+
 router.get('/lecture/:lecture_uid/info', mw.auth, lecturePerms, async (req: Request, res) => {
   res.send(responses.success(req.lecture)); // added by lecturePerms
 });

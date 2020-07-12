@@ -53,4 +53,16 @@ export default class LectureQs {
       [lecture_uid, account_uid]
     );
   }
+
+  getQuestionCountsByLectureUid(lecture_uid: string) {
+    return this.mysql.query(
+      'SELECT account_uid, COUNT(uid) FROM lecture_qs WHERE lecture_uid = ? GROUP BY account_uid',
+      [lecture_uid]
+    ).then(res => {
+      let data = {};
+      for (let each of res)
+        data[each.account_uid] = each['COUNT(uid)'];
+      return data;
+    });
+  }
 }
