@@ -20,6 +20,20 @@ export function genLowerCaseId(length: number): string {
   return id;
 }
 
+export function sum(arr: number[]) {
+  let sum = 0;
+  for (let each of arr) sum += each;
+  return sum;
+}
+
+export function diff(arr: number[]): number[] {
+  let res: number[] = [];
+  res.length = arr.length - 1;
+  for (let i = 0; i  < arr.length - 1; i++)
+    res[i] = arr[i + 1] - arr[i];
+  return res;
+}
+
 function isBadWord(str: string): boolean {
   // binary search, O(log n)
 
