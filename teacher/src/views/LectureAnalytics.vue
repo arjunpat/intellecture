@@ -1,6 +1,17 @@
 <template>
   <div>
-    <div style="height: 76px;"></div>
+    <div style="height: 64px;"></div>
+    <v-banner dark single-line color="grey darken-4">
+      <v-avatar
+        slot="icon"
+        color="red accent-4"
+        size="40"
+      >
+        <v-icon color="white">mdi-alert-circle</v-icon>
+      </v-avatar>
+
+      This page is still in development, so many features/buttons will not work.
+    </v-banner>
     
     <v-app>
       <v-navigation-drawer
@@ -40,7 +51,8 @@
         </v-list>
       </v-navigation-drawer>
 
-      <div style="margin-left: 256px;">
+      <div style="margin-left: 256px; overflow-y: scroll; height: 100vh;">
+        <v-card-text style="text-align: right;">{{ students.length }} student(s)</v-card-text>
         <div style="display: flex; justify-content: flex-start; flex-wrap: wrap;">
           <v-card
             class="mx-auto"
@@ -48,7 +60,7 @@
             height="300"
             v-for="a in students"
             :key="a.account_uid"
-            style="margin-bottom: 30px;"
+            style="margin: 15px;"
           >
             <v-img
               :src="a.photo"
@@ -58,7 +70,7 @@
             <v-card-subtitle>{{ a.email }}</v-card-subtitle>
 
             <v-card-text>
-              {{ randInt(1, 5) }} questions<br>
+              <span v-if="quesCount">{{ getQuesCount(a.account_uid) }} questions</span><br>
               <span v-if="participation">{{ getParticipation(a.account_uid) }}% participation</span>
             </v-card-text>
           </v-card>
@@ -78,12 +90,14 @@ export default {
       items: [
         { title: 'Students', icon: 'mdi-account' },
         { title: 'Attendance', icon: 'mdi-clipboard' },
+        { title: 'Questions', icon: 'mdi-comment-question' },
         { title: 'Predictions', icon: 'mdi-head-lightbulb' },
       ],
       lecture_uid: this.$route.params.lecture_uid,
       lectureInfo: {},
       students: [],
-      participation: null
+      participation: null,
+      quesCount: null
     }
   },
   methods: {
@@ -91,16 +105,19 @@ export default {
       return parseInt(Math.random() * (to - from + 1)) + from;
     },
     async init() {
-      this.lectureInfo = (await get(`/analytics/lecture/${this.lecture_uid}/info`)).data;
-      let students = (await get(`/analytics/lecture/${this.lecture_uid}/students`)).data;
-      let participation = (await get(`/analytics/lecture/${this.lecture_uid}/participation`)).data;
+      this.lectureInfo = await get(`/analytics/lecture/${this.lecture_uid}/info`).then(d => d.data);
+      let students = await get(`/analytics/lecture/${this.lecture_uid}/students`).then(d => d.data);
+      this.participation = await get(`/analytics/lecture/${this.lecture_uid}/participation`).then(d => d.data);
+      this.quesCount = await get(`/analytics/lecture/${this.lecture_uid}/question-count`).then(d => d.data);
 
       this.lectureLength = this.lectureInfo.end_time - this.lectureInfo.start_time;
       this.students = students;
-      this.participation = participation;
     },
     getParticipation(uid) {
       return Math.round((this.participation[uid] / this.lectureLength) * 100);
+    },
+    getQuesCount(uid) {
+      return this.quesCount[uid] || 0;
     }
   },
   mounted() {

@@ -2,7 +2,7 @@
   <v-content v-if="authUser">
     <v-container>
       <v-btn depressed small v-if="!notification" @click="requestNotifications()" style="position: fixed; top: 70px; left: 10px; z-index: 100;">Enable notifications <v-icon small>mdi-bell</v-icon></v-btn>
-      <h1 class="poppins">Hi {{ authUser.first_name === 'Arjun' ? 'Jonathan' : authUser.first_name }},</h1>
+      <h1 class="poppins">Hi {{ authUser.first_name }},</h1>
       <br>
 
       <v-card-title class="card-title" v-if="recentLectures.length !== 0">Your Recent Lectures</v-card-title>
