@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <v-container fluid style="height: 100%;">
     <v-row
       align="center"
       justify="center"
@@ -10,6 +10,7 @@
         md="6"
         lg="4"
       >
+        <br><br><br>
         <v-card class="pb-3">
           <v-card-title style="font-family: var(--main-font); font-weight: 600;">SIGN IN</v-card-title>
           <v-divider></v-divider>
