@@ -15,17 +15,18 @@
       <v-card v-show="value" color="#aed581ff">
         <v-card-text>
         <form @submit="askQuestion">
-          <v-text-field
+          <v-textarea
             ref="textField"
+            class="textField"
             v-model="question"
             @blur="onBlur"
             label="Ask a question"
-            hide-details="true"
+            auto-grow="true"
             autocomplete="off"
-            solo-inverted
+            single-line="true"
             clearable
-            dark
-          ></v-text-field>
+            solo
+          ></v-textarea>
         </form>
         </v-card-text>
       </v-card>
@@ -41,7 +42,10 @@
     bottom: 0; 
     transform: translate(-50%, 50%);
   }
-
+  .textField {
+    padding:20px 10px;
+    color:black;
+  }
   .disabled {
     pointer-events: none;
     color: gray !important;
