@@ -41,9 +41,9 @@
           </v-menu>
         </v-app-bar>
 
-        <v-content>
+        <v-main>
           <router-view/>
-        </v-content>
+        </v-main>
     </v-app>
     <LoadingScreen :show="!loaded" />
   </div>

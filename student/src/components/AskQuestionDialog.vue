@@ -21,9 +21,8 @@
             v-model="question"
             @blur="onBlur"
             label="Ask a question"
-            auto-grow="true"
+            :auto-grow="true"
             autocomplete="off"
-            single-line="true"
             clearable
             solo
           ></v-textarea>
@@ -43,7 +42,6 @@
     transform: translate(-50%, 50%);
   }
   .textField {
-    padding:20px 10px;
     color:black;
   }
   .disabled {
