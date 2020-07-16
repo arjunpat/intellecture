@@ -13,7 +13,7 @@ Wait for this message before loading the UI, sending anything, or allowing the s
 ```javascript
 {
   "type": "lecture_info",
-  "uid": "cqywa",
+  "uid": "asdfjDflDKSFj9sf2",
   "start_time": 1588889535833,
   "class_name": "AP Calc BC",
   "lecture_name": "Lecture A83",
@@ -22,7 +22,8 @@ Wait for this message before loading the UI, sending anything, or allowing the s
     "first_name": "Arjun",
     "last_name": "Patrawala",
     "photo": "https://wF...."
-  }
+  },
+  "join_code": "jfksi"
 }
 ```
 

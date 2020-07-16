@@ -22,7 +22,8 @@ Wait for this message before loading the UI, sending anything, etc.
     "first_name": "Arjun",
     "last_name": "Patrawala",
     "photo": "https://wF...."
-  }
+  },
+  "join_code": "jfksi"
 }
 ```
 
@@ -151,7 +152,7 @@ As lecture progresses, teacher will get this message when new understanding scor
 ```javascript
 {
   "type": "us_update",
-  "value": 60.23
+  "value": 62
 }
 ```
 

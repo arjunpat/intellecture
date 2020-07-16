@@ -39,5 +39,5 @@ export function toLectureUid(channel: string): string {
 export function genUnderstandingScore(arr: number[]): number {
   let sum = 0;
   for (let each of arr) sum += each;
-  return (sum / arr.length) * 10;
+  return Math.round((sum / arr.length) * 10);
 }

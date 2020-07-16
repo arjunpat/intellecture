@@ -1,7 +1,7 @@
 import db from '../../../models';
 const pub = db.redis.conn;
 import { genUnderstandingScore, toStudent, toTeacher } from '../helpers';
-import { genId } from '../../../lib/helpers';
+import { genId, genLectureJoinCode } from '../../../lib/helpers';
 import extract from './extract';
 
 const SCORE_UPDATE_MAX_INTERVAL = 1000;
@@ -32,7 +32,7 @@ export default class Lecture {
   }
 
   log(data: any) {
-    console.log('[lecture ' + this.lecture_uid + ']', data);
+    // console.log('[lecture ' + this.lecture_uid + ']', data);
   }
 
   async readLectureInfo() {
@@ -43,7 +43,7 @@ export default class Lecture {
 
   async init() {
     this.log('init');
-    await db.lectures.startLecture(this.lecture_uid, Date.now());
+    await db.lectures.startLecture(this.lecture_uid, Date.now(), genLectureJoinCode());
     this.lectureInfo = await this.readLectureInfo();
   }
 

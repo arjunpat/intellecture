@@ -107,7 +107,7 @@ export default {
     async init() {
       this.lectureInfo = await get(`/analytics/lecture/${this.lecture_uid}/info`).then(d => d.data);
       let students = await get(`/analytics/lecture/${this.lecture_uid}/students`).then(d => d.data);
-      this.participation = await get(`/analytics/lecture/${this.lecture_uid}/participation`).then(d => d.data);
+      this.participation = await get(`/analytics/lecture/${this.lecture_uid}/present`).then(d => d.data);
       this.quesCount = await get(`/analytics/lecture/${this.lecture_uid}/question-count`).then(d => d.data);
 
       this.lectureLength = this.lectureInfo.end_time - this.lectureInfo.start_time;

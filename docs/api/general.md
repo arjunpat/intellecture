@@ -73,7 +73,7 @@ Create a new lecture in a class.
 {
   "success": true,
   "data": {
-    "lecture_uid": "qnmuf"
+    "lecture_uid": "ERLrwvLe0ERLrwvLe0"
   }
 }
 ```
@@ -89,19 +89,19 @@ Get all the lectures from a particular class
   "success": true,
   "data": [
     {
-      "uid": "fdrxl",
+      "uid": "rwvLerwvLERL0ERLe0",
       "name": "Circuits",
       "start_time": null,
       "end_time": null
     },
     {
-      "uid": "qnmuf",
+      "uid": "wvLwERe0ERLrLrvLe0",
       "name": "Electric Fields",
       "start_time": null,
       "end_time": null
     },
     {
-      "uid": "xinya",
+      "uid": "e0ERLrwvERLrwvLLe0",
       "name": "Flux",
       "start_time": null,
       "end_time": null
@@ -110,7 +110,7 @@ Get all the lectures from a particular class
 }
 ```
 
-## GET /lectures/exists/:lecture_uid
+## GET /lectures/exists/:join_code
 
 Check if lecture exists.
 
@@ -121,6 +121,7 @@ Check if lecture exists.
   "success": true,
   "data": {
     "exists": true // or false
+    "lecture_uid": "wvLwERe0ERLrLrvLe0" // or undefined
   }
 }
 ```

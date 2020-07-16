@@ -48,9 +48,9 @@ Get all the students who ever joined a lecture.
 }
 ```
 
-## GET /analytics/lecture/:lecture_uid/participation
+## GET /analytics/lecture/:lecture_uid/present
 
-Gives you the total ms that a particular user was in the lecture for.
+Gives you the total ms that a particular user was present for.
 
 ###### Example response:
 

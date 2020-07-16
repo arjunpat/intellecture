@@ -5,12 +5,6 @@ function old(socket: Socket): boolean {
   return socket.readyState === 2 || socket.readyState === 3 || !socket.isAlive;
 }
 
-interface Question {
-  question_uid: string,
-  creator_uid: string,
-  question: string
-}
-
 class Broadcaster {
   private lecture_uid: string;
   private sockets: Socket[] = [];
@@ -38,14 +32,15 @@ class Broadcaster {
   }
 
   getLectureInfo() {
-    let { uid, start_time, class_name, lecture_name, creator } = this.lectureInfo;
+    let { uid, start_time, class_name, lecture_name, creator, join_code } = this.lectureInfo;
     return {
       type: 'lecture_info',
       uid,
       start_time,
       class_name,
       lecture_name,
-      creator
+      creator,
+      join_code
     }
   }
 
