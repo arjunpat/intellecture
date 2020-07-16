@@ -29,7 +29,7 @@
       >
         <template v-slot:activator="{ on }">
           <div v-on="on" class="ml-3" id="roomCode">
-            <span class="mr-1 font-weight-medium" style="font-size: 20px;">ROOM:</span> <span class="text--primary font-weight-black" style="background: #ddd; border-radius: 7px; padding: 2px 10px; font-size: 25px;">{{id}}</span>
+            <span class="mr-1 font-weight-medium" style="font-size: 20px;">ROOM:</span> <span class="text--primary font-weight-black" style="background: #ddd; border-radius: 7px; padding: 2px 10px; font-size: 25px;">{{joinCode}}</span>
           </div>
         </template>
         <v-list>
@@ -98,6 +98,7 @@ export default {
       started: false,
       imageurl: 'https://tonyxin-8bae2.firebaseapp.com/images/tonyxin2.png',
       id: '',
+      joinCode: '',
       error: '',
       snackbar: false,
       message: '',
@@ -188,9 +189,10 @@ export default {
       store.commit("setEndLecture", true)
       this.started = false
     },
-    starting(e) {
-      this.id = e;
-      this.started = true;
+    starting(id, joinCode) {
+      this.id = id
+      this.joinCode = joinCode
+      this.started = true
     },
     showCode() {
       store.commit('setShowCode', true)

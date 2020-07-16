@@ -15,7 +15,7 @@
       <v-row>
         <div class="mx-auto">
           <h1 class="roomcode">
-            {{this.$route.params.id}}
+            {{this.joinCode}}
           </h1>
         </div>
       </v-row>
@@ -396,6 +396,7 @@ export default {
     return {
       connected: false,
       socket: '',
+      joinCode: '',
       lectureName: '',
       datacollection: null,
       understandingScore: '--',
@@ -641,13 +642,6 @@ export default {
     }
   },
   mounted () {
-    this.$emit('startlecture', this.id);
-    document.addEventListener('fullscreenchange', (event) => {
-      if (!document.fullscreenElement) {
-        store.commit("setShowCode", false)
-      }
-    });
-
     this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.id}`)
     this.socket.onmessage = (event) => {
       const data = JSON.parse(event.data)
@@ -655,6 +649,14 @@ export default {
       if(data.type == "lecture_info") {
         this.connected = true
         this.lectureName = data.lecture_name
+        this.joinCode = data.join_code
+
+        this.$emit('startlecture', this.id, this.joinCode);
+        document.addEventListener('fullscreenchange', (event) => {
+          if (!document.fullscreenElement) {
+            store.commit("setShowCode", false)
+          }
+        });
       } else if(data.type == "student_join") {
         this.students.push(data)
         this.totalStudents.push(data)
