@@ -32,7 +32,7 @@ router.get('/lecture/:lecture_uid/students', mw.auth, lecturePerms, ended, async
   res.send(responses.success(await db.lectures.getStudents(lecture_uid)));
 });
 
-router.get('/lecture/:lecture_uid/analytics', mw.auth, lecturePerms, ended, async (req: Request, res) => {
+router.get('/lecture/:lecture_uid/present', mw.auth, lecturePerms, ended, async (req: Request, res) => {
   let { lecture_uid } = req.params;
   const lectureLength = req.lecture.end_time - req.lecture.start_time;
   const log = await db.lectureStudentLog.getLecture(lecture_uid);
