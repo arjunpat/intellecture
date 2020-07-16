@@ -199,7 +199,7 @@ export default {
           this.$refs['form'].validate()
         } else {
           // Redirect to room page
-          this.$router.push({ name: 'Room', params: { id: this.roomCode } })
+          this.$router.push({ name: 'Room', params: { id: response.data.lecture_uid } })
         }
       }).catch((err) => {
         this.currentError = 'Could not join room!'
