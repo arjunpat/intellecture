@@ -6,8 +6,8 @@ const sub = redis.createClient(REDIS_URL);
 import { toTeacher, toLectureUid } from '../helpers';
 import { Socket } from '../../../types';
 
-const lectures = {};
 import Broadcaster from '../Broadcaster';
+const lectures: { [key: string]: Broadcaster; } = {};
 
 function removeLecture(lecture_uid: string) {
   console.log('(t) removing lecture', lecture_uid);

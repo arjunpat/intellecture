@@ -139,4 +139,11 @@
       method: 'GET'
     }).then(res => res.json()).then(res => console.log(res));
   }
+
+  function getActiveLectures() {
+    fetch(hostp + '/admin/active-lectures', {
+      ...postStuff,
+      method: 'GET'
+    }).then(res => res.json()).then(res => console.log(res));
+  }
 </script>

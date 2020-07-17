@@ -8,8 +8,8 @@ const sub = redis.createClient(REDIS_URL);
 import { toController, toStudent, toLectureUid } from '../helpers';
 import { Socket } from '../../../types';
 
-const lectures = {};
 import Broadcaster from '../Broadcaster';
+const lectures: { [key: string]: Broadcaster; } = {};
 
 function publish(lecture_uid: string, obj: object) {
   pub.publish(toController(lecture_uid), JSON.stringify(obj));

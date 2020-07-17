@@ -20,7 +20,7 @@ export default class Lecture {
   private scores: object = {};
   private lectureInfo: any;
   private timing: any;
-  private ended: boolean = false;
+  public ended: boolean = false;
 
   private timeoutScore: NodeJS.Timer | undefined;
   private timeoutQs: NodeJS.Timer | undefined;
@@ -242,5 +242,9 @@ export default class Lecture {
 
   sendToStudents(obj) {
     pub.publish(toStudent(this.lecture_uid), JSON.stringify(obj));
+  }
+
+  getLectureInfo(): object {
+    return this.lectureInfo;
   }
 }

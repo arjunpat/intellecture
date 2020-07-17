@@ -16,7 +16,7 @@ function publish(lecture_uid: string, obj: object) {
 }
 
 import handleTeacher from './teacher/';
-import initLecture from './controller';
+import { initLecture } from './controller';
 router.get('/teacher/:lecture_uid', mw.websocket, mw.auth, async (req: Request, res) => {
   let { lecture_uid } = req.params;
 

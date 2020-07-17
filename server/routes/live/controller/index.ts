@@ -5,7 +5,7 @@ import { REDIS_URL } from '../../../lib/config';
 
 const sub = redis.createClient(REDIS_URL);
 const MAX_IDLE_MS = 10 * 60 * 1000; // 10 minutes
-const lectures = {};
+const lectures: { [key: string]: Lecture; } = {};
 
 function removeLecture(lecture_uid: string) {
   console.log('(c) removing lecture', lecture_uid);
@@ -35,10 +35,17 @@ sub.on('message', (channel, msg) => {
   lectures[lecture_uid].dispatch(data);
 });
 
-export default async function initLecture(lecture_uid) {
+export async function initLecture(lecture_uid) {
   let lecture = new Lecture(lecture_uid);
   await lecture.init();
 
   lectures[lecture_uid] = lecture;
   sub.subscribe(toController(lecture_uid));
+}
+
+export function getActiveLectures() {
+  let res: object[] = [];
+  for (let each in lectures)
+    res.push(lectures[each].getLectureInfo());
+  return res;
 }
