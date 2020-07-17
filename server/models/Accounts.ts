@@ -17,4 +17,8 @@ export default class Accounts {
   getBasicInfo(uid: string) {
     return this.mysql.query('SELECT email, first_name, last_name, photo FROM accounts WHERE uid = ?', [uid]).then((d: object[]) => d[0]);
   }
+
+  getUidByEmail(email: string) {
+    return this.mysql.query('SELECT uid FROM accounts WHERE email = ?', [email]).then(d => d[0] && d[0].uid);
+  }
 }

@@ -1,49 +1,32 @@
-<!-- The core Firebase JS SDK is always required and must be listed first -->
-<script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-auth.js"></script>
-
+<button id="google-signin">Sign in with Google</button>
+<script src="https://apis.google.com/js/platform.js"></script>
 
 <script>
-  // Your web app's Firebase configuration
-  var firebaseConfig = {
-    apiKey: "AIzaSyCcVmiE6jRuOK-XrD2TeGHVAhRUamq80jU",
-    authDomain: "intellecture-6b3e6.firebaseapp.com",
-    databaseURL: "https://intellecture-6b3e6.firebaseio.com",
-    projectId: "intellecture-6b3e6",
-    storageBucket: "intellecture-6b3e6.appspot.com",
-    messagingSenderId: "462381253872",
-    appId: "1:462381253872:web:fc0f440c35a1c920026e35"
-  };
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
+  gapi.load('auth2', () => {
+    let auth2 = gapi.auth2.init({
+      client_id: '462381253872-6vibv72k3cjoqlo17u5jmebgss8c1h4b.apps.googleusercontent.com',
+      scope: 'email profile'
+    });
 
-  let postStuff;
-
-  function genPostStuff() {
-    postStuff = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include'
-    }
-  }
-  genPostStuff();
-
-  function signIn() {
-    let provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider).then(res => {
-      fetch(hostp + '/auth/signin', {
+    auth2.attachClickHandler(document.getElementById('google-signin'), {}, user => {
+      let { access_token } = user.getAuthResponse();
+      fetch(hostp + '/auth/google-signin', {
         ...postStuff,
         body: JSON.stringify({
-          firebase_token: res.user.xa
+          google_access_token: access_token
         })
-      }).then(res => res.json()).then(res => {
-        console.log(res.data.token);
-        token = res.data.token;
-        genPostStuff();
-      });
+      }).then(res => res.json());
     });
+  });
+</script>
+
+<script>
+  let postStuff = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include'
   }
 
   async function getProfile() {

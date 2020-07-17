@@ -7,16 +7,9 @@ import { JWT_SECRET } from '../lib/config';
 
 import db from '../models';
 import * as mw from '../middleware';
+import { validateGoogleAccessToken, genId } from '../lib/helpers';
 
 import { Request } from '../types';
-
-import admin from 'firebase-admin';
-admin.initializeApp({
-  credential: admin.credential.cert(require('../../credentials/firebase.json')),
-  databaseURL: 'https://intellecture-6b3e6.firebaseio.com'
-});
-// admin.auth().listUsers().then(res => console.log(JSON.parse(JSON.stringify(res)).users[2]))
-
 const { NODE_ENV } = process.env;
 
 const cookieOpts: any = {
@@ -25,23 +18,19 @@ const cookieOpts: any = {
   secure: (NODE_ENV === 'production') ? true : undefined
 }
 
-router.post('/signin', async (req, res) => {
-  let { firebase_token } = req.body;
-  let uid;
+router.post('/google-signin', async (req, res) => {
+  let user = await validateGoogleAccessToken(req.body.google_access_token);
+  if (!user) return res.send(responses.error('bad_token'));
 
-  try {
-    uid = (await admin.auth().verifyIdToken(firebase_token)).uid;
-  } catch (e) {
-    return res.send(responses.error('bad_token'));
-  }
-  
-  let user: admin.auth.UserRecord = await admin.auth().getUser(uid);
+  let uid = await db.accounts.getUidByEmail(user.email);
+  if (!uid) uid = genId(28); // new account
+
   await db.accounts.createOrUpdate(
     uid,
-    user.email || '',
-    user.displayName?.split(' ')[0] || 'First Name',
-    user.displayName?.split(' ')[1] || 'Last Name',
-    user.photoURL || ''
+    user.email,
+    user.given_name,
+    user.family_name,
+    user.picture
   );
 
   let token = jwt.sign({
@@ -50,7 +39,6 @@ router.post('/signin', async (req, res) => {
   }, JWT_SECRET);
 
   res.cookie('intell_', token, cookieOpts);
-  
   res.send(responses.success());
 });
 

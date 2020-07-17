@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS accounts (
   email VARCHAR(100),
   first_name VARCHAR(50),
   last_name VARCHAR(50),
-  photo TEXT(1000)
+  photo TEXT(1000),
+  UNIQUE KEY (email)
 );
 
 CREATE TABLE IF NOT EXISTS classes (

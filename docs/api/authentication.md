@@ -2,7 +2,7 @@
 
 Can be called from anywhere at anytime regardless of login status
 
-## POST /auth/signin
+## POST /auth/google-signin
 
 Use to signin to account after Firebase Auth.
 
@@ -10,12 +10,11 @@ Use to signin to account after Firebase Auth.
 
 ```javascript
 {
-  firebase_token: "asSDFfasdfasdf...." // this is provided by Firebase when you log in
+  google_access_token: "asSDFfasdfasdf...." // this is provided by Google when you log in
 }
 ```
 
-[More info on Firebase Token and how to get it](https://firebase.google.com/docs/auth/admin/verify-id-tokens)
-If the firebase token is good, it will set a cookie in the browser that lasts for 3 days. Firebase wont be needed at all after you get this cookie set.
+If the Google token is good, it will set a cookie in the browser that lasts for 3 days. Google won't be needed at all after you get this cookie set.
 
 ###### Response format:
 

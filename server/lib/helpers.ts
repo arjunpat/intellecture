@@ -1,3 +1,4 @@
+import fetch from 'node-fetch';
 const badWords = require('../../lib/bad_words.json');
 
 export function genId(len: number): string {
@@ -74,4 +75,12 @@ export function genLectureJoinCode(): string {
   let code = genLowerCaseId(5);
   while (containsBadWord(code)) code = genLowerCaseId(5);
   return code;
+}
+
+export async function validateGoogleAccessToken(token: string) {
+  let url = 'https://www.googleapis.com/oauth2/v3/userinfo?access_token=' + encodeURIComponent(token);
+  let res = await fetch(url).then(res => res.json());
+
+  if (!res.email_verified || res.error) return false;
+  return res;
 }
