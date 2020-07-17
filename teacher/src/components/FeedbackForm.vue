@@ -4,7 +4,7 @@
       :text="message"
       color="info"
     />
-    <v-container class="text-center fill-height" style="position:relative;">
+    <v-container class="text-center fill-height" style="position: relative;">
       <template v-if="!submitted">
         <v-row justify="center" class="fill-height">
           <v-col

@@ -2,35 +2,33 @@
   <v-content v-if="authUser">
     <v-container>
       <v-btn depressed small v-if="!notification" @click="requestNotifications()" style="position: fixed; top: 70px; left: 10px; z-index: 100;">Enable notifications <v-icon small>mdi-bell</v-icon></v-btn>
-      <h1 class="poppins">Hi {{ authUser.first_name }},</h1>
-      <br>
+      <h1 class="poppins mb-8">Hi {{ authUser.first_name }},</h1>
 
-      <v-card-title class="card-title" v-if="recentLectures.length !== 0">Your Recent Lectures</v-card-title>
-      <div style="display: flex; justify-content: flex-start;">
-        <v-card
-          class="mx-auto"
-          width="275"
-          min-height="175"
-          hover
-          outlined
-          v-for="a in recentLectures"
-          :key="a.uid"
-          :to="'/lecture-analytics/' + a.uid"
-        >
-          <v-card-title>{{ a.name }}</v-card-title>
-          <v-card-subtitle>{{ a.className }}</v-card-subtitle>
-          <v-card-text>{{ dateToString(a.start_time) }}</v-card-text>
+      <v-card class="mb-12" v-if="recentLectures.length !== 0" id="recent-lectures">
+        <v-card-title class="card-title">RECENT LECTURES</v-card-title>
+        <div class="px-5 py-5">
+          <v-card
+            width="275"
+            min-height="175"
+            hover
+            outlined
+            v-for="a in recentLectures"
+            :key="a.uid"
+            :to="'/lecture-analytics/' + a.uid"
+          >
+            <v-card-title>{{ a.name }}</v-card-title>
+            <v-card-subtitle>{{ a.className }}</v-card-subtitle>
+            <v-card-text>{{ dateToString(a.start_time) }}</v-card-text>
 
-          <v-card-actions>
-            <v-btn text color="#66BB6A">See Analytics</v-btn>
-          </v-card-actions>
-        </v-card>
-      </div>
-
-      <br><br><br>
+            <v-card-actions>
+              <v-btn text color="#66BB6A">See Analytics</v-btn>
+            </v-card-actions>
+          </v-card>
+        </div>
+      </v-card>
 
       <v-card v-if="classes != []">
-        <v-card-title style="background-color: #ECEFF1;" class="card-title">CLASSES</v-card-title>
+        <v-card-title class="card-title">CLASSES</v-card-title>
         <v-divider></v-divider>
         <v-card-text align="left">
           <ul style="list-style-type: none">
@@ -48,7 +46,7 @@
       </v-card>
 
       <v-card class="mt-12 mb-12" v-if="classes != [] && classes">
-        <v-card-title style="background-color: #ECEFF1;" class="card-title">LECTURES
+        <v-card-title class="card-title">LECTURES
           <v-spacer></v-spacer>
           <v-text-field
           v-model="search"
@@ -201,6 +199,7 @@ export default {
   font-family: 'Noto Sans';
   font-weight: 800;
   font-size: 25px;
+  background-color: #ECEFF1;
 }
 
 .poppins {
@@ -218,6 +217,11 @@ h1 {
   height: 40px;
   line-height: 40px;
   color: #757575;
+}
+
+#recent-lectures > div{
+  display: flex;
+  justify-content: flex-start;
 }
 
 </style>

@@ -296,6 +296,8 @@ import { post, get, setLectures } from '@/helpers.js'
 import store from '@/store'
 import Understanding from '../components/Understanding'
 import TutorialDisplay from '@/components/TutorialDisplay'
+import sampleQuestions from '@/testdata/questions.json'
+import sampleTopics from '@/testdata/questions.json'
 
 export default {
   components: {
@@ -316,137 +318,11 @@ export default {
       averageUnderstanding: '--',
       range: '--',
       svgPath: mdiCloseThick,
-      questions: [/*{
-  "type":"new_question",
-  "question_uid":"jDuw6QJmDQiRfJo",
-  "creator_uid":"rUJyP317iuZErNlhrn2",
-  "question":"What is the relationship between voltage and a Gaussian surface?",
-          upvotes: 5,
-          upvotedStudents: [
-            {
-      "account_uid":"4qZpEpLkqFgUMdiyjuwWt8lY6Hy2",
-      "email":"100021830@mvla.net",
-      "first_name":"Arjun",
-      "last_name":"Patrawala",
-      "photo":"https://lh3.googleusercontent.com/a-/AOh14GipzqLNsIg"
-    },
-    {
-      "account_uid":"rUJyP317iuZErNlhrnnyn8eT7uY2",
-      "email":"ajpat1234@gmail.com",
-      "first_name":"Arjun",
-      "last_name":"Patrawala",
-      "photo":"https://lh3.googleusercontent.com/a-/AOh14Gh1hi7LxPF0wFC8OM1j2xg"
-    } ]
-},
-{
-  "type":"new_question",
-  "question_uid":"X8udiUQ8fN6F27C",
-  "creator_uid":"rUJyP317iuZErNlhrn2",
-  "question":"What is the relationship between voltage and a Gaussian surface?",
-          upvotes: 12,
-          upvotedStudents: [{
-      "account_uid":"4qZpEpLkqFgUMdiyjuwWt8lY6Hy2",
-      "email":"100021830@mvla.net",
-      "first_name":"Arjun",
-      "last_name":"Patrawala",
-      "photo":"https://lh3.googleusercontent.com/a-/AOh14GipzqLNsIg"
-    },
-    {
-      "account_uid":"rUJyP317iuZErNlhrnnyn8eT7uY2",
-      "email":"ajpat1234@gmail.com",
-      "first_name":"Arjun",
-      "last_name":"Patrawala",
-      "photo":"https://lh3.googleusercontent.com/a-/AOh14Gh1hi7LxPF0wFC8OM1j2xg"
-    }]
-
-},
-{
-  "type":"new_question",
-  "question_uid":"74i74G1UUuJJ13H",
-  "creator_uid":"rUJyP317iuZErNlhrn2",
-  "question":"What is the relationship between voltage and a Gaussian surface?",
-          upvotes: 5,
-          upvotedStudents: [{
-      "account_uid":"4qZpEpLkqFgUMdiyjuwWt8lY6Hy2",
-      "email":"100021830@mvla.net",
-      "first_name":"Arjun",
-      "last_name":"Patrawala",
-      "photo":"https://lh3.googleusercontent.com/a-/AOh14GipzqLNsIg"
-    },
-    {
-      "account_uid":"rUJyP317iuZErNlhrnnyn8eT7uY2",
-      "email":"ajpat1234@gmail.com",
-      "first_name":"Arjun",
-      "last_name":"Patrawala",
-      "photo":"https://lh3.googleusercontent.com/a-/AOh14Gh1hi7LxPF0wFC8OM1j2xg"
-    }]
-
-},
-{
-  "type":"new_question",
-  "question_uid":"mwZPFrIykOY8ZlZ",
-  "creator_uid":"rUJyP317iuZErNlhrn2",
-  "question":"What is the relationship between voltage and a Gaussian surface?",
-          upvotes: 0,
-          upvotedStudents: []
-}*/],
+      questions: [],
       displayQuestions: [],
       totalStudents: [],
       students: [],
-      topics: [/*
-    {
-      "type":"keyphrase",
-      "value":"gaussian surface",
-      "questions":[
-        "jDuw6QJmDQiRfJo",
-        "T9JpRo4NuTSKOJH",
-        "74i74G1UUuJJ13H",
-        "X8udiUQ8fN6F27C"
-      ],
-      "score":1,
-      "weight":8
-    },
-    {
-      "type":"keyword",
-      "value":"surface",
-      "questions":[
-        "jDuw6QJmDQiRfJo",
-        "T9JpRo4NuTSKOJH",
-        "74i74G1UUuJJ13H",
-        "mwZPFrIykOY8ZlZ",
-        "X8udiUQ8fN6F27C"
-      ],
-      "score":1
-    },
-    {
-      "type":"keyword",
-      "value":"gaussian",
-      "questions":[
-        "jDuw6QJmDQiRfJo",
-        "T9JpRo4NuTSKOJH",
-        "74i74G1UUuJJ13H",
-        "X8udiUQ8fN6F27C"
-      ],
-      "score":0.8
-    },
-    {
-      "type":"keyword",
-      "value":"voltage",
-      "questions":[
-        "mopv0qoAZDgScCB",
-        "X8udiUQ8fN6F27C"
-      ],
-      "score":0.4
-    },
-    {
-      "type":"keyword",
-      "value":"flux",
-      "questions":[
-        "r87LkYcgqyOFmCF",
-        "mwZPFrIykOY8ZlZ"
-      ],
-      "score":0.4
-    }*/],
+      topics: [],
       currentTab: 0,
       tab: null,
       items: [
@@ -561,6 +437,11 @@ export default {
     }
   },
   mounted () {
+
+    //Testing code
+    //this.displayQuestions = sampleQuestions["questions"];
+    //this.topics = sampleTopics["topics"];
+
     this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.id}`)
     this.socket.onmessage = (event) => {
       const data = JSON.parse(event.data)
