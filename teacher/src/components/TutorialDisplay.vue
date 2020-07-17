@@ -37,11 +37,11 @@
 
 <style scoped>
   .tutorial-overlay {
-    position: absolute;
+    position: fixed;
     background: rgba(51,51,51,0.7);
     z-index: 3;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     left: 0;
     top: 0;
   }
