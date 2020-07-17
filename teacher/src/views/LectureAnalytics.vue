@@ -71,7 +71,7 @@
 
             <v-card-text>
               <span v-if="quesCount">{{ getQuesCount(a.account_uid) }} questions</span><br>
-              <span v-if="participation">{{ getParticipation(a.account_uid) }}% participation</span>
+              <span v-if="present">{{ getPresent(a.account_uid) }}% present</span>
             </v-card-text>
           </v-card>
         </div>
@@ -96,25 +96,22 @@ export default {
       lecture_uid: this.$route.params.lecture_uid,
       lectureInfo: {},
       students: [],
-      participation: null,
+      present: null,
       quesCount: null
     }
   },
   methods: {
-    randInt(from, to) {
-      return parseInt(Math.random() * (to - from + 1)) + from;
-    },
     async init() {
       this.lectureInfo = await get(`/analytics/lecture/${this.lecture_uid}/info`).then(d => d.data);
       let students = await get(`/analytics/lecture/${this.lecture_uid}/students`).then(d => d.data);
-      this.participation = await get(`/analytics/lecture/${this.lecture_uid}/present`).then(d => d.data);
+      this.present = await get(`/analytics/lecture/${this.lecture_uid}/present`).then(d => d.data);
       this.quesCount = await get(`/analytics/lecture/${this.lecture_uid}/question-count`).then(d => d.data);
 
       this.lectureLength = this.lectureInfo.end_time - this.lectureInfo.start_time;
       this.students = students;
     },
-    getParticipation(uid) {
-      return Math.round((this.participation[uid] / this.lectureLength) * 100);
+    getPresent(uid) {
+      return Math.round((this.present[uid] / this.lectureLength) * 100);
     },
     getQuesCount(uid) {
       return this.quesCount[uid] || 0;

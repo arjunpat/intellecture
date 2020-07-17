@@ -1,7 +1,6 @@
 <template>
   <v-content>
     <v-container
-      class="fill-height"
       fluid
     >
       <v-row
@@ -58,7 +57,7 @@
                 <v-row align="center" justify="center">
                   <v-col cols="12" sm="12">
               <v-alert v-if="formErrors" type="error">
-                Fill out all the fields.
+                {{ error }}
               </v-alert>
                   </v-col>
                 </v-row>
@@ -82,12 +81,16 @@ export default {
       lectureName: '',
       chosenClass: '', // id of class
       formErrors: false,
-      classIndex: 0
+      classIndex: 0,
+      error: 'Fill out all the fields.'
     }
   },
   methods: {
     create () {
-      if (this.chosenClass !== '' && this.lectureName !== '') {
+      if(this.classes.length == 0) {
+        this.error = "You must create a class."
+        this.formErrors = true;
+      } else if (this.chosenClass !== '' && this.lectureName !== '') {
         this.formErrors = false
         post('/lectures/create', {
           class_uid: this.chosenClass,

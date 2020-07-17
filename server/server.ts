@@ -33,12 +33,14 @@ import lectures from './routes/lectures';
 import classes from './routes/classes';
 import feedback from './routes/feedback';
 import analytics from './routes/analytics';
+import admin from './routes/admin';
 
 app.use('/auth', auth);
 app.use('/lectures', lectures);
 app.use('/classes', classes);
 app.use('/feedback', feedback);
 app.use('/analytics', analytics);
+app.use('/admin', admin);
 
 app.all('*', (_, res) => {
   res.send({

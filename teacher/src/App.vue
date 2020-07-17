@@ -17,7 +17,9 @@
       <v-spacer></v-spacer>
 
       <v-btn class="ml-1 light-green lighten-2" v-if="landing" @click="$router.push({ path: '/signin' })">Sign In</v-btn>
-      <v-btn v-if="!started && dashboard" @click="$router.push({ path: '/new' })">Start Lecture</v-btn>
+      <Dialog :show="showDialog" :text="dialogText" :header="dialogHeader" @close="showDialog = false"> <!-- Child detect change -->
+        <v-btn v-if="!started && dashboard" @click="startLecture()" @close="showDialog = false">Start Lecture</v-btn>
+      </Dialog>
       <v-btn v-if="newlecture" @click="$router.push({ path: '/dashboard' })">Back</v-btn>
       <v-btn class="red" v-if="started && livelecture" @click="endlecture()">End Lecture</v-btn>
       <v-btn class="ml-1 deep-orange accent-2" v-if="!started && !landing && !signin && authUser" @click="signOutAuth()">Sign out <img id="avt-img" class="ml-2" v-bind:src="authUser.photo" width="25px"></v-btn>
@@ -76,9 +78,13 @@
 import store from './store'
 import { post, get, setLectures, signOut } from '@/helpers.js'
 import { mapState } from 'vuex'
+import Dialog from '@/components/Dialog'
 
 export default {
   name: 'App',
+  components: {
+    Dialog
+  },
   created: function () {
     get('/auth/profile').then((result) => {
       if (result.success) {
@@ -102,11 +108,14 @@ export default {
       error: '',
       snackbar: false,
       message: '',
-      timeout: 1000
+      timeout: 1000,
+      showDialog: false,
+      dialogHeader: "No classes",
+      dialogText: "You must create a class in order to start a lecture. Create a new class by hitting the new class button."
     }
   },
   computed: {
-    ...mapState(['authUser', 'lectures']),
+    ...mapState(['authUser', 'lectures', 'classes']),
     landing: function () {
       return this.$route.name === 'Landing'
     },
@@ -213,6 +222,13 @@ export default {
       /* unselect the range */
       codeToCopy.setAttribute('type', 'hidden')
       window.getSelection().removeAllRanges()
+    },
+    startLecture() {
+      if(this.classes.length != 0) {
+        this.$router.push({ path: '/new' }); 
+      } else {
+        this.showDialog = true;
+      }
     }
   }
 }

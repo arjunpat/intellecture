@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <div id="feedback-container">
     <AutoSnackbar
       :text="error"
       color="error"
@@ -12,7 +12,7 @@
       @updateTechDiff="updateTechDiff"
       @updateAdditionalInfo="updateAdditionalInfo"
     />
-  </span>
+  </div>
 </template>
 
 <script>
@@ -145,3 +145,11 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+
+  #feedback-container {
+    margin-top: 100px;
+  }
+
+</style>
