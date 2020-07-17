@@ -68,7 +68,7 @@ export default {
     updateOverallRating(rating) {
       console.log('change overall rating to ', rating)
       this.error = ''
-      if(this.id == '') {
+      if(!this.id) {
         post('/feedback/create', {
           stars: rating
         }).then((result) => {

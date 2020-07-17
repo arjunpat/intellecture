@@ -197,6 +197,7 @@ import LectureInfo from '@/components/LectureInfo'
 import QuestionDisplay from '@/components/QuestionDisplay'
 import { mapState } from 'vuex'
 import { get, post } from '@/helpers'
+import testData from '@/test/test.json'
 
 export default {
   name: 'Room',
@@ -230,57 +231,8 @@ export default {
           "question":"Why is the sky blue?"
         },
       },
-      testLectureInfo: {
-        type:"lecture_info",
-        uid:"cqywa",
-        start_time:1588889535833,
-        class_name:"AP Calc BC",
-        lecture_name:"Lecture A83",
-        creator:{
-          email:"ajpat1234@gmail.com",
-          first_name:"Arjun",
-          last_name:"Patrawala",
-          photo:"https://lh3.googleusercontent.com/a-/AOh14GhLdwXOcIH2W9KoJdVZTTDkxu-TCJesb3_HRqDOpQ"
-        }
-      },
-      testQuestions: {
-        X8udiUQ8fN6F27C: {
-          "type":"new_question",
-          "question_uid":"X8udiUQ8fN6F27C",
-          "question":"What is the relationship between voltage and a Gaussian surface?",
-          upvoted: false,
-        },
-        aa: {
-          "type":"new_question",
-          "question_uid":"aa",
-          "question":"What if we have a question that is absurdly long, longer than anything ever ever was? That was soooo long that I couldn't even say how long it was? that was super duuuper longg longggggggggg.",
-          upvoted: false,
-        },
-        a: {
-          "type":"new_question",
-          "question_uid":"a",
-          "question":"What is 10 + 10?",
-          upvoted: false,
-        },
-        b: {
-          "type":"new_question",
-          "question_uid":"b",
-          "question":"Why?",
-          upvoted: false,
-        },
-        c: {
-          "type":"new_question",
-          "question_uid":"c",
-          "question":"Why not?",
-          upvoted: false,
-        },
-        d: {
-          "type":"new_question",
-          "question_uid":"d",
-          "question":"How do you ask a question?",
-          upvoted: false,
-        },
-      },
+      testLectureInfo: testData.testLectureInfo,
+      testQuestions: testData.testQuestions,
       testing: false,
     }
   },

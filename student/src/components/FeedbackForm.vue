@@ -5,47 +5,59 @@
       color="info"
     />
     <v-container class="text-center fill-height" style="position:relative;">
-      <template v-if="!submitted">
-        <v-row justify="center" class="fill-height">
-          <v-col
-            cols="12"
-            lg="8"
-            md="10"
-            xl="6"
-            class="mt-8" 
-            :style="{
-              position: 'relative', 
-              top: overallTop, 
-              left: '0', 
-              right: '0',
-              transition: 'top .3s',
-            }"
-          >
-            <div 
-              class="display-2 font-weight-light mb-2"
-              :class="[$vuetify.breakpoint.smAndUp ? 'display-2' : 'display-1']"
-            >How was your experience?</div>
-            <v-rating 
-              v-model="overallRating"
-              @input="changeOverallRating"
-              hover
-              :size="ratingSizeBig"
-              color="yellow darken-1"  
-              background-color="grey lighten-1"
-              class="mb-8"
-            ></v-rating>
+      <v-row justify="center" class="fill-height">
+        <v-col
+          cols="12"
+          lg="8"
+          md="10"
+          xl="6"
+          class="mt-8" 
+          :style="{
+            position: 'relative', 
+            'padding-top': overallTop, 
+            left: '0', 
+            right: '0',
+            transition: 'padding-top .3s',
+          }"
+        >
+          <div 
+            class="display-2 font-weight-light mb-2"
+            :class="[$vuetify.breakpoint.smAndUp ? 'display-2' : 'display-1']"
+          >How was your experience?</div>
+          <v-rating 
+            v-model="overallRating"
+            @input="changeOverallRating"
+            hover
+            :size="ratingSizeBig"
+            color="yellow darken-1"  
+            background-color="grey lighten-1"
+            class="mb-8"
+          ></v-rating>
 
-            <v-fade-transition>
-              <div v-show="overallRating !== 0">
-
-                <div v-if="overallRating <= 2" :class="[$vuetify.breakpoint.smAndUp ? 'display-1' : 'headline']">We're sorry to hear that :(</div>
-                <div v-else :class="[$vuetify.breakpoint.smAndUp ? 'display-1' : 'headline']">Thank you for your feedback.</div>
-                <div :class="[$vuetify.breakpoint.smAndUp ? 'display-1' : 'headline']">Care to tell us more?</div>
-                <div class="subtitle-1 mb-8" >Fill out as little or as much as you want</div>
+          <v-fade-transition>
+            <div v-show="overallRating !== 0">
+              <v-expand-transition>
+                <div v-if="!showMore">
+                  <div v-if="overallRating <= 2" :class="[$vuetify.breakpoint.smAndUp ? 'display-1' : 'headline']">We're sorry to hear that :(</div>
+                  <div v-else :class="[$vuetify.breakpoint.smAndUp ? 'display-1' : 'headline']">Thank you for your feedback.</div>
+                  <div :class="[$vuetify.breakpoint.smAndUp ? 'display-1' : 'headline']">Care to tell us more?</div>
                 
-                <!-- have an expand thing showing the rest of it, and a no thanks link at the bottom-->
-                <!--<v-card outlined class="mb-4">-->
-                <ShowMoreContainer class="mb-4" initHeight="10rem">
+                
+                  <div class="mt-4">
+                    <v-btn
+                      color="primary"
+                      class="mr-4"
+                      @click="showMore = true"
+                    >Sure!</v-btn>
+                    <v-btn
+                      @click="goHome"
+                    >No thanks</v-btn>
+                  </div>
+                </div>
+              </v-expand-transition>
+              
+              <v-expand-transition>
+                <div v-show="showMore" class="mt-4">
                   <div class="mb-2" v-for="(question, i) in questions" :key="i">
                     <div 
                       :class="[$vuetify.breakpoint.smAndUp ? 'display-1' : 'headline']"
@@ -102,22 +114,12 @@
                   >
                     I'm done
                   </v-btn>
-                </ShowMoreContainer>
-                <!--</v-card>-->
-
-                <a href="" @click.prevent="goHome">No thanks</a>
-              </div>
-            </v-fade-transition>
-          </v-col>
-        </v-row>
-      </template>
-      
-      <template v-else>
-        <div class="display-2 font-weight-light mb-2">Thank you so much for your feedback! We really appreciate it.</div>
-        <img
-          src="@/assets/img/logo.svg"
-        >
-      </template>
+                </div>
+              </v-expand-transition>
+            </div>
+          </v-fade-transition>
+        </v-col>
+      </v-row>
     </v-container>
   </span>
 </template>
@@ -153,16 +155,13 @@ export default {
       techDiffText: '',
       additionalInfoText: '',
       questionsState: [],
-      submitted: false,
+      showMore: false,
     }
   },
 
   computed: {
     overallTop() {
       return this.overallRating === 0 ? '30%' : '0%' 
-    },
-    overallPosition() {
-      return this.overallRating === 0 ? 'absolute' : 'relative'
     },
     ratingSize() {
       const breakpoint = this.$vuetify.breakpoint.name
@@ -189,8 +188,6 @@ export default {
       this.$emit('updateAdditionalInfo', this.additionalInfoText)
     },
     submit() {
-      this.submitted = true
-      console.log('submit!!')
       this.$router.replace({ name: this.redirectToPage, params: { info: 'Thank you so much for your feedback! We really appreciate it.' } })
     },
     goHome() {
