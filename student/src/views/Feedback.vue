@@ -34,13 +34,14 @@ export default {
   },
 
   created() {
-    if (!this.fromLectureEnd) {
+    if (!this.fromLectureEnd && !this.testing) {
       this.$router.replace({ name: 'Join' })
     }
   },
 
   data() {
     return {
+      testing: false,
       error: '',
       id: 0,
       questions: [
@@ -66,9 +67,8 @@ export default {
 
   methods: {
     updateOverallRating(rating) {
-      console.log('change overall rating to ', rating)
       this.error = ''
-      if(this.id == '') {
+      if(!this.id) {
         post('/feedback/create', {
           stars: rating
         }).then((result) => {
@@ -93,7 +93,6 @@ export default {
       }
     },
     updateEaseOfUseRating(rating) {
-      console.log('change ease of use rating to ', rating)
       this.error = ''
       post('/feedback/update', {
         id: this.id,
@@ -106,7 +105,6 @@ export default {
       })
     },
     updateHelpfulnessRating(rating) {
-      console.log('change helpfulness rating to ', rating)
       this.error = ''
       post('/feedback/update', {
         id: this.id,
@@ -119,7 +117,6 @@ export default {
       })
     },
     updateTechDiff(techDiff) {
-      console.log('change tech diff to ', techDiff)
       this.error = ''
       post('/feedback/update', {
         id: this.id,
@@ -132,7 +129,6 @@ export default {
       })
     },
     updateAdditionalInfo(additionalInfo) {
-      console.log('change additional info to ', additionalInfo)
       this.error = ''
       post('/feedback/update', {
         id: this.id,
