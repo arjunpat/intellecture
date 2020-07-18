@@ -26,8 +26,13 @@ router.post('/create', mw.auth, async (req: Request, res) => {
   }));
 });
 
-router.get('/get/:class_uid', mw.auth, async (req, res) => {
+router.get('/by-class/:class_uid', mw.auth, async (req, res) => {
   res.send(responses.success(await db.lectures.getClassLectures(req.params.class_uid)));
+});
+
+router.get('/recent', mw.auth, async (req: Request, res) => {
+  // gets up to four recent lectures from the past week; could return 0
+  res.send(responses.success(await db.lectures.getRecentLectures(req.uid, 4)));
 });
 
 router.get('/exists/:join_code', mw.auth, async (req, res) => {

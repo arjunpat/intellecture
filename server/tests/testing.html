@@ -129,4 +129,11 @@
       method: 'GET'
     }).then(res => res.json()).then(res => console.log(res));
   }
+
+  function getRecentLectures() {
+    fetch(hostp + '/lectures/recent', {
+      ...postStuff,
+      method: 'GET'
+    }).then(res => res.json()).then(res => console.log(res));
+  }
 </script>

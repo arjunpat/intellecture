@@ -82,6 +82,10 @@ export default class Lectures {
     return this.mysql.query('SELECT uid, name, start_time, end_time FROM lectures WHERE class_uid = ?', [ class_uid ]);
   }
 
+  getRecentLectures(account_uid: string, limit: number) {
+    return this.mysql.query(`SELECT uid, name, start_time, end_time FROM lectures WHERE class_uid IN (SELECT uid FROM classes WHERE account_uid = ?) AND end_time IS NOT NULL ORDER BY end_time DESC LIMIT ${limit}`, [account_uid])
+  }
+  
   getStudents(lecture_uid: string): object {
     return this.mysql.query(
       `SELECT
