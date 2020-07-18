@@ -299,7 +299,8 @@ export default {
   
   methods: {
     reconnect() {
-      this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/student/${this.id}`)
+      let serverHost = window.location.origin.includes('localhost') ? 'ws://73.15.192.227:8080' : 'wss://api.intellecture.app';
+      this.socket = new WebSocket(`${serverHost}/lectures/live/student/${this.id}`)
       this.socket.onopen = (event) => {}
 
       this.socket.onmessage = (event) => {

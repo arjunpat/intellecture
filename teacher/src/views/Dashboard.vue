@@ -19,7 +19,7 @@
           >
             <v-card-title>{{ a.name }}</v-card-title>
             <v-card-subtitle>{{ a.className }}</v-card-subtitle>
-            <v-card-text>{{ dateToString(a.start_time) }}</v-card-text>
+            <v-card-text>{{ dateToString(a.end_time) }}</v-card-text>
 
             <v-card-actions>
               <v-btn text color="#66BB6A">See Analytics</v-btn>
@@ -138,14 +138,13 @@ export default {
           }
       });
     },
-    genRecentLectures() {
-      get('/lectures/recent').then(l => {
-        l.forEach(e => {
-          if (e.name.length > 21)
-            e.name = e.name.slice(0, 18) + '...'
-        })
-        this.recentLectures = l
-      });
+    async genRecentLectures() {
+      let d = await get('/lectures/recent').then(d => d.data)
+      d.forEach(e => {
+        if (e.name.length > 21)
+          e.name = e.name.slice(0, 18) + '...'
+      })
+      this.recentLectures = d
     }
   },
   mounted () {
@@ -158,16 +157,11 @@ export default {
           setLectures();
         }
       }
-    });
+    })
     this.genRecentLectures()
   },
   computed: {
     ...mapState(['classes', 'lectures'])
-  },
-  watch: {
-    lectures() {
-      this.genRecentLectures()
-    }
   }
 }
 </script>

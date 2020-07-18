@@ -442,7 +442,8 @@ export default {
     //this.displayQuestions = sampleQuestions["questions"];
     //this.topics = sampleTopics["topics"];
 
-    this.socket = new WebSocket(`wss://api.intellecture.app/lectures/live/teacher/${this.id}`)
+    let serverHost = window.location.origin.includes('localhost') ? 'ws://73.15.192.227:8080' : 'wss://api.intellecture.app';
+    this.socket = new WebSocket(`${serverHost}/lectures/live/teacher/${this.id}`)
     this.socket.onmessage = (event) => {
       const data = JSON.parse(event.data)
       console.log(data);

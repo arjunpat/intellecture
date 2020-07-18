@@ -37,7 +37,6 @@ router.get('/recent', mw.auth, async (req: Request, res) => {
 
 router.get('/exists/:join_code', mw.auth, async (req, res) => {
   let lecture_uid = await db.lectures.getLectureUidByJoinCode(req.params.join_code);
-  console.log(lecture_uid)
 
   if (lecture_uid) {
     return res.send(responses.success({
