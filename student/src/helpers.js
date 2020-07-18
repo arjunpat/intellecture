@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import store from './store'
-export const serverHost = 'https://api.intellecture.app';
+export const serverHost = window.location.origin.includes('localhost') ? 'http://73.15.192.227:8080' : 'https://api.intellecture.app';
 
 export function get(url) {
   if (!url.includes('http')) {
