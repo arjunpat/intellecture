@@ -16,6 +16,7 @@
     "vue": "^2.6.11",
     "vue-axios": "^2.1.5",
     "vue-chartjs": "^3.5.0",
+    "vue-google-oauth2": "^1.5.5",
     "vue-router": "^3.3.4",
     "vuefire": "^2.2.3",
     "vuetify": "^2.3.4",
