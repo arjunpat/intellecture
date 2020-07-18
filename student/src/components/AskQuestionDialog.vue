@@ -20,7 +20,10 @@
             class="textField"
             v-model="question"
             @blur="onBlur"
+            @keydown="inputHandler"
             label="Ask a question"
+            hint="Shift+enter to go to a new line"
+            :persistent-hint="true"
             :auto-grow="true"
             autocomplete="off"
             clearable
@@ -101,6 +104,16 @@ export default {
         this.$emit('input', false)
       }
     },
+    inputHandler(e) {
+      if (e.key === 'Enter') {
+        if (e.shiftKey) {
+          e.preventDefault()
+          this.question += '\n'
+        } else {
+          this.askQuestion(e)
+        }
+      }
+    }
   },
 }
 </script>
