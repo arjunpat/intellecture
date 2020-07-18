@@ -37,6 +37,14 @@ export function signInGoogle() {
   }).then((result) => {
     if (!result.success)
       throw result
+
+    return get('/auth/profile')
+  }).then((result) => {
+    if (result.success) {
+      store.commit('setAuthUser', result.data)
+    } else {
+      throw result
+    }
   })
 }
 

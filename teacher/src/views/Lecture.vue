@@ -223,7 +223,7 @@
             <v-row align="center" justify="center" v-if="students.length == 0 && showTutorial != 6" >
               <v-col cols="8">
                 <div style="font-family: var(--main-font); text-align: center;">
-                <h1 style="font-weight: normal;">No students have joined the lecture. Have them go to <a>join.intellecture.app</a> and enter the code <span style="background-color: #eee; padding: 3px 10px; border-radius: 5px; font-weight: bold;">{{ id }}</span> to join</h1>
+                <h1 style="font-weight: normal;">No students have joined the lecture. Have them go to <a>join.intellecture.app</a> and enter the code <span style="background-color: #eee; padding: 3px 10px; border-radius: 5px; font-weight: bold;">{{ joinCode }}</span> to join</h1>
                 </div>
               </v-col>
             </v-row>
