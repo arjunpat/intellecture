@@ -50,8 +50,6 @@
 </template>
 
 <script>
-import firebase from 'firebase/app'
-import 'firebase/auth'
 import { mapState } from 'vuex'
 import UserAvatarContent from '@/components/UserAvatarContent'
 import AutoSnackbar from '@/components/AutoSnackbar'

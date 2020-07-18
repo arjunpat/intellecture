@@ -1,6 +1,5 @@
-import store from './store';
-import firebase from 'firebase/app'
-import 'firebase/auth'
+import Vue from 'vue'
+import store from './store'
 export const serverHost = 'https://api.intellecture.app';
 
 export function get(url) {
@@ -28,28 +27,16 @@ export function post(url, json) {
   }).then(res => res.json());
 }
 
-export function signIn(user) {
-  return user.getIdToken(true).then((idToken) => {
-    return post('/auth/signin', {
-      firebase_token: idToken
-    })
-  })
-}
-
 export function signInGoogle() {
-  let provider = new firebase.auth.GoogleAuthProvider()
-  return firebase.auth().signInWithPopup(provider).then((result) => {
-    return signIn(result.user)
+  return Vue.gAuth.signIn().then((googleUser) => {
+    return googleUser.getAuthResponse()
+  }).then((response) => {
+    return post('/auth/google-signin', {
+      google_access_token: response.access_token
+    }) 
   }).then((result) => {
     if (!result.success)
       throw result
-
-    return get('/auth/profile')   
-  }).then((result) => {
-    if (!result.success)
-      throw result
-
-    store.commit('setAuthUser', result.data)
   })
 }
 

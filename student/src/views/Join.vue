@@ -91,8 +91,6 @@
 </style>
 
 <script>
-import firebase from 'firebase/app'
-import 'firebase/auth'
 import ButtonWithImage from '@/components/ButtonWithImage'
 import AutoSnackbar from '@/components/AutoSnackbar'
 import { mapState } from 'vuex'
