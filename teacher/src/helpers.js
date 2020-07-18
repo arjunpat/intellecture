@@ -69,7 +69,7 @@ export function setLectures() {
       store.commit('setClasses', result.data)
 
       for (let indexClass of result.data) {
-        get(`/lectures/get/${indexClass.uid}`).then((data)=>{
+        get(`/lectures/by-class/${indexClass.uid}`).then((data)=>{
           for (let item of data.data) {
             item.className = indexClass.name;
           }

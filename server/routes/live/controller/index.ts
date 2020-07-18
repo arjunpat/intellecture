@@ -46,6 +46,6 @@ export async function initLecture(lecture_uid) {
 export function getActiveLectures() {
   let res: object[] = [];
   for (let each in lectures)
-    res.push(lectures[each].getLectureInfo());
+    res.push(lectures[each].getSummary());
   return res;
 }

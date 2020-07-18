@@ -12,6 +12,7 @@
             min-height="175"
             hover
             outlined
+            style="margin-right: 15px;"
             v-for="a in recentLectures"
             :key="a.uid"
             :to="'/lecture-analytics/' + a.uid"
@@ -138,30 +139,13 @@ export default {
       });
     },
     genRecentLectures() {
-      let l = JSON.parse(JSON.stringify(this.lectures))
-      
-      // TODO for some reason there are duplicates and it is too late for me to figure out why
-      // so i will just remove them
-      // @Tony figure out why there are duplicates
-      let map = {}
-      for (let i = 0; i < l.length; i++) {
-        if (map[l[i].uid]) {
-          l.splice(i, 1);
-          i--;
-        } else {
-          map[l[i].uid] = true;
-        }
-      }
-
-      l.sort((a, b) => b.start_time - a.start_time)
-      l.forEach(e => {
-        if (e.name.length > 21) {
-          e.name = e.name.slice(0, 18) + '...'
-          console.log(e.name)
-        }
-      })
-      this.recentLectures = l.slice(0, 4)
-      console.log(JSON.parse(JSON.stringify(this.recentLectures)))
+      get('/lectures/recent').then(l => {
+        l.forEach(e => {
+          if (e.name.length > 21)
+            e.name = e.name.slice(0, 18) + '...'
+        })
+        this.recentLectures = l
+      });
     }
   },
   mounted () {

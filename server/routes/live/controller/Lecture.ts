@@ -244,7 +244,12 @@ export default class Lecture {
     pub.publish(toStudent(this.lecture_uid), JSON.stringify(obj));
   }
 
-  getLectureInfo(): object {
-    return this.lectureInfo;
+  getSummary(): object {
+    return {
+      lectureInfo: this.lectureInfo,
+      question_count: this.questions.length,
+      student_count: Object.keys(this.scores).length,
+      ended: this.ended
+    }
   }
 }

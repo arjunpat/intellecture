@@ -4,7 +4,7 @@ Can be called from anywhere at anytime regardless of login status
 
 ## POST /auth/google-signin
 
-Use to signin to account after Firebase Auth.
+Use to sign in to account after Google auth.
 
 ###### Request body:
 
@@ -14,7 +14,7 @@ Use to signin to account after Firebase Auth.
 }
 ```
 
-If the Google token is good, it will set a cookie in the browser that lasts for 3 days. Google won't be needed at all after you get this cookie set.
+If the Google access token is good, it will set a cookie in the browser that lasts for 3 days. Google won't be needed at all after you get this cookie set.
 
 ###### Response format:
 
