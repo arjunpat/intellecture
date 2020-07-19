@@ -1,6 +1,10 @@
-export const serverHost = window.location.origin.includes('localhost') ? 'http://73.15.192.227:8080' : 'https://api.intellecture.app';
 import Vue from 'vue'
-import store from './store';
+import store from '@/store'
+import config from '@/config'
+export const serverHost = config.useTestServer ? config.testServerAddress : config.prodServerAddress
+
+if (config.useTestServer)
+  console.log('-----------------\nUSING TEST SERVER\n-----------------')
 
 export function get(url) {
   if (!url.includes('http')) {

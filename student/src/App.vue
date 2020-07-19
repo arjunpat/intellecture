@@ -5,45 +5,45 @@
         :text="error"
         color="error"
       ></AutoSnackbar>
-        <v-app-bar
-          v-if="$route.path !== '/'"
-          app
-          color="green lighten-1"
-          dark
+      <v-app-bar
+        v-if="$route.path !== '/'"
+        app
+        color="green lighten-1"
+        dark
+      >
+        <img src="@/assets/img/logo.svg" width="35px" class="pointer">
+
+        <v-toolbar-title @click="homeRedirect" style="font-family: 'Roboto';"><span id="main-logo" class="pointer">INTELLECTURE</span> Student</v-toolbar-title>
+
+        <v-spacer></v-spacer>
+
+        <v-menu
+          v-if="authUser"
+          offset-y
+          :close-on-content-click="false"
         >
-            <img src="@/assets/img/logo.svg" width="35px" class="pointer">
+          <template v-slot:activator="{ on }">
+            <v-btn icon v-on="on">
+              <v-avatar>
+                <UserAvatarContent :user="authUser" />
+              </v-avatar>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item>
+              <v-list-item-title><strong>{{ `${authUser.first_name} ${authUser.last_name}` }}</strong></v-list-item-title>
+            </v-list-item>
+            <v-divider></v-divider>
+            <v-list-item @click="signOut">
+              <v-list-item-title class="red--text">Sign Out</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-app-bar>
 
-            <v-toolbar-title @click="homeRedirect" style="font-family: 'Roboto';"><span id="main-logo" class="pointer">INTELLECTURE</span> Student</v-toolbar-title>
-
-          <v-spacer></v-spacer>
-
-          <v-menu
-            v-if="authUser"
-            offset-y
-            :close-on-content-click="false"
-          >
-            <template v-slot:activator="{ on }">
-              <v-btn icon v-on="on">
-                <v-avatar>
-                  <UserAvatarContent :user="authUser" />
-                </v-avatar>
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item>
-                <v-list-item-title><strong>{{ `${authUser.first_name} ${authUser.last_name}` }}</strong></v-list-item-title>
-              </v-list-item>
-              <v-divider></v-divider>
-              <v-list-item @click="signOut">
-                <v-list-item-title class="red--text">Sign Out</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </v-app-bar>
-
-        <v-main>
-          <router-view/>
-        </v-main>
+      <v-main>
+        <router-view/>
+      </v-main>
     </v-app>
     <LoadingScreen :show="!loaded" />
   </div>

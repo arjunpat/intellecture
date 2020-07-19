@@ -161,7 +161,7 @@ export default {
 
   computed: {
     overallTop() {
-      return this.overallRating === 0 ? '30%' : '0%' 
+      return this.overallRating === 0 ? '20vh' : '0vh' 
     },
     ratingSize() {
       const breakpoint = this.$vuetify.breakpoint.name

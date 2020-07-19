@@ -1,5 +1,5 @@
 <template>
-  <div id="feedback-container">
+  <span>
     <AutoSnackbar
       :text="error"
       color="error"
@@ -12,7 +12,7 @@
       @updateTechDiff="updateTechDiff"
       @updateAdditionalInfo="updateAdditionalInfo"
     />
-  </div>
+  </span>
 </template>
 
 <script>
@@ -34,13 +34,14 @@ export default {
   },
 
   created() {
-    if (!this.fromLectureEnd) {
+    if (!this.fromLectureEnd  && !this.testing) {
       this.$router.replace({ name: 'Dashboard' })
     }
   },
 
   data() {
     return {
+      testing: true,
       error: '',
       id: 0,
       questions: [
@@ -145,11 +146,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-
-  #feedback-container {
-    margin-top: 100px;
-  }
-
-</style>

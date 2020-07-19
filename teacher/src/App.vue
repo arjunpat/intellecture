@@ -2,8 +2,6 @@
   <v-app>
     <v-app-bar
       v-if="$route.path !== '/'"
-      :collapse="false"
-      :collapse-on-scroll="false"
       color="green lighten-1"
       app
       dark
@@ -57,19 +55,21 @@
       {{message}}<v-icon style="color: white">mdi-clipboard</v-icon>  
     </v-snackbar>
 
-    <router-view v-on:startlecture="starting" v-on:nonexistant="started = false" />
+    <v-main>
+      <router-view v-on:startlecture="starting" v-on:nonexistant="started = false" />
+    </v-main>
 
     <v-footer padless color="green lighten-1" v-if="landing || dashboard || signin">
-        <v-card
-          flat
-          tile
-          width="100%"
-          class="green lighten-1 text-center"
-        >
-          <v-card-text class="white--text" style="font-family: var(--main-font);">
-            © {{ new Date().getFullYear() }} <strong>INTELLECTURE{{$vuetify.breakpoint.smAndUp ? ' | ALL RIGHTS RESERVED' : ''}}</strong>
-          </v-card-text>
-        </v-card>
+      <v-card
+        flat
+        tile
+        width="100%"
+        class="green lighten-1 text-center"
+      >
+        <v-card-text class="white--text" style="font-family: var(--main-font);">
+          © {{ new Date().getFullYear() }} <strong>INTELLECTURE{{$vuetify.breakpoint.smAndUp ? ' | ALL RIGHTS RESERVED' : ''}}</strong>
+        </v-card-text>
+      </v-card>
     </v-footer>
   </v-app>
 </template>

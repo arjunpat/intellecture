@@ -198,6 +198,7 @@ import QuestionDisplay from '@/components/QuestionDisplay'
 import { mapState } from 'vuex'
 import { get, post } from '@/helpers'
 import testData from '@/test/test.json'
+import config from '@/config'
 
 export default {
   name: 'Room',
@@ -208,6 +209,7 @@ export default {
 
   data() {
     return {
+      testing: false,
       sliderValue: 5,
       sliderMax: 10,
       throttleDelay: 1000, 
@@ -233,7 +235,6 @@ export default {
       },
       testLectureInfo: testData.testLectureInfo,
       testQuestions: testData.testQuestions,
-      testing: false,
     }
   },
 
@@ -269,6 +270,7 @@ export default {
   },
 
   destroyed() {
+    clearInterval(this.wsInterval)
     this.socket.close()
   },
 
@@ -299,7 +301,7 @@ export default {
   
   methods: {
     reconnect() {
-      let serverHost = window.location.origin.includes('localhost') ? 'ws://73.15.192.227:8080' : 'wss://api.intellecture.app';
+      let serverHost = config.useTestServer ? config.testServerSocketAddress : config.prodServerSocketAddress
       this.socket = new WebSocket(`${serverHost}/lectures/live/student/${this.id}`)
       this.socket.onopen = (event) => {}
 
@@ -348,7 +350,6 @@ export default {
           case 'end_lecture':
             window.localStorage.removeItem('questionData')
             this.$router.replace({ name: 'Feedback', params: { fromLectureEnd: true } })
-            clearInterval(this.wsInterval)
             break;
         }
       }

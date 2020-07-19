@@ -1,5 +1,5 @@
 <template>
-  <v-main>
+  <span>
     <v-container fluid v-show="showCode" class="window roomContainer" ref="start-window">
       <v-col>
        <v-row class="close">
@@ -286,7 +286,7 @@
 
       </v-tabs-items>
     </v-container>
-  </v-main>
+  </span>
 </template>
 
 <script>
@@ -297,7 +297,8 @@ import store from '@/store'
 import Understanding from '../components/Understanding'
 import TutorialDisplay from '@/components/TutorialDisplay'
 import sampleQuestions from '@/testdata/questions.json'
-import sampleTopics from '@/testdata/questions.json'
+import sampleTopics from '@/testdata/topics.json'
+import config from '@/config'
 
 export default {
   components: {
@@ -442,7 +443,7 @@ export default {
     //this.displayQuestions = sampleQuestions["questions"];
     //this.topics = sampleTopics["topics"];
 
-    let serverHost = window.location.origin.includes('localhost') ? 'ws://73.15.192.227:8080' : 'wss://api.intellecture.app';
+    let serverHost = config.useTestServer ? config.testServerSocketAddress : config.prodServerSocketAddress
     this.socket = new WebSocket(`${serverHost}/lectures/live/teacher/${this.id}`)
     this.socket.onmessage = (event) => {
       const data = JSON.parse(event.data)

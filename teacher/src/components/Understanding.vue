@@ -142,11 +142,11 @@ import LineChart from '../components/Chart'
 export default {
     name:"Understanding", 
     props: {
-      understandingScore: String,
+      understandingScore: Number,
       topics: Array,
       showTutorial: Number,
       datacollection: Object,
-      shortened:Boolean,
+      shortened: Boolean,
     }, 
     components: {
       TutorialDisplay, 

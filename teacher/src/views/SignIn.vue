@@ -1,5 +1,9 @@
 <template>
   <v-container fluid style="height: 100%;">
+    <AutoSnackbar
+      :text="error"
+      color="error"
+    />
     <v-row
       align="center"
       justify="center"
@@ -10,7 +14,6 @@
         md="6"
         lg="4"
       >
-        <br><br><br>
         <v-card class="pb-3">
           <v-card-title style="font-family: var(--main-font); font-weight: 600;">SIGN IN</v-card-title>
           <v-divider></v-divider>
@@ -37,18 +40,32 @@
 
 <script>
 import ButtonWithImage from '@/components/ButtonWithImage'
-import { signInGoogle } from '@/helpers.js'
+import AutoSnackbar from '@/components/AutoSnackbar'
+import { signInGoogle } from '@/helpers'
+import config from '@/config'
 
 export default {
   name: 'SignIn',
 
+  data() {
+    return {
+      error: '',
+    }
+  },
+
   components: {
-    ButtonWithImage
+    ButtonWithImage,
+    AutoSnackbar
   },
 
   methods: {
     signInWithGoogle() {
-      signInGoogle()
+      this.error = ''
+      signInGoogle().catch((err) => {
+        this.error = 'There was an error signing in! Please try again later.'
+        if (config.printErrors)
+          console.log(err)
+      })
     }
   }
 }
