@@ -1,18 +1,19 @@
 import mysql from 'mysql';
 
 export default class MySQL {
-  private conn: mysql.Connection;
+  // private conn: mysql.Connection;
+  private conn: mysql.Pool;
 
   constructor(user: string, password: string, database: string, host: string) {
     let creds = { user, password, database, host };
-    this.conn = mysql.createConnection(creds);
-    /* this.conn = mysql.createPool({
+    //this.conn = mysql.createConnection(creds);
+    this.conn = mysql.createPool({
       connectionLimit: 10,
       user,
       password,
       database,
       host
-    }); */
+    });
   }
 
   init(sql: string) {

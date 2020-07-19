@@ -49,7 +49,8 @@ export default class LectureQs {
         (SELECT COUNT(*) FROM lecture_q_upvotes WHERE question_uid = uid) as upvotes
       FROM
         lecture_qs
-      WHERE lecture_uid = ? AND account_uid = ?`,
+      WHERE lecture_uid = ? AND account_uid = ?
+      ORDER BY elapsed DESC`,
       [lecture_uid, account_uid]
     );
   }

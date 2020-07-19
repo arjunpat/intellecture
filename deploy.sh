@@ -1,6 +1,13 @@
 #!/bin/bash
 
 currentDir=$(basename "$PWD")
+quiet=false
+
+for i in "$@" ; do
+  if [[ $i = "-y" ]]; then
+    quiet=true
+  fi
+done
 
 echo "This script will build the teacher and student apps and deploy them to intellecture.app and join.intellecture.app"
 echo ""
@@ -23,7 +30,9 @@ then
 fi
 
 printf "\n\n\n"
-read -p "Does everything above look correct? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+if [ "$quiet" = false ]; then
+  read -p "Does everything above look correct? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+fi
 
 cd $currentDir
 
@@ -32,7 +41,9 @@ echo "Getting the latest changes from origin/master..."
 git pull
 
 printf "\n\n\n"
-read -p "Was it able to pull the latest changes from the repo w/ no errors? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+if [ "$quiet" = false ]; then
+  read -p "Was it able to pull the latest changes from the repo w/ no errors? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+fi
 
 echo "Making sure the two sibling repos are also up-to-date"
 cd ../join-intellecture-app
@@ -58,7 +69,9 @@ npm run build
 cd ..
 
 printf "\n\n\n"
-read -p "Did it successfully build the teacher application? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+if [ "$quiet" = false ]; then
+  read -p "Did it successfully build the teacher application? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+fi
 
 echo "Building student application..."
 cd student
@@ -67,7 +80,9 @@ npm run build
 cd ..
 
 printf "\n\n\n"
-read -p "Did it successfully build the student application? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+if [ "$quiet" = false ]; then
+  read -p "Did it successfully build the student application? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+fi
 
 cd ..
 echo "Copying teacher files..."
@@ -77,7 +92,9 @@ echo "Copying student files..."
 cp -r $currentDir/student/dist/* join-intellecture-app
 
 printf "\n\n\n"
-read -p "Did the above copy step go flawlessly? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+if [ "$quiet" = false ]; then
+  read -p "Did the above copy step go flawlessly? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+fi
 
 echo "Deploying updates to GitHub..."
 cd intellecture-app
