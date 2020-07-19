@@ -430,6 +430,7 @@ export default {
           if (!result.success)
             throw result
 
+          result.data = result.data.sort((a, b) => a.elapsed - b.elapsed)
           this.myQuestions = result.data
           this.myQuestionsVisible = true
         }).catch((err) => {
