@@ -55,6 +55,8 @@
                     :min="0"
                     :max="sliderMax"
                     :throttleDelay="throttleDelay"
+                    :spamDelay="spamDelay"
+                    :spamLimit="spamLimit"
                     class="mb-4"
                   />
                 </TutorialDisplay>
@@ -210,7 +212,9 @@ export default {
     return {
       sliderValue: 5,
       sliderMax: 10,
-      throttleDelay: 1000, 
+      throttleDelay: 1000, // Limit understanding to only be updated once every `throttleDelay` ms
+      spamDelay: 500, // Notify user if spamming slider too much every `spamDelay` ms
+      spamLimit: 5, // Notify user after spamming `spamLimit` times
       levels: ['I\'m lost', 'I\'m confused', 'I kinda get it', 'I think I get it', 'I completely understand'],
       colors: ['rgb(240, 53, 36)', 'rgb(255, 183, 0)', 'rgb(250, 225, 0)', 'rgb(126, 196, 4)', '#B2FF59'],
       color: '',
@@ -233,7 +237,7 @@ export default {
       },
       testLectureInfo: testData.testLectureInfo,
       testQuestions: testData.testQuestions,
-      testing: false,
+      testing: true,
     }
   },
 

@@ -103,6 +103,8 @@ export default {
     min: Number,
     max: Number,
     throttleDelay: Number,
+    spamDelay: Number,
+    spamLimit: Number,
   },
 
   data() {
@@ -114,9 +116,12 @@ export default {
         happy: require('@/assets/img/happy.svg'),
         wow: require('@/assets/img/wow.svg')
       },
+      lastValue: this.value,
+      lastValueTime: (new Date()).getTime(),
       lastValueSent: this.value,
       lastValueSentTime: (new Date()).getTime(),
       timeout: null,
+      spamAmt: 0,
     }
   },
 
@@ -211,6 +216,9 @@ export default {
     getPercentageFromValue(value) {
       return value/(this.max-this.min) * 100
     },
+    getDiffPercentage(v1, v2) {
+      return getPercentageFromValue(abs(v1-v2))
+    },
     inRange(num, a, b) {
       return num >= a && num <= b
     },
@@ -232,11 +240,16 @@ export default {
       // Throttle sending student understanding to send 
       // at max once per `throttleDelay` milliseconds
       const currentTime = (new Date()).getTime()
-      const diff = Math.abs(currentTime - this.lastValueSentTime)
+      const sentDiff = Math.abs(currentTime - this.lastValueSentTime) // diff from when sent last value
+      const diff = Math.abs(currentTime - this.lastValueTime)
+      
+      this.checkIfSpamming(diff)
+      this.lastValue = this.value
+      this.lastValueTime = currentTime
+      
       let delay = 0
-
-      if (diff < this.throttleDelay)
-        delay = this.throttleDelay - diff  
+      if (sentDiff < this.throttleDelay)
+        delay = this.throttleDelay - sentDiff  
 
       if (this.timeout)
         clearTimeout(this.timeout)
@@ -248,7 +261,18 @@ export default {
           this.$emit('updateUnderstanding')
         }
       }, delay)
-    }
+    },
+    checkIfSpamming(timeDiff) {
+      console.log('timediff ', timeDiff)
+      if (timeDiff < this.spamDelay) {
+        this.spamAmt++
+        if (this.spamAmt > this.spamLimit) {
+          console.log('SPAMMING TOO MUCH')
+        }
+      } else {
+        this.spamAmt = 0
+      }
+    },
   },
 
 }
