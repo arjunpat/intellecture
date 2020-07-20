@@ -51,12 +51,13 @@
 
                   <UnderstandingSlider
                     @updateUnderstanding="updateUnderstanding"
+                    @spammingTooMuch="spammingSliderTooMuch"
                     v-model="sliderValue"
                     :min="0"
                     :max="sliderMax"
                     :throttleDelay="throttleDelay"
-                    :spamDelay="spamDelay"
-                    :spamLimit="spamLimit"
+                    :spamLimitPerMin="spamLimitPerMin"
+                    :spamLockTime="spamLockTime"
                     class="mb-4"
                   />
                 </TutorialDisplay>
@@ -213,8 +214,8 @@ export default {
       sliderValue: 5,
       sliderMax: 10,
       throttleDelay: 1000, // Limit understanding to only be updated once every `throttleDelay` ms
-      spamDelay: 500, // Notify user if spamming slider too much every `spamDelay` ms
-      spamLimit: 5, // Notify user after spamming `spamLimit` times
+      spamLimitPerMin: 30, // Notify user after spamming slider `spamLimitPerMin` times in a minute
+      spamLockTime: 60000, // ms to lock slider after spamming
       levels: ['I\'m lost', 'I\'m confused', 'I kinda get it', 'I think I get it', 'I completely understand'],
       colors: ['rgb(240, 53, 36)', 'rgb(255, 183, 0)', 'rgb(250, 225, 0)', 'rgb(126, 196, 4)', '#B2FF59'],
       color: '',
@@ -439,7 +440,13 @@ export default {
           this.error = 'There was an error getting your questions!'
         })
       }
-    }
+    },
+    spammingSliderTooMuch() {
+      this.info = ''
+      this.$nextTick(() => {
+        this.info = 'You moved the slider too much! It has been disabled for 1 minute.'  
+      })
+    },
   },
 }
 </script>

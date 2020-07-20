@@ -103,8 +103,8 @@ export default {
     min: Number,
     max: Number,
     throttleDelay: Number,
-    spamDelay: Number,
-    spamLimit: Number,
+    spamLimitPerMin: Number,
+    spamLockTime: Number,
   },
 
   data() {
@@ -114,14 +114,14 @@ export default {
         sad: require('@/assets/img/sad.svg'),
         meh: require('@/assets/img/meh.svg'),
         happy: require('@/assets/img/happy.svg'),
-        wow: require('@/assets/img/wow.svg')
+        wow: require('@/assets/img/wow.svg'),
+        mad: require('@/assets/img/mad.svg'),
       },
-      lastValue: this.value,
-      lastValueTime: (new Date()).getTime(),
       lastValueSent: this.value,
       lastValueSentTime: (new Date()).getTime(),
       timeout: null,
-      spamAmt: 0,
+      sliderMoveAmt: 0, // How much slider has moved in a minute
+      spamLock: false, // If slider locked because of spam
     }
   },
 
@@ -130,7 +130,9 @@ export default {
       return this.getPercentageFromValue(this.value)
     },
     thumbSrc() {
-      if (this.dragging) {
+      if (this.spamLock) {
+        return this.faces.mad
+      } else if (this.dragging) {
         return this.faces.wow
       } else if (this.valueInRange(0, 25)) {
         return this.faces.sad
@@ -153,6 +155,11 @@ export default {
   mounted() {
     window.addEventListener('mousemove', this.doDrag)
     window.addEventListener('mouseup', this.stopDrag)
+
+    // Reset sliderMoveAmt every 60 seconds
+    setTimeout(() => {
+      this.sliderMoveAmt = 0
+    }, 60000)
 
     // Preload images (not sure if this works)
     /*for (let face in this.faces) {
@@ -195,19 +202,21 @@ export default {
       this.moveThumb(event.touches[0].clientX)
     },
     moveThumb(x) {
-      //this.$refs['slider-container'].focus()
-      const rect = this.$refs['slider'].getBoundingClientRect()
-      const sliderLeft = rect.left
-      const incrementWidth = rect.width/this.max
+      if (!this.spamLock) {
+        //this.$refs['slider-container'].focus()
+        const rect = this.$refs['slider'].getBoundingClientRect()
+        const sliderLeft = rect.left
+        const incrementWidth = rect.width/this.max
 
-      const newValue = Math.round((x-sliderLeft)/incrementWidth)
-      
-      if (newValue >= this.max) {
-        this.updateValue(this.max)
-      } else if (newValue <= this.min) {
-        this.updateValue(this.min)
-      } else {
-        this.updateValue(newValue)
+        const newValue = Math.round((x-sliderLeft)/incrementWidth)
+        
+        if (newValue >= this.max) {
+          this.updateValue(this.max)
+        } else if (newValue <= this.min) {
+          this.updateValue(this.min)
+        } else {
+          this.updateValue(newValue)
+        }
       }
     },
     getTickStyle(i) {
@@ -215,9 +224,6 @@ export default {
     },
     getPercentageFromValue(value) {
       return value/(this.max-this.min) * 100
-    },
-    getDiffPercentage(v1, v2) {
-      return getPercentageFromValue(abs(v1-v2))
     },
     inRange(num, a, b) {
       return num >= a && num <= b
@@ -239,17 +245,15 @@ export default {
     updateUnderstanding() {
       // Throttle sending student understanding to send 
       // at max once per `throttleDelay` milliseconds
+      this.sliderMoveAmt++
+      this.checkIfSpamming()
+
       const currentTime = (new Date()).getTime()
-      const sentDiff = Math.abs(currentTime - this.lastValueSentTime) // diff from when sent last value
-      const diff = Math.abs(currentTime - this.lastValueTime)
-      
-      this.checkIfSpamming(diff)
-      this.lastValue = this.value
-      this.lastValueTime = currentTime
-      
+      const diff = Math.abs(currentTime - this.lastValueSentTime)
       let delay = 0
-      if (sentDiff < this.throttleDelay)
-        delay = this.throttleDelay - sentDiff  
+
+      if (diff < this.throttleDelay)
+        delay = this.throttleDelay - diff  
 
       if (this.timeout)
         clearTimeout(this.timeout)
@@ -262,18 +266,17 @@ export default {
         }
       }, delay)
     },
-    checkIfSpamming(timeDiff) {
-      console.log('timediff ', timeDiff)
-      if (timeDiff < this.spamDelay) {
-        this.spamAmt++
-        if (this.spamAmt > this.spamLimit) {
-          console.log('SPAMMING TOO MUCH')
-        }
-      } else {
-        this.spamAmt = 0
-      }
-    },
-  },
+    checkIfSpamming() {
+      if (this.sliderMoveAmt > this.spamLimitPerMin) {
+        this.spamLock = true
+        this.sliderMoveAmt = 0
+        this.$emit('spammingTooMuch')
 
+        setTimeout(() => {
+          this.spamLock = false
+        }, this.spamLockTime)
+      }
+    }
+  },
 }
 </script>
