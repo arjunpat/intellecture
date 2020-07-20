@@ -238,7 +238,7 @@ export default {
       },
       testLectureInfo: testData.testLectureInfo,
       testQuestions: testData.testQuestions,
-      testing: true,
+      testing: false,
     }
   },
 
