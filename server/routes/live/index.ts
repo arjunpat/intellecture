@@ -132,7 +132,7 @@ router.post('/student/:lecture_uid/score', mw.auth, attachLecture, joinedLecture
   res.send(responses.received());
 });
 
-router.get('/student/:lecture_uid/questions', mw.auth, attachLecture, joinedLecture, async (req: Request, res) => {
+router.get('/student/:lecture_uid/questions', mw.auth, attachLecture, async (req: Request, res) => {
   if (typeof req.query.after !== 'string')
     return res.send(responses.error());
 
@@ -174,9 +174,9 @@ router.post('/student/:lecture_uid/question', mw.auth, attachLecture, joinedLect
     return res.send(responses.error());
   }
 
-  if (/(\r\n|\r|\n)/.test(question)) {
+  /* if (/(\r\n|\r|\n)/.test(question)) {
     return res.send(responses.error('newline_not_allowed'));
-  }
+  } */
 
   publish(req.params.lecture_uid, {
     type: 'q', // question

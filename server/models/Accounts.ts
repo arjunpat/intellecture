@@ -1,5 +1,13 @@
 import MySQL from '../lib/MySQL';
 
+interface BasicAccountInfo {
+  uid?: string,
+  email: string,
+  first_name: string,
+  last_name: string,
+  photo: string
+}
+
 export default class Accounts {
   private mysql: MySQL;
 
@@ -14,8 +22,8 @@ export default class Accounts {
     );
   }
 
-  getBasicInfo(uid: string) {
-    return this.mysql.query('SELECT email, first_name, last_name, photo FROM accounts WHERE uid = ?', [uid]).then((d: object[]) => d[0]);
+  getBasicInfo(uid: string): Promise<BasicAccountInfo> {
+    return this.mysql.query('SELECT email, first_name, last_name, photo FROM accounts WHERE uid = ?', [uid]).then((d: BasicAccountInfo[]) => d[0]);
   }
 
   getUidByEmail(email: string) {
