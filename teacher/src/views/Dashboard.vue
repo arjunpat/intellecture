@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="authUser">
+  <v-container v-if="authUser" class="mt-4">
     <v-btn depressed small v-if="!notification" @click="requestNotifications()" style="position: fixed; top: 70px; left: 10px; z-index: 100;">Enable notifications <v-icon small>mdi-bell</v-icon></v-btn>
     <h1 class="poppins mb-8">Hi {{ authUser.first_name }},</h1>
 

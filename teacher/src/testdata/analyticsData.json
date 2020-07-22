@@ -1,0 +1,94 @@
+{
+  "lectureInfo": {
+    "uid": "xodya",
+    "created_at": 1593381727266,
+    "class_uid": "CDHRdENsfwDNVJI",
+    "lecture_name": "Testing",
+    "start_time": 1593381727386,
+    "end_time": 1593382495924,
+    "account_uid": "rUJyP317iuZErNlhrnnyn8eT7uY2",
+    "class_name": "Algos, DS, & ANNs"
+  },
+  "students": [
+    {
+      "account_uid": "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2",
+      "email": "100021830@mvla.net",
+      "first_name": "Arjun",
+      "last_name": "Patrawala",
+      "photo": "https://lh3.googleusercontent.com/a-/AOh14GjTxiWisVwbIJetGx01unMZobe2xXI6Gd3GiYzEUQ"
+    },
+    {
+      "account_uid": "rUJyP317iuZErNlhrnnyn8eT7uY2",
+      "email": "ajpat1234@gmail.com",
+      "first_name": "Jonathan",
+      "last_name": "Liu",
+      "photo": "https://lh3.googleusercontent.com/a-/AOh14GjTxiWisVwbIJetGx01unMZobe2xXI6Gd3GiYzEUQ"
+    },
+    {
+      "account_uid": "asdf",
+      "email": "asdf@gmail.com",
+      "first_name": "Tony",
+      "last_name": "Xin",
+      "photo": "https://lh3.googleusercontent.com/a-/AOh14GjTxiWisVwbIJetGx01unMZobe2xXI6Gd3GiYzEUQ"
+    },
+    {
+      "account_uid": "watwat",
+      "email": "watwat@gmail.com",
+      "first_name": "Epic",
+      "last_name": "Name",
+      "photo": "https://lh3.googleusercontent.com/a-/AOh14GjTxiWisVwbIJetGx01unMZobe2xXI6Gd3GiYzEUQ"
+    },
+    {
+      "account_uid": "coolcool",
+      "email": "coolcool@gmail.com",
+      "first_name": "Very",
+      "last_name": "Cool",
+      "photo": "https://lh3.googleusercontent.com/a-/AOh14GjTxiWisVwbIJetGx01unMZobe2xXI6Gd3GiYzEUQ"
+    },
+    {
+      "account_uid": "123",
+      "email": "123@gmail.com",
+      "first_name": "Aidan",
+      "last_name": "Smith",
+      "photo": "https://lh3.googleusercontent.com/a-/AOh14GjTxiWisVwbIJetGx01unMZobe2xXI6Gd3GiYzEUQ"
+    }
+  ],
+  "intervals_present": {
+    "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2": [
+      [1593381727386, 1593382495924]
+    ],
+    "rUJyP317iuZErNlhrnnyn8eT7uY2": [
+      [1593381727386, 1593382435924]
+    ],
+    "asdf": [
+      [1593381757386, 1593382439924]
+    ],
+    "watwat": [
+      [1593381797386, 1593382495924]
+    ],
+    "coolcool": [
+      [1593381727386, 1593381797386],
+      [1593381897386, 1593381907386],
+      [1593381947386, 1593382495924]
+    ],
+    "123": [
+      [1593381727386, 1593382495924]
+    ]
+  },
+  "present": {
+    "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2": 768538,
+    "rUJyP317iuZErNlhrnnyn8eT7uY2": 708538,
+    "asdf": 682538,
+    "watwat": 698538,
+    "coolcool": 628538,
+    "123": 768538
+  },
+  "question_count": {
+    "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2": 1,
+    "rUJyP317iuZErNlhrnnyn8eT7uY2": 3,
+    "asdf": 5,
+    "watwat": 3,
+    "coolcool": 2,
+    "123": 0
+  }
+}
