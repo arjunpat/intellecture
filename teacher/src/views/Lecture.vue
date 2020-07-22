@@ -80,8 +80,8 @@
           <!-- Start of Understanding tab -->
           <v-card
             v-show="currentTab === 0"
-            flat
             min-height="75vh"
+            flat
             class="pt-3 pb-3"
           >
             <Understanding 
@@ -143,9 +143,9 @@
                 </v-card>
                 </v-col>
 
-                <v-col cols="8">
+                <v-col :cols="smallScreen ? 12 : 8">
                 <div v-if="displayQuestions.length < 1 && showTutorial != 5">
-                  <h1 style="font-weight: normal; font-size: 25px;">There are no questions to display</h1>
+                  <h1 :style="{fontWeight: 'normal', fontSize: '25px'}">There are no questions to display</h1>
                 </div>
                 <ul style="list-style-type: none; font-family: var(--main-font);">
                     <li v-for="question in displayQuestions" v-bind:key="question.question_uid" v-show="!question.dismiss">
@@ -223,7 +223,7 @@
             <v-row align="center" justify="center" v-if="students.length == 0 && showTutorial != 6" >
               <v-col cols="8">
                 <div style="font-family: var(--main-font); text-align: center;">
-                <h1 style="font-weight: normal;">No students have joined the lecture. Have them go to <a>join.intellecture.app</a> and enter the code <span style="background-color: #eee; padding: 3px 10px; border-radius: 5px; font-weight: bold;">{{ joinCode }}</span> to join</h1>
+                <h1 style="font-weight: normal;">No students have joined the lecture. <!--Have them go to <a>join.intellecture.app</a> and enter the code <span style="background-color: #eee; padding: 3px 10px; border-radius: 5px; font-weight: bold;">{{ joinCode }}</span> to join--></h1>
                 </div>
               </v-col>
             </v-row>
@@ -314,7 +314,7 @@ export default {
       joinCode: '',
       lectureName: '',
       datacollection: null,
-      understandingScore: '--',
+      understandingScore: null,
       averageUnderstanding: '--',
       range: '--',
       svgPath: mdiCloseThick,
