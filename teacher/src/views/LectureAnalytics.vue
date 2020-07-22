@@ -120,13 +120,13 @@ export default {
         this.present = analyticsData.present
         this.quesCount = analyticsData.question_count
       } else {
-        this.lectureInfo = await get(`/analytics/lecture/${this.lecture_uid}/info`).then(d => d.data)
-        let students = await get(`/analytics/lecture/${this.lecture_uid}/students`).then(d => d.data)
-        this.present = await get(`/analytics/lecture/${this.lecture_uid}/present`).then(d => d.data)
-        this.quesCount = await get(`/analytics/lecture/${this.lecture_uid}/question-count`).then(d => d.data)
-  
-        this.lectureLength = this.lectureInfo.end_time - this.lectureInfo.start_time
-        this.students = students
+        this.lectureInfo = await get(`/analytics/lecture/${this.lecture_uid}/info`).then(d => d.data);
+        let students = await get(`/analytics/lecture/${this.lecture_uid}/students`).then(d => d.data);
+        this.present = await get(`/analytics/lecture/${this.lecture_uid}/present`).then(d => d.data);
+        this.quesCount = await get(`/analytics/lecture/${this.lecture_uid}/question-counts`).then(d => d.data);
+
+        this.lectureLength = this.lectureInfo.end_time - this.lectureInfo.start_time;
+        this.students = students;
       }
     },
     getPresent(uid) {

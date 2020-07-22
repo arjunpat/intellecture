@@ -26,6 +26,7 @@ function ended(req, res, next) {
   res.send(responses.error('lecture_not_ended'));
 }
 
+/* GENERAL LECTURE ANALYTICS */
 router.get('/lecture/:lecture_uid/students', mw.auth, lecturePerms, ended, async (req, res) => {
   let { lecture_uid } = req.params;
 
@@ -61,7 +62,7 @@ router.get('/lecture/:lecture_uid/present', mw.auth, lecturePerms, ended, async 
   res.send(responses.success(result));
 });
 
-router.get('/lecture/:lecture_uid/question-count', mw.auth, lecturePerms, ended, async (req: Request, res) => {
+router.get('/lecture/:lecture_uid/question-counts', mw.auth, lecturePerms, ended, async (req: Request, res) => {
   let { lecture_uid } = req.params;
   res.send(responses.success(await db.lectureQs.getQuestionCountsByLectureUid(lecture_uid)));
 });
@@ -70,6 +71,13 @@ router.get('/lecture/:lecture_uid/info', mw.auth, lecturePerms, ended, async (re
   res.send(responses.success(req.lecture)); // added by lecturePerms
 });
 
+/* STUDENT ANALYTICS */
+/* router.get('/lecture/:lecture_uid/student/:account_uid/questions', mw.auth, lecturePerms, ended, async (req: Request, res) => {
+
+}); */
+
+
+/* QUESTION ANALYTICS */
 router.get('/lecture/:lecture_uid/question/:question_uid/upvotes', mw.auth, lecturePerms, async (req, res) => {
   let { question_uid, lecture_uid } = req.params;
 

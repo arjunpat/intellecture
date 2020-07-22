@@ -13,11 +13,18 @@ interface Question {
   question: string
 }
 
+interface Last {
+  q: {
+    [key: string]: number
+  }
+}
+
 export default class Lecture {
   private lecture_uid: string;
   private questions: Question[] = [];
-  private questionUpvotes: object = {};
-  private scores: object = {};
+  private questionUpvotes: { [key: string]: number } = {};
+  private scores: { [key: string]: number } = {};
+  private last: Last = { q: {} };
   private lectureInfo: any;
   private timing: any;
   public ended: boolean = false;
@@ -104,8 +111,13 @@ export default class Lecture {
   }
 
   async addQuestion(creator_uid: string, question: string) {
-    let uid = genId(15);
     let elapsed = this.elapsed();
+    if (elapsed - this.last.q[creator_uid] < 10000) { // 10 second cooldown
+      return;
+    }
+    this.last.q[creator_uid] = elapsed;
+
+    let uid = genId(15);
     await db.lectureQs.add(
       uid,
       this.lecture_uid,
