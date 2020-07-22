@@ -87,7 +87,7 @@
 </template>
 
 <script>
-import { post, get } from '@/helpers.js'
+import { post, get, log } from '@/helpers.js'
 import { mdiAndroidStudio } from '@mdi/js'
 import analyticsData from '@/testdata/analyticsData.json'
 
@@ -120,13 +120,15 @@ export default {
         this.present = analyticsData.present
         this.quesCount = analyticsData.question_count
       } else {
-        this.lectureInfo = await this.get(`/info`).then(d => d.data)
-        let students = await this.get(`/students`).then(d => d.data)
-        this.present = await this.get(`/present`).then(d => d.data)
-        this.quesCount = await this.get(`/question-counts`).then(d => d.data)
+        this.lectureInfo = await this.get('/info')
+        let students = await this.get('/students')
+        this.present = await this.get('/present')
+        this.quesCount = await this.get('/question-counts')
 
         this.lectureLength = this.lectureInfo.end_time - this.lectureInfo.start_time
         this.students = students
+
+        this.get(`/student/${students[0].account_uid}/questions`)
       }
     },
     getPresent(uid) {
@@ -136,7 +138,11 @@ export default {
       return this.quesCount[uid] || 0
     },
     get(addy) {
-      return get(`/analytics/lecture/${this.lecture_uid}${addy}`)
+      return get(`/analytics/lecture/${this.lecture_uid}${addy}`).then(d => {
+        if (d.success)
+          return d.data
+        log('failed', e)
+      })
     }
   },
   mounted() {
