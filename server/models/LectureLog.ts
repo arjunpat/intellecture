@@ -15,4 +15,11 @@ export default class LectureLog {
       score
     });
   }
+
+  getByStudent(lecture_uid: string, account_uid: string) {
+    return this.mysql.query(
+      'SELECT elapsed, score FROM lecture_log WHERE lecture_uid = ? AND account_uid = ?',
+      [lecture_uid, account_uid]
+    );
+  }
 }

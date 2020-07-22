@@ -29,7 +29,6 @@ function ended(req, res, next) {
 /* GENERAL LECTURE ANALYTICS */
 router.get('/lecture/:lecture_uid/students', mw.auth, lecturePerms, ended, async (req, res) => {
   let { lecture_uid } = req.params;
-
   res.send(responses.success(await db.lectures.getStudents(lecture_uid)));
 });
 
@@ -71,11 +70,31 @@ router.get('/lecture/:lecture_uid/info', mw.auth, lecturePerms, ended, async (re
   res.send(responses.success(req.lecture)); // added by lecturePerms
 });
 
+router.get('/lecture/:lecture_uid/questions', mw.auth, lecturePerms, ended, async (req: Request, res) => {
+  let { lecture_uid } = req.params;
+  res.send(responses.success(await db.lectureQs.getQuestionsByLectureUid(lecture_uid)));
+});
+
 /* STUDENT ANALYTICS */
-/* router.get('/lecture/:lecture_uid/student/:account_uid/questions', mw.auth, lecturePerms, ended, async (req: Request, res) => {
+router.get('/lecture/:lecture_uid/student/:account_uid/scores', mw.auth, lecturePerms, ended, async (req: Request, res) => {
+  let { lecture_uid, account_uid } = req.params;
+  let data = await db.lectureLog.getByStudent(lecture_uid, account_uid);
+  res.send(responses.success({
+    elapsed: data.map(d => d.elapsed),
+    score: data.map(d => d.score)
+  }));
+});
 
-}); */
+router.get('/lecture/:lecture_uid/student/:account_uid/upvotes', mw.auth, lecturePerms, ended, async (req: Request, res) => {
+  let { lecture_uid, account_uid } = req.params;
+  res.send(responses.success(await db.lectureQUpvotes.getByStudent(lecture_uid, account_uid)));
+});
 
+router.get('/lecture/:lecture_uid/student/:account_uid/questions', mw.auth, lecturePerms, ended, async (req: Request, res) => {
+  let { lecture_uid, account_uid } = req.params;
+  let data = await db.lectureQs.getQuestionsUidByUser(lecture_uid, account_uid);
+  res.send(responses.success(data.map(d => d.uid)));
+});
 
 /* QUESTION ANALYTICS */
 router.get('/lecture/:lecture_uid/question/:question_uid/upvotes', mw.auth, lecturePerms, async (req, res) => {

@@ -6,7 +6,7 @@ import Lecture from '@/views/Lecture.vue'
 import New from '@/views/New.vue'
 import SignIn from '@/views/SignIn.vue'
 import Feedback from '@/views/Feedback.vue'
-import LectureAnalytics from '@/views/LectureAnalytics';
+import LectureAnalyticsStudent from '@/views/lecture-analytics/Student';
 
 Vue.use(VueRouter)
 const isProd = process.env.NODE_ENV === 'production'
@@ -46,8 +46,12 @@ const routes = [
   },
   {
     path: '/lecture-analytics/:lecture_uid',
-    name: 'LectureAnalytics',
-    component: LectureAnalytics
+    redirect: '/lecture-analytics/:lecture_uid/students'
+  },
+  {
+    path: '/lecture-analytics/:lecture_uid/students',
+    name: 'LectureAnalyticsStudent',
+    component: LectureAnalyticsStudent
   }
 ]
 

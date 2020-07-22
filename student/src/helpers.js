@@ -1,14 +1,15 @@
 import Vue from 'vue'
 import store from '@/store'
-import config from '@/config'
-export const serverHost = config.useTestServer ? config.testServerAddress : config.prodServerAddress
+import config from '../../config'
+export const serverOrigin = config.serverOrigin
+export const socketServerOrigin = config.socketServerOrigin
+export const log = config.printErrors ? console.log : () => {}
 
-if (config.useTestServer)
-  console.log('-----------------\nUSING TEST SERVER\n-----------------')
+log(`-----------------\nUSING ${config.api} SERVER\n-----------------`)
 
 export function get(url) {
   if (!url.includes('http')) {
-    url = serverHost + url;
+    url = serverOrigin + url;
   }
 
   return fetch(url, {
@@ -18,7 +19,7 @@ export function get(url) {
 
 export function post(url, json) {
   if (!url.includes('http')) {
-    url = serverHost + url;
+    url = serverOrigin + url;
   }
 
   return window.fetch(url, {

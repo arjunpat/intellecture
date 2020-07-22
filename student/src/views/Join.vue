@@ -95,8 +95,7 @@ import ButtonWithImage from '@/components/ButtonWithImage'
 import AutoSnackbar from '@/components/AutoSnackbar'
 import { mapState } from 'vuex'
 import { colors } from '@/constants'
-import { get, setTokenForUser, signInGoogle, signOut } from '@/helpers'
-import config from '@/config'
+import { get, setTokenForUser, signInGoogle, signOut, log } from '@/helpers'
 
 export default {
   name: 'Join',
@@ -180,8 +179,7 @@ export default {
           this.redirectToRoom()
         }).catch((err) => {
           this.currentError = 'There was an error signing in! Please try again later.'
-          if (config.printErrors)
-            console.log(err)
+          log(err)
         })
       }
     },
@@ -204,16 +202,14 @@ export default {
         }
       }).catch((err) => {
         this.currentError = 'Could not join room!'
-        if (config.printErrors)
-          console.log(err)
+        log(err)
       })
     },
     signOut() {
       this.currentError = ''
       signOut().catch((err) => {
         this.currentError = 'There was an error signing out!'
-        if (config.printErrors)
-          console.log(err)
+        log(err)
       })
     }
   }

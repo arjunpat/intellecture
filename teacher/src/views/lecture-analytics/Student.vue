@@ -70,7 +70,7 @@
             <v-card-subtitle>{{ a.email }}</v-card-subtitle>
 
             <v-card-text>
-              <span v-if="quesCount">{{ getQuesCount(a.account_uid) }} questions</span><br>
+              <span v-if="quesCount">{{ getQuesCount(a.account_uid) }} question{{ getQuesCount(a.account_uid) !== 1 ? 's' : '' }}</span><br>
               <span v-if="present">{{ getPresent(a.account_uid) }}% present</span>
             </v-card-text>
           </v-card>
@@ -102,10 +102,10 @@ export default {
   },
   methods: {
     async init() {
-      this.lectureInfo = await get(`/analytics/lecture/${this.lecture_uid}/info`).then(d => d.data);
-      let students = await get(`/analytics/lecture/${this.lecture_uid}/students`).then(d => d.data);
-      this.present = await get(`/analytics/lecture/${this.lecture_uid}/present`).then(d => d.data);
-      this.quesCount = await get(`/analytics/lecture/${this.lecture_uid}/question-counts`).then(d => d.data);
+      this.lectureInfo = await this.get(`/info`).then(d => d.data);
+      let students = await this.get(`/students`).then(d => d.data);
+      this.present = await this.get(`/present`).then(d => d.data);
+      this.quesCount = await this.get(`/question-counts`).then(d => d.data);
 
       this.lectureLength = this.lectureInfo.end_time - this.lectureInfo.start_time;
       this.students = students;
@@ -115,6 +115,9 @@ export default {
     },
     getQuesCount(uid) {
       return this.quesCount[uid] || 0;
+    },
+    get(addy) {
+      return get(`/analytics/lecture/${this.lecture_uid}${addy}`);
     }
   },
   mounted() {

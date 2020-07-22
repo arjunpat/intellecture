@@ -118,3 +118,117 @@ Get all students who upvoted a question.
   ]
 }
 ```
+
+## GET /analytics/lecture/:lecture_uid/questions
+
+Get all questions (and corresponding upvotes) from a lecture.
+
+###### Example response:
+
+```javascript
+{
+  "success": true,
+  "data": [
+    {
+      "uid": "tPsMjR4WRtzdIKd",
+      "elapsed": 91572,
+      "question": "yessir",
+      "upvotes": 1
+    },
+    {
+      "uid": "hMakyiEMhrCD0z1",
+      "elapsed": 76788,
+      "question": "anotheer",
+      "upvotes": 1
+    },
+    {
+      "uid": "WWEYUQVueSYZLjS",
+      "elapsed": 64543,
+      "question": "hello",
+      "upvotes": 1
+    },
+    {
+      "uid": "OvIyHaOcsS5rYHy",
+      "elapsed": 53930,
+      "question": "why is it having issues",
+      "upvotes": 1
+    },
+    {
+      "uid": "XgXbSyfMDvW5pAF",
+      "elapsed": 23682,
+      "question": "asdfjasdflk",
+      "upvotes": 1
+    }
+  ]
+}
+```
+
+## GET /analytics/lecture/:lecture_uid/student/:account_uid/scores
+
+All the understanding scores a student put throughout the lecture. Elapsed is basically x and score is basically y.
+
+###### Example response:
+
+```javascript
+{
+  "success": true,
+  "data": {
+    "elapsed": [
+      5315,
+      19635
+    ],
+    "score": [
+      5,
+      8
+    ]
+  }
+}
+```
+
+## GET /analytics/lecture/:lecture_uid/student/:account_uid/upvotes
+
+All the upvotes from a particular student and the time they upvoted.
+
+###### Example response:
+
+```javascript
+{
+  "success": true,
+  "data": [
+    {
+      "question_uid": "hMakyiEMhrCD0z1",
+      "elapsed": 88716
+    },
+    {
+      "question_uid": "OvIyHaOcsS5rYHy",
+      "elapsed": 57529
+    },
+    {
+      "question_uid": "tPsMjR4WRtzdIKd",
+      "elapsed": 93644
+    },
+    {
+      "question_uid": "WWEYUQVueSYZLjS",
+      "elapsed": 87935
+    }
+  ]
+}
+```
+
+## GET /analytics/lecture/:lecture_uid/student/:account_uid/upvotes
+
+All the questions a particular student asked.
+
+###### Example response:
+
+```javascript
+{
+  "success": true,
+  "data": [
+    "hMakyiEMhrCD0z1",
+    "OvIyHaOcsS5rYHy",
+    "tPsMjR4WRtzdIKd",
+    "WWEYUQVueSYZLjS"
+  ]
+}
+```

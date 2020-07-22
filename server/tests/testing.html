@@ -116,13 +116,6 @@
     }).then(res => res.json()).then(res => console.log(res));
   }
 
-  function getStudents(lecture_uid) {
-    fetch(hostp + '/analytics/lecture/students/' + lecture_uid, {
-      ...postStuff,
-      method: 'GET'
-    }).then(res => res.json()).then(res => console.log(res));
-  }
-
   function getActiveLectures() {
     fetch(hostp + '/admin/active-lectures', {
       ...postStuff,
@@ -132,6 +125,13 @@
 
   function getRecentLectures() {
     fetch(hostp + '/lectures/recent', {
+      ...postStuff,
+      method: 'GET'
+    }).then(res => res.json()).then(res => console.log(res));
+  }
+
+  function getStudents(lecture_uid) {
+    fetch(hostp + '/analytics/lecture/students/' + lecture_uid, {
       ...postStuff,
       method: 'GET'
     }).then(res => res.json()).then(res => console.log(res));

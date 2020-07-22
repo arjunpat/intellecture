@@ -33,4 +33,11 @@ export default class LectureQUpvotes {
       [question_uid]
     );
   }
+
+  getByStudent(lecture_uid: string, account_uid: string) {
+    return this.mysql.query(
+      'SELECT question_uid, elapsed FROM lecture_q_upvotes WHERE question_uid IN (SELECT uid FROM lecture_qs WHERE lecture_uid = ?) AND account_uid = ?',
+      [lecture_uid, account_uid]
+    );
+  }
 }

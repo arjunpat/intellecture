@@ -95,7 +95,7 @@ export default class Lectures {
         b.last_name,
         b.photo
       FROM
-        (SELECT DISTINCT account_uid FROM lecture_log WHERE lecture_uid = ?) a
+        (SELECT DISTINCT account_uid FROM lecture_student_log WHERE lecture_uid = ?) a
       LEFT JOIN
         accounts b
       ON

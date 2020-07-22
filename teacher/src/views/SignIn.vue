@@ -41,8 +41,7 @@
 <script>
 import ButtonWithImage from '@/components/ButtonWithImage'
 import AutoSnackbar from '@/components/AutoSnackbar'
-import { signInGoogle } from '@/helpers'
-import config from '@/config'
+import { signInGoogle, log } from '@/helpers'
 
 export default {
   name: 'SignIn',
@@ -63,8 +62,7 @@ export default {
       this.error = ''
       signInGoogle().catch((err) => {
         this.error = 'There was an error signing in! Please try again later.'
-        if (config.printErrors)
-          console.log(err)
+        log(err)
       })
     }
   }

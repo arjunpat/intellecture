@@ -199,9 +199,8 @@ import TutorialDisplay from '@/components/TutorialDisplay'
 import LectureInfo from '@/components/LectureInfo'
 import QuestionDisplay from '@/components/QuestionDisplay'
 import { mapState } from 'vuex'
-import { get, post } from '@/helpers'
+import { get, post, socketServerOrigin } from '@/helpers'
 import testData from '@/test/test.json'
-import config from '@/config'
 
 export default {
   name: 'Room',
@@ -306,8 +305,7 @@ export default {
   
   methods: {
     reconnect() {
-      let serverHost = config.useTestServer ? config.testServerSocketAddress : config.prodServerSocketAddress
-      this.socket = new WebSocket(`${serverHost}/lectures/live/student/${this.id}`)
+      this.socket = new WebSocket(`${socketServerOrigin}/lectures/live/student/${this.id}`)
       this.socket.onopen = (event) => {}
 
       this.socket.onmessage = (event) => {

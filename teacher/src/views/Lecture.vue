@@ -292,13 +292,12 @@
 <script>
 import { mdiCloseThick } from '@mdi/js';
 import { mapState } from 'vuex'
-import { post, get, setLectures } from '@/helpers.js'
+import { post, get, setLectures, socketServerOrigin } from '@/helpers.js'
 import store from '@/store'
 import Understanding from '../components/Understanding'
 import TutorialDisplay from '@/components/TutorialDisplay'
 import sampleQuestions from '@/testdata/questions.json'
 import sampleTopics from '@/testdata/topics.json'
-import config from '@/config'
 
 export default {
   components: {
@@ -443,8 +442,7 @@ export default {
     //this.displayQuestions = sampleQuestions["questions"];
     //this.topics = sampleTopics["topics"];
 
-    let serverHost = config.useTestServer ? config.testServerSocketAddress : config.prodServerSocketAddress
-    this.socket = new WebSocket(`${serverHost}/lectures/live/teacher/${this.id}`)
+    this.socket = new WebSocket(`${socketServerOrigin}/lectures/live/teacher/${this.id}`)
     this.socket.onmessage = (event) => {
       const data = JSON.parse(event.data)
       console.log(data);

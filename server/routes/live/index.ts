@@ -154,7 +154,7 @@ router.get('/student/:lecture_uid/questions', mw.auth, attachLecture, async (req
 });
 
 router.get('/student/:lecture_uid/questions/mine', mw.auth, attachLecture, joinedLecture, async (req: Request, res) => {
-  let qs = await db.lectureQs.getQuestionsAndUpvotesByUser(req.uid, req.params.lecture_uid);
+  let qs = await db.lectureQs.getQuestionsAndUpvotesByUser(req.params.lecture_uid, req.uid);
 
   res.send(responses.success(qs.map(({ uid, elapsed, question, upvotes }) => {
     return {
