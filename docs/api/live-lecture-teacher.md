@@ -175,3 +175,15 @@ End lecture.
 ```javascript
 {} // empty body
 ```
+
+## POST /lectures/live/teacher/:lecture_uid/kick
+
+Kick a student from the lecture.
+
+###### Request body:
+
+```javascript
+{
+  "student_uid": "as3dfjLDKsdfn8237"
+}
+```

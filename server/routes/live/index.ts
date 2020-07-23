@@ -74,6 +74,14 @@ router.get('/student/:lecture_uid', mw.websocket, mw.auth, async (req: Request, 
     return socket.close();
   }
 
+  if (await db.redis.isBanned(lecture_uid, req.uid)) {
+    socket.json({
+      type: 'error',
+      error: 'banned'
+    });
+    return socket.close();
+  }
+
   let status = await db.lectureStudentLog.getStudentStatus(lecture_uid, req.uid);
   if (status && status === 'j') {
     socket.json({
@@ -206,6 +214,18 @@ router.post('/teacher/:lecture_uid/end', mw.auth, attachLecture, async (req: Req
   }
 
   publish(req.params.lecture_uid, { type: 'end' });
+  res.send(responses.received());
+});
+
+router.post('/teacher/:lecture_uid/kick', mw.auth, attachLecture, async (req: Request, res) => {
+  if (req.lecture.account_uid !== req.uid) {
+    return res.send(responses.error('permissions'));
+  }
+
+  if (typeof req.body.student_uid !== 'string')
+    return res.send(responses.error('missing_data'));
+
+  publish(req.params.lecture_uid, { type: 'bns', student_uid: req.body.student_uid });
   res.send(responses.received());
 });
 

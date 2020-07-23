@@ -21,13 +21,17 @@ class Broadcaster {
   }
 
   dispatch(msg: any): string | void {
-    this.sendAll(msg);
-  
     let data = JSON.parse(msg);
-    switch (data.type) {
-      // ... more cases could be included
-      case 'end_lecture':
-        return 'end';
+
+    if (data.to) {
+      this.send(data.to, msg);
+    } else {
+      this.sendAll(msg);
+      switch (data.type) {
+        // ... more cases could be included
+        case 'end_lecture':
+          return 'end';
+      }
     }
   }
 
@@ -54,8 +58,17 @@ class Broadcaster {
 
   sendAll(txt: string) {
     for (let s of this.sockets) {
-      if (s.readyState === 1) {
+      s.send(txt);
+    }
+  }
+
+  send(account_uid: string, txt: string) {
+    // O(n) rn, hashmap could impove to O(1)
+    // but not worth the hassle/memory use bc so infrequent
+    for (let s of this.sockets) {
+      if (s.uid === account_uid) {
         s.send(txt);
+        return; // only one
       }
     }
   }

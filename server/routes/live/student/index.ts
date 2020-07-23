@@ -42,17 +42,17 @@ sub.on('message', (channel: string, msg: string) => {
 });
 
 export default async function handleStudent(lecture_uid: string, student_uid: string, socket: Socket) {
+  publish(lecture_uid, {
+    type: 'sj', // student join
+    student_uid
+  });
+  
   socket.uid = student_uid;
   socket.on('close', () => {
     publish(lecture_uid, {
       type: 'sl', // student leave
       student_uid
     });
-  });
-
-  publish(lecture_uid, {
-    type: 'sj', // student join
-    student_uid
   });
 
   if (!lectures[lecture_uid]) {
