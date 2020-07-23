@@ -184,6 +184,7 @@ Kick a student from the lecture.
 
 ```javascript
 {
-  "student_uid": "as3dfjLDKsdfn8237"
+  "student_uid": "as3dfjLDKsdfn8237",
+  "banned": true // prevents rejoin to same lecture
 }
 ```

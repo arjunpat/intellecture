@@ -273,7 +273,7 @@ export default {
     }
   },
 
-  destroyed() {
+  beforeDestroy() {
     clearInterval(this.wsInterval)
     this.socket.close()
   },

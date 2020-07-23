@@ -78,7 +78,7 @@ export default class Lecture {
         this.upvoteQuestion(data.question_uid, data.student_uid);
         break;
       case 'bns': // ban student
-        this.banStudent(data.student_uid);
+        this.kickStudent(data.student_uid, data.banned);
         break;
       case 'end': // end lecture
         this.end();
@@ -178,8 +178,8 @@ export default class Lecture {
     this.updateTeachers();
   }
 
-  banStudent(student_uid: string) {
-    redis.ban(this.lecture_uid, student_uid);
+  kickStudent(student_uid: string, banned: boolean) {
+    if (banned) redis.ban(this.lecture_uid, student_uid);
     this.sendToStudents({
       to: student_uid,
       type: 'ban_student'

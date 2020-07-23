@@ -225,7 +225,11 @@ router.post('/teacher/:lecture_uid/kick', mw.auth, attachLecture, async (req: Re
   if (typeof req.body.student_uid !== 'string')
     return res.send(responses.error('missing_data'));
 
-  publish(req.params.lecture_uid, { type: 'bns', student_uid: req.body.student_uid });
+  publish(req.params.lecture_uid, {
+    type: 'bns',
+    student_uid: req.body.student_uid,
+    banned: !!req.body.banned
+  });
   res.send(responses.received());
 });
 
