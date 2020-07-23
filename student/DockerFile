@@ -1,0 +1,17 @@
+### Stage Build ###
+FROM node:10-alpine AS builder
+RUN apk --update add git
+WORKDIR /home/node/app
+COPY . .
+RUN npm install
+RUN npm ci
+ENV NODE_ENV=production
+RUN npm run build
+### Stage Serve Prod ###
+FROM andreilhicas/nginx-letsencrypt AS production
+COPY --from=builder --chown=nginx:nginx /home/node/app/dist /usr/share/nginx/html
+COPY --from=builder --chown=nginx:nginx /home/node/app/nginx.conf /
+RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
+    ln -sf /dev/stderr /var/log/nginx/error.log
+EXPOSE 8080
+STOPSIGNAL SIGTERM
