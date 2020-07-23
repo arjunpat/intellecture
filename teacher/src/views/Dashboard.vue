@@ -104,7 +104,7 @@ export default {
       authUser: null,
       notification: Notification.permission == 'granted' ? true : false,
       search: "",
-      skeleton:[{"uid":"","end_time":null,"name":"","start_time":null,"className":""}],
+      skeleton:[{"end_time":null,"name":"","start_time":null,"className":""}],
       recentLectures: [],
       headers: [
         {
@@ -117,7 +117,7 @@ export default {
         { text: 'Start Time', value: 'start_time' },
         { text:"Lecture Name", value: `name`},
         //{ text: 'Student List', value: "" }, TODO
-        { text: 'Code', value: 'uid' },
+        //{ text: 'Code', value: 'uid' },
         ],
     }
   },
@@ -160,7 +160,6 @@ export default {
       }
     })
     this.genRecentLectures()
-    console.log(this.lectures);
   },
   computed: {
     ...mapState(['classes', 'lectures']),
