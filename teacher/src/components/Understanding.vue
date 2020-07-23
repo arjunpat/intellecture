@@ -31,13 +31,13 @@
               class="text--primary font-weight-black"
               style="margin-top: 40px; text-align: center; font-size: 180px; background: #E0E0E0; border-radius: 10px; padding: 4px 20px;"
               :style="{ fontSize: understandingFontSize }"
-            >{{ understandingScore }}%</span>
+            >{{ understandingScore == null ? '--' : understandingScore }}%</span>
             <br />
             <br />
             <br />
             <br />
             <div style="width: 335px; display: inline-block;">
-              <v-progress-linear :value="understandingScore" :color="progressColor" rounded></v-progress-linear>
+              <v-progress-linear :value="understandingScore == null ? 0 : understandingScore" :color="progressColor" rounded></v-progress-linear>
             </div>
           </v-card-text>
         </div>
@@ -165,7 +165,7 @@ export default {
           return val + 'px'
         },
         progressColor () {
-        if(this.understandingScore == '--') {
+        if(this.understandingScore == null) {
           return 'primary'
         } else if(this.understandingScore >= 70) {
           return 'success'

@@ -5,15 +5,18 @@
 
     <v-card class="mb-12" v-if="recentLectures.length !== 0" id="recent-lectures">
       <v-card-title class="card-title">RECENT LECTURES</v-card-title>
-      <div class="px-5 py-5">
+      <v-row class="pl-5 pt-2">
+      <div
+          v-for="a in recentLectures"
+          :key="a.uid"
+          style="display: 'inline-block';"
+          class="pb-2">
         <v-card
-          width="275"
+          :width="recentLectureCardSize"
           min-height="175"
           hover
           outlined
           style="margin-right: 15px;"
-          v-for="a in recentLectures"
-          :key="a.uid"
           :to="'/lecture-analytics/' + a.uid"
         >
           <v-card-title>{{ a.name }}</v-card-title>
@@ -25,6 +28,7 @@
           </v-card-actions>
         </v-card>
       </div>
+      </v-row>
     </v-card>
 
     <v-card v-if="classes != []">
@@ -156,9 +160,29 @@ export default {
       }
     })
     this.genRecentLectures()
+    console.log(this.lectures);
   },
   computed: {
-    ...mapState(['classes', 'lectures'])
+    ...mapState(['classes', 'lectures']),
+    smallScreen () {
+      switch (this.$vuetify.breakpoint.name) {
+        case 'xs': return true
+        case 'sm': return true
+        case 'md': return false
+        case 'lg': return false
+        case 'xl': return false
+      }
+    },
+    recentLectureCardSize() {
+      switch (this.$vuetify.breakpoint.name) {
+        case 'xs': return '170'
+        case 'sm': return '200'
+        case 'md': return '275'
+        case 'lg': return '275'
+        case 'xl': return '275'
+      }
+
+    }
   }
 }
 </script>

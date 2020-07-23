@@ -7,9 +7,9 @@
       dark
       flat
     >
-      <img src="@/assets/img/logo.svg" width="35px" class="pointer">
+      <img @click="homeRedirect()" src="@/assets/img/logo.svg" :width="smallScreen ? '40px' : '35px'" class="pointer">
 
-      <v-toolbar-title @click="homeRedirect()" v-if="!smallScreen || !livelecture"><span id="main-logo" class="pointer">INTELLECTURE</span> Teacher</v-toolbar-title>
+      <v-toolbar-title @click="homeRedirect()" v-if="!smallScreen || signin"><span id="main-logo" class="pointer">INTELLECTURE</span> Teacher</v-toolbar-title>
     
 
       <v-spacer></v-spacer>
@@ -189,7 +189,9 @@ export default {
       if(this.started) {
         return;
       } else if(this.authUser) {
-        this.$router.push({ path: '/dashboard' })
+        if(!this.dashboard) {
+          this.$router.push({ path: '/dashboard' })
+        }
       } else {
         this.$router.push({ path: '/' })
       }
