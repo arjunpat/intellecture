@@ -41,6 +41,15 @@ When another student asks a question, it gets sent here.
 }
 ```
 
+#### ban_student
+
+```javascript
+{
+  "type": "ban_student",
+  "to": "rUJyP317iuZErNlhrn2"
+}
+```
+
 #### end_lecture
 
 When teacher ends lecture, server will send client this message.
@@ -82,6 +91,13 @@ If there is an error, the app will send one message and close the connection.
 {
   type: 'error',
   error: 'already_joined'
+}
+```
+
+```javascript
+{
+  type: 'error',
+  error: 'banned'
 }
 ```
 

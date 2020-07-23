@@ -37,15 +37,35 @@ export default class Redis {
     });
   }
 
+  /* lecture objects */
   setLecture(lecture_uid: string, obj: object) {
-    return this.set('lecture:' + lecture_uid, obj);
+    return this.set(`lecture:${lecture_uid}:info`, obj);
   }
 
   getLecture(lecture_uid: string) {
-    return this.get('lecture:' + lecture_uid);
+    return this.get(`lecture:${lecture_uid}:info`);
   }
 
   delLecture(lecture_uid: string) {
-    return this.del('lecture:' + lecture_uid);
+    return this.del(`lecture:${lecture_uid}:info`);
+  }
+
+  /* lecture ban */
+  ban(lecture_uid: string, student_uid: string) {
+    this.conn.sadd(`lecture:${lecture_uid}:banned`, student_uid, () => {
+      this.conn.expire(`lecture:${lecture_uid}:banned`, 2 * 60 * 60); // 2 hours
+    });
+  }
+
+  isBanned(lecture_uid: string, student_uid: string) {
+    return new Promise((resolve, reject) => {
+      this.conn.sismember(`lecture:${lecture_uid}:banned`, student_uid, (err, val) => {
+        resolve(!!val);
+      });
+    });
+  }
+
+  clearBan(lecture_uid: string) {
+    this.del(`lecture:${lecture_uid}:banned`);
   }
 }

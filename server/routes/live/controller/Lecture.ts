@@ -1,5 +1,5 @@
 import db from '../../../models';
-const pub = db.redis.conn;
+const { redis } = db;
 import { genUnderstandingScore, toStudent, toTeacher } from '../helpers';
 import { genId, genLectureJoinCode } from '../../../lib/helpers';
 import extract from './extract';
@@ -59,7 +59,6 @@ export default class Lecture {
       return;
 
     this.timing.lastMsg = Date.now();
-
     this.log(data);
     
     switch (data.type) {
@@ -78,6 +77,9 @@ export default class Lecture {
       case 'qu': // question upvote
         this.upvoteQuestion(data.question_uid, data.student_uid);
         break;
+      case 'bns': // ban student
+        this.banStudent(data.student_uid);
+        break;
       case 'end': // end lecture
         this.end();
         break;
@@ -88,6 +90,8 @@ export default class Lecture {
     let now = Date.now();
     this.blast({ type: 'end_lecture' });
     this.ended = true;
+    redis.clearBan(this.lecture_uid);
+    
     let remainingStudents = Object.keys(this.scores);
     if (remainingStudents.length > 0)
       await db.lectureStudentLog.leaveBulk(this.lecture_uid, remainingStudents, this.elapsed(now));
@@ -174,6 +178,14 @@ export default class Lecture {
     this.updateTeachers();
   }
 
+  banStudent(student_uid: string) {
+    redis.ban(this.lecture_uid, student_uid);
+    this.sendToStudents({
+      to: student_uid,
+      type: 'ban_student'
+    });
+  }
+
   updateTeachers() {
     // wait before updating the teacher
     if (this.timeoutScore) return;
@@ -249,11 +261,11 @@ export default class Lecture {
   }
 
   sendToTeachers(obj) {
-    pub.publish(toTeacher(this.lecture_uid), JSON.stringify(obj));
+    redis.conn.publish(toTeacher(this.lecture_uid), JSON.stringify(obj));
   }
 
   sendToStudents(obj) {
-    pub.publish(toStudent(this.lecture_uid), JSON.stringify(obj));
+    redis.conn.publish(toStudent(this.lecture_uid), JSON.stringify(obj));
   }
 
   getSummary(): object {
