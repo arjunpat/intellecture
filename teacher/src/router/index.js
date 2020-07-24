@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import NotFound from '@/views/NotFound.vue'
 import Landing from '@/views/Landing.vue'
 import Dashboard from '@/views/Dashboard.vue'
 import Lecture from '@/views/Lecture.vue'
@@ -12,6 +13,14 @@ Vue.use(VueRouter)
 const isProd = process.env.NODE_ENV === 'production'
 
 const routes = [
+  { 
+    path: '/404', 
+    component: NotFound 
+  },  
+  { 
+    path: '*', 
+    redirect: '/404'
+  }, 
   {
     path: '/',
     name: 'Landing',
