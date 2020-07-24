@@ -25,6 +25,9 @@
     <v-container
       fluid
     >
+    <v-card
+      :flat="smallScreen ? true : false"
+    >
       <transition name="fade">
         <div
           v-show="snackbar"
@@ -44,7 +47,7 @@
         </TutorialDisplay>
       </div>
       
-      <v-card-title>
+      <v-card-title >
         <h2 style="font-family: 'Noto Sans'; font-weight: bold;">{{ lectureName || 'Untitled Lecture' }}</h2>
       </v-card-title>
 
@@ -74,6 +77,7 @@
           </v-tab>
         </v-tabs>
       </TutorialDisplay>
+    </v-card>
 
       <v-tabs-items v-model="tab">
 
@@ -81,7 +85,7 @@
           <v-card
             v-show="currentTab === 0"
             min-height="75vh"
-            flat
+            :flat="smallScreen ? true : false"
             class="pt-3 pb-3"
           >
             <Understanding 
@@ -94,7 +98,7 @@
           <!-- Start of Questions tab -->
         <v-card
             v-show="currentTab === 1"
-            flat
+            :flat="smallScreen ? true : false"
             class="pt-3"
             style="min-height: 75vh;"
           >
@@ -215,7 +219,7 @@
         <!-- Start of Students tab -->
         <v-card
             v-show="currentTab === 2"
-            flat
+            :flat="smallScreen ? true : false"
             class="pt-3"
             height="75vh"
           >
