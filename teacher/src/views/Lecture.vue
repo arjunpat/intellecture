@@ -220,14 +220,14 @@
             height="75vh"
           >
           <v-row align="center" justify="center">
-            <v-row align="center" justify="center" v-if="students.length == 0 && showTutorial != 6" >
+            <v-row class="mt-4" align="center" justify="center" v-if="students.length == 0 && showTutorial != 6" >
               <v-col cols="8">
                 <div style="font-family: var(--main-font); text-align: center;">
-                <h1 style="font-weight: normal;">No students have joined the lecture. <!--Have them go to <a>join.intellecture.app</a> and enter the code <span style="background-color: #eee; padding: 3px 10px; border-radius: 5px; font-weight: bold;">{{ joinCode }}</span> to join--></h1>
+                <h1 :style="{fontWeight: 'normal', fontSize: '25px'}">No students have joined the lecture <!--Have them go to <a>join.intellecture.app</a> and enter the code <span style="background-color: #eee; padding: 3px 10px; border-radius: 5px; font-weight: bold;">{{ joinCode }}</span> to join--></h1>
                 </div>
               </v-col>
             </v-row>
-            <v-row align="center" justify="center">
+            <v-row align="center" justify="center" v-if="students.length != 0">
                 <v-col cols="8">
                 <ul style="list-style-type: none">
                     <li v-for="student in students" v-bind:key="student.id">
@@ -298,6 +298,7 @@ import Understanding from '../components/Understanding'
 import TutorialDisplay from '@/components/TutorialDisplay'
 import sampleQuestions from '@/testdata/questions.json'
 import sampleTopics from '@/testdata/topics.json'
+import sampleStudents from '@/testdata/students.json'
 
 export default {
   components: {
@@ -441,6 +442,7 @@ export default {
     //Testing code
     //this.displayQuestions = sampleQuestions["questions"];
     //this.topics = sampleTopics["topics"];
+    //this.students = sampleStudents["students"];
 
     this.socket = new WebSocket(`${socketServerOrigin}/lectures/live/teacher/${this.id}`)
     this.socket.onmessage = (event) => {
