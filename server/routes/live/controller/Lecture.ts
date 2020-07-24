@@ -182,7 +182,7 @@ export default class Lecture {
     if (banned) redis.ban(this.lecture_uid, student_uid);
     this.sendToStudents({
       to: student_uid,
-      type: 'ban_student'
+      type: 'kick_student'
     });
   }
 

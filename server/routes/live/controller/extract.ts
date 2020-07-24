@@ -3,7 +3,7 @@ import pos from 'retext-pos';
 import keywords from 'retext-keywords';
 
 function prepareQuestions(questions) {
-  return questions.length > 0 && questions.map(e => e.question.trim()).join('\n').toLowerCase().replace(/\?/g, '');
+  return questions.length > 0 && questions.map(e => e.question.trim().replace(/\r?\n|\r/g, ' ')).join('\n').toLowerCase().replace(/\?/g, '');
 }
 
 function processResult(questions, res): QuestionCategory[] {

@@ -41,11 +41,11 @@ When another student asks a question, it gets sent here.
 }
 ```
 
-#### ban_student
+#### kick_student
 
 ```javascript
 {
-  "type": "ban_student",
+  "type": "kick_student",
   "to": "rUJyP317iuZErNlhrn2"
 }
 ```

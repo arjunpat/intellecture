@@ -10,8 +10,9 @@ import db from '../models';
 
 import live from './live/';
 router.use('/live', live);
+router.use(mw.auth);
 
-router.post('/create', mw.auth, async (req: Request, res) => {
+router.post('/create', async (req: Request, res) => {
   let { name, class_uid } = req.body;
   let resp = await db.classes.ownsClass(class_uid, req.uid);
 
@@ -26,16 +27,16 @@ router.post('/create', mw.auth, async (req: Request, res) => {
   }));
 });
 
-router.get('/by-class/:class_uid', mw.auth, async (req, res) => {
+router.get('/by-class/:class_uid', async (req, res) => {
   res.send(responses.success(await db.lectures.getClassLectures(req.params.class_uid)));
 });
 
-router.get('/recent', mw.auth, async (req: Request, res) => {
+router.get('/recent', async (req: Request, res) => {
   // gets up to four recent lectures from the past week; could return 0
   res.send(responses.success(await db.lectures.getRecentLectures(req.uid, 4)));
 });
 
-router.get('/exists/:join_code', mw.auth, async (req, res) => {
+router.get('/exists/:join_code', async (req, res) => {
   let lecture_uid = await db.lectures.getLectureUidByJoinCode(req.params.join_code);
 
   if (lecture_uid) {

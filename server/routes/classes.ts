@@ -9,7 +9,9 @@ import db from '../models';
 
 import { Request } from '../types';
 
-router.post('/create', mw.auth, async (req: Request, res) => {
+router.use(mw.auth);
+
+router.post('/create', async (req: Request, res) => {
   let { name } = req.body;
 
   let class_uid = helpers.genId(15);
@@ -20,7 +22,7 @@ router.post('/create', mw.auth, async (req: Request, res) => {
   }));
 });
 
-router.get('/mine', mw.auth, async (req: Request, res) => {
+router.get('/mine', async (req: Request, res) => {
   res.send(responses.success(await db.classes.getUserClasses(req.uid)));
 });
 

@@ -7,11 +7,13 @@ import { Request } from '../types';
 
 import db from '../models';
 
+router.use(mw.auth);
+
 function isValidStars(value: number): boolean {
   return typeof value === 'number' && Number.isInteger(value) && value > 0 && value <= 5;
 }
 
-router.post('/create', mw.auth, async (req: Request, res) => {
+router.post('/create', async (req: Request, res) => {
   let { stars } = req.body;
 
   if (!isValidStars(stars))
@@ -23,7 +25,7 @@ router.post('/create', mw.auth, async (req: Request, res) => {
   res.send(responses.success({ id }));
 });
 
-router.post('/update', mw.auth, async (req: Request, res) => {
+router.post('/update', async (req: Request, res) => {
   let { id, stars, comments, tech_comments, diff_stars, helpful_stars } = req.body;
 
   if (typeof id !== 'number' || Date.now() - id > 30 * 60 * 1000) // 30 minutes
