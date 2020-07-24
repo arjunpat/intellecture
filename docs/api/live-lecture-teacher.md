@@ -156,6 +156,17 @@ As lecture progresses, teacher will get this message when new understanding scor
 }
 ```
 
+#### question_dismissed
+
+As lecture progresses, teacher will get this message when they dismiss a question.
+
+```javascript
+{
+  "type": "question_dismissed",
+  "question_uid": "j8fjKusdfh239al"
+}
+```
+
 #### end_lecture
 
 When lecture done, the teacher will receive this message.
@@ -186,5 +197,17 @@ Kick a student from the lecture.
 {
   "student_uid": "as3dfjLDKsdfn8237",
   "banned": true // prevents rejoin to same lecture
+}
+```
+
+## POST /lectures/live/teacher/:lecture_uid/dismiss
+
+Dismiss a question and tell everybody about it.
+
+###### Request body:
+
+```javascript
+{
+  "question_uid": "8jslDFIijsdfl49",
 }
 ```
