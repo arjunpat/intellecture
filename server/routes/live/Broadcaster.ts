@@ -23,8 +23,8 @@ class Broadcaster {
   dispatch(msg: any): string | void {
     let data = JSON.parse(msg);
 
-    if (data.to) {
-      this.send(data.to, msg);
+    if (data.to && data.type === 'kick_student') {
+      this.kick(data.to, msg);
     } else {
       this.sendAll(msg);
       switch (data.type) {
@@ -62,12 +62,13 @@ class Broadcaster {
     }
   }
 
-  send(account_uid: string, txt: string) {
+  kick(account_uid: string, txt: string) {
     // O(n) rn, hashmap could impove to O(1)
     // but not worth the hassle/memory use bc so infrequent
     for (let s of this.sockets) {
       if (s.uid === account_uid) {
         s.send(txt);
+        s.close();
         return; // only one
       }
     }

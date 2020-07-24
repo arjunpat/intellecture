@@ -233,4 +233,19 @@ router.post('/teacher/:lecture_uid/kick', mw.auth, attachLecture, async (req: Re
   res.send(responses.received());
 });
 
+router.post('/teacher/:lecture_uid/dismiss', mw.auth, attachLecture, async (req: Request, res) => {
+  if (req.lecture.account_uid !== req.uid) {
+    return res.send(responses.error('permissions'));
+  }
+
+  if (typeof req.body.question_uid !== 'string')
+    return res.send(responses.error('missing_data'));
+  
+  publish(req.params.lecture_uid, {
+    type: 'qds',
+    question_uid: req.body.question_uid
+  });
+  res.send(responses.received());
+});
+
 export default router;

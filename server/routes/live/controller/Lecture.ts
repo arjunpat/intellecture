@@ -80,6 +80,12 @@ export default class Lecture {
       case 'bns': // ban student
         this.kickStudent(data.student_uid, data.banned);
         break;
+      case 'qds':
+        this.blast({
+          type: 'question_dismissed',
+          question_uid: data.question_uid
+        });
+        break;
       case 'end': // end lecture
         this.end();
         break;

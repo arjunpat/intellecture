@@ -43,10 +43,23 @@ When another student asks a question, it gets sent here.
 
 #### kick_student
 
+If student gets this message and "to" has their uid, they have been kicked from the lecture.
+
 ```javascript
 {
   "type": "kick_student",
   "to": "rUJyP317iuZErNlhrn2"
+}
+```
+
+#### question_dismissed
+
+As lecture progresses, students will get this message teacher's dismiss a question.
+
+```javascript
+{
+  "type": "question_dismissed",
+  "question_uid": "j8fjKusdfh239al"
 }
 ```
 
