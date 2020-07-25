@@ -513,7 +513,7 @@ export default {
         this.$router.replace({ name: 'Feedback', params: { fromLectureEnd: true } })
       } else if(data.type == "error") {
         this.endLectureMethod()
-        //this.$router.replace({ name: 'Dashboard'})
+        this.$router.replace({ name: 'Dashboard'})
       }
     }
   },

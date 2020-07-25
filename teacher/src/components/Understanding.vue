@@ -1,6 +1,7 @@
 <template>
   <div>
-    <v-row align="center" style="margin: 20px;">
+    <v-row style="margin: 20px;">
+      <v-card :style="{ width: smallScreen ? '100%' : '35%' }">
       <TutorialDisplay
         :show="showTutorial == 0"
         backgroundColor="white"
@@ -12,7 +13,7 @@
         <template
           v-slot:explanation
         >The aggregated understanding score from your students will show up here.</template>
-        <div style="padding: 10px;">
+        <div style="padding: 10px; min-width: 300px;">
           <v-card-text style="text-align: center;">
             <span style="font-size: 23px; color: black; font-weight: bold;">
               <span
@@ -42,6 +43,8 @@
           </v-card-text>
         </div>
       </TutorialDisplay>
+      </v-card>
+      <v-card :style="{ width: smallScreen ? '100%' : '65%', paddingTop: '20px' }">
       <TutorialDisplay
         :show="showTutorial == 1"
         backgroundColor="white"
@@ -59,6 +62,7 @@
           <v-switch style="display: inline-block;" v-model="shortened" label="Shorten"></v-switch>
         </div>
       </TutorialDisplay>
+      </v-card>
     </v-row>
 
     <v-row
@@ -151,30 +155,41 @@ export default {
     components: {
       TutorialDisplay, 
       LineChart,
-    }
-    , computed: {
+    }, 
+    computed: {
         understandingFontSize () { //We should replace this with a single, simple calc statement at some point.
-          /* switch (this.$vuetify.breakpoint.name) {
-            case 'xs': return '180px'
-            case 'sm': return '180px'
+          switch (this.$vuetify.breakpoint.name) {
+            case 'xs': return '130px'
+            case 'sm': return '130px'
             case 'md': return '130px'
-            case 'lg': return '180px'
+            case 'lg': return '160px'
             case 'xl': return '180px'
-          } */
+          } 
+          /* This one doesn't really work
           let val = Math.min(window.innerWidth / 3.14, 180)
-          return val + 'px'
+          console.log(val);
+          return val + 'px'*/
         },
         progressColor () {
-        if(this.understandingScore == null) {
-          return 'primary'
-        } else if(this.understandingScore >= 70) {
-          return 'success'
-        } else if(this.understandingScore <= 20) {
-          return 'error'
-        } else {
-          return 'warning'
-        }
+          if(this.understandingScore == null) {
+            return 'primary'
+          } else if(this.understandingScore >= 70) {
+            return 'success'
+          } else if(this.understandingScore <= 20) {
+            return 'error'
+          } else {
+            return 'warning'
+          }
         },
+        smallScreen () {
+          switch (this.$vuetify.breakpoint.name) {
+            case 'xs': return true
+            case 'sm': return true
+            case 'md': return false
+            case 'lg': return false
+            case 'xl': return false
+          }
+        }
     },
      methods: {
       resetTutorial() {
