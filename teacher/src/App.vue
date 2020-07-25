@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-app-bar
-      v-if="$route.path !== '/'"
+      v-if="$route.path !== '/' && !pageNotFound"
       color="green lighten-1"
       app
       dark
@@ -56,7 +56,7 @@
     </v-snackbar>
 
     <v-main>
-      <router-view v-on:startlecture="starting" v-on:nonexistant="started = false" />
+      <router-view v-on:startlecture="starting" v-on:nonexistant="started = false" v-on:notFound="pageNotFound = true"/>
     </v-main>
 
     <v-footer padless color="green lighten-1" v-if="landing || dashboard || signin">
@@ -102,6 +102,7 @@ export default {
   data: function () {
     return {
       started: false,
+      pageNotFound: false,
       imageurl: 'https://tonyxin-8bae2.firebaseapp.com/images/tonyxin2.png',
       id: '',
       joinCode: '',
@@ -150,9 +151,12 @@ export default {
   },
   watch: {
     $route: function (to, from) {
+      if(from.name == "NotFound") {
+        this.pageNotFound = false;
+      }
       if(to.name == "Dashboard") {
         this.started = false
-      }
+      } 
       this.redirectAuthUser()
     },
     authUser: function(val) {

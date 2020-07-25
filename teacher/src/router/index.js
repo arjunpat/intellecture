@@ -15,10 +15,12 @@ const isProd = process.env.NODE_ENV === 'production'
 const routes = [
   { 
     path: '/404', 
+    name: 'NotFound',
     component: NotFound 
   },  
   { 
     path: '*', 
+    name: 'NotFound',
     redirect: '/404'
   }, 
   {
