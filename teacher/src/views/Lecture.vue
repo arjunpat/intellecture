@@ -117,88 +117,10 @@
             class="pt-3"
             min-height="75vh"
           >
-          <v-row align="center" justify="center">
-            <v-row class="mt-4" align="center" justify="center" v-if="students.length == 0 && showTutorial != 6" >
-              <v-col cols="8">
-                <div style="font-family: var(--main-font); text-align: center;">
-                <h1 :style="{fontWeight: 'normal', fontSize: '25px'}">No students have joined the lecture <!--Have them go to <a>join.intellecture.app</a> and enter the code <span style="background-color: #eee; padding: 3px 10px; border-radius: 5px; font-weight: bold;">{{ joinCode }}</span> to join--></h1>
-                </div>
-              </v-col>
-            </v-row>
-            <v-row align="center" justify="center" v-if="students.length != 0 || showTutorial == 6">
-                <v-col cols="8">
-                <ul style="list-style-type: none">
-                    <li v-for="student in students" v-bind:key="student.id">
-                      <v-banner style="font-family: var(--main-font);">
-                        <v-hover
-                          v-slot:default="{ hover }"
-                        >
-                          <span>
-                          <v-avatar
-                            size="42px"
-                            class="mr-3"
-                          >
-                            <img
-                              alt="Avatar"
-                              :src="student.photo"
-                              style="background-color: #F5F5F5;"
-                            >
-                          </v-avatar>
-                          {{ student.first_name }} {{ student.last_name }}
-                          <transition name="fade">
-                            <v-btn v-if="hover" class="ml-3" text color="red" @click="showDialog = true; activeStudent = student" @close="showDialog = false">Remove</v-btn> 
-                          </transition>
-                          </span>
-                        </v-hover>
-                        <template v-slot:actions>
-                          <span style="font-size: 15px; color: #BDBDBD;">Joined {{ formatUnix(student.ts) }}</span>
-                        </template>
-                      </v-banner>
-                    </li>
-
-                    <Dialog :show="showDialog" :lowerHeader="true" :header="dialogHeader" @close="removeStudent()" :width="600" btnColor="red" btnText="Remove"> 
-                      <template v-slot:content>
-                        <v-checkbox
-                          v-model="preventFromJoining"
-                          color="success"
-                          label="prevent from joining again"
-                        ></v-checkbox>
-                      </template>
-                    </Dialog>
-
-                    <!-- EXAMPLE QUESTION -->
-                    <TutorialDisplay :show="showTutorial == 6" backgroundColor="white" @next="showTutorial++; clickTab(0)" @cancel="showTutorial = -1" bottom>
-                      <template v-slot:title>
-                        Students
-                      </template>
-                      <template v-slot:explanation>
-                        Here, you can see a list of all the students that have joined your lecture.
-                      </template>
-                      <v-expand-transition>
-                        <li v-if="showTutorial == 6">
-                          <v-banner style="font-family: var(--main-font);">
-                            <v-avatar
-                              size="42px"
-                              class="mr-3"
-                            ><!-- CHANGE LATER -->
-                              <img
-                                alt="Avatar"
-                                src="https://i.imgur.com/4Wj8Wz2.jpg"
-                                style="background-color: #F5F5F5;"
-                              >
-                            </v-avatar>
-                            Joe Smoe
-                            <template v-slot:actions>
-                              <span style="font-size: 15px; color: #BDBDBD;">Joined 8:00 AM</span>
-                            </template>
-                          </v-banner>
-                        </li>
-                      </v-expand-transition>
-                    </TutorialDisplay>
-                </ul>
-                </v-col>
-            </v-row>
-        </v-row>
+          <Students
+            :topics="topics" :showTutorial="showTutorial" :students="students" :shortened="shortened"
+            @resetTutorial="resetTutorial()" @nextTutorial="nextTutorial()" @clickTab="clickTab(0)"  @invertDialog="invertDialog()"
+          />
         </v-card>
           <!-- End of Students tab -->
 
@@ -215,6 +137,8 @@ import store from '@/store'
 
 import Understanding from '../components/Understanding'
 import Questions from '../components/Questions'
+import Students from '../components/Students'
+
 import TutorialDisplay from '@/components/TutorialDisplay'
 import Dialog from '@/components/Dialog'
 
@@ -227,6 +151,7 @@ export default {
     TutorialDisplay,
     Understanding,
     Dialog,
+    Students,
     Questions
   },
   props: {
@@ -263,9 +188,6 @@ export default {
       snackbarMessage: '',
       showTutorial: -1,
       endCalled: false,
-      preventFromJoining: false,
-      showDialog: false,
-      activeStudent: ''
     }
   },
   methods: {
@@ -336,13 +258,6 @@ export default {
         this.snackbar = false;
       }, this.timeout);
     },
-    formatUnix(unix_timestamp) {
-      if (unix_timestamp==undefined) {
-        return "";
-      }
-      let date = new Date(unix_timestamp);
-      return date.toLocaleTimeString();
-    },
     sortQuestions() {
       this.questions.sort((a, b) => (a.upvotes < b.upvotes) ? 1 : -1)
       this.displayQuestions.sort((a, b) => (a.upvotes < b.upvotes) ? 1 : -1)
@@ -364,17 +279,6 @@ export default {
           var text = message
           var notification = new Notification(subject, { body: text, icon: img })
       }
-    },
-    removeStudent() {
-      this.showDialog = false
-      post(`/lectures/live/teacher/${this.id}/kick`, {
-        student_uid: this.activeStudent.id,
-        banned: this.preventFromJoining
-      }).then((data) => {
-        console.log(data);
-        this.students.splice(this.students.indexOf(this.activeStudent), 1);
-      });
-      this.preventFromJoining = false
     }
   },
   mounted () {
@@ -485,9 +389,6 @@ export default {
       if(this.smallScreen) {
         return '80vw';
       }
-    },
-    dialogHeader() {
-      return 'Are you sure you want to remove ' + this.activeStudent.first_name + ' ' + this.activeStudent.last_name + '?';
     }
   },
   watch: {

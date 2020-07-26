@@ -150,12 +150,15 @@ export default {
       topics: Array,
       showTutorial: Number,
       datacollection: Object,
-      shortened: Boolean,
     }, 
     components: {
       TutorialDisplay, 
       LineChart,
-    }, 
+    }, data() {
+      return {
+        shortened: false
+      }
+    },
     computed: {
         understandingFontSize () { //We should replace this with a single, simple calc statement at some point.
           switch (this.$vuetify.breakpoint.name) {
