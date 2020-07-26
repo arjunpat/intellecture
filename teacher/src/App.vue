@@ -15,8 +15,13 @@
       <v-spacer></v-spacer>
 
       <v-btn class="ml-1 light-green lighten-2" v-if="landing" @click="$router.push({ path: '/signin' })">Sign In</v-btn>
-      <Dialog :show="showDialog" :text="dialogText" :header="dialogHeader" @close="showDialog = false"> <!-- Child detect change -->
-        <v-btn v-if="!started && dashboard" @click="startLecture()" @close="showDialog = false">Start Lecture</v-btn>
+      <Dialog :show="showDialog" :header="dialogHeader" @close="showDialog = false"> <!-- Child detect change -->
+        <template v-slot:activator>
+          <v-btn v-if="!started && dashboard" @click="startLecture()" @close="showDialog = false">Start Lecture</v-btn>
+        </template>
+        <template v-slot:content>
+          {{ dialogText }}
+        </template>
       </Dialog>
       <v-btn v-if="newlecture" @click="$router.push({ path: '/dashboard' })">Back</v-btn>
       <v-btn class="red" v-if="started && livelecture" @click="endlecture()">End Lecture</v-btn>
@@ -55,7 +60,7 @@
       {{message}}<v-icon style="color: white">mdi-clipboard</v-icon>  
     </v-snackbar>
 
-    <v-main>
+    <v-main class="fill-height">
       <router-view v-on:startlecture="starting" v-on:nonexistant="started = false" v-on:notFound="pageNotFound = true"/>
     </v-main>
 
@@ -245,6 +250,8 @@ export default {
 @import url('https://fonts.googleapis.com/css?family=Noto+Sans&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Poppins&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Material+Icons');
+
 
 :root {
   --main-font: 'Poppins', 'Roboto', 'Sans-serif';

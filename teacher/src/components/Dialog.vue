@@ -1,32 +1,35 @@
 <template>
-  <v-row class="d-flex flex-row-reverse pr-3">
-    <slot></slot>
+  <div style="display: inline-block">
+    <slot name="activator"></slot>
 
     <v-dialog
       v-model="dialog"
-      max-width="290"
+      :width="width"
     >
-      <v-card>
-        <v-card-title class="headline">{{ header }}</v-card-title>
-
+      <v-card style="font-family: var(--main-font);">
+        <v-card-title v-if="!lowerHeader">
+          {{ header }}
+        </v-card-title>
+        
         <v-card-text>
-          {{ text }}
+          <h1 v-if="lowerHeader" class="pt-5" id="dialogHeader">{{ header }}</h1>
+          <slot name="content"></slot>
         </v-card-text>
 
         <v-card-actions>
           <v-spacer></v-spacer>
 
           <v-btn
-            color="green darken-1"
+            :color="btnColor"
             text
             @click="dialog = false"
           >
-            Okay
+            {{ btnText }}
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-row>
+  </div>
 </template>
 
 
@@ -37,7 +40,10 @@ export default {
   props: {
     show: { type: Boolean, required: true },
     header: { type: String, required: true },
-    text: { type: String, required: true }
+    width: { type: Number, default: 250 },
+    btnText: { type: String, default: 'Okay'},
+    btnColor: { type: String, default: 'green darken-1'},
+    lowerHeader: {type: Boolean, default: false }
   },
 
   data() {
@@ -60,3 +66,11 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+
+  #dialogHeader {
+    font-size: 20px;
+  }
+
+</style>

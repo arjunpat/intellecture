@@ -17,17 +17,33 @@
             :class="$vuetify.breakpoint.smAndUp ? 'text-h5' : 'text-h6'"  
           >Teach online with confidence</div>
         </div>
-        <a href="https://forms.gle/6TNwin4Jf7ZjQ5P5A" style="text-decoration: none;">
         <v-btn
           class="mt-8"
           color="light-green lighten-2" 
           dark
-        >Request Access</v-btn>
-        </a>
+          @click="$router.push({ name: 'SignIn' })"
+        >Get started</v-btn>
+        <v-btn
+          class="mt-8 ml-1"
+          color="" 
+          text
+          @click="showvid = true"
+        ><v-icon class="mr-1">play_circle_filled</v-icon>See how it works</v-btn>
       </v-col>
     </v-row>
     <img src="@/assets/img/logo_pile_left.svg" :style="logoPileStyle" style="position: absolute; left:0; bottom: 0;">
     <img src="@/assets/img/logo_pile_right.svg" :style="logoPileStyle" style="position: absolute; right:0; bottom: 0;">
+
+
+    <v-container id="vid-container" class="fill-height" fluid v-if="showvid">
+
+      <v-btn text id="close-vid" @click="showvid = false"><v-icon large>close</v-icon></v-btn>
+
+      <v-row justify="center">
+        <iframe width="972" height="547" src="https://www.youtube.com/embed/gEi5K-KifhE?autoplay=1&modestbranding=1&rel=0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </v-row>
+
+    </v-container>
   </v-container>
   <!--<v-content class="fullscreen">
     <v-container class="section">
@@ -108,6 +124,7 @@ export default {
   name: 'Landing',
   data () {
     return {
+      showvid: false
     }
   },
   computed: {
@@ -135,9 +152,22 @@ h3 {
 .section {
   min-height: 100vh;
 }
-.container {
-  //display:flex;
+
+#vid-container {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  background-color: rgba(0, 0, 0, 0.25);
+  z-index: 100;
 }
+
+#close-vid {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: white;
+}
+
 .blurbs {
   justify-content: space-evenly;
   font-size:1.5rem;

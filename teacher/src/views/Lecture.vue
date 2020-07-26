@@ -221,7 +221,7 @@
             v-show="currentTab === 2"
             :flat="smallScreen ? true : false"
             class="pt-3"
-            height="75vh"
+            min-height="75vh"
           >
           <v-row align="center" justify="center">
             <v-row class="mt-4" align="center" justify="center" v-if="students.length == 0 && showTutorial != 6" >
@@ -236,22 +236,42 @@
                 <ul style="list-style-type: none">
                     <li v-for="student in students" v-bind:key="student.id">
                       <v-banner style="font-family: var(--main-font);">
-                        <v-avatar
-                          size="42px"
-                          class="mr-3"
+                        <v-hover
+                          v-slot:default="{ hover }"
                         >
-                          <img
-                            alt="Avatar"
-                            :src="student.photo"
-                            style="background-color: #F5F5F5;"
+                          <span>
+                          <v-avatar
+                            size="42px"
+                            class="mr-3"
                           >
-                        </v-avatar>
-                        {{ student.first_name }} {{ student.last_name }}
+                            <img
+                              alt="Avatar"
+                              :src="student.photo"
+                              style="background-color: #F5F5F5;"
+                            >
+                          </v-avatar>
+                          {{ student.first_name }} {{ student.last_name }}
+                          <transition name="fade">
+                            <v-btn v-if="hover" class="ml-3" text color="red" @click="showDialog = true; activeStudent = student" @close="showDialog = false">Remove</v-btn> 
+                          </transition>
+                          </span>
+                        </v-hover>
                         <template v-slot:actions>
                           <span style="font-size: 15px; color: #BDBDBD;">Joined {{ formatUnix(student.ts) }}</span>
                         </template>
                       </v-banner>
                     </li>
+
+                    <Dialog :show="showDialog" :lowerHeader="true" :header="dialogHeader" @close="removeStudent()" :width="600" btnColor="red" btnText="Remove"> 
+                      <template v-slot:content>
+                        <v-checkbox
+                          v-model="preventFromJoining"
+                          color="success"
+                          label="prevent from joining again"
+                        ></v-checkbox>
+                      </template>
+                    </Dialog>
+
                     <!-- EXAMPLE QUESTION -->
                     <TutorialDisplay :show="showTutorial == 6" backgroundColor="white" @next="showTutorial++; clickTab(0)" @cancel="showTutorial = -1" bottom>
                       <template v-slot:title>
@@ -298,8 +318,11 @@ import { mdiCloseThick } from '@mdi/js';
 import { mapState } from 'vuex'
 import { post, get, setLectures, socketServerOrigin } from '@/helpers.js'
 import store from '@/store'
+
 import Understanding from '../components/Understanding'
 import TutorialDisplay from '@/components/TutorialDisplay'
+import Dialog from '@/components/Dialog'
+
 import sampleQuestions from '@/testdata/questions.json'
 import sampleTopics from '@/testdata/topics.json'
 import sampleStudents from '@/testdata/students.json'
@@ -307,7 +330,8 @@ import sampleStudents from '@/testdata/students.json'
 export default {
   components: {
     TutorialDisplay,
-    Understanding
+    Understanding,
+    Dialog
   },
   props: {
     id: { type: String }
@@ -342,7 +366,10 @@ export default {
       timeout: 1000,
       snackbarMessage: '',
       showTutorial: -1,
-      endCalled: false
+      endCalled: false,
+      preventFromJoining: false,
+      showDialog: false,
+      activeStudent: ''
     }
   },
   methods: {
@@ -435,10 +462,21 @@ export default {
     },
     displayNotification(subject, message) {
       if (Notification.permission == 'granted') {
-          var img = 'https://i.imgur.com/lMPcw6k.png';
-          var text = message;
-          var notification = new Notification(subject, { body: text, icon: img });
+          var img = 'https://i.imgur.com/lMPcw6k.png'
+          var text = message
+          var notification = new Notification(subject, { body: text, icon: img })
       }
+    },
+    removeStudent() {
+      this.showDialog = false
+      post(`/lectures/live/teacher/${this.id}/kick`, {
+        student_uid: this.activeStudent.id,
+        banned: this.preventFromJoining
+      }).then((data) => {
+        console.log(data);
+        this.students.splice(this.students.indexOf(this.activeStudent), 1);
+      });
+      this.preventFromJoining = false
     }
   },
   mounted () {
@@ -549,6 +587,9 @@ export default {
       if(this.smallScreen) {
         return '80vw';
       }
+    },
+    dialogHeader() {
+      return 'Are you sure you want to remove ' + this.activeStudent.first_name + ' ' + this.activeStudent.last_name + '?';
     }
   },
   watch: {
@@ -724,6 +765,13 @@ html {
 .tabs-bar {
   width: 50% !important;
   margin: auto;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .3s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 
 @media screen and (max-width: 500px) {
