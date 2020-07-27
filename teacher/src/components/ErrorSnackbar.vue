@@ -1,25 +1,16 @@
 <template>
-  <v-snackbar
-    v-model="show"
-    top
-    color="error"
-  >
+  <v-snackbar v-model="show" top color="error">
     {{ error }}
-    <v-btn
-      text
-      @click="show = false"
-    >
-      Close
-    </v-btn>
+    <v-btn text @click="show = false">Close</v-btn>
   </v-snackbar>
 </template>
 
 <script>
 export default {
-  name: 'ErrorSnackbar',
-  
+  name: "ErrorSnackbar",
+
   props: {
-    error: {type: String, default: ''},
+    error: { type: String, default: "" },
   },
 
   data() {

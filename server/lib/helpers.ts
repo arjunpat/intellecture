@@ -1,9 +1,9 @@
-import fetch from 'node-fetch';
-const badWords = require('../../lib/bad_words.json');
+import fetch from "node-fetch";
+const badWords = require("../../lib/bad_words.json");
 
 export function genId(len: number): string {
-  let options = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
-  let id = '';
+  let options = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+  let id = "";
 
   for (let i = 0; i < len; i++)
     id += options[Math.floor(Math.random() * options.length)];
@@ -12,8 +12,8 @@ export function genId(len: number): string {
 }
 
 export function genLowerCaseId(length: number): string {
-  let options = 'abcdefghijklmnopqrstuvwxyz';
-  let id = '';
+  let options = "abcdefghijklmnopqrstuvwxyz";
+  let id = "";
 
   for (let i = 0; i < length; i++)
     id += options[Math.floor(Math.random() * options.length)];
@@ -30,8 +30,7 @@ export function sum(arr: number[]) {
 export function diff(arr: number[]): number[] {
   let res: number[] = [];
   res.length = arr.length - 1;
-  for (let i = 0; i  < arr.length - 1; i++)
-    res[i] = arr[i + 1] - arr[i];
+  for (let i = 0; i < arr.length - 1; i++) res[i] = arr[i + 1] - arr[i];
   return res;
 }
 
@@ -62,12 +61,12 @@ function containsBadWord(code: string): boolean {
   // O(6log n) -> O(log n)
   // assumes that all bad words are of length 3 to 5
   return (
-    isBadWord(code)
-    || isBadWord(code.slice(0, 4))
-    || isBadWord(code.slice(1, 5))
-    || isBadWord(code.slice(0, 3))
-    || isBadWord(code.slice(1, 4))
-    || isBadWord(code.slice(2, 5))
+    isBadWord(code) ||
+    isBadWord(code.slice(0, 4)) ||
+    isBadWord(code.slice(1, 5)) ||
+    isBadWord(code.slice(0, 3)) ||
+    isBadWord(code.slice(1, 4)) ||
+    isBadWord(code.slice(2, 5))
   );
 }
 
@@ -78,8 +77,8 @@ export function genLectureJoinCode(): string {
 }
 
 export async function validateGoogleAccessToken(token: string) {
-  let url = 'https://www.googleapis.com/oauth2/v3/userinfo?access_token=' + encodeURIComponent(token);
-  let res = await fetch(url).then(res => res.json());
+  let url = "https://www.googleapis.com/oauth2/v3/userinfo?access_token=" + encodeURIComponent(token);
+  let res = await fetch(url).then((res) => res.json());
 
   if (!res.email_verified || res.error) return false;
   return res;

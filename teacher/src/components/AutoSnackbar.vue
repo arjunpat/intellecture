@@ -1,26 +1,17 @@
 <template>
-  <v-snackbar
-    v-model="show"
-    top
-    :color="color"
-  >
+  <v-snackbar v-model="show" top :color="color">
     {{ text }}
-    <v-btn
-      text
-      @click="show = false"
-    >
-      Close
-    </v-btn>
+    <v-btn text @click="show = false">Close</v-btn>
   </v-snackbar>
 </template>
 
 <script>
 export default {
-  name: 'AutoSnackbar',
-  
+  name: "AutoSnackbar",
+
   props: {
-    text: {type: String, default: ''},
-    color: {type: String, default: ''}
+    text: { type: String, default: "" },
+    color: { type: String, default: "" },
   },
 
   data() {
@@ -37,8 +28,7 @@ export default {
       handler(text) {
         if (text) {
           this.show = true
-        } else
-          this.show = false
+        } else this.show = false
       },
     },
   },

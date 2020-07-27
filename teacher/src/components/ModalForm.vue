@@ -13,7 +13,11 @@
           <v-container>
             <v-row>
               <v-col cols="12" sm="6" md="12">
-                <v-text-field label="Class Name" hint="What's the name of the new class?" v-model="className"></v-text-field>
+                <v-text-field
+                  label="Class Name"
+                  hint="What's the name of the new class?"
+                  v-model="className"
+                ></v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -32,26 +36,26 @@
 </style>
 
 <script>
-import { mapState } from 'vuex'
-import { post, get, getClasses } from '@/helpers.js'
+import { mapState } from "vuex"
+import { post, get, getClasses } from "@/helpers.js"
 
 export default {
-  name: 'ModalForm',
+  name: "ModalForm",
   data() {
-      return {
-          dialog: false,
-          className: ''
-      }
+    return {
+      dialog: false,
+      className: "",
+    }
   },
   methods: {
     createClass() {
-      post('/classes/create', {
-        name: this.className
-      }).then(response => {
-        this.className = '';
-        getClasses();
+      post("/classes/create", {
+        name: this.className,
+      }).then((response) => {
+        this.className = ""
+        getClasses()
       })
-    }
-  }
+    },
+  },
 }
 </script>
