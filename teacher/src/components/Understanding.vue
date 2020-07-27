@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row style="margin: 20px;">
-      <v-card :style="{ width: smallScreen ? '100%' : '35%' }">
+      <v-card :style="{ width: smallScreen ? '100%' : '40%' }" :flat="!this.$vuetify.breakpoint.lgAndUp">
       <TutorialDisplay
         :show="showTutorial == 0"
         backgroundColor="white"
@@ -44,7 +44,7 @@
         </div>
       </TutorialDisplay>
       </v-card>
-      <v-card :style="{ width: smallScreen ? '100%' : '65%', paddingTop: '20px' }">
+      <v-card :style="{ width: smallScreen ? '100%' : '60%', paddingTop: '20px' }" :flat="!this.$vuetify.breakpoint.lgAndUp">
       <TutorialDisplay
         :show="showTutorial == 1"
         backgroundColor="white"
@@ -165,7 +165,7 @@ export default {
             case 'xs': return '130px'
             case 'sm': return '130px'
             case 'md': return '130px'
-            case 'lg': return '160px'
+            case 'lg': return '180px'
             case 'xl': return '180px'
           } 
           /* This one doesn't really work
@@ -185,13 +185,7 @@ export default {
           }
         },
         smallScreen () {
-          switch (this.$vuetify.breakpoint.name) {
-            case 'xs': return true
-            case 'sm': return true
-            case 'md': return false
-            case 'lg': return false
-            case 'xl': return false
-          }
+          return this.$vuetify.breakpoint.smAndDown
         }
     },
      methods: {
