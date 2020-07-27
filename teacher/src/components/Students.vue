@@ -172,14 +172,11 @@ export default {
         this.$emit('clickTab');
       },  
       removeStudent() {
-        this.showDialog = false
-        post(`/lectures/live/teacher/${this.id}/kick`, {
+        this.$emit('kickStudent', {
           student_uid: this.activeStudent.uid,
           banned: this.preventFromJoining
-        }).then((data) => {
-          console.log(data);
-          this.students.splice(this.students.indexOf(this.activeStudent), 1);
-        });
+        })
+        this.showDialog = false
         this.preventFromJoining = false
       },
     getStudentById(id) {

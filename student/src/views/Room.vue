@@ -310,7 +310,6 @@ export default {
 
       this.socket.onmessage = (event) => {
         const data = JSON.parse(event.data)
-        console.log(data)
         switch (data.type) {
           case 'error':
             if (data.error === 'does_not_exist' || data.error === 'lecture_not_initialized') {

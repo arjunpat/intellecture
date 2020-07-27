@@ -118,8 +118,15 @@
             min-height="75vh"
           >
           <Students
-            :topics="topics" :showTutorial="showTutorial" :students="students" :shortened="shortened"
-            @resetTutorial="resetTutorial()" @nextTutorial="nextTutorial()" @clickTab="clickTab(0)"  @invertDialog="invertDialog()"
+            :topics="topics" 
+            :showTutorial="showTutorial" 
+            :students="students" 
+            :shortened="shortened"
+            @resetTutorial="resetTutorial()" 
+            @nextTutorial="nextTutorial()" 
+            @clickTab="clickTab(0)"  
+            @invertDialog="invertDialog()"
+            @kickStudent="kickStudent"
           />
         </v-card>
           <!-- End of Students tab -->
@@ -279,7 +286,20 @@ export default {
           var text = message
           var notification = new Notification(subject, { body: text, icon: img })
       }
-    }
+    },
+    kickStudent({ student_uid, banned }) {
+      post(`/lectures/live/teacher/${this.id}/kick`, {
+        student_uid,
+        banned,
+      }).then((data) => {
+        this.removeStudent(student_uid)
+      })
+    },
+    removeStudent(uid) {
+      this.students = this.students.filter((student) => {
+        return student.uid !== uid
+      })
+    },
   },
   mounted () {
 
