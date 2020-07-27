@@ -44,7 +44,7 @@
       </v-list>
 
       <v-btn 
-        v-if="numExtraQuestions > 0"
+        v-if="!mine && numExtraQuestions > 0"
         block
         text
         class="mb-0"

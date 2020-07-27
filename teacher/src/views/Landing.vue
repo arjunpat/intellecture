@@ -24,8 +24,8 @@
           @click="$router.push({ name: 'SignIn' })"
         >Get started</v-btn>
         <v-btn
-          class="mt-8 ml-1"
-          color="" 
+          class="mt-8 ml-2"
+          color="white" 
           text
           @click="showvid = true"
         ><v-icon class="mr-1">play_circle_filled</v-icon>See how it works</v-btn>
