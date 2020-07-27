@@ -115,10 +115,12 @@
             :showTutorial="showTutorial"
             :datacollection="datacollection"
             :shortened="shortened"
+            :students="students"
             @resetTutorial="resetTutorial()"
             @nextTutorial="nextTutorial()"
-            :totalStudents="totalStudents"
-            @showCategory="showCategory()"
+            @showCategory="showCategory"
+            @showAllQuestions="showAllQuestions"
+            @dismiss="dismiss"
             :displayQuestions="displayQuestions"
             @clickTab="clickTab(2)"
           />
@@ -203,8 +205,18 @@ export default {
     }
   },
   methods: {
-    dismiss(question) {
-      question.dismiss = true
+    dismiss(question_uid) {
+      let index = this.getQuestionIndexById(question_uid)
+      let question = this.questions[index]
+
+      this.$set(this.questions, index, {
+        ...question,
+        dismissed: true
+      })
+      this.displayQuestions = [...this.questions]
+      post(`/lectures/live/teacher/${this.lectureInfo.uid}/dismiss`, {
+        question_uid
+      })
     },
     exitFS() {
       document.exitFullscreen()
@@ -262,11 +274,21 @@ export default {
         q.includes(question.question_uid)
       )
     },
+    showAllQuestions() {
+      this.displayQuestions = [...this.questions]
+    },
     getStudentById(id) {
       return this.students[id]
     },
     getQuestionById(id) {
       return this.questions.find((question) => question.question_uid === id)
+    },
+    getQuestionIndexById(id) {
+      for (let i = 0; i < this.questions.length; i++) {
+        if (this.questions[i].question_uid === id)
+          return i
+      }
+      return -1
     },
     showSnackBar(message) {
       this.snackbarMessage = message
@@ -298,7 +320,7 @@ export default {
       }
     },
     kickStudent({ student_uid, banned }) {
-      post(`/lectures/live/teacher/${this.lectureInfo.lecture_uid}/kick`, {
+      post(`/lectures/live/teacher/${this.lectureInfo.uid}/kick`, {
         student_uid,
         banned,
       })
@@ -306,9 +328,9 @@ export default {
   },
   mounted() {
     //Testing code
-    //this.displayQuestions = sampleQuestions["questions"];
-    //this.topics = sampleTopics["topics"];
-    //this.students = sampleStudents["students"];
+    // this.displayQuestions = sampleQuestions["questions"];
+    // this.topics = sampleTopics["topics"];
+    // this.students = sampleStudents;
 
     this.socket = new WebSocket(
       `${socketServerOrigin}/lectures/live/teacher/${this.id}`
@@ -326,10 +348,10 @@ export default {
           }
         })
       } else if (data.type === "student_join") {
-        this.students[data.uid] = {
+        this.$set(this.students, data.uid, {
           ...data,
           inLecture: true,
-        }
+        })
         this.showSnackBar(`${data.first_name} ${data.last_name} joined`)
         this.displayNotification(
           "Student joined",
@@ -337,7 +359,10 @@ export default {
         )
       } else if (data.type === "student_leave") {
         let left = this.students[data.uid]
-        left.inLecture = false
+        this.$set(this.students, data.uid, {
+          ...left,
+          inLecture: false,
+        })
         this.showSnackBar(`${left.first_name} ${left.last_name} left`)
         this.displayNotification(
           "Student left",
@@ -362,6 +387,7 @@ export default {
           upvotes: 0,
           upvotedStudents: [],
         })
+        this.displayQuestions = [...this.questions]
         this.displayNotification("New Question", data.question)
       } else if (data.type === "ques_categor") {
         this.topics = data.categories
@@ -451,9 +477,7 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     if (!this.endCalled) {
-      const answer = window.confirm(
-        "Do you really want to leave? you have unsaved changes!"
-      )
+      const answer = window.confirm("Do you really want to leave? you have unsaved changes!")
       if (answer) {
         this.endLectureMethod()
         next()

@@ -1,75 +1,74 @@
-{ 
-    "students": [{
-        "type": "student_join",
-        "ts": "1595610269833",
-        "uid": "JfdslFKjd82jSDF",
-        "email": "asdfjlsadf@asdf.com",
-        "first_name": "John",
-        "last_name": "Liu",
-        "photo": "https://media-exp1.licdn.com/dms/image/C5603AQHGqLHs3EpsCw/profile-displayphoto-shrink_400_400/0?e=1600905600&v=beta&t=D0PJXqUSaD9QO32CP2ylej0WKKc73V0knwlUrvHfzpo"
-      },
-      {
-        "type": "student_join",
-        "ts": "1595609613707",
-        "uid": "JfdslFKjd82jSDF",
-        "email": "asdfjlsadf@asdf.com",
-        "first_name": "Anthony",
-        "last_name": "Shin",
-        "photo": "https://i.imgur.com/4Wj8Wz2.jpg"
-      },
-      {
-  "type": "student_join",
-  "ts": "1595609618707",
-  "uid": "JfdslFKjd82jSDF",
-  "email": "asdfjlsadf@asdf.com",
-  "first_name": "Ajay",
-  "last_name": "Patel",
-  "photo": "https://static.wixstatic.com/media/bf3f32_abf07f338afa4d928433f647bf5ea430~mv2.jpg/v1/crop/x_0,y_39,w_2349,h_2349/fill/w_575,h_575,al_c,q_80,usm_0.66_1.00_0.01/IMG_2834_CR2.webp"
-},
 {
+  "JfdslFKjd82jSDF": {
+    "type": "student_join",
+    "ts": "1595610269833",
+    "uid": "JfdslFKjd82jSDF",
+    "email": "asdfjlsadf@asdf.com",
+    "first_name": "John",
+    "last_name": "Liu",
+    "photo": "https://media-exp1.licdn.com/dms/image/C5603AQHGqLHs3EpsCw/profile-displayphoto-shrink_400_400/0?e=1600905600&v=beta&t=D0PJXqUSaD9QO32CP2ylej0WKKc73V0knwlUrvHfzpo"
+  },
+  "JfsdslFKjd82jSDF": {
+    "type": "student_join",
+    "ts": "1595609613707",
+    "uid": "JfsdslFKjd82jSDF",
+    "email": "asdfjlsadf@asdf.com",
+    "first_name": "Anthony",
+    "last_name": "Shin",
+    "photo": "https://i.imgur.com/4Wj8Wz2.jpg"
+  },
+  "JfdslFKjfd82jSDF": {
+    "type": "student_join",
+    "ts": "1595609618707",
+    "uid": "JfdslFKjfd82jSDF",
+    "email": "asdfjlsadf@asdf.com",
+    "first_name": "Ajay",
+    "last_name": "Patel",
+    "photo": "https://static.wixstatic.com/media/bf3f32_abf07f338afa4d928433f647bf5ea430~mv2.jpg/v1/crop/x_0,y_39,w_2349,h_2349/fill/w_575,h_575,al_c,q_80,usm_0.66_1.00_0.01/IMG_2834_CR2.webp"
+  },
+  "JfdslFdjd82jSDF": {
     "type": "student_join",
     "ts": "1595609622707",
-    "uid": "JfdslFKjd82jSDF",
+    "uid": "JfdslFdjd82jSDF",
     "email": "asdfjlsadf@asdf.com",
     "first_name": "Anton",
     "last_name": "Smith",
     "photo": "https://codetclub.ga/images/aidan.jpg"
   },
-  {
+  "JfdslFKjd82jfSDF": {
     "type": "student_join",
     "ts": "1595609625707",
-    "uid": "JfdslFKjd82jSDF",
+    "uid": "JfdslFKjd82jfSDF",
     "email": "asdfjlsadf@asdf.com",
     "first_name": "Debra",
     "last_name": "Hawkins",
     "photo": "https://cache.legacy.net/legacy/images/cobrands/Batesville/photos/dba9e7f4-f206-4102-8a23-700d3d0ef09a.jpg"
   },
-  {
+  "JfdslFKsjd82jSDF": {
     "type": "student_join",
     "ts": "1595609627707",
-    "uid": "JfdslFKjd82jSDF",
+    "uid": "JfdslFKsjd82jSDF",
     "email": "asdfjlsadf@asdf.com",
     "first_name": "Daniel",
     "last_name": "Grand",
     "photo": "https://publichealth.uga.edu/wp-content/uploads/2020/01/Thomas-Cameron_Student_Profile.jpg"
   },
-  {
+  "JfdslFKjd82ajSDF": {
     "type": "student_join",
     "ts": "1595609629707",
-    "uid": "JfdslFKjd82jSDF",
+    "uid": "JfdslFKjd82ajSDF",
     "email": "asdfjlsadf@asdf.com",
     "first_name": "Samantha",
     "last_name": "Cook",
     "photo": "https://pbs.twimg.com/profile_images/991361673427480579/LG29sXVo.jpg"
   },
-  {
+  "JfadslFKjd82jSDF": {
     "type": "student_join",
     "ts": "1595609630707",
-    "uid": "JfdslFKjd82jSDF",
+    "uid": "JfadslFKjd82jSDF",
     "email": "asdfjlsadf@asdf.com",
     "first_name": "Jeff",
     "last_name": "Grimes",
     "photo": "https://www2.physics.ox.ac.uk/sites/default/files/images/Stan1.jpg"
   }
-    ]
-    }
+}

@@ -150,7 +150,7 @@ import LineChart from "./Chart"
 export default {
   name: "Understanding",
   props: {
-    understandingScore: Number,
+    understandingScore: Number | String,
     topics: Array,
     showTutorial: Number,
     datacollection: Object,

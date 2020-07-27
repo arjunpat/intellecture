@@ -4,7 +4,7 @@
       class="mt-4"
       align="center"
       justify="center"
-      v-if="students.length == 0 && showTutorial != 6"
+      v-if="showTutorial != 6"
     >
       <v-col cols="8">
         <div style="font-family: var(--main-font); text-align: center;">
@@ -18,7 +18,7 @@
     <v-row align="center" justify="center" v-if="students.length != 0 || showTutorial == 6">
       <v-col cols="8">
         <ul style="list-style-type: none">
-          <li v-for="student in students" v-bind:key="student.uid">
+          <li v-for="student in students" v-bind:key="student.uid" v-show="student.inLecture">
             <v-banner style="font-family: var(--main-font);">
               <v-hover v-slot:default="{ hover }">
                 <span>
@@ -108,7 +108,7 @@ export default {
   name: "Students",
   props: {
     topics: Array,
-    students: Array,
+    students: Object,
     showTutorial: Number,
     shortened: Boolean,
     totalStudents: Array,
@@ -118,6 +118,7 @@ export default {
       preventFromJoining: false,
       activeStudent: "",
       showDialog: true,
+      noStudentsToShow: true
     }
   },
   components: {

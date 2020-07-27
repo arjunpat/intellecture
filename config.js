@@ -3,8 +3,7 @@ const config = {}
 // ----------------------------- MAKE CHANGES BELOW -----------------------
 // let api = 'prod'
 // let api = 'test'
-let api = 'test'
-// let api = window.location.origin.includes('localhost') ? 'test' : 'prod'
+let api = window.location.origin.includes('localhost') ? 'test' : 'prod'
 // ----------------------------- MAKE CHANGES ABOVE -----------------------
 
 if (api === 'prod') {

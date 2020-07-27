@@ -7,7 +7,7 @@
             <v-card-title style="font-weight: bold;">
               Key Topics
               <v-btn
-                @click="displayQuestions = questions"
+                @click="$emit('showAllQuestions')"
                 v-show="questions.length != displayQuestions.length"
                 text
                 color="primary"
@@ -15,25 +15,25 @@
               >Show all</v-btn>
             </v-card-title>
             <v-card-text>
-              <v-list-item v-if="topics.length < 1 && showTutorial != 4">
+              <v-list-item v-if="topics.length === 0 && showTutorial != 4">
                 <v-list-item-content>
                   <v-list-item-title>At least 5 questions are needed</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item v-for="n in topics.length" v-bind:key="n">
+              <v-list-item v-for="(topic, index) in topics" v-bind:key="index">
                 <v-list-item-content>
                   <v-list-item-title>
                     <div
                       style="display: inline-block; font-size: 20px;"
                       class="topic"
-                      @click="$emit('showCategory',n-1)"
+                      @click="$emit('showCategory', index)"
                     >
                       <span
-                        v-if="topics[n-1].value.length > 20"
-                      >{{ topics[n-1].value.substring(0, 20) }}...</span>
-                      <span v-else>{{ topics[n-1].value }}</span>
+                        v-if="topic.value.length > 20"
+                      >{{ topic.value.substring(0, 20) }}...</span>
+                      <span v-else>{{ topic.value }}</span>
                     </div>
-                    <div id="topic-quantity" class="ml-3">{{ topics[n-1].questions.length }}</div>
+                    <div id="topic-quantity" class="ml-3">{{ topic.questions.length }}</div>
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -77,17 +77,17 @@
               v-bind:key="question.question_uid"
               v-show="!question.dismissed"
             >
-              <v-banner :style="{ textAlign: 'left', width: questionWidth }">
+              <v-banner :style="{ textAlign: 'left' }">
                 <v-tooltip right>
                   <template v-slot:activator="{ on }">
                     <span v-on="on">{{question.question}}</span>
                   </template>
                   <span>
-                    {{ getStudentById(question.creator_uid).first_name }} {{ getStudentById(question.creator_uid).last_name }}
+                    {{ students[question.creator_uid].first_name }} {{ students[question.creator_uid].last_name }}
                     <v-avatar size="20px" class="ml-1">
                       <img
                         alt="Avatar"
-                        :src="getStudentById(question.creator_uid).photo"
+                        :src="students[question.creator_uid].photo"
                         style="background-color: #F5F5F5;"
                       />
                     </v-avatar>
@@ -108,7 +108,7 @@
                       <div v-else>No upvotes</div>
                     </span>
                   </v-tooltip>
-                  <v-btn text color="primary" v-on:click="dismiss(question)">Dismiss</v-btn>
+                  <v-btn text color="primary" v-on:click="$emit('dismiss', question.question_uid)">Dismiss</v-btn>
                 </template>
               </v-banner>
             </li>
@@ -156,7 +156,7 @@ export default {
     showTutorial: Number,
     datacollection: Object,
     shortened: Boolean,
-    totalStudents: Array,
+    students: Object,
   },
   components: {
     TutorialDisplay,
@@ -217,9 +217,6 @@ export default {
     },
     clickTab(num) {
       this.$emit("clickTab")
-    },
-    getStudentById(id) {
-      return this.totalStudents.find((student) => student.uid == id)
     },
   },
 }
