@@ -310,19 +310,22 @@ export default {
 
       this.socket.onmessage = (event) => {
         const data = JSON.parse(event.data)
+        console.log(data)
         switch (data.type) {
           case 'error':
             if (data.error === 'does_not_exist' || data.error === 'lecture_not_initialized') {
               if (!this.testing)
-                this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join does not exist!' } })
+                this.$router.replace({name: 'Join', params: {error: 'The lecture you tried to join does not exist!'} })
             } else if (data.error === 'already_ended') {
-              this.$router.replace({name: 'Join', params: { error: 'The lecture you tried to join has already ended!' } })
+              this.$router.replace({name: 'Join', params: {error: 'The lecture you tried to join has already ended!'} })
             } else if (data.error === 'already_joined') {
-              this.$router.replace({name: 'Join', params: { error: 'You already have that lecture open in another tab!' } })
+              this.$router.replace({name: 'Join', params: {error: 'You already have that lecture open in another tab!'} })
+            } else if (data.error === 'banned') {
+              this.$router.replace({name: 'Join', params: {error: 'You have been banned from joining that lecture!'} })
             } else {
-              this.$router.replace({name: 'Join', params: { error: 'Could not join lecture!' } })
+              this.$router.replace({name: 'Join', params: {error: 'Could not join lecture!'} })
             }
-            break;
+            break
           case 'lecture_info':
             this.lectureInfo = data
 
@@ -346,14 +349,22 @@ export default {
             }).catch((err) => {
               this.error = 'There was an error fetching questions!'
             })
-            break;
+            break
           case 'new_question':
             this.pushQuestion(data)
-            break;
+            break
           case 'end_lecture':
             window.localStorage.removeItem('questionData')
             this.$router.replace({ name: 'Feedback', params: { fromLectureEnd: true } })
-            break;
+            break
+          case 'kick_student':
+            if (data.to === this.authUser.uid) {
+              this.$router.replace({ name: 'Join', params: { error: 'You were kicked from the lecture!' } })
+            }
+            break
+          case 'question_dismissed':
+            this.dismissQuestion(data.question_uid)
+            break
         }
       }
 

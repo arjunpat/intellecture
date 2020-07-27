@@ -47,21 +47,21 @@ export default {
   },
 
   data() {
-      return {
-        dialog: false
-      }
+    return {
+      dialog: false
+    }
   },
 
   watch: {
     show(val) {
-        if(val) {
-            this.dialog = true
-        }
+      if(val) {
+        this.dialog = true
+      }
     },
     dialog(val) {
-        if(!val) {
-            this.$emit('close');
-        }
+      if(!val) {
+        this.$emit('close');
+      }
     }
   }
 }
