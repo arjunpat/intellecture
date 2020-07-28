@@ -124,25 +124,6 @@ export default {
     Dialog,
   },
   computed: {
-    understandingFontSize() {
-      //We should replace this with a single, simple calc statement at some point.
-      switch (this.$vuetify.breakpoint.name) {
-        case "xs":
-          return "130px"
-        case "sm":
-          return "130px"
-        case "md":
-          return "130px"
-        case "lg":
-          return "160px"
-        case "xl":
-          return "180px"
-      }
-      /* This one doesn't really work
-        let val = Math.min(window.innerWidth / 3.14, 180)
-        console.log(val);
-        return val + 'px'*/
-    },
     dialogHeader() {
       return (
         "Are you sure you want to remove " +
@@ -151,17 +132,6 @@ export default {
         this.activeStudent.last_name +
         "?"
       )
-    },
-    progressColor() {
-      if (this.understandingScore == null) {
-        return "primary"
-      } else if (this.understandingScore >= 70) {
-        return "success"
-      } else if (this.understandingScore <= 20) {
-        return "error"
-      } else {
-        return "warning"
-      }
     },
     smallScreen () {
       return this.$vuetify.breakpoint.smAndDown
@@ -192,7 +162,6 @@ export default {
     },
     setActive(student) {
       this.activeStudent = student
-      console.log('set active!')
     },
     clickTab(num) {
       this.$emit("clickTab", num)

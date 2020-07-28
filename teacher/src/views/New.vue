@@ -82,7 +82,6 @@ export default {
           class_uid: this.chosenClass,
           name: this.lectureName,
         }).then((data) => {
-          console.log(data)
           this.$router.push({ path: "/lecture/" + data.data.lecture_uid })
         })
       } else {

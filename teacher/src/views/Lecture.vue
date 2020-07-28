@@ -283,12 +283,10 @@ export default {
       this.endCalled = true
       post(`/lectures/live/teacher/${this.id}/end`)
       this.socket.close()
-      console.log("Ending lecture")
       store.commit("setEndLecture", false)
       setLectures()
     },
     showCategory(index) {
-      console.log("showing category " + index)
       this.displayQuestions = [...this.questions]
       const q = this.topics[index].questions
       this.displayQuestions = this.displayQuestions.filter((question) =>
@@ -353,7 +351,6 @@ export default {
     )
     this.socket.onmessage = (event) => {
       const data = JSON.parse(event.data)
-      console.log(data)
       if (data.type === "lecture_info") {
         this.lectureInfo = data
 
@@ -465,7 +462,6 @@ export default {
           name: "Feedback",
           params: { fromLectureEnd: true },
         })
-        console.log("done")
       }
     },
     shortened(val) {

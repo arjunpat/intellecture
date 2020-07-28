@@ -152,10 +152,6 @@ export default {
         case "xl":
           return "180px"
       }
-      /* This one doesn't really work
-          let val = Math.min(window.innerWidth / 3.14, 180)
-          console.log(val);
-          return val + 'px'*/
     },
     progressColor() {
       if (this.understandingScore == null) {
