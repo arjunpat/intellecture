@@ -6,7 +6,10 @@ const config = {}
 let api = window.location.origin.includes('localhost') ? 'test' : 'prod'
 // ----------------------------- MAKE CHANGES ABOVE -----------------------
 
-if (api === 'prod' || window.location.origin.includes('intellecture.app')) {
+// -------------------------- DO NOT MAKE CHANGES BELOW -------------------
+let api = window.location.origin.includes('intellecture.app') ? 'prod' : api;
+
+if (api === 'prod') {
   config.serverOrigin = 'https://api.intellecture.app'
   config.socketServerOrigin = 'wss://api.intellecture.app'
 } else if (api === 'test') {
