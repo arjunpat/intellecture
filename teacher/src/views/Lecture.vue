@@ -67,9 +67,9 @@
             v-model="tab"
             background-color="transparent"
             color="#66bb6a"
-            grow
             class="tabs-bar"
-            :mobile-breakpoint="500"
+            :style="{width: smallScreen ? '100% !important' : '50% !important'}"
+            grow
           >
             <v-tab
               v-for="item in items"
@@ -167,7 +167,6 @@
               @click="clickTab(0); nextTutorial()"
               fab
               dark
-              small
             >
               <v-icon>mdi-help</v-icon>
             </v-btn>
@@ -189,7 +188,6 @@ import Questions from "@/components/lecture/Questions"
 import Students from "@/components/lecture/Students"
 
 import TutorialDisplay from "@/components/lecture/TutorialDisplay"
-import Dialog from "@/components/Dialog"
 
 import sampleQuestions from "@/testdata/questions.json"
 import sampleTopics from "@/testdata/topics.json"
@@ -199,7 +197,6 @@ export default {
   components: {
     TutorialDisplay,
     Understanding,
-    Dialog,
     Students,
     Questions,
   },
@@ -638,7 +635,7 @@ html {
 }
 
 .tabs-bar {
-  width: 50% !important;
+  width: 100% !important;
   margin: auto;
 }
 
@@ -648,11 +645,5 @@ html {
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
-}
-
-@media screen and (max-width: 500px) {
-  .tabs-bar {
-    width: 100% !important;
-  }
 }
 </style>

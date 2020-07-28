@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row align="center" justify="center">
-      <v-col :cols="width" sm="8" md="8">
+      <v-col cols="12" sm="12" md="8" lg="6" xl="6">
         <v-card ref="form">
           <v-toolbar color="light-green lighten-2" dark flat>
             <v-toolbar-title
@@ -15,7 +15,7 @@
             <v-form>
               <h1 class="mb-2">Select a class</h1>
               <v-row align="center" justify="center">
-                <v-col cols="12" sm="6">
+                <v-col cols="12">
                   <v-select
                     :items="(classes && classes.length > 0) ? classes : ['No classes to show']"
                     item-value="uid"
@@ -29,7 +29,7 @@
 
               <h1 class="mb-2">Give it a name</h1>
               <v-row align="center" justify="center">
-                <v-col cols="12" sm="6">
+                <v-col cols="12">
                   <v-text-field label="Lecture name" outlined v-model="lectureName" required></v-text-field>
                 </v-col>
               </v-row>
@@ -45,7 +45,7 @@
             </div>
             <br />
             <v-row align="center" justify="center">
-              <v-col cols="12" sm="12">
+              <v-col cols="12">
                 <v-alert v-if="formErrors" type="error">{{ error }}</v-alert>
               </v-col>
             </v-row>
@@ -98,20 +98,6 @@ export default {
   },
   computed: {
     ...mapState(["classes"]),
-    width() {
-      switch (this.$vuetify.breakpoint.name) {
-        case "xs":
-          return "12"
-        case "sm":
-          return "12"
-        case "md":
-          return "12"
-        case "lg":
-          return "6"
-        case "xl":
-          return "6"
-      }
-    },
   },
 }
 </script>

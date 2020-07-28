@@ -15,7 +15,7 @@
       <v-spacer></v-spacer>
 
       <v-btn class="ml-1 light-green lighten-2" v-if="landing" @click="$router.push({ path: '/signin' })">Sign In</v-btn>
-      <Dialog :show="showDialog" :header="dialogHeader" @close="showDialog = false"> <!-- Child detect change -->
+      <Dialog v-model="showDialog" :header="dialogHeader" @close="showDialog = false"> <!-- Child detect change -->
         <template v-slot:activator>
           <v-btn v-if="!started && dashboard" @click="startLecture()" @close="showDialog = false">Start Lecture</v-btn>
         </template>

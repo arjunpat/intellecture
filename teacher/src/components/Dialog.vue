@@ -2,7 +2,7 @@
   <div style="display: inline-block">
     <slot name="activator"></slot>
 
-    <v-dialog v-model="dialog" :width="width">
+    <v-dialog v-model="show" :width="width">
       <v-card style="font-family: var(--main-font);">
         <v-card-title v-if="!lowerHeader">{{ header }}</v-card-title>
 
@@ -14,7 +14,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
 
-          <v-btn :color="btnColor" text @click="dialog = false">{{ btnText }}</v-btn>
+          <v-btn :color="btnColor" text @click="submit">{{ btnText }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -27,7 +27,7 @@ export default {
   name: "Dialog",
 
   props: {
-    show: { type: Boolean, required: true },
+    value: { type: Boolean, required: true },
     header: { type: String, required: true },
     width: { type: Number, default: 250 },
     btnText: { type: String, default: "Okay" },
@@ -35,23 +35,29 @@ export default {
     lowerHeader: { type: Boolean, default: false },
   },
 
-  data() {
-    return {
-      dialog: false,
-    }
-  },
-
   watch: {
-    show(val) {
-      if (val) {
-        this.dialog = true
-      }
-    },
-    dialog(val) {
-      if (!val) {
+    value() {
+      this.show = this.value
+      if (!this.value) {
         this.$emit("close")
       }
     },
+    show() {
+      this.$emit('input', this.show) 
+    }
+  },
+
+  data() {
+    return {
+      show: this.value,
+    }
+  },
+
+  methods: {
+    submit() {
+      this.$emit('input', false)
+      this.$emit('submit')
+    }
   },
 }
 </script>

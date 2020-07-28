@@ -17,8 +17,7 @@
                       class="ml-3"
                       text
                       color="red"
-                      @click="() => {invertDialog(); setActive(student)}"
-                      @close="invertDialog"
+                      @click.stop="showDialog = true; setActive(student);"
                     >Remove</v-btn>
                   </transition>
                 </span>
@@ -30,7 +29,7 @@
           </li>
 
           <li
-            v-if="Object.keys(students).length === 0 && showTutorial !== 6" 
+            v-if="showNoStudentsMsg" 
           >
             <div 
               class="text-center heading-4"
@@ -42,10 +41,10 @@
           </li>
 
           <Dialog
-            :show="showDialog"
+            v-model="showDialog"
             :lowerHeader="true"
             :header="dialogHeader"
-            @close="removeStudent()"
+            @submit="removeStudent()"
             :width="600"
             btnColor="red"
             btnText="Remove"
@@ -109,13 +108,13 @@ export default {
     showTutorial: Number,
     shortened: Boolean,
     totalStudents: Array,
-    joinCode: Number,
+    joinCode: String,
   },
   data() {
     return {
       preventFromJoining: false,
       activeStudent: "",
-      showDialog: true,
+      showDialog: false,
       noStudentsToShow: true
     }
   },
@@ -164,19 +163,17 @@ export default {
         return "warning"
       }
     },
-    smallScreen() {
-      switch (this.$vuetify.breakpoint.name) {
-        case "xs":
-          return true
-        case "sm":
-          return true
-        case "md":
+    smallScreen () {
+      return this.$vuetify.breakpoint.smAndDown
+    },
+    showNoStudentsMsg() {
+      // Check if any students in lecture
+      for (let key in this.students)
+        if (this.students[key].inLecture)
           return false
-        case "lg":
-          return false
-        case "xl":
-          return false
-      }
+      
+      // No students in lecture, check if on tutorial step 6
+      return this.showTutorial !== 6
     },
   },
   methods: {
@@ -193,11 +190,9 @@ export default {
       let date = new Date(unix_timestamp)
       return date.toLocaleTimeString()
     },
-    invertDialog() {
-      this.showDialog = !this.showDialog
-    },
     setActive(student) {
       this.activeStudent = student
+      console.log('set active!')
     },
     clickTab(num) {
       this.$emit("clickTab", num)

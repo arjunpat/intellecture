@@ -126,7 +126,7 @@
               >Questions from the students will show up here along with the number of upvotes they get by the students (on the right). You can dismiss the question by clicking the dismiss button.</template>
               <v-expand-transition>
                 <li>
-                  <v-banner v-show="showTutorial == 5">
+                  <v-banner :style="{ textAlign: 'left' }" v-show="showTutorial == 5">
                     This is a question
                     <template v-slot:actions>
                       <div id="upvotes">5</div>
@@ -193,19 +193,8 @@ export default {
         return "warning"
       }
     },
-    smallScreen() {
-      switch (this.$vuetify.breakpoint.name) {
-        case "xs":
-          return true
-        case "sm":
-          return true
-        case "md":
-          return false
-        case "lg":
-          return false
-        case "xl":
-          return false
-      }
+    smallScreen () {
+      return this.$vuetify.breakpoint.smAndDown
     },
   },
   methods: {
