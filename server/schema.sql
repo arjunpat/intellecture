@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS classes (
   created_at BIGINT UNSIGNED,
   account_uid VARCHAR(36),
   name VARCHAR(50),
-  FOREIGN KEY (account_uid) REFERENCES accounts(uid) -- creates index auto
+  FOREIGN KEY (account_uid) REFERENCES accounts(uid) ON DELETE CASCADE -- creates index auto
 );
 
 CREATE TABLE IF NOT EXISTS lectures (
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS lectures (
   end_time BIGINT UNSIGNED,
   join_code VARCHAR(5),
   UNIQUE KEY (join_code),
-  FOREIGN KEY (class_uid) REFERENCES classes(uid)
+  FOREIGN KEY (class_uid) REFERENCES classes(uid) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS feedback (
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS feedback (
   diff_stars TINYINT UNSIGNED,
   helpful_stars TINYINT UNSIGNED,
   CONSTRAINT PRIMARY KEY (account_uid, ts),
-  FOREIGN KEY (account_uid) REFERENCES accounts(uid)
+  FOREIGN KEY (account_uid) REFERENCES accounts(uid) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS lecture_log (
@@ -47,8 +47,8 @@ CREATE TABLE IF NOT EXISTS lecture_log (
   elapsed BIGINT UNSIGNED,
   score SMALLINT,
   CONSTRAINT PRIMARY KEY (lecture_uid, account_uid, elapsed),
-  FOREIGN KEY (lecture_uid) REFERENCES lectures(uid),
-  FOREIGN KEY (account_uid) REFERENCES accounts(uid)
+  FOREIGN KEY (lecture_uid) REFERENCES lectures(uid) ON DELETE CASCADE,
+  FOREIGN KEY (account_uid) REFERENCES accounts(uid) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS lecture_qs (
@@ -57,8 +57,8 @@ CREATE TABLE IF NOT EXISTS lecture_qs (
   account_uid VARCHAR(36),
   elapsed BIGINT UNSIGNED,
   question TINYTEXT,
-  FOREIGN KEY (lecture_uid) REFERENCES lectures(uid),
-  FOREIGN KEY (account_uid) REFERENCES accounts(uid)
+  FOREIGN KEY (lecture_uid) REFERENCES lectures(uid) ON DELETE CASCADE,
+  FOREIGN KEY (account_uid) REFERENCES accounts(uid) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS lecture_us (
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS lecture_us (
   elapsed BIGINT UNSIGNED,
   score SMALLINT,
   CONSTRAINT PRIMARY KEY (lecture_uid, elapsed),
-  FOREIGN KEY (lecture_uid) REFERENCES lectures(uid)
+  FOREIGN KEY (lecture_uid) REFERENCES lectures(uid) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS lecture_q_upvotes (
@@ -74,8 +74,8 @@ CREATE TABLE IF NOT EXISTS lecture_q_upvotes (
   account_uid VARCHAR(36),
   elapsed BIGINT UNSIGNED,
   CONSTRAINT PRIMARY KEY (question_uid, account_uid),
-  FOREIGN KEY (question_uid) REFERENCES lecture_qs(uid),
-  FOREIGN KEY (account_uid) REFERENCES accounts(uid)
+  FOREIGN KEY (question_uid) REFERENCES lecture_qs(uid) ON DELETE CASCADE,
+  FOREIGN KEY (account_uid) REFERENCES accounts(uid) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS lecture_student_log (
@@ -84,6 +84,6 @@ CREATE TABLE IF NOT EXISTS lecture_student_log (
   elapsed BIGINT UNSIGNED,
   status VARCHAR(1), -- j for join, l for leave
   CONSTRAINT PRIMARY KEY (lecture_uid, account_uid, elapsed),
-  FOREIGN KEY (lecture_uid) REFERENCES lectures(uid),
-  FOREIGN KEY (account_uid) REFERENCES accounts(uid)
+  FOREIGN KEY (lecture_uid) REFERENCES lectures(uid) ON DELETE CASCADE,
+  FOREIGN KEY (account_uid) REFERENCES accounts(uid) ON DELETE CASCADE
 );
