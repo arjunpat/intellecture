@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row style="margin: 20px;">
-      <v-card :style="{ width: smallScreen ? '100%' : '40%' }" :flat="!this.$vuetify.breakpoint.lgAndUp">>
+      <v-card :style="{ width: smallScreen ? '100%' : '40%' }" flat>
         <TutorialDisplay
           :show="showTutorial == 0"
           backgroundColor="white"
@@ -48,7 +48,7 @@
           </div>
         </TutorialDisplay>
       </v-card>
-      <v-card :style="{ width: smallScreen ? '100%' : '60%', paddingTop: '20px' }" :flat="!this.$vuetify.breakpoint.lgAndUp">
+      <v-card :style="{ width: smallScreen ? '100%' : '60%', paddingTop: '20px' }" flat>
         <TutorialDisplay
           :show="showTutorial == 1"
           backgroundColor="white"
@@ -113,33 +113,6 @@
         </v-expand-transition>
       </TutorialDisplay>
     </v-row>
-    <div style="text-align: right; position: absolute; right: 10px; bottom: 10px; width: 400px;">
-      <TutorialDisplay
-        style="text-align: left;"
-        :show="showTutorial == 8"
-        backgroundColor="white"
-        @next="resetTutorial()"
-        @cancel="resetTutorial()"
-        top
-        last
-      >
-        <template v-slot:title>Help</template>
-        <template v-slot:explanation>Click here to view this tutorial again.</template>
-        <div style="text-align: right;">
-          <v-btn
-            style="display: inline-block;"
-            color="green"
-            bottom
-            @click="nextTutorial()"
-            fab
-            dark
-            small
-          >
-            <v-icon>mdi-help</v-icon>
-          </v-btn>
-        </div>
-      </TutorialDisplay>
-    </div>
   </div>
 </template>
 

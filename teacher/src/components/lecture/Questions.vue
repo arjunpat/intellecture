@@ -2,7 +2,7 @@
   <v-row align="center" justify="center">
     <v-col align="center">
       <v-row>
-        <v-col align="left">
+        <v-col :cols="smallScreen ? 12 : 4">
           <v-card class="mx-auto" max-width="400" tile style="font-family: var(--main-font);">
             <v-card-title style="font-weight: bold;">
               Key Topics
@@ -216,7 +216,7 @@ export default {
       this.$emit("nextTutorial")
     },
     clickTab(num) {
-      this.$emit("clickTab")
+      this.$emit("clickTab", num)
     },
   },
 }

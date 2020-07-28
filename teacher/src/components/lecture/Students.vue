@@ -1,21 +1,6 @@
 <template>
   <v-row align="center" justify="center">
-    <v-row
-      class="mt-4"
-      align="center"
-      justify="center"
-      v-if="showTutorial != 6"
-    >
-      <v-col cols="8">
-        <div style="font-family: var(--main-font); text-align: center;">
-          <h1 :style="{fontWeight: 'normal', fontSize: '25px'}">
-            No students have joined the lecture
-            <!--Have them go to <a>join.intellecture.app</a> and enter the code <span style="background-color: #eee; padding: 3px 10px; border-radius: 5px; font-weight: bold;">{{ joinCode }}</span> to join-->
-          </h1>
-        </div>
-      </v-col>
-    </v-row>
-    <v-row align="center" justify="center" v-if="students.length != 0 || showTutorial == 6">
+    <v-row align="center" justify="center">
       <v-col cols="8">
         <ul style="list-style-type: none">
           <li v-for="student in students" v-bind:key="student.uid" v-show="student.inLecture">
@@ -44,6 +29,18 @@
             </v-banner>
           </li>
 
+          <li
+            v-if="Object.keys(students).length === 0 && showTutorial !== 6" 
+          >
+            <div 
+              class="text-center heading-4"
+              :style="{fontWeight: 'normal', fontSize: '25px'}"
+            >
+              No students have joined the lecture!
+            </div>
+            <div class="text-center subtitle-1">Have students go to <a>join.intellecture.app</a> and enter the code <span style="background-color: #eee; padding: 3px 10px; border-radius: 5px; font-weight: bold;">{{ joinCode }}</span> to join.</div>
+          </li>
+
           <Dialog
             :show="showDialog"
             :lowerHeader="true"
@@ -64,7 +61,7 @@
 
           <!-- EXAMPLE QUESTION -->
           <TutorialDisplay
-            :show="showTutorial == 6"
+            :show="showTutorial === 6"
             backgroundColor="white"
             @next="nextTutorial(); clickTab(0)"
             @cancel="resetTutorial()"
@@ -112,6 +109,7 @@ export default {
     showTutorial: Number,
     shortened: Boolean,
     totalStudents: Array,
+    joinCode: Number,
   },
   data() {
     return {
@@ -202,7 +200,7 @@ export default {
       this.activeStudent = student
     },
     clickTab(num) {
-      this.$emit("clickTab")
+      this.$emit("clickTab", num)
     },
     removeStudent() {
       this.$emit("kickStudent", {

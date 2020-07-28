@@ -26,7 +26,7 @@
       </v-col>
     </v-container>
     <v-container fluid>
-      <v-card :flat="smallScreen ? true : false">
+      <v-card flat>
         <transition name="fade">
           <div v-show="snackbar" id="snackbar">{{ snackbarMessage }}</div>
         </transition>
@@ -72,82 +72,108 @@
             :mobile-breakpoint="500"
           >
             <v-tab
-              v-for="(item, index) in items"
-              :class="{active: currentTab === index}"
-              @click="currentTab = index"
+              v-for="item in items"
               :key="item"
-              :ref="getTabId(index)"
             >{{ item }}</v-tab>
           </v-tabs>
         </TutorialDisplay>
+
+        <v-tabs-items v-model="tab">
+          <!-- Start of Understanding tab -->
+          <v-card
+            v-show="tab === 0"
+            min-height="75vh"
+            flat
+            class="pt-3 pb-3"
+          >
+            <Understanding
+              :understandingScore="understandingScore"
+              :topics="topics"
+              :showTutorial="showTutorial"
+              :datacollection="datacollection"
+              :shortened="shortened"
+              @resetTutorial="resetTutorial()"
+              @nextTutorial="nextTutorial()"
+            />
+          </v-card>
+          <!-- End of Understanding tab -->
+
+          <!-- Start of Questions tab -->
+          <v-card
+            v-show="tab === 1"
+            flat
+            class="pt-3"
+            style="min-height: 75vh;"
+          >
+            <Questions
+              :questions="questions"
+              :topics="topics"
+              :showTutorial="showTutorial"
+              :datacollection="datacollection"
+              :shortened="shortened"
+              :students="students"
+              @resetTutorial="resetTutorial()"
+              @nextTutorial="nextTutorial()"
+              @showCategory="showCategory"
+              @showAllQuestions="showAllQuestions"
+              @dismiss="dismiss"
+              :displayQuestions="displayQuestions"
+              @clickTab="clickTab"
+            />
+          </v-card>
+          <!-- End of Questions tab -->
+
+          <!-- Start of Students tab -->
+          <v-card
+            v-show="tab === 2"
+            flat
+            class="pt-3"
+            min-height="75vh"
+          >
+            <Students
+              :topics="topics"
+              :showTutorial="showTutorial"
+              :students="students"
+              :shortened="shortened"
+              :joinCode="lectureInfo.join_code"
+              @resetTutorial="resetTutorial()"
+              @nextTutorial="nextTutorial()"
+              @clickTab="clickTab"
+              @invertDialog="invertDialog()"
+              @kickStudent="kickStudent"
+            />
+          </v-card>
+          <!-- End of Students tab -->
+        </v-tabs-items>
       </v-card>
 
-      <v-tabs-items v-model="tab">
-        <!-- Start of Understanding tab -->
-        <v-card
-          v-show="currentTab === 0"
-          min-height="75vh"
-          :flat="smallScreen ? true : false"
-          class="pt-3 pb-3"
+      <div style="position: absolute; right: 10px; bottom: 10px; width: 400px;">
+        <TutorialDisplay
+          style="text-align: left;"
+          :show="showTutorial == 8"
+          backgroundColor="white"
+          @next="resetTutorial()"
+          @cancel="resetTutorial()"
+          top
+          last
         >
-          <Understanding
-            :understandingScore="understandingScore"
-            :topics="topics"
-            :showTutorial="showTutorial"
-            :datacollection="datacollection"
-            :shortened="shortened"
-            @resetTutorial="resetTutorial()"
-            @nextTutorial="nextTutorial()"
-          />
-        </v-card>
-        <!-- End of Understanding tab -->
-
-        <!-- Start of Questions tab -->
-        <v-card
-          v-show="currentTab === 1"
-          :flat="smallScreen ? true : false"
-          class="pt-3"
-          style="min-height: 75vh;"
-        >
-          <Questions
-            :questions="questions"
-            :topics="topics"
-            :showTutorial="showTutorial"
-            :datacollection="datacollection"
-            :shortened="shortened"
-            :students="students"
-            @resetTutorial="resetTutorial()"
-            @nextTutorial="nextTutorial()"
-            @showCategory="showCategory"
-            @showAllQuestions="showAllQuestions"
-            @dismiss="dismiss"
-            :displayQuestions="displayQuestions"
-            @clickTab="clickTab(2)"
-          />
-        </v-card>
-        <!-- End of Questions tab -->
-
-        <!-- Start of Students tab -->
-        <v-card
-          v-show="currentTab === 2"
-          :flat="smallScreen ? true : false"
-          class="pt-3"
-          min-height="75vh"
-        >
-          <Students
-            :topics="topics"
-            :showTutorial="showTutorial"
-            :students="students"
-            :shortened="shortened"
-            @resetTutorial="resetTutorial()"
-            @nextTutorial="nextTutorial()"
-            @clickTab="clickTab(0)"
-            @invertDialog="invertDialog()"
-            @kickStudent="kickStudent"
-          />
-        </v-card>
-        <!-- End of Students tab -->
-      </v-tabs-items>
+          <template v-slot:title>Help</template>
+          <template v-slot:explanation>Click here to view this tutorial again.</template>
+          <div style="text-align: right;">
+            <v-btn
+              style="display: inline-block;"
+              color="green"
+              bottom
+              @click="clickTab(0); nextTutorial()"
+              fab
+              dark
+              small
+            >
+              <v-icon>mdi-help</v-icon>
+            </v-btn>
+          </div>
+        </TutorialDisplay>
+      </div>
     </v-container>
   </span>
 </template>
@@ -191,9 +217,7 @@ export default {
       students: {},
       displayQuestions: [],
       topics: [],
-
-      currentTab: 0,
-      tab: null,
+      tab: 0,
       items: ["Understanding", "Questions", "Students"],
       understandingData: [],
       shortened: false,
@@ -305,12 +329,7 @@ export default {
       return "tab" + index
     },
     clickTab(index) {
-      if (index === 1) {
-        //console.log(this.$refs.tab2[0])
-        //this.$refs.tab2[0].click(); IM BEING STUPID TODO IMPLEMENT LATER
-      }
-      console.log("Switching to tab " + index)
-      this.currentTab = index
+      this.tab = index
     },
     displayNotification(subject, message) {
       if (Notification.permission === "granted") {
@@ -463,6 +482,9 @@ export default {
         this.exitFS()
       }
     },
+    showTutorial(val) {
+
+    }
   },
   beforeRouteLeave(to, from, next) {
     if (!this.endCalled) {
