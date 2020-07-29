@@ -185,7 +185,6 @@ export default class Lecture {
     delete this.scores[student_uid];
     this.sendToTeachers({
       type: 'student_leave',
-      elapsed,
       uid: student_uid
     });
     this.updateTeachers()
@@ -264,11 +263,21 @@ export default class Lecture {
     this.updateTeachersQuestions();
 
     // send all students
-    for (let student_uid in this.scores) {
+    // must send ALL students so that
+    // teacher page can relate to questions
+    for (let student_uid in this.studentData) {
       this.sendToTeachers({
         type: 'student_join',
         ...this.studentData[student_uid]
       });
+
+      // not live, per say
+      if (typeof this.scores[student_uid] !== 'number') {
+        this.sendToTeachers({
+          type: 'student_leave',
+          uid: student_uid
+        });
+      }
     }
 
     // send all questions
