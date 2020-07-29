@@ -36,23 +36,23 @@
 </style>
 
 <script>
-import { mapState } from "vuex"
-import { post, get, getClasses } from "@/helpers.js"
+import { mapState } from 'vuex'
+import { post, get, getClasses } from '@/helpers.js'
 
 export default {
-  name: "ModalForm",
+  name: 'ModalForm',
   data() {
     return {
       dialog: false,
-      className: "",
+      className: '',
     }
   },
   methods: {
     createClass() {
-      post("/classes/create", {
+      post('/classes/create', {
         name: this.className,
       }).then((response) => {
-        this.className = ""
+        this.className = ''
         getClasses()
       })
     },

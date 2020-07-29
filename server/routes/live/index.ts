@@ -31,15 +31,11 @@ router.get('/teacher/:lecture_uid', mw.websocket, mw.auth, async (req: Request, 
     return socket.close();
   }
 
-  if (typeof lecture.start_time === 'number') {
-    socket.json({
-      type: 'error',
-      error: 'already_started'
-    });
-    return socket.close();
+  if (typeof lecture.start_time !== 'number') {
+    // lecture hasn't started
+    await initLecture(lecture_uid);
   }
 
-  await initLecture(lecture_uid);
   handleTeacher(lecture_uid, req.uid, socket);
 });
 

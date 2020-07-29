@@ -117,11 +117,11 @@
 </template>
 
 <script>
-import TutorialDisplay from "./TutorialDisplay"
-import LineChart from "./Chart"
+import TutorialDisplay from './TutorialDisplay'
+import LineChart from './Chart'
 
 export default {
-  name: "Understanding",
+  name: 'Understanding',
   props: {
     understandingScore: Number | String,
     topics: Array,
@@ -141,27 +141,27 @@ export default {
     understandingFontSize() {
       //We should replace this with a single, simple calc statement at some point.
       switch (this.$vuetify.breakpoint.name) {
-        case "xs":
-          return "130px"
-        case "sm":
-          return "130px"
-        case "md":
-          return "130px"
-        case "lg":
-          return "160px"
-        case "xl":
-          return "180px"
+        case 'xs':
+          return '130px'
+        case 'sm':
+          return '130px'
+        case 'md':
+          return '130px'
+        case 'lg':
+          return '160px'
+        case 'xl':
+          return '180px'
       }
     },
     progressColor() {
       if (this.understandingScore == null) {
-        return "primary"
+        return 'primary'
       } else if (this.understandingScore >= 70) {
-        return "success"
+        return 'success'
       } else if (this.understandingScore <= 20) {
-        return "error"
+        return 'error'
       } else {
-        return "warning"
+        return 'warning'
       }
     },
     smallScreen() {
@@ -170,10 +170,10 @@ export default {
   },
   methods: {
     resetTutorial() {
-      this.$emit("resetTutorial")
+      this.$emit('resetTutorial')
     },
     nextTutorial() {
-      this.$emit("nextTutorial")
+      this.$emit('nextTutorial')
     },
   },
 }

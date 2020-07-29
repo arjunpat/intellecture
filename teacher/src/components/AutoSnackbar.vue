@@ -7,11 +7,11 @@
 
 <script>
 export default {
-  name: "AutoSnackbar",
+  name: 'AutoSnackbar',
 
   props: {
-    text: { type: String, default: "" },
-    color: { type: String, default: "" },
+    text: { type: String, default: '' },
+    color: { type: String, default: '' },
   },
 
   data() {

@@ -34,7 +34,7 @@ As the lecture progresses, teacher will get this message when student joins.
 ```javascript
 {
   "type": "student_join",
-  "ts": "1587439072263",
+  "elapsed": 15874,
   "uid": "JfdslFKjd82jSDF",
   "email": "asdfjlsadf@asdf.com",
   "first_name": "Arjun",
@@ -50,7 +50,7 @@ As lecture progresses, teacher will get this message when student leaves lecture
 ```javascript
 {
   "type": "student_leave",
-  "ts": "1587439072263",
+  "elapsed": 874463,
   "uid": "JfdslFKjd82jSDF"
 }
 ```
@@ -62,7 +62,7 @@ As lecture progresses, teacher will get this message when question is asked.</td
 ```javascript
 {
   "type": "new_question",
-  "question_uid": "X8udiUQ8fN6F27C",
+  "uid": "X8udiUQ8fN6F27C",
   "creator_uid": "rUJyP317iuZErNlhrn2",
   "question": "What is the relationship between voltage and a Gaussian surface?",
   "elapsed": 1829
@@ -140,7 +140,7 @@ As the lecture progresses, teacher will receive this message when student upvote
 ```javascript
 {
   "type": "question_update",
-  "question_uid": "X8udiUQ8fN6F27C",
+  "uid": "X8udiUQ8fN6F27C",
   "upvotes": 3,
 }
 ```

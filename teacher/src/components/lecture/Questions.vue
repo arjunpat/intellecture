@@ -28,9 +28,7 @@
                       class="topic"
                       @click="$emit('showCategory', index)"
                     >
-                      <span
-                        v-if="topic.value.length > 20"
-                      >{{ topic.value.substring(0, 20) }}...</span>
+                      <span v-if="topic.value.length > 20">{{ topic.value.substring(0, 20) }}...</span>
                       <span v-else>{{ topic.value }}</span>
                     </div>
                     <div id="topic-quantity" class="ml-3">{{ topic.questions.length }}</div>
@@ -108,7 +106,11 @@
                       <div v-else>No upvotes</div>
                     </span>
                   </v-tooltip>
-                  <v-btn text color="primary" v-on:click="$emit('dismiss', question.question_uid)">Dismiss</v-btn>
+                  <v-btn
+                    text
+                    color="primary"
+                    v-on:click="$emit('dismiss', question.question_uid)"
+                  >Dismiss</v-btn>
                 </template>
               </v-banner>
             </li>
@@ -144,11 +146,11 @@
 </template>
 
 <script>
-import TutorialDisplay from "./TutorialDisplay"
-import LineChart from "./Chart"
+import TutorialDisplay from './TutorialDisplay'
+import LineChart from './Chart'
 
 export default {
-  name: "Questions",
+  name: 'Questions',
   props: {
     topics: Array,
     questions: Array,
@@ -163,19 +165,19 @@ export default {
     LineChart,
   },
   computed: {
-    smallScreen () {
+    smallScreen() {
       return this.$vuetify.breakpoint.smAndDown
     },
   },
   methods: {
     resetTutorial() {
-      this.$emit("resetTutorial")
+      this.$emit('resetTutorial')
     },
     nextTutorial() {
-      this.$emit("nextTutorial")
+      this.$emit('nextTutorial')
     },
     clickTab(num) {
-      this.$emit("clickTab", num)
+      this.$emit('clickTab', num)
     },
   },
 }

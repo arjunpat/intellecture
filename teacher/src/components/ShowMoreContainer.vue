@@ -33,10 +33,10 @@
 
 <script>
 export default {
-  name: "ShowMoreContainer",
+  name: 'ShowMoreContainer',
 
   props: {
-    initHeight: { type: String, default: "10rem" },
+    initHeight: { type: String, default: '10rem' },
   },
 
   data() {
@@ -48,7 +48,7 @@ export default {
   computed: {
     maxHeight() {
       if (!this.expand) return this.initHeight
-      else return "1000px"
+      else return '1000px'
     },
   },
 }

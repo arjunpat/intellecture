@@ -8,9 +8,19 @@ const SCORE_UPDATE_MAX_INTERVAL = 1000;
 const QUESTION_CAT_MAX_INTERVAL = 10000;
 
 interface Question {
-  uid: string,
+  question_uid: string,
   creator_uid: string,
-  question: string
+  question: string,
+  elapsed: number // creation time
+}
+
+interface Student {
+  uid: string,
+  email: string,
+  first_name: string,
+  last_name: string,
+  photo: string,
+  elapsed: number // join time
 }
 
 interface Last {
@@ -24,6 +34,7 @@ export default class Lecture {
   private questions: Question[] = [];
   private questionUpvotes: { [key: string]: number } = {};
   private scores: { [key: string]: number } = {};
+  private studentData: { [key: string]: Student } = {};
   private last: Last = { q: {} };
   private lectureInfo: any;
   private timing: any;
@@ -80,11 +91,14 @@ export default class Lecture {
       case 'bns': // ban student
         this.kickStudent(data.student_uid, data.banned);
         break;
-      case 'qds':
+      case 'qds': // question dismissed
         this.blast({
           type: 'question_dismissed',
           question_uid: data.question_uid
         });
+        break;
+      case 'tj': // teacher join
+        this.teacherJoined();
         break;
       case 'end': // end lecture
         this.end();
@@ -126,48 +140,52 @@ export default class Lecture {
       return;
     }
     this.last.q[creator_uid] = elapsed;
+    let q: Question = {
+      creator_uid,
+      question,
+      question_uid: genId(15),
+      elapsed
+    };
 
-    let uid = genId(15);
     await db.lectureQs.add(
-      uid,
+      q.question_uid,
       this.lecture_uid,
       elapsed,
       creator_uid,
       question
     );
-    this.questions.push({
-      creator_uid,
-      question,
-      uid
-    });
-    this.questionUpvotes[uid] = 0;
+    this.questions.push(q);
+    this.questionUpvotes[q.question_uid] = 0;
     this.blast({
       type: 'new_question',
-      question_uid: uid,
-      creator_uid,
-      question,
-      elapsed
+      ...q
     });
     this.updateTeachersQuestions();
   }
 
   async addStudent(student_uid: string) {
-    await db.lectureStudentLog.join(this.lecture_uid, student_uid, this.elapsed());
+    let elapsed = this.elapsed();
+    await db.lectureStudentLog.join(this.lecture_uid, student_uid, elapsed);
+    let stu: Student = {
+      ...await db.accounts.getBasicInfo(student_uid),
+      elapsed,
+      uid: student_uid
+    };
     this.sendToTeachers({
       type: 'student_join',
-      ts: Date.now(),
-      uid: student_uid,
-      ...await db.accounts.getBasicInfo(student_uid)
+      ...stu
     });
     this.scores[student_uid] = 5;
+    this.studentData[student_uid] = stu;
   }
 
   async removeStudent(student_uid: string) {
-    await db.lectureStudentLog.leave(this.lecture_uid, student_uid, this.elapsed());
+    let elapsed = this.elapsed();
+    await db.lectureStudentLog.leave(this.lecture_uid, student_uid, elapsed);
     delete this.scores[student_uid];
     this.sendToTeachers({
       type: 'student_leave',
-      ts: Date.now(),
+      elapsed,
       uid: student_uid
     });
     this.updateTeachers()
@@ -240,6 +258,37 @@ export default class Lecture {
     this.timing.lastQuesCategorization = Date.now();
   }
 
+  teacherJoined() {
+    // understanding score and questions
+    this.updateTeachers();
+    this.updateTeachersQuestions();
+
+    // send all students
+    for (let student_uid in this.scores) {
+      this.sendToTeachers({
+        type: 'student_join',
+        ...this.studentData[student_uid]
+      });
+    }
+
+    // send all questions
+    for (let each of this.questions) {
+      this.sendToTeachers({
+        type: 'new_question',
+        ...each
+      });
+    }
+
+    // question upvotes
+    for (let question_uid in this.questionUpvotes) {
+      this.sendToTeachers({
+        type: 'question_update',
+        question_uid,
+        upvotes: this.questionUpvotes[question_uid]
+      });
+    }
+  }
+
   getScore() {
     let score = Math.round(genUnderstandingScore(Object.values(this.scores)));
     return isNaN(score) ? null : score;
@@ -261,16 +310,16 @@ export default class Lecture {
     }
   }
 
-  blast(obj) {
+  blast(obj: object) {
     this.sendToStudents(obj);
     this.sendToTeachers(obj);
   }
 
-  sendToTeachers(obj) {
+  sendToTeachers(obj: object) {
     redis.conn.publish(toTeacher(this.lecture_uid), JSON.stringify(obj));
   }
 
-  sendToStudents(obj) {
+  sendToStudents(obj: object) {
     redis.conn.publish(toStudent(this.lecture_uid), JSON.stringify(obj));
   }
 

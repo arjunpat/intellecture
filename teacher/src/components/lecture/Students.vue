@@ -28,16 +28,18 @@
             </v-banner>
           </li>
 
-          <li
-            v-if="showNoStudentsMsg" 
-          >
-            <div 
+          <li v-if="showNoStudentsMsg">
+            <div
               class="text-center heading-4"
               :style="{fontWeight: 'normal', fontSize: '25px'}"
-            >
-              No students have joined the lecture!
+            >No students have joined the lecture!</div>
+            <div class="text-center subtitle-1">
+              Have students go to
+              <a>join.intellecture.app</a> and enter the code
+              <span
+                style="background-color: #eee; padding: 3px 10px; border-radius: 5px; font-weight: bold;"
+              >{{ joinCode }}</span> to join.
             </div>
-            <div class="text-center subtitle-1">Have students go to <a>join.intellecture.app</a> and enter the code <span style="background-color: #eee; padding: 3px 10px; border-radius: 5px; font-weight: bold;">{{ joinCode }}</span> to join.</div>
           </li>
 
           <Dialog
@@ -95,13 +97,13 @@
 </template>
 
 <script>
-import TutorialDisplay from "./TutorialDisplay"
-import LineChart from "./Chart"
-import Dialog from "@/components/Dialog"
-import { post } from "@/helpers.js"
+import TutorialDisplay from './TutorialDisplay'
+import LineChart from './Chart'
+import Dialog from '@/components/Dialog'
+import { post } from '@/helpers.js'
 
 export default {
-  name: "Students",
+  name: 'Students',
   props: {
     topics: Array,
     students: Object,
@@ -113,9 +115,9 @@ export default {
   data() {
     return {
       preventFromJoining: false,
-      activeStudent: "",
+      activeStudent: '',
       showDialog: false,
-      noStudentsToShow: true
+      noStudentsToShow: true,
     }
   },
   components: {
@@ -126,36 +128,35 @@ export default {
   computed: {
     dialogHeader() {
       return (
-        "Are you sure you want to remove " +
+        'Are you sure you want to remove ' +
         this.activeStudent.first_name +
-        " " +
+        ' ' +
         this.activeStudent.last_name +
-        "?"
+        '?'
       )
     },
-    smallScreen () {
+    smallScreen() {
       return this.$vuetify.breakpoint.smAndDown
     },
     showNoStudentsMsg() {
       // Check if any students in lecture
       for (let key in this.students)
-        if (this.students[key].inLecture)
-          return false
-      
+        if (this.students[key].inLecture) return false
+
       // No students in lecture, check if on tutorial step 6
       return this.showTutorial !== 6
     },
   },
   methods: {
     resetTutorial() {
-      this.$emit("resetTutorial")
+      this.$emit('resetTutorial')
     },
     nextTutorial() {
-      this.$emit("nextTutorial")
+      this.$emit('nextTutorial')
     },
     formatUnix(unix_timestamp) {
       if (unix_timestamp == undefined) {
-        return ""
+        return ''
       }
       let date = new Date(unix_timestamp)
       return date.toLocaleTimeString()
@@ -164,10 +165,10 @@ export default {
       this.activeStudent = student
     },
     clickTab(num) {
-      this.$emit("clickTab", num)
+      this.$emit('clickTab', num)
     },
     removeStudent() {
-      this.$emit("kickStudent", {
+      this.$emit('kickStudent', {
         student_uid: this.activeStudent.uid,
         banned: this.preventFromJoining,
       })

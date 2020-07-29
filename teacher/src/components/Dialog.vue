@@ -24,14 +24,14 @@
 
 <script>
 export default {
-  name: "Dialog",
+  name: 'Dialog',
 
   props: {
     value: { type: Boolean, required: true },
     header: { type: String, required: true },
     width: { type: Number, default: 250 },
-    btnText: { type: String, default: "Okay" },
-    btnColor: { type: String, default: "green darken-1" },
+    btnText: { type: String, default: 'Okay' },
+    btnColor: { type: String, default: 'green darken-1' },
     lowerHeader: { type: Boolean, default: false },
   },
 
@@ -39,12 +39,12 @@ export default {
     value() {
       this.show = this.value
       if (!this.value) {
-        this.$emit("close")
+        this.$emit('close')
       }
     },
     show() {
-      this.$emit('input', this.show) 
-    }
+      this.$emit('input', this.show)
+    },
   },
 
   data() {
@@ -57,7 +57,7 @@ export default {
     submit() {
       this.$emit('input', false)
       this.$emit('submit')
-    }
+    },
   },
 }
 </script>

@@ -1,13 +1,19 @@
 import redis from 'redis';
+import db from '../../../models';
 import { REDIS_URL } from '../../../lib/config';
 
+const pub = db.redis.conn;
 const sub = redis.createClient(REDIS_URL);
 
-import { toTeacher, toLectureUid } from '../helpers';
+import { toController, toTeacher, toLectureUid } from '../helpers';
 import { Socket } from '../../../types';
 
 import Broadcaster from '../Broadcaster';
 const lectures: { [key: string]: Broadcaster; } = {};
+
+function publish(lecture_uid: string, obj: object) {
+  pub.publish(toController(lecture_uid), JSON.stringify(obj));
+}
 
 function removeLecture(lecture_uid: string) {
   console.log('(t) removing lecture', lecture_uid);
@@ -44,4 +50,8 @@ export default async function handleTeacher(lecture_uid: string, teacher_uid: st
     sub.subscribe(toTeacher(lecture_uid));
   }
   lectures[lecture_uid].add(socket);
+
+  publish(lecture_uid, {
+    type: 'tj' // teacher join
+  });
 }

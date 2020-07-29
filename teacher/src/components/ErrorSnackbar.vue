@@ -7,10 +7,10 @@
 
 <script>
 export default {
-  name: "ErrorSnackbar",
+  name: 'ErrorSnackbar',
 
   props: {
-    error: { type: String, default: "" },
+    error: { type: String, default: '' },
   },
 
   data() {

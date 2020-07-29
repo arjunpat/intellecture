@@ -61,12 +61,12 @@
 
 <script>
 export default {
-  name: "TutorialDisplay",
+  name: 'TutorialDisplay',
 
   props: {
     show: { type: Boolean, required: true },
-    backgroundColor: { type: String, default: "white" },
-    spacing: { type: String, default: "10px" },
+    backgroundColor: { type: String, default: 'white' },
+    spacing: { type: String, default: '10px' },
     bottom: { type: Boolean, default: false },
     top: { type: Boolean, default: false },
     last: { type: Boolean, default: false },

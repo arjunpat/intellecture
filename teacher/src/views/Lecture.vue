@@ -71,21 +71,13 @@
             :style="{width: smallScreen ? '100% !important' : '50% !important'}"
             grow
           >
-            <v-tab
-              v-for="item in items"
-              :key="item"
-            >{{ item }}</v-tab>
+            <v-tab v-for="item in items" :key="item">{{ item }}</v-tab>
           </v-tabs>
         </TutorialDisplay>
 
         <v-tabs-items v-model="tab">
           <!-- Start of Understanding tab -->
-          <v-card
-            v-show="tab === 0"
-            min-height="75vh"
-            flat
-            class="pt-3 pb-3"
-          >
+          <v-card v-show="tab === 0" min-height="75vh" flat class="pt-3 pb-3">
             <Understanding
               :understandingScore="understandingScore"
               :topics="topics"
@@ -99,12 +91,7 @@
           <!-- End of Understanding tab -->
 
           <!-- Start of Questions tab -->
-          <v-card
-            v-show="tab === 1"
-            flat
-            class="pt-3"
-            style="min-height: 75vh;"
-          >
+          <v-card v-show="tab === 1" flat class="pt-3" style="min-height: 75vh;">
             <Questions
               :questions="questions"
               :topics="topics"
@@ -124,12 +111,7 @@
           <!-- End of Questions tab -->
 
           <!-- Start of Students tab -->
-          <v-card
-            v-show="tab === 2"
-            flat
-            class="pt-3"
-            min-height="75vh"
-          >
+          <v-card v-show="tab === 2" flat class="pt-3" min-height="75vh">
             <Students
               :topics="topics"
               :showTutorial="showTutorial"
@@ -178,20 +160,20 @@
 </template>
 
 <script>
-import { mdiCloseThick } from "@mdi/js"
-import { mapState } from "vuex"
-import { post, get, setLectures, socketServerOrigin } from "@/helpers.js"
-import store from "@/store"
+import { mdiCloseThick } from '@mdi/js'
+import { mapState } from 'vuex'
+import { post, get, setLectures, socketServerOrigin } from '@/helpers.js'
+import store from '@/store'
 
-import Understanding from "@/components/lecture/Understanding"
-import Questions from "@/components/lecture/Questions"
-import Students from "@/components/lecture/Students"
+import Understanding from '@/components/lecture/Understanding'
+import Questions from '@/components/lecture/Questions'
+import Students from '@/components/lecture/Students'
 
-import TutorialDisplay from "@/components/lecture/TutorialDisplay"
+import TutorialDisplay from '@/components/lecture/TutorialDisplay'
 
-import sampleQuestions from "@/testdata/questions.json"
-import sampleTopics from "@/testdata/topics.json"
-import sampleStudents from "@/testdata/students.json"
+import sampleQuestions from '@/testdata/questions.json'
+import sampleTopics from '@/testdata/topics.json'
+import sampleStudents from '@/testdata/students.json'
 
 export default {
   components: {
@@ -215,12 +197,12 @@ export default {
       displayQuestions: [],
       topics: [],
       tab: 0,
-      items: ["Understanding", "Questions", "Students"],
+      items: ['Understanding', 'Questions', 'Students'],
       understandingData: [],
       shortened: false,
-      shortentext: "Shorten",
+      shortentext: 'Shorten',
       snackbar: false,
-      snackbarMessage: "",
+      snackbarMessage: '',
       showTutorial: -1,
       endCalled: false,
     }
@@ -232,11 +214,11 @@ export default {
 
       this.$set(this.questions, index, {
         ...question,
-        dismissed: true
+        dismissed: true,
       })
       this.displayQuestions = [...this.questions]
       post(`/lectures/live/teacher/${this.lectureInfo.uid}/dismiss`, {
-        question_uid
+        question_uid,
       })
     },
     exitFS() {
@@ -271,19 +253,19 @@ export default {
         labels: x,
         datasets: [
           {
-            label: "Understanding",
-            backgroundColor: "#4FC3F7",
+            label: 'Understanding',
+            backgroundColor: '#4FC3F7',
             data: y,
           },
         ],
       }
     },
     endLectureMethod() {
-      window.onbeforeunload = undefined
+      // window.onbeforeunload = undefined
       this.endCalled = true
       post(`/lectures/live/teacher/${this.id}/end`)
       this.socket.close()
-      store.commit("setEndLecture", false)
+      store.commit('setEndLecture', false)
       setLectures()
     },
     showCategory(index) {
@@ -304,8 +286,7 @@ export default {
     },
     getQuestionIndexById(id) {
       for (let i = 0; i < this.questions.length; i++) {
-        if (this.questions[i].question_uid === id)
-          return i
+        if (this.questions[i].question_uid === id) return i
       }
       return -1
     },
@@ -321,14 +302,14 @@ export default {
       this.displayQuestions.sort((a, b) => b.upvotes - a.upvotes)
     },
     getTabId(index) {
-      return "tab" + index
+      return 'tab' + index
     },
     clickTab(index) {
       this.tab = index
     },
     displayNotification(subject, message) {
-      if (Notification.permission === "granted") {
-        let img = "https://i.imgur.com/lMPcw6k.png"
+      if (Notification.permission === 'granted') {
+        let img = 'https://i.imgur.com/lMPcw6k.png'
         let text = message
         let notification = new Notification(subject, { body: text, icon: img })
       }
@@ -351,26 +332,28 @@ export default {
     )
     this.socket.onmessage = (event) => {
       const data = JSON.parse(event.data)
-      if (data.type === "lecture_info") {
+      if (data.type === 'lecture_info') {
         this.lectureInfo = data
 
-        this.$emit("startlecture", this.id, this.lectureInfo.join_code)
-        document.addEventListener("fullscreenchange", (event) => {
+        this.$emit('startlecture', this.id, this.lectureInfo.join_code)
+        document.addEventListener('fullscreenchange', (event) => {
           if (!document.fullscreenElement) {
-            store.commit("setShowCode", false)
+            store.commit('setShowCode', false)
           }
         })
-      } else if (data.type === "student_join") {
+      } else if (data.type === 'student_join') {
+        // data.ts is no longer set
+        data.ts = data.elapsed + this.lectureInfo.start_time
         this.$set(this.students, data.uid, {
           ...data,
           inLecture: true,
         })
         this.showSnackBar(`${data.first_name} ${data.last_name} joined`)
         this.displayNotification(
-          "Student joined",
+          'Student joined',
           `${data.first_name} ${data.last_name} joined`
         )
-      } else if (data.type === "student_leave") {
+      } else if (data.type === 'student_leave') {
         let left = this.students[data.uid]
         this.$set(this.students, data.uid, {
           ...left,
@@ -378,10 +361,10 @@ export default {
         })
         this.showSnackBar(`${left.first_name} ${left.last_name} left`)
         this.displayNotification(
-          "Student left",
+          'Student left',
           `${left.first_name} ${left.last_name} left`
         )
-      } else if (data.type === "us_update") {
+      } else if (data.type === 'us_update') {
         if (data.score != null) {
           let d = (Date.now() - this.start) / 1000
           this.understandingData.push({
@@ -391,9 +374,9 @@ export default {
           this.understandingScore = data.score
           this.initChart()
         } else {
-          this.understandingScore = "--"
+          this.understandingScore = '--'
         }
-      } else if (data.type === "new_question") {
+      } else if (data.type === 'new_question' && !this.getQuestionById(data.question_uid)) {
         this.questions.push({
           ...data,
           dismissed: false,
@@ -401,10 +384,10 @@ export default {
           upvotedStudents: [],
         })
         this.displayQuestions = [...this.questions]
-        this.displayNotification("New Question", data.question)
-      } else if (data.type === "ques_categor") {
+        this.displayNotification('New Question', data.question)
+      } else if (data.type === 'ques_categor') {
         this.topics = data.categories
-      } else if (data.type === "question_update") {
+      } else if (data.type === 'question_update') {
         let question = this.getQuestionById(data.question_uid)
         question.upvotes = data.upvotes
         this.sortQuestions()
@@ -416,41 +399,41 @@ export default {
             this.sortQuestions()
           }
         }) */
-      } else if (data.type === "end_lecture") {
+      } else if (data.type === 'end_lecture') {
         this.$router.replace({
-          name: "Feedback",
+          name: 'Feedback',
           params: { fromLectureEnd: true },
         })
-      } else if (data.type === "error") {
-        this.$router.replace({ name: "Dashboard" })
+      } else if (data.type === 'error') {
+        this.$router.replace({ name: 'Dashboard' })
       }
     }
   },
   created() {
     this.initChart()
-    window.onbeforeunload = function () {
-      return "Reloading the page will end your lecture"
-    }
-    if (!localStorage["notfirst"]) {
+   /*  window.onbeforeunload = function () {
+      return 'Reloading the page will end your lecture'
+    } */
+    if (!localStorage['notfirst']) {
       this.showTutorial = 0
-      localStorage["notfirst"] = true
+      localStorage['notfirst'] = true
     }
   },
   computed: {
     ...mapState(['endLecture', 'showCode']),
-    smallScreen () {
+    smallScreen() {
       return this.$vuetify.breakpoint.smAndDown
     },
     understandingWidth() {
       if (!this.smallScreen) {
-        return "30vw"
+        return '30vw'
       } else {
-        return "90vw"
+        return '90vw'
       }
     },
     questionWidth() {
       if (this.smallScreen) {
-        return "80vw"
+        return '80vw'
       }
     },
   },
@@ -459,29 +442,29 @@ export default {
       if (this.endLecture) {
         this.endLectureMethod()
         this.$router.replace({
-          name: "Feedback",
+          name: 'Feedback',
           params: { fromLectureEnd: true },
         })
       }
     },
     shortened(val) {
       this.initChart()
-      this.shortentext = this.shortened ? "Entire" : "Shorten"
+      this.shortentext = this.shortened ? 'Entire' : 'Shorten'
     },
     showCode(val) {
       if (this.showCode) {
-        this.$refs["start-window"].requestFullscreen()
+        this.$refs['start-window'].requestFullscreen()
       } else if (document.fullScreen) {
         this.exitFS()
       }
     },
-    showTutorial(val) {
-
-    }
+    showTutorial(val) {},
   },
-  beforeRouteLeave(to, from, next) {
+  /* beforeRouteLeave(to, from, next) {
     if (!this.endCalled) {
-      const answer = window.confirm("Do you really want to leave? you have unsaved changes!")
+      const answer = window.confirm(
+        'Do you really want to leave? you have unsaved changes!'
+      )
       if (answer) {
         this.endLectureMethod()
         next()
@@ -491,7 +474,7 @@ export default {
     } else {
       next()
     }
-  },
+  }, */
 }
 </script>
 
