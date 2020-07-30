@@ -14,26 +14,28 @@ export default class Classes {
     ).then((d: any[]) => d.length === 1);
   }
 
-  createClass(class_uid: string, account_uid: string, name: string) {
+  createClass(class_uid: string, account_uid: string, name: string, section: string) {
     return this.mysql.insert('classes', {
       uid: class_uid,
       created_at: Date.now(),
       account_uid,
-      name
+      name,
+      section
     });
   }
 
   getUserClasses(account_uid: string): any {
-    return this.mysql.query('SELECT uid, created_at, name FROM classes WHERE account_uid = ?', [account_uid]);
+    return this.mysql.query('SELECT uid, created_at, name, section FROM classes WHERE account_uid = ?', [account_uid]);
   }
 
   deleteClass(account_uid: string, class_uid: string) {
     return this.mysql.query('DELETE FROM classes WHERE account_uid = ? AND uid = ?', [account_uid, class_uid]);
   }
 
-  rename(account_uid: string, class_uid: string, name: string) {
+  rename(account_uid: string, class_uid: string, name: string, section) {
     return this.mysql.update('classes', {
-      name
+      name,
+      section
     }, {
       account_uid,
       uid: class_uid
