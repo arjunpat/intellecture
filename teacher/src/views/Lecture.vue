@@ -48,7 +48,7 @@
 
         <v-card-title>
           <h2
-            style="font-family: 'Noto Sans'; font-weight: bold;"
+          id="lecture-title"
           >{{ lectureInfo.lecture_name || 'Untitled Lecture' }}</h2>
         </v-card-title>
 
@@ -487,6 +487,15 @@ export default {
 <style lang='scss'>
 html {
   scroll-behavior: smooth;
+}
+
+#lecture-title {
+  font-family: 'Poppins'; 
+  font-weight: bold; 
+  font-size: 35px; 
+  border-left: 2px solid #aae691ff; 
+  line-height: 50px;
+  padding-left: 5px;
 }
 
 #arrow-btn {
