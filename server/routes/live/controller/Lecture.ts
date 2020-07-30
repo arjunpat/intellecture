@@ -231,8 +231,9 @@ export default class Lecture {
   }
 
   async updateTeachersQuestions() {
-    // need at least 10 questions
-    if (this.questions.length < 5 || this.timeoutQs) return;
+    // need at least 5 questions
+    let qs = this.questions.filter(q => !this.dismissed.has(q.question_uid));
+    if (qs.length < 5 || this.timeoutQs) return;
 
     let now = Date.now();
     let lastUpdate = now - this.timing.lastQuesCategorization;
@@ -244,7 +245,7 @@ export default class Lecture {
       return;
     }
 
-    let result = await extract(this.questions);
+    let result = await extract(qs);
     this.sendToTeachers(<WS.QuesCategor> {
       type: 'ques_categor',
       categories: result.slice(0, 5)
