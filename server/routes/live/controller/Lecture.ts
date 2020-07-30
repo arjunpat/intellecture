@@ -3,23 +3,11 @@ const { redis } = db;
 import { genUnderstandingScore, toStudent, toTeacher } from '../helpers';
 import { genId, genLectureJoinCode } from '../../../lib/helpers';
 import extract from './extract';
-import { BasicAccountInfo } from '../../../types';
-import { WS } from '../types';
+import Questions from './Questions';
+import { Question, Student , WS } from '../types';
 
 const SCORE_UPDATE_MAX_INTERVAL = 1000;
 const QUESTION_CAT_MAX_INTERVAL = 10000;
-
-interface Question {
-  question_uid: string,
-  creator_uid: string,
-  question: string,
-  elapsed: number // creation time
-}
-
-interface Student extends BasicAccountInfo {
-  uid: string,
-  elapsed: number // join time
-}
 
 interface Last {
   q: {
@@ -29,9 +17,7 @@ interface Last {
 
 export default class Lecture {
   private lecture_uid: string;
-  private questions: Question[] = [];
-  private questionUpvotes: { [key: string]: number } = {};
-  private dismissed: Set<string> = new Set<string>();
+  private questions: Questions =  new Questions();
   private scores: { [key: string]: number } = {};
   private studentData: { [key: string]: Student } = {};
   private last: Last = { q: {} };
@@ -114,20 +100,16 @@ export default class Lecture {
     await db.lectures.endLecture(this.lecture_uid, now);
   }
 
-  async upvoteQuestion(question_uid: string, suid: string) {
-    if (typeof this.questionUpvotes[question_uid] !== 'number')
-      return; // concerning??
+  async upvoteQuestion(question_uid: string, student_uid: string) {
+    if (this.questions.validUpvote(question_uid, student_uid)) {
+      await db.lectureQUpvotes.add(question_uid, student_uid, this.elapsed());
 
-    try {
-      await db.lectureQUpvotes.add(question_uid, suid, this.elapsed());
-      
-      // db will error if already upvoted
       this.sendToTeachers(<WS.QuestionUpdate> {
         type: 'question_update',
         question_uid,
-        upvotes: ++this.questionUpvotes[question_uid]
+        upvotes: this.questions.upvote(question_uid, student_uid)
       });
-    } catch (e) {}
+    }
   }
 
   async addQuestion(creator_uid: string, question: string) {
@@ -150,8 +132,7 @@ export default class Lecture {
       creator_uid,
       question
     );
-    this.questions.push(q);
-    this.questionUpvotes[q.question_uid] = 0;
+    this.questions.add(q);
     this.blast(<WS.NewQuestion> {
       type: 'new_question',
       ...q
@@ -232,7 +213,7 @@ export default class Lecture {
 
   async updateTeachersQuestions() {
     // need at least 5 questions
-    let qs = this.questions.filter(q => !this.dismissed.has(q.question_uid));
+    let qs = this.questions.getNondismissed();
     if (qs.length < 5 || this.timeoutQs) return;
 
     let now = Date.now();
@@ -256,7 +237,7 @@ export default class Lecture {
 
   async dismissQuestion(question_uid: string) {
     await db.lectureQs.dismissQuestion(this.lecture_uid, question_uid);
-    this.dismissed.add(question_uid);
+    this.questions.dismiss(question_uid);
     this.blast(<WS.QuestionDismissed> {
       type: 'question_dismissed',
       question_uid
@@ -289,35 +270,24 @@ export default class Lecture {
       }
     }
 
-    // send all questions
-    for (let each of this.questions) {
+    // send nondismissed questions
+    for (let each of this.questions.getNondismissed()) {
       messages.push(<WS.NewQuestion> {
         type: 'new_question',
         ...each
       });
-    }
 
-    // send the dismissed questions
-    this.dismissed.forEach(question_uid => {
-      messages.push(<WS.QuestionDismissed> {
-        type: 'question_dismissed',
-        question_uid
-      });
-    });
-
-    // question upvotes
-    for (let question_uid in this.questionUpvotes) {
+      // question upvotes
       messages.push(<WS.QuestionUpdate> {
         type: 'question_update',
-        question_uid,
-        upvotes: this.questionUpvotes[question_uid]
+        question_uid: each.question_uid,
+        upvotes: this.questions.getUpvoteCount(each.question_uid)
       });
     }
 
     // TODO above code can be optimized
     // waiting for feature set to be solidified
     // before optimizing
-    
     this.sendToTeachers(<WS.Bulk> {
       type: 'bulk',
       messages
@@ -361,7 +331,7 @@ export default class Lecture {
   getSummary(): object {
     return {
       lectureInfo: this.lectureInfo,
-      question_count: this.questions.length,
+      question_count: this.questions.count(),
       student_count: Object.keys(this.scores).length,
       ended: this.ended
     }

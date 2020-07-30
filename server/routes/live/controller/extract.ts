@@ -1,13 +1,13 @@
 import retext from 'retext';
 import pos from 'retext-pos';
 import keywords from 'retext-keywords';
-import { QuestionCategory } from '../types'
+import { QuestionCategory, Question } from '../types'
 
-function prepareQuestions(questions) {
+function prepareQuestions(questions: Question[]) {
   return questions.length > 0 && questions.map(e => e.question.trim().replace(/\r?\n|\r/g, ' ')).join('\n').toLowerCase().replace(/\?/g, '');
 }
 
-function processResult(questions, res): QuestionCategory[] {
+function processResult(questions: Question[], res): QuestionCategory[] {
   let result: QuestionCategory[] = [];
 
   // keyphrases
@@ -35,7 +35,7 @@ function processResult(questions, res): QuestionCategory[] {
     for (let match of each.matches) {
       for (let node of match.nodes) {
         lines.add(
-          questions[node.position.start.line - 1].uid
+          questions[node.position.start.line - 1].question_uid
         );
       }
     }
@@ -58,7 +58,7 @@ function processResult(questions, res): QuestionCategory[] {
     let lines = new Set<string>();
     for (let match of each.matches) {
       lines.add(
-        questions[match.node.position.start.line - 1].uid
+        questions[match.node.position.start.line - 1].question_uid
       );
     }
 
@@ -91,7 +91,7 @@ function consolidate(result: QuestionCategory[]): QuestionCategory[] {
   return Object.values(map);
 }
 
-export default function extract(questions: object[]): Promise<QuestionCategory[]> {
+export default function extract(questions: Question[]): Promise<QuestionCategory[]> {
   return new Promise((resolve, reject) => {
     console.time('extract');
     let input = prepareQuestions(questions);

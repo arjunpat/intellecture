@@ -37,17 +37,20 @@ View all of the users classes.
     {
       "uid": "GsF2nERLrwvLe0T",
       "created_at": 1587439054817,
-      "name": "AP Physics C"
+      "name": "AP Physics C",
+      "section": "Period 3"
     },
     {
       "uid": "j3fmOXvJyq5Dlww",
       "created_at": 1587439080846,
-      "name": "History"
+      "name": "History",
+      "section": "Period 4"
     },
     {
       "uid": "YaneS98ttCj7ErF",
       "created_at": 1587439072263,
-      "name": "English"
+      "name": "English",
+      "section": "Period 6"
     }
   ]
 }
