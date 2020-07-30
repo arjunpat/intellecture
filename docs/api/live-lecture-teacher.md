@@ -4,6 +4,17 @@
 
 Join a lecture as a teacher.
 
+#### bulk
+
+When the server wants to send many messages all at once but in one message for efficiency.
+
+```javascript
+{
+  "type": "bulk",
+  "messages": [{...}, {...}] // array of normal messages
+}
+```
+
 #### lecture_info
 
 As soon as client joins, they get this message from server.
@@ -61,7 +72,7 @@ As lecture progresses, teacher will get this message when question is asked.</td
 ```javascript
 {
   "type": "new_question",
-  "uid": "X8udiUQ8fN6F27C",
+  "question_uid": "X8udiUQ8fN6F27C",
   "creator_uid": "rUJyP317iuZErNlhrn2",
   "question": "What is the relationship between voltage and a Gaussian surface?",
   "elapsed": 1829
@@ -139,7 +150,7 @@ As the lecture progresses, teacher will receive this message when student upvote
 ```javascript
 {
   "type": "question_update",
-  "uid": "X8udiUQ8fN6F27C",
+  "question_uid": "X8udiUQ8fN6F27C",
   "upvotes": 3,
 }
 ```
@@ -151,7 +162,7 @@ As lecture progresses, teacher will get this message when new understanding scor
 ```javascript
 {
   "type": "us_update",
-  "value": 62
+  "score": 62
 }
 ```
 

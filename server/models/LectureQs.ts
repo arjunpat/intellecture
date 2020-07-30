@@ -18,6 +18,15 @@ export default class LectureQs {
     });
   }
 
+  dismissQuestion(lecture_uid: string, question_uid: string) {
+    return this.mysql.update('lecture_qs', {
+      dismissed: true
+    }, {
+      lecture_uid,
+      uid: question_uid
+    });
+  }
+
   // specific methods
   getQuestions(lecture_uid: string) {
     return this.mysql.query(
@@ -26,9 +35,9 @@ export default class LectureQs {
     );
   }
 
-  getQuestionsAfter(lecture_uid: string, elapsed: number) {
+  getUndismissedQuestionsAfter(lecture_uid: string, elapsed: number) {
     return this.mysql.query(
-      'SELECT uid, account_uid, elapsed, question FROM lecture_qs WHERE lecture_uid = ? AND elapsed > ?',
+      'SELECT uid, account_uid, elapsed, question FROM lecture_qs WHERE lecture_uid = ? AND elapsed > ? AND dismissed IS NOT TRUE',
       [lecture_uid, elapsed]
     );
   }

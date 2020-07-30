@@ -12,3 +12,11 @@ export interface Socket extends WebSocket {
   send(msg: string): void,
   json(obj: object): void
 }
+
+export interface BasicAccountInfo {
+  uid?: string,
+  email: string,
+  first_name: string,
+  last_name: string,
+  photo: string
+}

@@ -209,14 +209,6 @@ export default {
   },
   methods: {
     dismiss(question_uid) {
-      let index = this.getQuestionIndexById(question_uid)
-      let question = this.questions[index]
-
-      this.$set(this.questions, index, {
-        ...question,
-        dismissed: true,
-      })
-      this.displayQuestions = [...this.questions]
       post(`/lectures/live/teacher/${this.lectureInfo.uid}/dismiss`, {
         question_uid,
       })
@@ -320,18 +312,7 @@ export default {
         banned,
       })
     },
-  },
-  mounted() {
-    //Testing code
-    // this.displayQuestions = sampleQuestions["questions"];
-    // this.topics = sampleTopics["topics"];
-    // this.students = sampleStudents;
-
-    this.socket = new WebSocket(
-      `${socketServerOrigin}/lectures/live/teacher/${this.id}`
-    )
-    this.socket.onmessage = (event) => {
-      const data = JSON.parse(event.data)
+    handleMessage(data) {
       if (data.type === 'lecture_info') {
         this.lectureInfo = data
 
@@ -399,6 +380,15 @@ export default {
             this.sortQuestions()
           }
         }) */
+      } else if (data.type === 'question_dismissed') {
+        let index = this.getQuestionIndexById(data.question_uid)
+        let question = this.questions[index]
+
+        this.$set(this.questions, index, {
+          ...question,
+          dismissed: true,
+        })
+        this.displayQuestions = [...this.questions]
       } else if (data.type === 'end_lecture') {
         this.$router.replace({
           name: 'Feedback',
@@ -406,12 +396,28 @@ export default {
         })
       } else if (data.type === 'error') {
         this.$router.replace({ name: 'Dashboard' })
+      } else if (data.type === 'bulk') {
+        for (let msg of data.messages) this.handleMessage(msg)
       }
+    },
+  },
+  mounted() {
+    //Testing code
+    // this.displayQuestions = sampleQuestions["questions"];
+    // this.topics = sampleTopics["topics"];
+    // this.students = sampleStudents;
+
+    this.socket = new WebSocket(
+      `${socketServerOrigin}/lectures/live/teacher/${this.id}`
+    )
+    this.socket.onmessage = (event) => {
+      const data = JSON.parse(event.data)
+      this.handleMessage(data)
     }
   },
   created() {
     this.initChart()
-   /*  window.onbeforeunload = function () {
+    /*  window.onbeforeunload = function () {
       return 'Reloading the page will end your lecture'
     } */
     if (!localStorage['notfirst']) {
