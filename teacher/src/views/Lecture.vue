@@ -162,7 +162,7 @@
 <script>
 import { mdiCloseThick } from '@mdi/js'
 import { mapState } from 'vuex'
-import { post, get, setLectures, socketServerOrigin } from '@/helpers.js'
+import { post, get, socketServerOrigin } from '@/helpers.js'
 import store from '@/store'
 
 import Understanding from '@/components/lecture/Understanding'
@@ -258,7 +258,6 @@ export default {
       post(`/lectures/live/teacher/${this.id}/end`)
       this.socket.close()
       store.commit('setEndLecture', false)
-      setLectures()
     },
     showCategory(index) {
       this.displayQuestions = [...this.questions]

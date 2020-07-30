@@ -81,7 +81,7 @@
 
 <script>
 import store from './store'
-import { post, get, setLectures, signOut } from '@/helpers.js'
+import { post, get, getClasses, signOut } from '@/helpers.js'
 import { mapState } from 'vuex'
 import Dialog from '@/components/Dialog'
 
@@ -94,7 +94,7 @@ export default {
     get('/auth/profile').then((result) => {
       if (result.success) {
         this.$store.commit('setAuthUser', result.data)
-        setLectures();
+        getClasses()
       } else {
         this.$store.commit('setAuthUser', null)
         this.$store.commit('setClasses', null)

@@ -55,8 +55,8 @@
           :to="'/lectures/' + cla.uid"
         >
           <v-card-title>{{ cla.name }}</v-card-title>
-          <v-card-subtitle>Period 2</v-card-subtitle>
-          <v-card-text>5 Lectures</v-card-text>
+          <v-card-subtitle>{{ cla.section }}</v-card-subtitle>
+          <v-card-text>{{ cla.lecture_count }} Lectures</v-card-text>
 
           <v-menu
             offset-x
@@ -170,7 +170,7 @@
 
 <script>
 import ModalForm from "@/components/ModalForm";
-import { post, get, getClasses, setLectures, dateToString } from "@/helpers.js";
+import { post, get, dateToString } from "@/helpers.js";
 import { mapState } from "vuex";
 
 export default {
@@ -183,7 +183,6 @@ export default {
   },
   data() {
     return {
-      authUser: null,
       notification: Notification.permission == "granted" ? true : false,
       search: "",
       skeleton: [{ end_time: null, name: "", start_time: null, className: "" }],
@@ -236,20 +235,10 @@ export default {
     }
   },
   mounted() {
-    get("/auth/profile").then(response => {
-      if (!response.success) {
-        this.authUser = null;
-      } else {
-        this.authUser = response.data;
-        if (!this.classes) {
-          setLectures();
-        }
-      }
-    });
     this.genRecentLectures();
   },
   computed: {
-    ...mapState(["classes", "lectures"]),
+    ...mapState(["classes", "lectures", "authUser"]),
     smallScreen() {
       switch (this.$vuetify.breakpoint.name) {
         case "xs":

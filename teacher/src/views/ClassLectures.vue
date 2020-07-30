@@ -31,9 +31,7 @@
             </v-col>
             <v-col cols="4">
             <h3 class="subtitle font-weight-regular">
-              {{
-                lecture.students ? lecture.students.length : 0
-              }}
+              {{ lecture.student_count }}
               students
             </h3>
             </v-col>
@@ -101,15 +99,6 @@ export default {
           }
         );
         this.lectures.sort((a, b) => (a.end_time < b.end_time) ? 1 : -1)
-
-        for (let i = 0; i < this.lectures.length; i++) {
-          this.lectures[i].students = await get(
-            `/analytics/lecture/${this.lectures[i].uid}/students`
-          ).then(d => {
-            if (d.success) return d.data;
-            log(d)
-          });
-        }
 
         /*this.lectureLength = this.lectureInfo.end_time - this.lectureInfo.start_time
         this.students = students*/

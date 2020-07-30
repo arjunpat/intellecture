@@ -21,16 +21,6 @@ export default new Vuex.Store({
     setClasses(state, classes) {
       state.classes = classes
     },
-    setLectures(state, lectures) {
-      state.lectures = lectures;
-    },
-    addLectures(state, lectures) {
-      let priorlect=state.lectures;
-      if (priorlect==null) {
-        priorlect=[];
-      }
-      state.lectures=priorlect.concat(lectures);
-    },
     setShowCode(state, showCode) {
       state.showCode = showCode
     }

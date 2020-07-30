@@ -25,7 +25,18 @@ export default class Classes {
   }
 
   getUserClasses(account_uid: string): any {
-    return this.mysql.query('SELECT uid, created_at, name, section FROM classes WHERE account_uid = ?', [account_uid]);
+    return this.mysql.query(
+      `SELECT
+        a.uid,
+        a.created_at,
+        a.name,
+        a.section,
+        (SELECT COUNT(*) FROM lectures b WHERE b.class_uid = a.uid) as lecture_count
+      FROM
+        classes a
+      WHERE account_uid = ?`,
+      [account_uid]
+    );
   }
 
   deleteClass(account_uid: string, class_uid: string) {

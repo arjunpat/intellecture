@@ -79,7 +79,16 @@ export default class Lectures {
 
   // analytics/aggregation
   getClassLectures(class_uid: string) {
-    return this.mysql.query('SELECT uid, name, start_time, end_time FROM lectures WHERE class_uid = ?', [ class_uid ]);
+    return this.mysql.query(
+      `SELECT
+        uid,
+        name,
+        start_time,
+        end_time,
+        (SELECT COUNT(DISTINCT account_uid) FROM lecture_student_log WHERE lecture_uid = uid) as student_count
+      FROM lectures WHERE class_uid = ?`,
+      [ class_uid ]
+    );
   }
 
   getRecentLectures(account_uid: string, limit: number) {
