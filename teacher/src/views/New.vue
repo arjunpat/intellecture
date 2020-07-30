@@ -15,7 +15,7 @@
             <v-form>
               <h1 class="mb-2">Select a class</h1>
               <v-row align="center" justify="center">
-                <v-col cols="12">
+                <v-col :cols="$vuetify.breakpoint.xs ? 12 : 8">
                   <v-select
                     :items="(classes && classes.length > 0) ? classes : ['No classes to show']"
                     item-value="uid"
@@ -29,7 +29,7 @@
 
               <h1 class="mb-2">Give it a name</h1>
               <v-row align="center" justify="center">
-                <v-col cols="12">
+                <v-col :cols="$vuetify.breakpoint.xs ? 12 : 8">
                   <v-text-field label="Lecture name" outlined v-model="lectureName" required></v-text-field>
                 </v-col>
               </v-row>

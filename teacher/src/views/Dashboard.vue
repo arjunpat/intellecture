@@ -13,7 +13,11 @@
     <h1 class="poppins mb-4 header">Recent Lectures</h1>
 
     <v-row class="pl-3 pt-2">
-      <div v-for="a in recentLectures" :key="a.uid" style="display: 'inline-block';">
+      <div
+        v-for="a in recentLectures"
+        :key="a.uid"
+        style="display: 'inline-block';"
+      >
         <v-card
           :width="recentLectureCardSize"
           min-height="175"
@@ -36,16 +40,44 @@
     <h1 class="poppins mt-10 mb-4 header">Classes</h1>
 
     <v-row class="pl-3 pt-2">
-      <div class="mr-3 mb-3" v-for="cla in classes" :key="cla.uid" style="display: 'inline-block';">
-      <v-card
-      :width="$vuetify.breakpoint.sm ? '95vw' : 350" outlined hover min-height="100" class="rounded-lg poppins">
-      <v-card-title>{{ cla.name }}</v-card-title>
-      <v-card-subtitle>Period 2</v-card-subtitle>
-      <v-card-text>5 Lectures</v-card-text>
+      <div
+        class="mr-3 mb-3"
+        v-for="cla in classes"
+        :key="cla.uid"
+        style="display: 'inline-block';"
+      >
+        <v-card
+          :width="$vuetify.breakpoint.xs ? '95vw' : 350"
+          outlined
+          hover
+          min-height="100"
+          class="rounded-lg poppins"
+        >
+          <v-card-title>{{ cla.name }}</v-card-title>
+          <v-card-subtitle>Period 2</v-card-subtitle>
+          <v-card-text>5 Lectures</v-card-text>
 
-      <a style="position: absolute; right: 0px; top: 43px;"><v-icon large id="menu-icon">more_vert</v-icon></a>
-
-      </v-card>
+          <v-menu
+            offset-x
+            nudge-top
+            :close-on-content-click="false"
+            transition="slide-x-transition"
+          >
+            <template v-slot:activator="{ on }">
+              <a v-on="on" style="position: absolute; right: 0px; top: 43px;"
+                ><v-icon large id="menu-icon">more_vert</v-icon></a
+              >
+            </template>
+            <v-list class="poppins">
+              <v-list-item @click="copyLink()">
+                <v-list-item-title>Delete</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="copyLink()">
+                <v-list-item-title>Rename</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-card>
       </div>
     </v-row>
 
@@ -79,6 +111,7 @@
     </v-card>
     -->
 
+    <!-- OLD CLASSES AND LECTURES
     <v-card v-if="classes != []" class="mt-12">
       <v-card-title class="card-title">CLASSES</v-card-title>
       <v-divider></v-divider>
@@ -88,7 +121,7 @@
             <div class="noshow">No classes to show</div>
           </li>
           <li v-for="cla in classes" v-bind:key="cla.id">
-            <v-banner style="font-family: 'Poppins';">{{cla.name}}</v-banner>
+            <v-banner style="font-family: 'Poppins';">{{ cla.name }}</v-banner>
           </li>
         </ul>
         <ModalForm class="mt-3 ml-6"></ModalForm>
@@ -116,20 +149,21 @@
       <v-card-text align="center">
         <v-data-table
           :headers="headers"
-          :items="(lectures==null) ? skeleton : lectures"
+          :items="lectures == null ? skeleton : lectures"
           :items-per-page="5"
           :search="search"
           class="elevation-1"
         >
           <template v-slot:item.end_time="{ item }">
-            <div>{{formatUnix(item.end_time)}}</div>
+            <div>{{ formatUnix(item.end_time) }}</div>
           </template>
           <template v-slot:item.start_time="{ item }">
-            <div>{{formatUnix(item.start_time)}}</div>
+            <div>{{ formatUnix(item.start_time) }}</div>
           </template>
         </v-data-table>
       </v-card-text>
     </v-card>
+    -->
   </v-container>
 </template>
 
@@ -141,10 +175,10 @@ import { mapState } from "vuex";
 export default {
   name: "Dashboard",
   components: {
-    ModalForm,
+    ModalForm
   },
   props: {
-    fromLectureEnd: { type: Boolean, default: false },
+    fromLectureEnd: { type: Boolean, default: false }
   },
   data() {
     return {
@@ -158,14 +192,14 @@ export default {
           text: "Class Name",
           align: "start",
           sortable: true,
-          value: "className",
+          value: "className"
         },
         { text: "End Time", value: "end_time" },
         { text: "Start Time", value: "start_time" },
-        { text: "Lecture Name", value: `name` },
+        { text: "Lecture Name", value: `name` }
         //{ text: 'Student List', value: "" }, TODO
         //{ text: 'Code', value: 'uid' },
-      ],
+      ]
     };
   },
   methods: {
@@ -180,12 +214,12 @@ export default {
         month: "short",
         day: "2-digit",
         hour: "numeric",
-        minute: "numeric",
+        minute: "numeric"
       });
       return dtf.format(date);
     },
     requestNotifications() {
-      Notification.requestPermission(function (status) {
+      Notification.requestPermission(function(status) {
         console.log("Notification permission status:", status);
         if (this.status == "granted") {
           this.notification = true;
@@ -193,15 +227,15 @@ export default {
       });
     },
     async genRecentLectures() {
-      let d = await get("/lectures/recent").then((d) => d.data);
-      d.forEach((e) => {
+      let d = await get("/lectures/recent").then(d => d.data);
+      d.forEach(e => {
         if (e.name.length > 21) e.name = e.name.slice(0, 18) + "...";
       });
       this.recentLectures = d;
-    },
+    }
   },
   mounted() {
-    get("/auth/profile").then((response) => {
+    get("/auth/profile").then(response => {
       if (!response.success) {
         this.authUser = null;
       } else {
@@ -242,8 +276,8 @@ export default {
         case "xl":
           return "275";
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
