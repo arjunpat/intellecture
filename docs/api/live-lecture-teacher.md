@@ -50,7 +50,6 @@ As lecture progresses, teacher will get this message when student leaves lecture
 ```javascript
 {
   "type": "student_leave",
-  "elapsed": 874463,
   "uid": "JfdslFKjd82jSDF"
 }
 ```
