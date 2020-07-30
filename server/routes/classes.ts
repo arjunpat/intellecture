@@ -22,6 +22,28 @@ router.post('/create', async (req: Request, res) => {
   }));
 });
 
+router.post('/delete', async (req: Request, res) => {
+  let { class_uid } = req.body;
+  if (!class_uid) return res.send(responses.error('missing_data'));
+  
+  // class ownership does not need to be checked because it is handled
+  // by the sql
+
+  await db.classes.deleteClass(req.uid, class_uid);
+  res.send(responses.success());
+});
+
+router.post('/rename', async (req: Request, res) => {
+  let { class_uid, name } = req.body;
+  if (!class_uid) return res.send(responses.error('missing_data'));
+
+  // class ownership does not need to be checked because it is handled
+  // by the sql
+
+  await db.classes.rename(req.uid, class_uid, name || 'Untitled Class');
+  res.send(responses.success());
+});
+
 router.get('/mine', async (req: Request, res) => {
   res.send(responses.success(await db.classes.getUserClasses(req.uid)));
 });

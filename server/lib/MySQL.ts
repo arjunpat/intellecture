@@ -72,12 +72,12 @@ export default class MySQL {
     }
 
     for (let key in where) {
-      whereString += `${key} = ? AND`;
+      whereString += `${key} = ? AND `;
       values.push(where[key])
     }
 
     setString = setString.substring(0, setString.length - 2);
-    whereString = whereString.substring(0, whereString.length - 4);
+    whereString = whereString.substring(0, whereString.length - 5);
 
     return this.query(`UPDATE ${table} SET ${setString} WHERE ${whereString}`, values);
   }

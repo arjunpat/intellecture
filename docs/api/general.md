@@ -1,58 +1,6 @@
 # General Routes
 
-Use the **/auth/*** routes to get the cookie set that is needed to access these routes.
-
-## POST /classes/create
-
-Create a new class.
-
-###### Request body:
-
-```javascript
-{
-  "name": "AP Physics C"
-}
-```
-
-###### Example response:
-
-```javascript
-{
-  "success": true,
-  "data": {
-    "class_uid": "GsF2nERLrwvLe0T" // this API generates a class and returns UID
-  }
-}
-```
-
-## GET /classes/mine
-
-View all of the users classes.
-
-###### Example response:
-
-```javascript
-{
-  "success": true,
-  "data": [
-    {
-      "uid": "GsF2nERLrwvLe0T",
-      "created_at": 1587439054817,
-      "name": "AP Physics C"
-    },
-    {
-      "uid": "j3fmOXvJyq5Dlww",
-      "created_at": 1587439080846,
-      "name": "History"
-    },
-    {
-      "uid": "YaneS98ttCj7ErF",
-      "created_at": 1587439072263,
-      "name": "English"
-    }
-  ]
-}
-```
+Use the **/auth/** routes to get the cookie set that is needed to access these routes.
 
 ## POST /lectures/create
 

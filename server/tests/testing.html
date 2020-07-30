@@ -18,6 +18,32 @@
       }).then(res => res.json());
     });
   });
+
+  function get(url) {
+    if (!url.includes('http')) {
+      url = hostp + url;
+    }
+
+    return fetch(url, {
+      credentials: 'include'
+    }).then(res => res.json());
+  }
+
+  function post(url, json) {
+    if (!url.includes('http')) {
+      url = hostp + url;
+    }
+
+    return window.fetch(url, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(json)
+    }).then(res => res.json());
+  }
+
 </script>
 
 <script>
@@ -135,5 +161,18 @@
       ...postStuff,
       method: 'GET'
     }).then(res => res.json()).then(res => console.log(res));
+  }
+
+  function renameClass(class_uid, name) {
+    post('/classes/rename', {
+      class_uid,
+      name
+    });
+  }
+
+  function deleteClass(class_uid) {
+    post('/classes/delete', {
+      class_uid
+    });
   }
 </script>
