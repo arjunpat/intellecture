@@ -35,7 +35,7 @@ export default class LectureQs {
     );
   }
 
-  getUndismissedQuestionsAfter(lecture_uid: string, elapsed: number) {
+  getNondismissedQuestionsAfter(lecture_uid: string, elapsed: number) {
     return this.mysql.query(
       'SELECT uid, account_uid, elapsed, question FROM lecture_qs WHERE lecture_uid = ? AND elapsed > ? AND dismissed IS NOT TRUE',
       [lecture_uid, elapsed]

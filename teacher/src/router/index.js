@@ -8,6 +8,7 @@ import New from '@/views/New.vue'
 import SignIn from '@/views/SignIn.vue'
 import Feedback from '@/views/Feedback.vue'
 import LectureAnalyticsStudent from '@/views/lecture-analytics/Student';
+import ClassLectures from '@/views/ClassLectures';
 
 Vue.use(VueRouter)
 const isProd = process.env.NODE_ENV === 'production'
@@ -63,6 +64,12 @@ const routes = [
     path: '/lecture-analytics/:lecture_uid/students',
     name: 'LectureAnalyticsStudent',
     component: LectureAnalyticsStudent,
+    props: true
+  },
+  {
+    path: '/lectures/:class_uid',
+    name: 'ClassLectures',
+    component: ClassLectures,
     props: true
   }
 ]

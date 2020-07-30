@@ -8,6 +8,18 @@ export interface QuestionCategory {
   weight?: number
 }
 
+export interface Question {
+  question_uid: string,
+  creator_uid: string,
+  question: string,
+  elapsed: number // creation time
+}
+
+export interface Student extends BasicAccountInfo {
+  uid: string,
+  elapsed: number // join time
+}
+
 export namespace WS {
   export interface Message {
     type: string
