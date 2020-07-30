@@ -12,10 +12,10 @@ import { Request } from '../types';
 router.use(mw.auth);
 
 router.post('/create', async (req: Request, res) => {
-  let { name } = req.body;
+  let { name, section } = req.body;
 
   let class_uid = helpers.genId(15);
-  await db.classes.createClass(class_uid, req.uid, name || 'Untitled Class');
+  await db.classes.createClass(class_uid, req.uid, name || 'Untitled Class', section || 'Untitled Section');
 
   res.send(responses.success({
     class_uid
@@ -34,13 +34,13 @@ router.post('/delete', async (req: Request, res) => {
 });
 
 router.post('/rename', async (req: Request, res) => {
-  let { class_uid, name } = req.body;
+  let { class_uid, name, section } = req.body;
   if (!class_uid) return res.send(responses.error('missing_data'));
 
   // class ownership does not need to be checked because it is handled
   // by the sql
 
-  await db.classes.rename(req.uid, class_uid, name || 'Untitled Class');
+  await db.classes.rename(req.uid, class_uid, name || 'Untitled Class', section || 'Untitled Section');
   res.send(responses.success());
 });
 
