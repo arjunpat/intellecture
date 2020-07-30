@@ -110,3 +110,35 @@ export function dateToString(date) {
     timeZone: 'America/Los_Angeles'
   });
 }
+
+export function durationToString(ms, descriptive=false) {
+  // Descriptive determines whether to display hours with minutes, and minutes with seconds
+
+  let seconds = Math.floor(ms / 1000) % 60
+  let minutes = Math.floor(ms / (1000 * 60)) % 60
+  let hours = Math.floor(ms / (1000 * 60 * 60)) % 24
+  let days = Math.floor(ms / (1000 * 60 * 60 * 24)) % 365
+  let years = Math.floor(ms / (1000 * 60 * 60 * 24 * 365))
+
+  if (years > 0) {
+    return getQuantityString(years, 'year')
+  } else if (days > 0) {
+    return getQuantityString(days, 'day')
+  } else if (hours > 0) {
+    let str = getQuantityString(hours, 'hour')
+    if (descriptive && minutes !== 0)
+      str += ' ' + getQuantityString(minutes, 'minute')
+    return str
+  } else if (minutes > 0) {
+    let str = getQuantityString(minutes, 'minute')
+    if (descriptive && seconds !== 0)
+      str += ' ' + getQuantityString(seconds, 'second')
+    return str
+  } else {
+    return getQuantityString(seconds, 'second')
+  }
+}
+
+export function getQuantityString(quantity, singular, plural=singular+'s') {
+  return quantity === 1 ? `${quantity} ${singular}` : `${quantity} ${plural}`
+}
