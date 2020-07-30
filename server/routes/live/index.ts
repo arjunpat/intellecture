@@ -153,7 +153,7 @@ router.get('/student/:lecture_uid/questions', mw.auth, attachLecture, async (req
   if (isNaN(elapsed) || elapsed < 0)
     return res.send(responses.error());
   
-  let qs = await db.lectureQs.getQuestionsAfter(req.params.lecture_uid, elapsed);
+  let qs = await db.lectureQs.getUndismissedQuestionsAfter(req.params.lecture_uid, elapsed);
 
   res.send(responses.success(qs.map(({ account_uid, uid, question, elapsed }) => {	
     return {	

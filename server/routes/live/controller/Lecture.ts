@@ -3,6 +3,8 @@ const { redis } = db;
 import { genUnderstandingScore, toStudent, toTeacher } from '../helpers';
 import { genId, genLectureJoinCode } from '../../../lib/helpers';
 import extract from './extract';
+import { BasicAccountInfo } from '../../../types';
+import { WS } from '../types';
 
 const SCORE_UPDATE_MAX_INTERVAL = 1000;
 const QUESTION_CAT_MAX_INTERVAL = 10000;
@@ -14,12 +16,8 @@ interface Question {
   elapsed: number // creation time
 }
 
-interface Student {
+interface Student extends BasicAccountInfo {
   uid: string,
-  email: string,
-  first_name: string,
-  last_name: string,
-  photo: string,
   elapsed: number // join time
 }
 
@@ -33,6 +31,7 @@ export default class Lecture {
   private lecture_uid: string;
   private questions: Question[] = [];
   private questionUpvotes: { [key: string]: number } = {};
+  private dismissed: Set<string> = new Set<string>();
   private scores: { [key: string]: number } = {};
   private studentData: { [key: string]: Student } = {};
   private last: Last = { q: {} };
@@ -92,10 +91,7 @@ export default class Lecture {
         this.kickStudent(data.student_uid, data.banned);
         break;
       case 'qds': // question dismissed
-        this.blast({
-          type: 'question_dismissed',
-          question_uid: data.question_uid
-        });
+        this.dismissQuestion(data.question_uid);
         break;
       case 'tj': // teacher join
         this.teacherJoined();
@@ -108,7 +104,7 @@ export default class Lecture {
 
   async end() {
     let now = Date.now();
-    this.blast({ type: 'end_lecture' });
+    this.blast(<WS.Message> { type: 'end_lecture' });
     this.ended = true;
     redis.clearBan(this.lecture_uid);
     
@@ -126,7 +122,7 @@ export default class Lecture {
       await db.lectureQUpvotes.add(question_uid, suid, this.elapsed());
       
       // db will error if already upvoted
-      this.sendToTeachers({
+      this.sendToTeachers(<WS.QuestionUpdate> {
         type: 'question_update',
         question_uid,
         upvotes: ++this.questionUpvotes[question_uid]
@@ -156,7 +152,7 @@ export default class Lecture {
     );
     this.questions.push(q);
     this.questionUpvotes[q.question_uid] = 0;
-    this.blast({
+    this.blast(<WS.NewQuestion> {
       type: 'new_question',
       ...q
     });
@@ -171,7 +167,7 @@ export default class Lecture {
       elapsed,
       uid: student_uid
     };
-    this.sendToTeachers({
+    this.sendToTeachers(<WS.StudentJoin> {
       type: 'student_join',
       ...stu
     });
@@ -183,7 +179,7 @@ export default class Lecture {
     let elapsed = this.elapsed();
     await db.lectureStudentLog.leave(this.lecture_uid, student_uid, elapsed);
     delete this.scores[student_uid];
-    this.sendToTeachers({
+    this.sendToTeachers(<WS.StudentLeave> {
       type: 'student_leave',
       uid: student_uid
     });
@@ -203,7 +199,7 @@ export default class Lecture {
 
   kickStudent(student_uid: string, banned: boolean) {
     if (banned) redis.ban(this.lecture_uid, student_uid);
-    this.sendToStudents({
+    this.sendToStudents(<WS.KickStudent> {
       to: student_uid,
       type: 'kick_student'
     });
@@ -225,7 +221,7 @@ export default class Lecture {
 
     let score = this.getScore();
     db.lectureUs.recordScoreChange(this.lecture_uid, this.elapsed(now), score);
-    this.sendToTeachers({
+    this.sendToTeachers(<WS.UsUpdate> {
       type: 'us_update',
       score
     });
@@ -249,7 +245,7 @@ export default class Lecture {
     }
 
     let result = await extract(this.questions);
-    this.sendToTeachers({
+    this.sendToTeachers(<WS.QuesCategor> {
       type: 'ques_categor',
       categories: result.slice(0, 5)
     });
@@ -257,23 +253,35 @@ export default class Lecture {
     this.timing.lastQuesCategorization = Date.now();
   }
 
+  async dismissQuestion(question_uid: string) {
+    await db.lectureQs.dismissQuestion(this.lecture_uid, question_uid);
+    this.dismissed.add(question_uid);
+    this.blast(<WS.QuestionDismissed> {
+      type: 'question_dismissed',
+      question_uid
+    });
+  }
+
   teacherJoined() {
     // understanding score and questions
     this.updateTeachers();
     this.updateTeachersQuestions();
 
+    // generate update bulk message
+    let messages: WS.Message[] = [];
+
     // send all students
     // must send ALL students so that
     // teacher page can relate to questions
     for (let student_uid in this.studentData) {
-      this.sendToTeachers({
+      messages.push(<WS.StudentJoin> {
         type: 'student_join',
         ...this.studentData[student_uid]
       });
 
       // not live, per say
       if (typeof this.scores[student_uid] !== 'number') {
-        this.sendToTeachers({
+        messages.push(<WS.StudentLeave> {
           type: 'student_leave',
           uid: student_uid
         });
@@ -282,20 +290,37 @@ export default class Lecture {
 
     // send all questions
     for (let each of this.questions) {
-      this.sendToTeachers({
+      messages.push(<WS.NewQuestion> {
         type: 'new_question',
         ...each
       });
     }
 
+    // send the dismissed questions
+    this.dismissed.forEach(question_uid => {
+      messages.push(<WS.QuestionDismissed> {
+        type: 'question_dismissed',
+        question_uid
+      });
+    });
+
     // question upvotes
     for (let question_uid in this.questionUpvotes) {
-      this.sendToTeachers({
+      messages.push(<WS.QuestionUpdate> {
         type: 'question_update',
         question_uid,
         upvotes: this.questionUpvotes[question_uid]
       });
     }
+
+    // TODO above code can be optimized
+    // waiting for feature set to be solidified
+    // before optimizing
+    
+    this.sendToTeachers(<WS.Bulk> {
+      type: 'bulk',
+      messages
+    });
   }
 
   getScore() {
@@ -319,16 +344,16 @@ export default class Lecture {
     }
   }
 
-  blast(obj: object) {
+  blast(obj: WS.Message) {
     this.sendToStudents(obj);
     this.sendToTeachers(obj);
   }
 
-  sendToTeachers(obj: object) {
+  sendToTeachers(obj: WS.Message) {
     redis.conn.publish(toTeacher(this.lecture_uid), JSON.stringify(obj));
   }
 
-  sendToStudents(obj: object) {
+  sendToStudents(obj: WS.Message) {
     redis.conn.publish(toStudent(this.lecture_uid), JSON.stringify(obj));
   }
 

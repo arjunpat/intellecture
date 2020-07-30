@@ -1,12 +1,5 @@
 import MySQL from '../lib/MySQL';
-
-interface BasicAccountInfo {
-  uid?: string,
-  email: string,
-  first_name: string,
-  last_name: string,
-  photo: string
-}
+import { BasicAccountInfo } from '../types';
 
 export default class Accounts {
   private mysql: MySQL;

@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS lecture_qs (
   lecture_uid VARCHAR(20),
   account_uid VARCHAR(36),
   elapsed BIGINT UNSIGNED,
+  dismissed BOOLEAN,
   question TINYTEXT,
   FOREIGN KEY (lecture_uid) REFERENCES lectures(uid) ON DELETE CASCADE,
   FOREIGN KEY (account_uid) REFERENCES accounts(uid) ON DELETE CASCADE

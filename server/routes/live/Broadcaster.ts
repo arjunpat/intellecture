@@ -1,5 +1,6 @@
 import db from '../../models';
 import { Socket } from '../../types';
+import { WS } from './types'
 
 function old(socket: Socket): boolean {
   return socket.readyState === 2 || socket.readyState === 3 || !socket.isAlive;
@@ -35,7 +36,7 @@ class Broadcaster {
     }
   }
 
-  getLectureInfo() {
+  getLectureInfo(): WS.LectureInfo {
     let { uid, start_time, class_name, lecture_name, creator, join_code } = this.lectureInfo;
     return {
       type: 'lecture_info',

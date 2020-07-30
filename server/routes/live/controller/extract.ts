@@ -1,6 +1,7 @@
 import retext from 'retext';
 import pos from 'retext-pos';
 import keywords from 'retext-keywords';
+import { QuestionCategory } from '../types'
 
 function prepareQuestions(questions) {
   return questions.length > 0 && questions.map(e => e.question.trim().replace(/\r?\n|\r/g, ' ')).join('\n').toLowerCase().replace(/\?/g, '');
@@ -90,15 +91,7 @@ function consolidate(result: QuestionCategory[]): QuestionCategory[] {
   return Object.values(map);
 }
 
-export interface QuestionCategory {
-  type: string,
-  value: string,
-  questions: string[],
-  score: number,
-  weight?: number
-}
-
-export default function extract(questions: object[]): Promise<object[]> {
+export default function extract(questions: object[]): Promise<QuestionCategory[]> {
   return new Promise((resolve, reject) => {
     console.time('extract');
     let input = prepareQuestions(questions);
