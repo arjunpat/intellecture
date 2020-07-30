@@ -14,7 +14,6 @@ CREATE TABLE IF NOT EXISTS classes (
   created_at BIGINT UNSIGNED,
   account_uid VARCHAR(36),
   name VARCHAR(50),
-  section VARCHAR(50),
   FOREIGN KEY (account_uid) REFERENCES accounts(uid) ON DELETE CASCADE -- creates index auto
 );
 

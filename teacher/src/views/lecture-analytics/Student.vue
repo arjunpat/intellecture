@@ -1,119 +1,115 @@
 <template>
-  <v-container class="fill-height py-0" fluid>
-    <v-row 
-      class="fill-height"
-      justify="center"  
+  <div class="fill-height">
+    <v-banner 
+      dark 
+      single-line 
+      color="grey darken-4"
     >
-      <v-col
-        cols="12"
-        sm="12"
-        md="8"
-        lg="6"
+      <v-avatar
+        slot="icon"
+        color="red accent-4"
+        size="40"
       >
-        <v-card v-if="lectureInfo" class="mb-4">
-          <div class="pl-2 green white--text text-subtitle-1">{{ lectureInfo.class_name }}</div>
-          <v-card-text class="black--text">
-            <div class="text-sm-h3 text-h4 mb-2">
-              {{ lectureInfo.lecture_name }}
-            </div>
-            <v-row
-              justify="start"
-            >
-              <v-col
-                cols="12"
-                sm="auto"
-              >
-                <v-icon>mdi-timer-outline</v-icon>
-                {{ lectureLengthString }}
-              </v-col>
-              <v-col
-                cols="12"
-                sm="auto"
-              >
-                <v-icon>mdi-account</v-icon>
-                {{ students.length + ' students' }}
-              </v-col>
-              <v-col
-                cols="12"
-                sm="auto"
-              >
-                <v-icon>mdi-update</v-icon>
-                {{ timeSinceEndTimeString }}
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
+        <v-icon color="white">mdi-alert-circle</v-icon>
+      </v-avatar>
 
-        <v-card>
-          <v-card-title>
-            Students
-            <v-spacer></v-spacer>
-            <v-text-field
-              v-model="search"
-              prepend-icon="mdi-magnify"
-              label="Search"
-              single-line
-              hide-details
-            ></v-text-field>
-          </v-card-title>
-          <v-data-table
-            :headers="headers"
-            :items="students"
+      This page is still in development, so many features/buttons will not work.
+    </v-banner>
+
+    <v-container class="fill-height py-0" fluid>
+      <v-row class="fill-height">
+          <v-navigation-drawer
+            color="transparent"
+            :permanent="true"
+            :expand-on-hover="false"
+            :mini-variant="false"
           >
-            <template v-slot:item.name="{ item }">
-              <v-avatar size="36" class="mr-2">
-                <img :src="item.photo">
-              </v-avatar>
-              {{ `${item.first_name} ${item.last_name}` }}
-            </template>
-          </v-data-table>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+            <v-list
+              nav
+              class="py-0"
+            >
+              <v-list-item two-line>
+                <v-list-item-content>
+                  <h2 style="font-weight: bold;">{{ lectureInfo.lecture_name }}</h2>
+                  <v-list-item-subtitle>{{ lectureInfo.class_name }}</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+
+              <v-divider></v-divider>
+
+              <v-list-item-group
+                v-model="selectedItem"
+              >
+                <v-list-item
+                  v-for="item in items"
+                  :key="item.title"
+                  link
+                >
+                  <v-list-item-icon>
+                    <v-icon>{{ item.icon }}</v-icon>
+                  </v-list-item-icon>
+
+                  <v-list-item-content>
+                    <v-list-item-title>{{ item.title }}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
+          </v-navigation-drawer>
+        <v-col>
+          <v-card-text style="text-align: right;">{{ students.length }} student(s)</v-card-text>
+          <div style="display: flex; justify-content: flex-start; flex-wrap: wrap;">
+            <v-card
+              class="mx-auto"
+              width="250"
+              height="300"
+              v-for="a in students"
+              :key="a.account_uid"
+              style="margin: 15px;"
+            >
+              <v-img
+                :src="a.photo"
+                height="150px"
+              ></v-img>
+              <v-card-title>{{ a.first_name }} {{ a.last_name }}</v-card-title>
+              <v-card-subtitle>{{ a.email }}</v-card-subtitle>
+
+              <v-card-text>
+                <span v-if="quesCount">{{ getQuesCount(a.account_uid) }} question{{ getQuesCount(a.account_uid) !== 1 ? 's' : '' }}</span><br>
+                <span v-if="present">{{ getPresent(a.account_uid) }}% present</span>
+              </v-card-text>
+            </v-card>
+          </div>
+        </v-col>
+      </v-row>
+    </v-container>
+  </div>
 </template>
 
 <script>
-import { post, get, log, durationToString, dateToString } from '@/helpers.js'
+import { post, get, log } from '@/helpers.js'
 import { mdiAndroidStudio } from '@mdi/js'
 import analyticsData from '@/testdata/analyticsData.json'
 
 export default {
-  // mdi-timer-outline
-  // mdi-update OR mdi-calendar-range
-  props: {
-    lecture_uid: { type: String },
-  },
-
   data() {
     return {
       testing: false,
-      lectureInfo: {},
-      lectureLength: 0,
-      search: '',
-      headers: [
-        { text: 'Name', value: 'name' },
-        { text: 'Present-ness', value: 'present' },
-        { text: 'Average Understanding', value: 'understanding' },
-        { text: 'Questions Asked', value: 'quesCount' },
-        { text: 'Questions Upvoted', value: 'quesUpvoted' },
+      items: [
+        { title: 'Students', icon: 'mdi-account' },
+        { title: 'Understanding', icon: 'mdi-head-lightbulb' },
+        { title: 'Questions', icon: 'mdi-comment-question' },
+        { title: 'Attendance', icon: 'mdi-clipboard' },
       ],
+      selectedItem: 0,
+      lecture_uid: this.$route.params.lecture_uid,
+      lectureInfo: {},
       students: [],
       present: null,
       quesCount: null,
       intervals_present: null,
     }
   },
-
-  computed: {
-    lectureLengthString() {
-      return durationToString(this.lectureLength, true)
-    },
-    timeSinceEndTimeString() {
-      return dateToString(this.lectureInfo.end_time)
-    },
-  },
-
   methods: {
     async init() {
       if (this.testing) {
@@ -149,7 +145,6 @@ export default {
       })
     }
   },
-
   mounted() {
     this.init()
   }

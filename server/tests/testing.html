@@ -77,12 +77,11 @@
   // let host = 'api.intellecture.app';
   // let hostp = 'https://api.intellecture.app';
   let hostp = 'http://localhost:8080';
-  function createClass(name, section) {
+  function createClass(name) {
     fetch(hostp + '/classes/create', {
       ...postStuff,
       body: JSON.stringify({
-        name,
-        section
+        name
       })
     });
   }
@@ -164,11 +163,10 @@
     }).then(res => res.json()).then(res => console.log(res));
   }
 
-  function renameClass(class_uid, name, section) {
+  function renameClass(class_uid, name) {
     post('/classes/rename', {
       class_uid,
-      name,
-      section
+      name
     });
   }
 

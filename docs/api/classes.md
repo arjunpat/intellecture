@@ -8,8 +8,7 @@ Create a new class.
 
 ```javascript
 {
-  "name": "AP Physics C",
-  "section": "Period 2"
+  "name": "AP Physics C"
 }
 ```
 
@@ -72,7 +71,6 @@ Rename a class.
 ```javascript
 {
   "class_uid": "asdfasdfasdf",
-  "name": "New Name",
-  "section": "Period 1"
+  "name": "New Name"
 }
 ```

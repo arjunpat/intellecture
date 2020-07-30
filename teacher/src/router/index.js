@@ -62,8 +62,7 @@ const routes = [
   {
     path: '/lecture-analytics/:lecture_uid/students',
     name: 'LectureAnalyticsStudent',
-    component: LectureAnalyticsStudent,
-    props: true
+    component: LectureAnalyticsStudent
   }
 ]
 
