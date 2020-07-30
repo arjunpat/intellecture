@@ -52,6 +52,7 @@
           hover
           min-height="100"
           class="rounded-lg poppins"
+          :to="'/lectures/' + cla.uid"
         >
           <v-card-title>{{ cla.name }}</v-card-title>
           <v-card-subtitle>Period 2</v-card-subtitle>
