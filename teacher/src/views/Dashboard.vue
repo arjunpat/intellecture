@@ -23,10 +23,10 @@
           min-height="175"
           hover
           outlined
-          class="mr-3 rounded-lg"
+          class="mr-3 rounded-lg mainfont"
           :to="'/lecture-analytics/' + a.uid"
         >
-          <v-card-title>{{ a.name }}</v-card-title>
+          <v-card-title class="font-weight-bold">{{ a.name }}</v-card-title>
           <v-card-subtitle>{{ a.className }}</v-card-subtitle>
           <v-card-text>{{ dateToString(a.end_time) }}</v-card-text>
 
@@ -37,7 +37,10 @@
       </div>
     </v-row>
 
-    <h1 class="poppins mt-10 mb-4 header">Classes</h1>
+    <v-row>
+      <h1 class="poppins mt-10 mb-4 ml-3 header">Classes</h1>
+      <ModalForm style="margin-top: 62px;" class="ml-1"></ModalForm>
+    </v-row>
 
     <v-row class="pl-3 pt-2">
       <div
@@ -52,7 +55,7 @@
           hover
           min-height="100"
           class="rounded-lg poppins"
-          :to="'/lectures/' + cla.uid"
+          @click="classRedirect(cla.uid)"
         >
           <v-card-title>{{ cla.name }}</v-card-title>
           <v-card-subtitle>{{ cla.section }}</v-card-subtitle>
@@ -65,16 +68,16 @@
             transition="slide-x-transition"
           >
             <template v-slot:activator="{ on }">
-              <a v-on="on" style="position: absolute; right: 0px; top: 43px;"
+              <a v-on="on" style="position: absolute; right: 0px; top: 40px;"
                 ><v-icon large id="menu-icon">more_vert</v-icon></a
               >
             </template>
             <v-list class="poppins">
-              <v-list-item @click="copyLink()">
-                <v-list-item-title>Delete</v-list-item-title>
+              <v-list-item>
+                <v-list-item-title><EditClass @removed="genRecentLectures()" :remove="true" :className="cla.name" :classId="cla.uid"></EditClass></v-list-item-title>
               </v-list-item>
-              <v-list-item @click="copyLink()">
-                <v-list-item-title>Rename</v-list-item-title>
+              <v-list-item>
+                <v-list-item-title><EditClass :remove="false" :className="cla.name" :classSection="cla.section" :classId="cla.uid"></EditClass></v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -170,13 +173,15 @@
 
 <script>
 import ModalForm from "@/components/ModalForm";
+import EditClass from "@/components/EditClass";
 import { post, get, dateToString } from "@/helpers.js";
 import { mapState } from "vuex";
 
 export default {
   name: "Dashboard",
   components: {
-    ModalForm
+    ModalForm,
+    EditClass
   },
   props: {
     fromLectureEnd: { type: Boolean, default: false }
@@ -232,6 +237,9 @@ export default {
         if (e.name.length > 21) e.name = e.name.slice(0, 18) + "...";
       });
       this.recentLectures = d;
+    },
+    classRedirect(classId) {
+      this.$router.push({ path: `/lectures/${classId}` })
     }
   },
   mounted() {

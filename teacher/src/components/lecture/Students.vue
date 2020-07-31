@@ -33,11 +33,11 @@
               class="text-center heading-4"
               :style="{fontWeight: 'normal', fontSize: '25px'}"
             >No students have joined the lecture!</div>
-            <div class="text-center subtitle-1">
+            <div class="text-center">
               Have students go to
               <a>join.intellecture.app</a> and enter the code
               <span
-                style="background-color: #eee; padding: 3px 10px; border-radius: 5px; font-weight: bold;"
+                style="background-color: #eee; padding: 3px 5px; border-radius: 5px; font-weight: bold;"
               >{{ joinCode }}</span> to join.
             </div>
           </li>
