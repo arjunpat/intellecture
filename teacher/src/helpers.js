@@ -3,7 +3,7 @@ import store from '@/store'
 import config from '../../config'
 export const serverOrigin = config.serverOrigin
 export const socketServerOrigin = config.socketServerOrigin
-export const log = config.printErrors ? console.log : () => {}
+export const log = config.printErrors ? console.log : () => { }
 
 log(`-----------------\nUSING ${config.api} SERVER\n-----------------`)
 
@@ -38,7 +38,7 @@ export function signInGoogle() {
   }).then((response) => {
     return post('/auth/google-signin', {
       google_access_token: response.access_token
-    }) 
+    })
   }).then((result) => {
     if (!result.success)
       throw result
@@ -65,30 +65,10 @@ export function signOut() {
 
 export function getClasses() {
   return get('/classes/mine').then((result) => {
-    if(!result.success)
+    if (!result.success)
       throw result
     result.data.sort((a, b) => (a.name > b.name) ? 1 : -1)
     store.commit('setClasses', result.data)
-  })
-}
-
-export function setLectures() {
-  get('/classes/mine').then((result) => {
-      store.commit("setLectures", null);
-      if(!result.success)
-        throw result
-      
-      result.data.sort((a, b) => (a.name > b.name) ? 1 : -1)
-      store.commit('setClasses', result.data)
-
-      for (let indexClass of result.data) {
-        get(`/lectures/by-class/${indexClass.uid}`).then((data)=>{
-          for (let item of data.data) {
-            item.className = indexClass.name;
-          }
-          store.commit("addLectures", data.data);
-        });
-      }
   })
 }
 
@@ -111,7 +91,7 @@ export function dateToString(date) {
   });
 }
 
-export function durationToString(ms, descriptive=false) {
+export function durationToString(ms, descriptive = false) {
   // Descriptive determines whether to display hours with minutes, and minutes with seconds
 
   let seconds = Math.floor(ms / 1000) % 60
@@ -139,6 +119,10 @@ export function durationToString(ms, descriptive=false) {
   }
 }
 
-export function getQuantityString(quantity, singular, plural=singular+'s') {
+export function getQuantityString(quantity, singular, plural = singular + 's') {
   return quantity === 1 ? `${quantity} ${singular}` : `${quantity} ${plural}`
+}
+
+export function compareString(a, b) {
+  return a.toString().toLowerCase().localeCompare(b.toString().toLowerCase())
 }
