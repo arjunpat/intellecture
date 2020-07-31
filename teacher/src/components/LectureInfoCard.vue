@@ -20,7 +20,7 @@
           sm="auto"
         >
           <v-icon>mdi-account</v-icon>
-          {{ numStudents + ' students' }}
+          {{ studentsString }}
         </v-col>
         <v-col
           cols="12"
@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { durationToString, dateToString } from '@/helpers.js'
+import { durationToString, dateToString, getQuantityString } from '@/helpers.js'
 
 export default {
   props: {
@@ -52,6 +52,9 @@ export default {
     },
     lectureLength() {
       return this.lectureInfo ? this.lectureInfo.end_time - this.lectureInfo.start_time : 0
+    },
+    studentsString() {
+      return getQuantityString(this.numStudents, 'student')
     },
   },
 
