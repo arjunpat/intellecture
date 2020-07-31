@@ -50,7 +50,7 @@ export default {
       students: [],
       present: {},
       quesCount: {},
-      quesUpvotes: {},
+      upvoteCount: {},
       intervals_present: null,
     }
   },
@@ -64,7 +64,7 @@ export default {
           present: `${this.getPresent(student.account_uid)}%`,
           understanding: 'TEST%',
           quesCount: this.getQuesCount(student.account_uid),
-          quesUpvotes: this.getQuesUpvotes(student.account_uid),
+          upvoteCount: this.getUpvoteCount(student.account_uid),
         }
       })
     },
@@ -84,9 +84,10 @@ export default {
         this.quesUpvotes = analyticsData.upvotes
       } else {
         this.lectureInfo = await this.get('/info')
+        this.students = await this.get('/students')
         this.present = await this.get('/present')
         this.quesCount = await this.get('/question-counts')
-        this.students = await this.get('/students')
+        this.upvoteCount = await this.get('/upvote-counts')
 
         this.get(`/student/${this.students[0].account_uid}/questions`)
       }
@@ -97,8 +98,8 @@ export default {
     getQuesCount(uid) {
       return this.quesCount[uid] || 0
     },
-    getQuesUpvotes(uid) {
-      return this.quesUpvotes[uid] || 0
+    getUpvoteCount(uid) {
+      return this.upvoteCount[uid] || 0
     },
     get(addy) {
       return get(`/analytics/lecture/${this.lecture_uid}${addy}`).then(d => {

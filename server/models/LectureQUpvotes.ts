@@ -40,4 +40,22 @@ export default class LectureQUpvotes {
       [lecture_uid, account_uid]
     );
   }
+
+  getUpvoteCountsByLectureUid(lecture_uid: string) {
+    return this.mysql.query(
+      `SELECT
+        account_uid,
+        COUNT(question_uid)
+      FROM lecture_q_upvotes
+      WHERE
+        question_uid IN (SELECT uid FROM lecture_qs WHERE lecture_uid = ?)
+      GROUP BY account_uid`,
+      [lecture_uid]
+    ).then(res => {
+      let data = {};
+      for (let each of res)
+        data[each.account_uid] = each['COUNT(question_uid)'];
+      return data;
+    });
+  }
 }

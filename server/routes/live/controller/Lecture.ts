@@ -90,7 +90,7 @@ export default class Lecture {
 
   async end() {
     let now = Date.now();
-    this.blast(<WS.Message> { type: 'end_lecture' });
+    this.blast(<WS.EndLecture> { type: 'end_lecture' });
     this.ended = true;
     redis.clearBan(this.lecture_uid);
     

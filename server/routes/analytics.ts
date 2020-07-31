@@ -68,6 +68,11 @@ router.get('/lecture/:lecture_uid/question-counts', lecturePerms, ended, async (
   res.send(responses.success(await db.lectureQs.getQuestionCountsByLectureUid(lecture_uid)));
 });
 
+router.get('/lecture/:lecture_uid/upvote-counts', lecturePerms, ended, async (req: Request, res) => {
+  let { lecture_uid } = req.params;
+  res.send(responses.success(await db.lectureQUpvotes.getUpvoteCountsByLectureUid(lecture_uid)));
+});
+
 router.get('/lecture/:lecture_uid/info', lecturePerms, ended, async (req: Request, res) => {
   res.send(responses.success(req.lecture)); // added by lecturePerms
 });
