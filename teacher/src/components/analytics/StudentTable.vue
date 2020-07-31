@@ -58,6 +58,9 @@
           </v-col>
         </v-row>
       </template>
+      <template v-slot:item.present="{ item }">
+        {{ scalePresent ? `${getScaledPresent(item.present)}%` : `${item.present}%` }}
+      </template>
     </v-data-table>
   </v-card>
 </template>
@@ -97,9 +100,15 @@ export default {
     smallScreen() {
       return this.$vuetify.breakpoint.smAndDown
     },
+    highestPresent() {
+      return Math.max.apply(Math, this.data.map(item => item.present))
+    }
   },
 
   methods: {
+    getScaledPresent(present) {
+      return Math.round(present/this.highestPresent * 100)
+    },
     customSort(items, index, isDesc) {
       items.sort((a, b) => {
         if (index[0] === 'name') {

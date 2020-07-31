@@ -61,7 +61,7 @@ export default {
         return {
           ...student,
           name: `${student.first_name} ${student.last_name}`,
-          present: `${this.getPresent(student.account_uid)}%`,
+          present: this.getPresent(student.account_uid),
           understanding: 'TEST%',
           quesCount: this.getQuesCount(student.account_uid),
           upvoteCount: this.getUpvoteCount(student.account_uid),
