@@ -23,6 +23,7 @@ router.get('/teacher/:lecture_uid', mw.websocket, mw.auth, async (req: Request, 
   let socket = await handleUpgrade(wss, req);
 
   let lecture = await db.lectures.getLecture(lecture_uid);
+  if (!lecture) return res.send(responses.error());
   if (lecture.account_uid !== req.uid) {
     socket.json({
       type: 'error',

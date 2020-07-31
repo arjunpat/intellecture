@@ -94,7 +94,7 @@ class Broadcaster {
 
   async readLectureInfo() {
     let data = await db.lectures.getLecture(this.lecture_uid);
-    data.creator = await db.accounts.getBasicInfo(data.account_uid);
+    if (data) data.creator = await db.accounts.getBasicInfo(data.account_uid);
     return data;
   }
 
