@@ -128,6 +128,7 @@ export default {
         let students = await this.get('/students')
         this.present = await this.get('/present')
         this.quesCount = await this.get('/question-counts')
+        this.upvoteCount = await this.get('/upvote-counts')
 
         this.lectureLength = this.lectureInfo.end_time - this.lectureInfo.start_time
         this.students = students

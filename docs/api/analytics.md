@@ -65,7 +65,7 @@ Gives you the total ms that a particular user was present for.
 }
 ```
 
-## GET /analytics/lecture/:lecture_uid/question-count
+## GET /analytics/lecture/:lecture_uid/question-counts
 
 Gives you number of questions by user.
 
@@ -215,7 +215,7 @@ All the upvotes from a particular student and the time they upvoted.
 }
 ```
 
-## GET /analytics/lecture/:lecture_uid/student/:account_uid/upvotes
+## GET /analytics/lecture/:lecture_uid/student/:account_uid/questions
 
 All the questions a particular student asked.
 
