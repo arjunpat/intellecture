@@ -125,7 +125,7 @@ export default {
               return compareString(b.last_name, a.last_name)
           }
         } else {
-          if (typeof a[index] !== 'undefined') {
+          if (a[index] !== null && b[index] !== null) {
             if (!isDesc[0])
               return compareString(a[index], b[index])
             else
