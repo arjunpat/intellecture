@@ -92,7 +92,7 @@ export default class Lecture {
     let now = Date.now();
     this.blast(<WS.EndLecture> { type: 'end_lecture' });
     this.ended = true;
-    redis.clearBan(this.lecture_uid);
+    redis.endLecture(this.lecture_uid);
     
     let remainingStudents = Object.keys(this.scores);
     if (remainingStudents.length > 0)

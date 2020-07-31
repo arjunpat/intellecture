@@ -105,6 +105,7 @@ export function getPresentnessAndUnderstandingScores(lecture: Lecture, log: Stat
   let avg_us: { [key: string]: number } = {};
   for (let uid in logMap) {
     avg_us[uid] = 0;
+    scoreLogMap[uid] = scoreLogMap[uid] || []; // edge case: never changed score
     let arr: any[] = [...logMap[uid], ...scoreLogMap[uid]];
     arr.sort((a, b) => a.elapsed - b.elapsed); // asc order
 

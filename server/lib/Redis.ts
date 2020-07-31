@@ -50,10 +50,14 @@ export default class Redis {
     return this.del(`lecture:${lecture_uid}:info`);
   }
 
+  endLecture(lecture_uid: string) {
+    this.del(`lecture:${lecture_uid}:banned`);
+  }
+
   /* lecture ban */
   ban(lecture_uid: string, student_uid: string) {
     this.conn.sadd(`lecture:${lecture_uid}:banned`, student_uid, () => {
-      this.conn.expire(`lecture:${lecture_uid}:banned`, 2 * 60 * 60); // 2 hours
+      // this.conn.expire(`lecture:${lecture_uid}:banned`, 2 * 60 * 60); // 2 hours
     });
   }
 
@@ -63,9 +67,5 @@ export default class Redis {
         resolve(!!val);
       });
     });
-  }
-
-  clearBan(lecture_uid: string) {
-    this.del(`lecture:${lecture_uid}:banned`);
   }
 }

@@ -329,7 +329,7 @@ export default {
             this.lectureInfo = data
 
             // Send initial slider value
-            this.updateUnderstanding()
+            setTimeout(() => this.updateUnderstanding(), 1000); // give a second for db to register user
 
             // Get previously asked questions
             const questionData = JSON.parse(window.localStorage.getItem('questionData'))
