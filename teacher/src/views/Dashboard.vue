@@ -10,7 +10,7 @@
       Enable notifications
       <v-icon small>mdi-bell</v-icon>
     </v-btn>
-    <h1 class="poppins mb-4 header">Recent Lectures</h1>
+    <h1 class="poppins mb-4 header" v-if="recentLectures.length > 0">Recent Lectures</h1>
 
     <v-row class="pl-3 pt-2">
       <div
