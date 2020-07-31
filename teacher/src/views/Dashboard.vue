@@ -63,7 +63,7 @@
         >
           <v-card-title>{{ cla.name }}</v-card-title>
           <v-card-subtitle>{{ cla.section }}</v-card-subtitle>
-          <v-card-text>{{ cla.lecture_count }} Lectures</v-card-text>
+          <v-card-text>{{ cla.lecture_count }} lecture{{ cla.lecture_count === 1 ? '' : 's' }}</v-card-text>
 
           <v-menu
             offset-x

@@ -22,4 +22,8 @@ export default class LectureLog {
       [lecture_uid, account_uid]
     );
   }
+
+  getLecture(lecture_uid: string) {
+    return this.mysql.query('SELECT account_uid, elapsed, score FROM lecture_log WHERE lecture_uid = ?', [lecture_uid]);
+  }
 }

@@ -1,5 +1,6 @@
 import MySQL from '../lib/MySQL';
 import Redis from '../lib/Redis';
+import { Lecture } from '../types';
 
 export default class Lectures {
   private mysql: MySQL;
@@ -19,7 +20,7 @@ export default class Lectures {
     });
   }
 
-  async getLecture(lecture_uid: string) {
+  async getLecture(lecture_uid: string): Promise<Lecture | false> {
     // let d: any = await this.redis.getLecture(lecture_uid);
     // if (d) return d;
 
@@ -33,7 +34,8 @@ export default class Lectures {
         a.end_time,
         a.join_code,
         b.account_uid,
-        b.name as class_name
+        b.name as class_name,
+        b.section as class_section
       FROM
         (SELECT uid, created_at, class_uid, name, start_time, end_time, join_code FROM lectures WHERE uid = ?) a
       LEFT JOIN
