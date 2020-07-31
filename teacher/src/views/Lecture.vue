@@ -402,9 +402,9 @@ export default {
   },
   mounted() {
     //Testing code
-    // this.displayQuestions = sampleQuestions["questions"];
-    // this.topics = sampleTopics["topics"];
-    // this.students = sampleStudents;
+     //this.displayQuestions = sampleQuestions["questions"];
+     //this.topics = sampleTopics["topics"];
+     //this.students = sampleStudents;
 
     this.socket = new WebSocket(
       `${socketServerOrigin}/lectures/live/teacher/${this.id}`
@@ -577,10 +577,12 @@ span {
   border-radius: 10px;
   padding: 5px 7px;
   text-align: center;
+  transition: all 0.3s;
 }
 
 .topic:hover {
   cursor: pointer;
+  background-color: #F5F5F5;
 }
 
 #topic-quantity {

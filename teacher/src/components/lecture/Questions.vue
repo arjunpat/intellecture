@@ -24,9 +24,11 @@
                 <v-list-item-content>
                   <v-list-item-title>
                     <div
-                      style="display: inline-block; font-size: 20px;"
                       class="topic"
-                      @click="$emit('showCategory', index)"
+                      @click="$emit('showCategory', index); selectedIndex = index;"
+                      :style="{display: 'inline-block', fontSize: '20px', backgroundColor: topicBackground(index)}"
+                      @mouseover="hoveredIndex = index"
+                      @mouseleave="hoveredIndex = -1"
                     >
                       <span v-if="topic.value.length > 20">{{ topic.value.substring(0, 20) }}...</span>
                       <span v-else>{{ topic.value }}</span>
@@ -164,10 +166,16 @@ export default {
     TutorialDisplay,
     LineChart,
   },
+  data() {
+    return {
+      selectedIndex: -1,
+      hoveredIndex: -1,
+    }
+  },
   computed: {
     smallScreen() {
       return this.$vuetify.breakpoint.smAndDown
-    },
+    }
   },
   methods: {
     resetTutorial() {
@@ -179,6 +187,15 @@ export default {
     clickTab(num) {
       this.$emit('clickTab', num)
     },
+    topicBackground(index) {
+      if(this.selectedIndex == index) {
+        return '#E0E0E0'
+      } else if(this.hoveredIndex == index) {
+        return '#F5F5F5'
+      } else {
+        return '#EEEEEE'
+      }
+    }
   },
 }
 </script>
