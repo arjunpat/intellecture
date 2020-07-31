@@ -47,6 +47,7 @@ export function signInGoogle() {
   }).then((result) => {
     if (result.success) {
       store.commit('setAuthUser', result.data)
+      getClasses()
     } else {
       throw result
     }

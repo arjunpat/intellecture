@@ -23,7 +23,7 @@
           {{ dialogText }}
         </template>
       </Dialog>
-      <v-btn v-if="newlecture || lectures" @click="$router.push({ path: '/dashboard' })">Back</v-btn>
+      <v-btn v-if="newlecture || lectures || analytics" @click="$router.push({ path: '/dashboard' })">Back</v-btn>
       <v-btn class="red" v-if="started && livelecture" @click="endlecture()">End Lecture</v-btn>
       <v-btn class="ml-1 deep-orange accent-2" v-if="!started && !landing && !signin && authUser" @click="signOutAuth()">Sign out <img id="avt-img" class="ml-2" v-bind:src="authUser.photo" width="25px"></v-btn>
       <v-menu
@@ -139,6 +139,9 @@ export default {
     },
     lectures: function () {
       return this.$route.name === 'ClassLectures'
+    },
+    analytics: function () {
+      return this.$route.name === 'LectureAnalyticsStudent'
     },
     feedback: function () {
       return this.$route.name === 'Feedback'

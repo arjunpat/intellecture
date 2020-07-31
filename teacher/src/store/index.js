@@ -23,6 +23,9 @@ export default new Vuex.Store({
     },
     setShowCode(state, showCode) {
       state.showCode = showCode
+    },
+    setLectures(state, lectures) {
+      state.lectures = lectures
     }
   },
   actions: {
