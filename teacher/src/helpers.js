@@ -78,9 +78,9 @@ export function dateToString(date) {
   let distance = Date.now() - date;
 
   if (3600000 > distance && distance > 0) {
-    return Math.round(distance / 60000) + ' minutes ago';
+    return getQuantityString(Math.round(distance / 60000), 'minute') + ' ago';
   } else if (86400000 > distance && distance > 0) {
-    return Math.round((now - date) / 3600000) + ' hours ago';
+    return getQuantityString(Math.round((now - date) / 3600000), 'hour') + ' ago';
   }
 
   return new Date(date).toLocaleDateString('en-US', {

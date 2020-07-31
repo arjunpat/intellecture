@@ -88,8 +88,6 @@ export default {
         this.present = await this.get('/present')
         this.quesCount = await this.get('/question-counts')
         this.upvoteCount = await this.get('/upvote-counts')
-
-        this.get(`/student/${this.students[0].account_uid}/questions`)
       }
     },
     getPresent(uid) {
