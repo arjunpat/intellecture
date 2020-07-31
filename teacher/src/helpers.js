@@ -122,3 +122,7 @@ export function durationToString(ms, descriptive = false) {
 export function getQuantityString(quantity, singular, plural = singular + 's') {
   return quantity === 1 ? `${quantity} ${singular}` : `${quantity} ${plural}`
 }
+
+export function compareString(a, b) {
+  return a.toString().toLowerCase().localeCompare(b.toString().toLowerCase())
+}
