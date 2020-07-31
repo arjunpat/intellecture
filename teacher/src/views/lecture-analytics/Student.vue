@@ -104,7 +104,7 @@ export default {
       return this.upvoteCount[uid] || 0
     },
     getAvgUs(uid) {
-      return this.avgUs[uid] === -1 ? 'ERR' : this.avgUs[uid] || 0
+      return this.avgUs[uid] || 'ERR'
     },
     get(addy) {
       return get(`/analytics/lecture/${this.lecture_uid}${addy}`).then(d => {
