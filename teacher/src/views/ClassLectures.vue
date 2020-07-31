@@ -14,11 +14,38 @@
     <v-row
       class="fill-height"
       justify="center"
+    >
+      <v-col cols="12" lg="5" md="5" sm="8">
+        <v-card class="mainfont px-2 py-2 rounded-lg" id="newLectureCard" :style="{ height: newLectureHeight }">
+          <v-card-title class="font-weight-regular">Create a new lecture</v-card-title>
+          <v-btn id="addBtn" fab dark medium :color="addColor" :style="{ transform: addRotate }" @click="animateNewLecture()">
+            <v-icon dark large>mdi-plus</v-icon>
+          </v-btn>
+           <v-slide-y-transition>
+             <v-row v-if="showNewLecture">
+                <v-text-field
+                  class="mainfont ml-7"
+                  label="Lecture name"
+                  hint="What's the name of the new lecture?"
+                  v-model="newLectureName"
+                ></v-text-field>
+                 <v-btn small color="#aae691ff" dark class="mt-5 mr-4 ml-1" @click="create">
+                   <v-icon>arrow_forward</v-icon>
+                 </v-btn>
+             </v-row>
+           </v-slide-y-transition>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <v-row
+      class="fill-height"
+      justify="center"
       v-for="lecture in lectures"
       :key="lecture.uid"
     >
       <v-col cols="12" lg="5" md="5" sm="8">
-        <v-card class="mainfont px-2 py-2 rounded-lg">
+        <v-card hover outlined class="mainfont px-2 py-2 rounded-lg" :to="'/lecture-analytics/' + lecture.uid">
           <v-card-title id="lectureTitle">{{ lecture.name }}</v-card-title>
           <v-row class="pl-3">
             <v-col cols="4">
@@ -74,7 +101,12 @@ export default {
       testing: false,
       lectures: [],
       classInfo: {},
-      classes: []
+      classes: [],
+      showNewLecture: false,
+      newLectureName: '',
+      newLectureHeight: '80px',
+      addColor: '#81c784ff',
+      addRotate: 'rotate(0deg)'
     };
   },
 
@@ -119,6 +151,27 @@ export default {
     },
     timeSinceEndTimeString(endTime) {
       return dateToString(endTime);
+    },
+    animateNewLecture() {
+      if(!this.showNewLecture) {
+        this.showNewLecture = true
+        this.newLectureHeight = '150px'
+        this.addColor = 'red'
+        this.addRotate = 'rotate(45deg)'
+      } else {
+        this.showNewLecture = false
+        this.newLectureHeight = '80px'
+        this.addColor = '#81c784ff'
+        this.addRotate = 'rotate(0deg)'
+      }
+    },
+    create() {
+      post("/lectures/create", {
+        class_uid: this.classInfo.uid,
+        name: this.newLectureName,
+      }).then((data) => {
+        this.$router.push({ path: "/lecture/" + data.data.lecture_uid })
+      })
     }
   },
 
@@ -143,4 +196,17 @@ export default {
   font-size: 18px;
   color: gray;
 }
+
+#addBtn {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  transition: 0.3s all;
+}
+
+#newLectureCard {
+  transition: 0.3s all;
+  height: 80px;
+}
+
 </style>
