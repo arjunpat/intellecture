@@ -1,8 +1,8 @@
 <template>
   <v-card>
-    <div class="pl-2 green white--text text-subtitle-1">{{ lectureInfo.class_name }}</div>
-    <v-card-text class="black--text">
-      <div class="text-sm-h3 text-h4 mb-2">
+    <div class="pl-2 py-1 green white--text mainfont">{{ lectureInfo.class_name }}</div>
+    <v-card-text class="black--text mainfont">
+      <div class="mb-3 mt-3" :style="{ fontSize: $vuetify.breakpoint.smAndDown ? '35px' : '40px' }">
         {{ lectureInfo.lecture_name }}
       </div>
       <v-row

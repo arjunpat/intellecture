@@ -1,7 +1,7 @@
 <template>
   <v-card>
-    <v-card-title>
-      Students
+    <v-card-title class="mainfont">
+      <span class="font-weight-bold">Students</span>
       <v-spacer></v-spacer>
       <v-text-field
         v-model="search"
