@@ -48,9 +48,11 @@
                       color="primary"
                       class="mr-4"
                       @click="showMore = true"
+                      text
                     >Sure!</v-btn>
                     <v-btn
                       @click="goHome"
+                      text
                     >No thanks</v-btn>
                   </div>
                 </div>
