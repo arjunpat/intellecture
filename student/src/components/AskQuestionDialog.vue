@@ -66,16 +66,20 @@ export default {
 
   props: {
     value: {type: Boolean, required: true},
+    questionsDelay: {type: Number, default: true},
   },
 
   data() {
     return {
       question: '',
+      enabled: true,
     }
   },
 
   computed: {
     disabled() {
+      if (!this.enabled)
+        return true
       return this.value && !this.question
     },
   },
@@ -102,6 +106,12 @@ export default {
         this.$emit('askQuestion', this.question)
         this.question = ''
         this.$emit('input', false)
+
+        // Disable button for `questionsDelay` ms
+        this.enabled = false
+        setTimeout(() => {
+          this.enabled = true
+        }, this.questionsDelay)
       }
     },
     inputHandler(e) {

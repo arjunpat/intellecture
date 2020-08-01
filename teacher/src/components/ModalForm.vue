@@ -18,12 +18,14 @@
                   label="Class name"
                   hint="What's the name of the new class?"
                   v-model="className"
+                  autocomplete="off"
                 ></v-text-field>
                 <v-text-field
                   class="mainfont"
                   label="Class section"
                   hint="What's the section of the new class?"
                   v-model="classSection"
+                  autocomplete="off"
                 ></v-text-field>
               </v-col>
             </v-row>

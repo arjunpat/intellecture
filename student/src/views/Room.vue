@@ -73,6 +73,7 @@
                   <AskQuestionDialog
                     v-model="showQuestionDialog"
                     @askQuestion="askQuestion"
+                    :questionsDelay="questionsDelay"
                     class="mt-10 mb-12"
                   />
                 </TutorialDisplay>
@@ -199,7 +200,7 @@ import TutorialDisplay from '@/components/TutorialDisplay'
 import LectureInfo from '@/components/LectureInfo'
 import QuestionDisplay from '@/components/QuestionDisplay'
 import { mapState } from 'vuex'
-import { get, post, socketServerOrigin } from '@/helpers'
+import { get, post, socketServerOrigin, log } from '@/helpers'
 import testData from '@/test/test.json'
 
 export default {
@@ -214,9 +215,10 @@ export default {
       testing: false,
       sliderValue: 5,
       sliderMax: 10,
-      throttleDelay: 1000, // Limit understanding to only be updated once every `throttleDelay` ms
-      spamLimitPerMin: 30, // Notify user after spamming slider `spamLimitPerMin` times in a minute
-      spamLockTime: 60000, // ms to lock slider after spamming
+      throttleDelay: 1000,    // Limit understanding to only be updated once every `throttleDelay` ms
+      spamLimitPerMin: 30,    // Notify user after spamming slider `spamLimitPerMin` times in a minute
+      spamLockTime: 60000,    // ms to lock slider after spamming
+      questionsDelay: 10000,  // Limit questions to only be asked once per `questionsDelay` ms  
       levels: ['I\'m lost', 'I\'m confused', 'I kinda get it', 'I think I get it', 'I completely understand'],
       colors: ['rgb(240, 53, 36)', 'rgb(255, 183, 0)', 'rgb(250, 225, 0)', 'rgb(126, 196, 4)', '#B2FF59'],
       color: '',
@@ -387,6 +389,7 @@ export default {
           score
         }).catch((err) => {
           this.error = 'There was an error updating your score!'
+          log(err)
         })
       }
     },
@@ -399,6 +402,7 @@ export default {
         this.info = 'Question submitted!'
       }).catch((err) => {
         this.error = 'There was an error submitting your question!'
+        log(err)
       })
     },
     upvoteQuestion(uid) {
@@ -413,6 +417,7 @@ export default {
           }, 150)
         }).catch((err) => {
           this.error = 'There was an error upvoting the question!'
+          log(err)
         })
       }
     },
@@ -448,6 +453,7 @@ export default {
           this.myQuestionsVisible = true
         }).catch((err) => {
           this.error = 'There was an error getting your questions!'
+          log(err)
         })
       }
     },
