@@ -17,9 +17,38 @@
           :numStudents="students.length"
         />
 
-        <StudentTable
-          :data="studentTableData"
-        />
+        <v-card>
+          <v-tabs
+            v-model="tab"
+            grow
+            color="green"
+          >
+            <v-tab
+              v-for="(tab, i) in tabs"
+              :key="i"
+              :href="tab.id"
+            >
+              <v-icon>{{ tab.icon }}</v-icon>
+              {{ tab.title }}
+            </v-tab>
+            
+            <v-tab-item
+              value="students-tab"
+            >
+              <StudentTable
+                :data="studentTableData"
+              />
+            </v-tab-item>
+
+            <v-tab-item
+              value="questions-tab"
+            >
+              <QuestionTable
+                :data="questions"
+              />
+            </v-tab-item>
+          </v-tabs>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
@@ -31,6 +60,7 @@ import analyticsData from '@/testdata/analyticsData.json'
 import Dialog from '@/components/Dialog'
 import LectureInfoCard from '@/components/LectureInfoCard'
 import StudentTable from '@/components/analytics/StudentTable'
+import QuestionTable from '@/components/analytics/QuestionTable'
 
 export default {
   props: {
@@ -41,16 +71,35 @@ export default {
     Dialog,
     LectureInfoCard,
     StudentTable,
+    QuestionTable,
   },
 
   data() {
     return {
       testing: false,
+
+      tab: null,
+      tabs: [
+        {
+          icon: 'mdi-account',
+          title: 'Students',
+          id: '#students-tab',
+        },
+        {
+          icon: 'mdi-forum',
+          title: 'Questions',
+          id: '#questions-tab',
+        },
+      ],
+
       lectureInfo: {},
       students: [],
       present: {},
       quesCount: {},
       upvoteCount: {},
+
+      questions: [],
+
       intervals_present: null,
     }
   },
@@ -84,7 +133,7 @@ export default {
         this.quesUpvotes = analyticsData.upvotes
       } else {
         let vals = await Promise.all(
-          ['/info', '/students', '/general', '/question-counts', '/upvote-counts'].map(e => this.get(e))
+          ['/info', '/students', '/general', '/question-counts', '/upvote-counts', '/questions'].map(e => this.get(e))
         );
         this.lectureInfo = vals[0]
         this.students = vals[1]
@@ -92,6 +141,7 @@ export default {
         this.avgUs = vals[2].avg_us
         this.quesCount = vals[3]
         this.upvoteCount = vals[4]
+        this.questions = vals[5]
       }
     },
     getPresent(uid) {

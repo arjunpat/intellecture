@@ -1,45 +1,32 @@
 <template>
-  <v-card>
+  <span>
     <v-card-title class="mainfont">
-      <span class="font-weight-bold">Students</span>
-      <v-spacer></v-spacer>
-      <v-text-field
-        v-model="search"
-        prepend-inner-icon="mdi-magnify"
-        placeholder="Search"
-        filled
-        rounded
-        dense
-        single-line
-        hide-details
-        autocomplete="off"
-        autocorrect="off"
-        autocapitalize="off"
-        spellcheck="false"
-      ></v-text-field>
-      <v-btn
-        icon
-        class="ml-2"
-        @click.stop="settingsDialog = true"
-      >
-        <v-icon>mdi-cog</v-icon>
-      </v-btn>
+      <v-row align="center">
+        <v-col>
+          <v-text-field
+            v-model="search"
+            prepend-inner-icon="mdi-magnify"
+            placeholder="Search"
+            filled
+            rounded
+            dense
+            single-line
+            hide-details
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+          ></v-text-field>
+        </v-col>
+        <v-btn
+          icon
+          class="mr-2"
+          @click.stop="settingsDialog = true"
+        >
+          <v-icon>mdi-cog</v-icon>
+        </v-btn>
+      </v-row>
     </v-card-title>
-    <Dialog 
-      v-model="settingsDialog"
-      header="Settings"
-      btn-text="Done"
-      :width="300"
-    >
-      <template v-slot:content>
-        <v-switch v-model="scalePresent" label="Scale present-ness"></v-switch>
-        <v-select
-          v-model="sortNameBy"
-          :items="sortNameByItems"
-          label="Sort name by"
-        ></v-select>
-      </template>
-    </Dialog>
     <v-data-table
       :headers="headers"
       :items="data"
@@ -62,7 +49,23 @@
         {{ scalePresent ? `${getScaledPresent(item.present)}%` : `${item.present}%` }}
       </template>
     </v-data-table>
-  </v-card>
+    <Dialog 
+      v-model="settingsDialog"
+      header="Settings"
+      btn-text="Done"
+      :width="300"
+      style="position: absolute;"
+    >
+      <template v-slot:content>
+        <v-switch v-model="scalePresent" label="Scale present-ness"></v-switch>
+        <v-select
+          v-model="sortNameBy"
+          :items="sortNameByItems"
+          label="Sort name by"
+        ></v-select>
+      </template>
+    </Dialog>
+  </span>
 </template>
 
 <script>
@@ -80,7 +83,6 @@ export default {
 
   data() {
     return {
-      settingsDialog: false,
       settingsDialog: false,
       sortNameBy: 'Last name',
       sortNameByItems: ['First name', 'Last name'],
