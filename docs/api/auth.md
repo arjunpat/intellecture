@@ -20,7 +20,10 @@ If the Google access token is good, it will set a cookie in the browser that las
 
 ```javascript
 {
-  success: true
+  success: true,
+  data: {
+    status: 'new' // or 'returning'
+  }
 }
 ```
 
