@@ -62,7 +62,7 @@ export default {
           ...student,
           name: `${student.first_name} ${student.last_name}`,
           present: this.getPresent(student.account_uid),
-          understanding: 'TEST%',
+          understanding: this.getAvgUs(student.account_uid),
           quesCount: this.getQuesCount(student.account_uid),
           upvoteCount: this.getUpvoteCount(student.account_uid),
         }
@@ -83,11 +83,15 @@ export default {
         this.quesCount = analyticsData.question_count
         this.quesUpvotes = analyticsData.upvotes
       } else {
-        this.lectureInfo = await this.get('/info')
-        this.students = await this.get('/students')
-        this.present = await this.get('/present')
-        this.quesCount = await this.get('/question-counts')
-        this.upvoteCount = await this.get('/upvote-counts')
+        let vals = await Promise.all(
+          ['/info', '/students', '/general', '/question-counts', '/upvote-counts'].map(e => this.get(e))
+        );
+        this.lectureInfo = vals[0]
+        this.students = vals[1]
+        this.present = vals[2].present
+        this.avgUs = vals[2].avg_us
+        this.quesCount = vals[3]
+        this.upvoteCount = vals[4]
       }
     },
     getPresent(uid) {
@@ -99,11 +103,14 @@ export default {
     getUpvoteCount(uid) {
       return this.upvoteCount[uid] || 0
     },
+    getAvgUs(uid) {
+      return this.avgUs[uid] || 'ERR'
+    },
     get(addy) {
       return get(`/analytics/lecture/${this.lecture_uid}${addy}`).then(d => {
         if (d.success)
           return d.data
-        log('failed', e)
+        log('failed', d.error)
       })
     },
   },

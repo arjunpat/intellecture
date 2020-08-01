@@ -22,8 +22,13 @@ router.post("/google-signin", async (req, res) => {
   let user = await validateGoogleAccessToken(req.body.google_access_token);
   if (!user) return res.send(responses.error("bad_token"));
 
+  let status = 'returning';
+  
   let uid = await db.accounts.getUidByEmail(user.email);
-  if (!uid) uid = genId(28); // new account
+  if (!uid) { // new account
+    uid = genId(28);
+    status = 'new';
+  }
 
   await db.accounts.createOrUpdate(
     uid,
@@ -42,7 +47,7 @@ router.post("/google-signin", async (req, res) => {
   );
 
   res.cookie("intell_", token, cookieOpts);
-  res.send(responses.success());
+  res.send(responses.success({ status }));
 });
 
 router.get("/profile", mw.auth, async (req: Request, res) => {

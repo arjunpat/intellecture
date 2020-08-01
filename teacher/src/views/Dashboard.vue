@@ -43,6 +43,10 @@
     </v-row>
 
     <v-row class="pl-3 pt-2">
+      <div id="noclasses" v-if="!classes || classes.length == 0">
+        <v-img style="margin-left: 150px;" width="50px" src="@/assets/img/arrow.png"></v-img>
+        <h1> Create your first class!</h1>
+      </div>
       <div
         class="mr-3 mb-3"
         v-for="cla in classes"
@@ -59,7 +63,7 @@
         >
           <v-card-title>{{ cla.name }}</v-card-title>
           <v-card-subtitle>{{ cla.section }}</v-card-subtitle>
-          <v-card-text>{{ cla.lecture_count }} Lectures</v-card-text>
+          <v-card-text>{{ cla.lecture_count }} lecture{{ cla.lecture_count === 1 ? '' : 's' }}</v-card-text>
 
           <v-menu
             offset-x
@@ -326,5 +330,16 @@ h1 {
 
 #menu-icon:hover {
   transform: scale(1.1);
+}
+
+#noclasses {
+  margin-top: -40px;
+  margin-left: 70px;
+}
+
+#noclasses > h1 {
+  font-size: 20px;
+  font-weight: normal;
+  margin-top: -10px;
 }
 </style>

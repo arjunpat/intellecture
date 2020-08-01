@@ -1,12 +1,12 @@
 import { Router } from 'express';
 const router = Router();
 
-import * as mw from '../middleware';
-import  * as responses from '../lib/responses';
+import * as mw from '../../middleware';
+import  * as responses from '../../lib/responses';
 
-import { sum, diff } from '../lib/helpers';
-import { Request } from '../types';
-import db from '../models';
+import { getPresentnessAndUnderstandingScores } from './helpers';
+import { Request } from '../../types';
+import db from '../../models';
 
 async function lecturePerms(req, res, next) {
   let { lecture_uid } = req.params;
@@ -34,33 +34,14 @@ router.get('/lecture/:lecture_uid/students', lecturePerms, ended, async (req, re
   res.send(responses.success(await db.lectures.getStudents(lecture_uid)));
 });
 
-router.get('/lecture/:lecture_uid/present', lecturePerms, ended, async (req: Request, res) => {
+router.get('/lecture/:lecture_uid/general', lecturePerms, ended, async (req: Request, res) => {
   let { lecture_uid } = req.params;
-  const lectureLength = req.lecture.end_time - req.lecture.start_time;
   const log = await db.lectureStudentLog.getLecture(lecture_uid);
-
-  let time = {};
-  for (let i = 0; i < log.length; i++) {
-    let uid = log[i].account_uid;
-    if (!time[uid]) time[uid] = [];
-    
-    time[uid].push(log[i].elapsed);
-  }
-
-  let result = {};
-  for (let each in time) {
-    if (time[each].length % 2 !== 0) {
-      console.error(Date.now() + ': (1) present parse error for lecture_uid ' + lecture_uid);
-      time[each].push(req.lecture.end_time)
-    }
-
-    result[each] = sum(diff(time[each]));
-
-    if (result[each] > lectureLength)
-      console.error(Date.now() + ': (2) present parse error for lecture_uid ' + lecture_uid);
-  }
+  const scoreLog = await db.lectureLog.getLecture(lecture_uid);
   
-  res.send(responses.success(result));
+  res.send(responses.success(
+    getPresentnessAndUnderstandingScores(req.lecture, log, scoreLog)
+  ));
 });
 
 router.get('/lecture/:lecture_uid/question-counts', lecturePerms, ended, async (req: Request, res) => {
