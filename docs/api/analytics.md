@@ -130,31 +130,36 @@ Get all questions (and corresponding upvotes) from a lecture.
   "success": true,
   "data": [
     {
-      "uid": "tPsMjR4WRtzdIKd",
+      "question_uid": "tPsMjR4WRtzdIKd",
+      "creator_uid": "tfPssMjfR4sgWRtgzdIKd",
       "elapsed": 91572,
       "question": "yessir",
       "upvotes": 1
     },
     {
-      "uid": "hMakyiEMhrCD0z1",
+      "question_uid": "hMakyiEMhrCD0z1",
+      "creator_uid": "hfMaskyfiEsgMhrgCD0z1",
       "elapsed": 76788,
       "question": "anotheer",
       "upvotes": 1
     },
     {
-      "uid": "WWEYUQVueSYZLjS",
+      "question_uid": "WWEYUQVueSYZLjS",
+      "creator_uid": "WfWEsYUfQVsgueSgYZLjS",
       "elapsed": 64543,
       "question": "hello",
       "upvotes": 1
     },
     {
-      "uid": "OvIyHaOcsS5rYHy",
+      "question_uid": "OvIyHaOcsS5rYHy",
+      "creator_uid": "OfvIsyHfaOsgcsSg5rYHy",
       "elapsed": 53930,
       "question": "why is it having issues",
       "upvotes": 1
     },
     {
-      "uid": "XgXbSyfMDvW5pAF",
+      "question_uid": "XgXbSyfMDvW5pAF",
+      "creator_uid": "XfgXsbSfyfsgMDvgW5pAF",
       "elapsed": 23682,
       "question": "asdfjasdflk",
       "upvotes": 1
