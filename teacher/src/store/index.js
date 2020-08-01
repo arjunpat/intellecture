@@ -7,7 +7,7 @@ export default new Vuex.Store({
   state: {
     endLecture: false,
     authUser: null,
-    classes: null,
+    classes: [],
     lectures: null,
     showCode: false
   },

@@ -27,7 +27,8 @@
           :to="'/lecture-analytics/' + a.uid"
         >
           <v-card-title class="font-weight-bold">{{ a.name }}</v-card-title>
-          <v-card-subtitle>{{ a.className }}</v-card-subtitle>
+          <v-card-subtitle>{{ getClassNameAndSection(a.class_uid) }}</v-card-subtitle>
+          <!-- <v-card-subtitle>{{ a.class_name }} - {{ a.class_section }}</v-card-subtitle> -->
           <v-card-text>{{ dateToString(a.end_time) }}</v-card-text>
 
           <v-card-actions>
@@ -244,6 +245,13 @@ export default {
     },
     classRedirect(classId) {
       this.$router.push({ path: `/lectures/${classId}` })
+    },
+    getClassNameAndSection(uid) {
+      let cl = this.classes.find(c => c.uid === uid);
+      if (cl) {
+        return `${cl.name} - ${cl.section}`
+      }
+      return 'Loading...'
     }
   },
   mounted() {
