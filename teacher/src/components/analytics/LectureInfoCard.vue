@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <div class="pl-2 py-1 green white--text mainfont">{{ lectureInfo.class_name }}</div>
+    <div class="pl-2 py-1 green white--text mainfont">{{ lectureInfo.class_name }} - {{ lectureInfo.class_section }}</div>
     <v-card-text class="black--text mainfont">
       <div class="mb-3 mt-3" :style="{ fontSize: $vuetify.breakpoint.smAndDown ? '35px' : '40px' }">
         {{ lectureInfo.lecture_name }}

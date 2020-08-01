@@ -58,7 +58,7 @@
 import { post, get, log } from '@/helpers.js'
 import analyticsData from '@/testdata/analyticsData.json'
 import Dialog from '@/components/Dialog'
-import LectureInfoCard from '@/components/LectureInfoCard'
+import LectureInfoCard from '@/components/analytics/LectureInfoCard'
 import StudentTable from '@/components/analytics/StudentTable'
 import QuestionTable from '@/components/analytics/QuestionTable'
 
