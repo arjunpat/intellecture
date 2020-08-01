@@ -74,7 +74,8 @@ export default class LectureQs {
   getQuestionsByLectureUid(lecture_uid: string) {
     return this.mysql.query(
       `SELECT
-        uid,
+        uid as question_uid,
+        account_uid as creator_uid,
         elapsed,
         question,
         (SELECT COUNT(*) FROM lecture_q_upvotes WHERE question_uid = uid) as upvotes
