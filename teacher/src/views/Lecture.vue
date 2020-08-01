@@ -68,7 +68,6 @@
             background-color="transparent"
             color="#66bb6a"
             class="tabs-bar"
-            :style="{width: smallScreen ? '100% !important' : '50% !important'}"
             grow
           >
             <v-tab v-for="item in items" :key="item">{{ item }}</v-tab>
@@ -77,54 +76,60 @@
 
         <v-tabs-items v-model="tab">
           <!-- Start of Understanding tab -->
-          <v-card v-show="tab === 0" min-height="75vh" flat class="pt-3 pb-3">
-            <Understanding
-              :understandingScore="understandingScore"
-              :topics="topics"
-              :showTutorial="showTutorial"
-              :datacollection="datacollection"
-              :shortened="shortened"
-              @resetTutorial="resetTutorial()"
-              @nextTutorial="nextTutorial()"
-            />
-          </v-card>
+          <v-tab-item>
+            <v-card min-height="75vh" flat class="pt-3 pb-3">
+              <Understanding
+                :understandingScore="understandingScore"
+                :topics="topics"
+                :showTutorial="showTutorial"
+                :datacollection="datacollection"
+                :shortened="shortened"
+                @resetTutorial="resetTutorial()"
+                @nextTutorial="nextTutorial()"
+              />
+            </v-card>
+          </v-tab-item>
           <!-- End of Understanding tab -->
 
           <!-- Start of Questions tab -->
-          <v-card v-show="tab === 1" flat class="pt-3" style="min-height: 75vh;">
-            <Questions
-              :questions="questions"
-              :topics="topics"
-              :showTutorial="showTutorial"
-              :datacollection="datacollection"
-              :shortened="shortened"
-              :students="students"
-              @resetTutorial="resetTutorial()"
-              @nextTutorial="nextTutorial()"
-              @showCategory="showCategory"
-              @showAllQuestions="showAllQuestions"
-              @dismiss="dismiss"
-              :displayQuestions="displayQuestions"
-              @clickTab="clickTab"
-            />
-          </v-card>
+          <v-tab-item>
+            <v-card flat class="pt-3" style="min-height: 75vh;">
+              <Questions
+                :questions="questions"
+                :topics="topics"
+                :showTutorial="showTutorial"
+                :datacollection="datacollection"
+                :shortened="shortened"
+                :students="students"
+                @resetTutorial="resetTutorial()"
+                @nextTutorial="nextTutorial()"
+                @showCategory="showCategory"
+                @showAllQuestions="showAllQuestions"
+                @dismiss="dismiss"
+                :displayQuestions="displayQuestions"
+                @clickTab="clickTab"
+              />
+            </v-card>
+          </v-tab-item>
           <!-- End of Questions tab -->
 
           <!-- Start of Students tab -->
-          <v-card v-show="tab === 2" flat class="pt-3" min-height="75vh">
-            <Students
-              :topics="topics"
-              :showTutorial="showTutorial"
-              :students="students"
-              :shortened="shortened"
-              :joinCode="lectureInfo.join_code"
-              @resetTutorial="resetTutorial()"
-              @nextTutorial="nextTutorial()"
-              @clickTab="clickTab"
-              @invertDialog="invertDialog()"
-              @kickStudent="kickStudent"
-            />
-          </v-card>
+          <v-tab-item>
+            <v-card flat class="pt-3" min-height="75vh">
+              <Students
+                :topics="topics"
+                :showTutorial="showTutorial"
+                :students="students"
+                :shortened="shortened"
+                :joinCode="lectureInfo.join_code"
+                @resetTutorial="resetTutorial()"
+                @nextTutorial="nextTutorial()"
+                @clickTab="clickTab"
+                @invertDialog="invertDialog()"
+                @kickStudent="kickStudent"
+              />
+            </v-card>
+          </v-tab-item>
           <!-- End of Students tab -->
         </v-tabs-items>
       </v-card>
@@ -494,7 +499,7 @@ html {
   font-size: 35px; 
   border-left: 2px solid #aae691ff; 
   line-height: 50px;
-  padding-left: 5px;
+  padding: 0px 5px;
 }
 
 #arrow-btn {
@@ -640,5 +645,10 @@ html {
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
+}
+
+/* Fix for small screens */
+.v-slide-group__prev {
+  display: none !important;
 }
 </style>

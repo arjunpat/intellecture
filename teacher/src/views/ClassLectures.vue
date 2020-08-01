@@ -16,7 +16,7 @@
       justify="center"
     >
       <v-col cols="12" lg="5" md="5" sm="8">
-        <v-card class="mainfont px-2 py-2 rounded-lg" id="newLectureCard" :style="{ height: newLectureHeight }">
+        <v-card class="mainfont px-2 py-2 rounded-lg inner-shadow" id="newLectureCard" :style="{ height: newLectureHeight, backgroundColor: '#f7f7f7' }">
           <v-card-title class="font-weight-regular">Create a new lecture</v-card-title>
           <v-btn id="addBtn" fab dark medium :color="addColor" :style="{ transform: addRotate }" @click="animateNewLecture()">
             <v-icon dark large>mdi-plus</v-icon>
@@ -207,6 +207,10 @@ export default {
 #newLectureCard {
   transition: 0.3s all;
   height: 80px;
+}
+
+.inner-shadow {
+  box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.25) !important;
 }
 
 </style>
