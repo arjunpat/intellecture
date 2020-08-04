@@ -86,7 +86,7 @@ export function addToMailchimp(email_address: string, FNAME: string, LNAME: stri
         FNAME,
         LNAME
       },
-      tags: ['User']
+      tags: ['Teacher']
     })
   }).then(res => res.json());
 }

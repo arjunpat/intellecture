@@ -39,7 +39,7 @@ router.post("/google-signin", async (req, res) => {
     user.picture
   );
 
-  if (status === 'new' && SERVER_NAME === 'prod') {
+  if (status === 'new' && req.body.teacher && SERVER_NAME === 'prod') {
     // not awaiting so we dont block
     addToMailchimp(user.email, user.given_name, user.family_name);
     messageSlack(`${user.given_name} ${user.family_name} (${user.email}) just created an account`);

@@ -10,7 +10,8 @@ Use to sign in to account after Google auth.
 
 ```javascript
 {
-  google_access_token: "asSDFfasdfasdf...." // this is provided by Google when you log in
+  google_access_token: "asSDFfasdfasdf....", // this is provided by Google when you log in
+  teacher: true // or false, depending on application
 }
 ```
 
