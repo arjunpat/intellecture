@@ -7,6 +7,14 @@
       <v-col
         cols="12"
       >
+        <v-btn
+          color="white"
+          text
+          absolute
+          top 
+          right
+          @click.stop="dialog = true; signUp = false"
+        >Sign in</v-btn>
         <div class="mt-8">
           <div 
             class="shadow white--text"
@@ -21,7 +29,7 @@
           class="mt-8"
           color="light-green lighten-2" 
           dark
-          @click="$router.push({ name: 'SignIn' })"
+          @click.stop="dialog = true; signUp = true"
         >Get started</v-btn>
         <v-btn
           class="mt-8 ml-2"
@@ -44,7 +52,28 @@
       </v-row>
 
     </v-container>
+
+    <v-dialog
+      v-model="dialog"
+      max-width="400"
+      content-class="ma-0"
+    >
+      <v-card>
+        <v-card-title>{{ signUp ? 'Sign up' : 'Sign in' }}</v-card-title>
+        <v-card-text>
+          <ButtonWithImage @click="signInWithGoogle" class="mb-2 mt-2" style="width: 100%" :src="require('@/assets/img/google_logo.svg')" text="Continue with Google" />
+          <div v-if="signUp">
+            <p class="text-center text-caption">By signing up, you agree to our <a href="https://drive.google.com/file/d/125XXyn-Vk978m-cpqxQVr0HFhkuWmUZZ/preview" target="_blank">Privacy Policy</a> and consent to receiving emails from us about new features and opportunities. You can unsubscribe at any time.</p>
+            <p class="text-center">Already have an account? <a href="" @click.prevent="signUp = false">Sign in</a></p>
+          </div>
+          <div v-else class="text-center">
+            Don't have an account? <a href="" @click.prevent="signUp = true">Sign up</a>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-container>
+
   <!--<v-content class="fullscreen">
     <v-container class="section">
         <v-row align="center" class="page">
@@ -119,14 +148,24 @@
 </template>
 
 <script>
+import ButtonWithImage from '@/components/ButtonWithImage'
+import { signInGoogle, log } from '@/helpers.js'
 
 export default {
   name: 'Landing',
+
+  components: {
+    ButtonWithImage
+  },
+
   data () {
     return {
-      showvid: false
+      showvid: false,
+      dialog: false,
+      signUp: false,
     }
   },
+
   computed: {
     logoPileStyle() {
       let breakpoint = this.$vuetify.breakpoint.name
@@ -139,10 +178,23 @@ export default {
       }
     }
   },
+
+  methods: {
+    signInWithGoogle() {
+      signInGoogle().catch((err) => {
+        this.$emit('error', 'There was an error signing in! Please try again later.')
+        log(err)
+      })
+    }
+  },
 }
 </script>
 
 <style scoped lang="scss">
+.v-dialog {
+  margin: 0 !important;
+}
+
 .shadow {
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }

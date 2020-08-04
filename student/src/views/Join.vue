@@ -1,13 +1,5 @@
 <template>
   <v-container fluid class="fill-height _green">
-    <AutoSnackbar
-      :text="currentError"
-      color="error"
-    />
-    <AutoSnackbar
-      :text="currentInfo"
-      color="info"
-    />
     <v-row
       justify="center"
       align="center"
@@ -92,7 +84,6 @@
 
 <script>
 import ButtonWithImage from '@/components/ButtonWithImage'
-import AutoSnackbar from '@/components/AutoSnackbar'
 import { mapState } from 'vuex'
 import { colors } from '@/constants'
 import { get, setTokenForUser, signInGoogle, signOut, log } from '@/helpers'
@@ -107,7 +98,6 @@ export default {
 
   components: {
     ButtonWithImage,
-    AutoSnackbar,
   },
 
   watch: {
@@ -121,6 +111,18 @@ export default {
           this.btnText = 'Continue with Google'
           this.btnImageSrc = require('@/assets/img/google_logo_white.svg')
         }
+      }
+    },
+    error: {
+      immediate: true,
+      handler(error) {
+        this.$emit('error', error)
+      }
+    },
+    info: {
+      immediate: true,
+      handler(info) {
+        this.$emit('info', info)
       }
     },
   },
@@ -139,17 +141,12 @@ export default {
         v => this.validRoomCode || 'Invalid room code!',
       ],
       snackbar: false,
-      currentError: '',
-      currentInfo: '',
     }
   },
 
   mounted() {
     // Do a cool little animation when loaded
     setTimeout(() => {this.show = true}, 100)
-
-    this.currentError = this.error
-    this.currentInfo = this.info
   },
 
   computed: {
@@ -174,11 +171,10 @@ export default {
         this.redirectToRoom()
       } else {
         // Sign user in if not already signed in
-        this.currentError = ''
         signInGoogle().then((result) => {
           this.redirectToRoom()
         }).catch((err) => {
-          this.currentError = 'There was an error signing in! Please try again later.'
+          this.$emit('error', 'There was an error signing in! Please try again later.')
           log(err)
         })
       }
@@ -187,7 +183,6 @@ export default {
       // Check if room exists
       this.validRoomCode = true
       this.$refs['form'].validate()
-      this.currentError = ''
       get(`/lectures/exists/${this.roomCode}`).then((response) => {
         if (!response.success)
           throw response.error
@@ -201,14 +196,13 @@ export default {
           this.$router.push({ name: 'Room', params: { id: response.data.lecture_uid } })
         }
       }).catch((err) => {
-        this.currentError = 'Could not join room!'
+        this.$emit('error', 'Could not join room!')
         log(err)
       })
     },
     signOut() {
-      this.currentError = ''
       signOut().catch((err) => {
-        this.currentError = 'There was an error signing out!'
+        this.$emit('error', 'There was an error signing out!')
         log(err)
       })
     }

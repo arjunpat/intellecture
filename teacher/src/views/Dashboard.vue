@@ -23,7 +23,7 @@
           min-height="175"
           hover
           outlined
-          class="mr-3 rounded-lg mainfont"
+          class="mr-3 mainfont"
           :to="'/lecture-analytics/' + a.uid"
         >
           <v-card-title class="font-weight-bold">{{ a.name }}</v-card-title>
@@ -59,7 +59,7 @@
           outlined
           hover
           min-height="100"
-          class="rounded-lg poppins"
+          class="poppins"
           @click="classRedirect(cla.uid)"
         >
           <v-card-title>{{ cla.name }}</v-card-title>

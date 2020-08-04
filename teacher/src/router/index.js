@@ -5,7 +5,6 @@ import Landing from '@/views/Landing.vue'
 import Dashboard from '@/views/Dashboard.vue'
 import Lecture from '@/views/Lecture.vue'
 import New from '@/views/New.vue'
-import SignIn from '@/views/SignIn.vue'
 import Feedback from '@/views/Feedback.vue'
 import LectureAnalyticsStudent from '@/views/lecture-analytics/Student';
 import ClassLectures from '@/views/ClassLectures';
@@ -44,11 +43,6 @@ const routes = [
     path: '/new',
     name: 'New',
     component: New
-  },
-  {
-    path: '/signin',
-    name: 'SignIn',
-    component: SignIn
   },
   {
     path: '/feedback',

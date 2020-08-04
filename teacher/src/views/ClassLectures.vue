@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-row class="fill-height" justify="center">
       <v-col cols="12" lg="6" md="6" sm="9">
-        <v-card class="mainfont px-2 py-2 rounded-lg">
+        <v-card class="mainfont px-2 py-2">
           <v-card-title id="classTitle">{{ classInfo.name }}</v-card-title>
           <v-card-subtitle class="mt-2 subtitle" style="line-height: 30px;"
             >Period 1<br />{{ lectures.length }} lectures</v-card-subtitle
@@ -16,7 +16,7 @@
       justify="center"
     >
       <v-col cols="12" lg="5" md="5" sm="8">
-        <v-card class="mainfont px-2 py-2 rounded-lg inner-shadow" id="newLectureCard" :style="{ height: newLectureHeight, backgroundColor: '#f7f7f7' }">
+        <v-card class="mainfont px-2 py-2 inner-shadow" id="newLectureCard" :style="{ height: newLectureHeight, backgroundColor: '#f7f7f7' }">
           <v-card-title class="font-weight-regular">Create a new lecture</v-card-title>
           <v-btn id="addBtn" fab dark medium :color="addColor" :style="{ transform: addRotate }" @click="animateNewLecture()">
             <v-icon dark large>mdi-plus</v-icon>
@@ -45,7 +45,7 @@
       :key="lecture.uid"
     >
       <v-col cols="12" lg="5" md="5" sm="8">
-        <v-card hover outlined class="mainfont px-2 py-2 rounded-lg" :to="'/lecture-analytics/' + lecture.uid">
+        <v-card hover outlined class="mainfont px-2 py-2" :to="'/lecture-analytics/' + lecture.uid">
           <v-card-title id="lectureTitle">{{ lecture.name }}</v-card-title>
           <v-row class="pl-3">
             <v-col cols="4">

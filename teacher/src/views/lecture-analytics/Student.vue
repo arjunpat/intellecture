@@ -17,7 +17,7 @@
           :numStudents="students.length"
         />
 
-        <v-card>
+        <v-card class="pb-2">
           <v-tabs
             v-model="tab"
             grow

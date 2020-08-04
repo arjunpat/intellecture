@@ -1,5 +1,13 @@
 <template>
   <v-app>
+    <AutoSnackbar
+      :text="error"
+      color="error"
+    />
+    <AutoSnackbar
+      :text="info"
+      color="info"
+    />
     <v-app-bar
       v-if="$route.path !== '/' && !pageNotFound"
       color="green lighten-1"
@@ -49,19 +57,8 @@
       </v-menu>
     </v-app-bar>
 
-    <v-snackbar
-      v-model="snackbar"
-      :timeout="timeout"
-      top
-      color="light-green lighten-2"
-      style="font-family: var(--main-font);"
-
-    >
-      {{message}}<v-icon style="color: white">mdi-clipboard</v-icon>  
-    </v-snackbar>
-
     <v-main class="fill-height">
-      <router-view v-on:startlecture="starting" v-on:nonexistant="started = false" v-on:notFound="pageNotFound = true"/>
+      <router-view @error="showError" @info="showInfo" v-on:startlecture="starting" v-on:nonexistant="started = false" v-on:notFound="pageNotFound = true"/>
     </v-main>
 
     <v-footer padless color="green lighten-1" v-if="landing || dashboard || signin">
@@ -84,11 +81,13 @@ import store from './store'
 import { post, get, getClasses, signOut } from '@/helpers.js'
 import { mapState } from 'vuex'
 import Dialog from '@/components/Dialog'
+import AutoSnackbar from '@/components/AutoSnackbar'
 
 export default {
   name: 'App',
   components: {
-    Dialog
+    Dialog,
+    AutoSnackbar,
   },
   created: function () {
     get('/auth/profile').then((result) => {
@@ -111,13 +110,13 @@ export default {
       imageurl: 'https://tonyxin-8bae2.firebaseapp.com/images/tonyxin2.png',
       id: '',
       joinCode: '',
-      error: '',
       snackbar: false,
-      message: '',
       timeout: 1000,
       showDialog: false,
       dialogHeader: "No classes",
-      dialogText: "You must create a class in order to start a lecture. Create a new class by hitting the new class button."
+      dialogText: "You must create a class in order to start a lecture. Create a new class by hitting the new class button.",
+      error: '',
+      info: '',
     }
   },
   computed: {
@@ -173,10 +172,6 @@ export default {
     authUser: function(val) {
       this.redirectAuthUser()
     },
-    error: function(val) {
-      this.message = this.error
-      this.snackbar = true
-    }
   },
   methods: {
     signOutAuth () {
@@ -188,7 +183,7 @@ export default {
       // Redirects based on the state of authUser
       // All redirecting based on authUser should be placed here
       const authRoutes = ['Dashboard', 'New', 'Lecture', 'Feedback']
-      const noAuthRoutes = ['Landing', 'SignIn']
+      const noAuthRoutes = ['Landing']
 
       if (this.authUser) {
         if (noAuthRoutes.includes(this.$route.name)) {
@@ -196,7 +191,7 @@ export default {
         }
       } else {
         if (authRoutes.includes(this.$route.name)) {
-          this.$router.replace({ name: 'SignIn' })
+          this.$router.replace({ name: 'Landing' })
         }
       }
     },
@@ -210,6 +205,14 @@ export default {
       } else {
         this.$router.push({ path: '/' })
       }
+    },
+    showError(error) {
+      this.error = ''
+      this.$nextTick(() => {this.error = error})
+    },
+    showInfo(info) {
+      this.info = ''
+      this.$nextTick(() => {this.info = info})
     },
     endlecture() {
       store.commit("setEndLecture", true)
@@ -230,10 +233,9 @@ export default {
 
       try {
         var successful = document.execCommand('copy')
-        this.message = "Room link copied to clipboard"
-        this.snackbar = true
+        this.showInfo("Room link copied to clipboard")
       } catch (err) {
-        this.error = 'There was an error copying the link'
+        this.showError('There was an error copying the link')
       }
 
       /* unselect the range */

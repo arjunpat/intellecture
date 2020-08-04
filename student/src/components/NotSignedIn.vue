@@ -1,9 +1,5 @@
 <template>
   <v-row align="center" justify="center">
-    <AutoSnackbar
-      :text="error"
-      color="error"
-    />
     <v-col
       cols="12"
       sm="12"
@@ -36,7 +32,6 @@
 </style>
 
 <script>
-import AutoSnackbar from '@/components/AutoSnackbar'
 import ButtonWithImage from '@/components/ButtonWithImage'
 import { signInGoogle } from '@/helpers'
 
@@ -45,13 +40,11 @@ export default {
   
   components: {
     ButtonWithImage,
-    AutoSnackbar,
   },
 
   data() {
     return {
       face: '😐',
-      error: '',
     }
   },
 
@@ -61,7 +54,7 @@ export default {
       signInGoogle().then((result) => {
         this.face = '😍'
       }).catch((err) => {
-        this.error = 'There was an error signing in! Please try again later.'
+        this.$emit('error', 'There was an error signing in! Please try again later.')
       })
     }
   },

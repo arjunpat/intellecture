@@ -4,7 +4,11 @@
       <AutoSnackbar
         :text="error"
         color="error"
-      ></AutoSnackbar>
+      />
+      <AutoSnackbar
+        :text="info"
+        color="info"
+      />
       <v-app-bar
         v-if="$route.path !== '/'"
         app
@@ -42,7 +46,7 @@
       </v-app-bar>
 
       <v-main>
-        <router-view/>
+        <router-view @error="showError" @info="showInfo"/>
       </v-main>
     </v-app>
     <LoadingScreen :show="!loaded" />
@@ -62,6 +66,7 @@ export default {
   data() {
     return {
       error: '',
+      info: '',
       loaded: false,
     }
   },
@@ -107,7 +112,7 @@ export default {
         if (this.$route.name === 'Room')
           this.$router.replace({ name: 'Join' })
       }).catch((err) => {
-        this.error = "There was an error signing out!"
+        this.showError('There was an error signing out!')
       })
     },
     redirectAuthUser() {
@@ -123,7 +128,15 @@ export default {
     },
     homeRedirect() {
       this.$router.push({ name: 'Join' });
-    }
+    },
+    showError(error) {
+      this.error = ''
+      this.$nextTick(() => {this.error = error})
+    },
+    showInfo(info) {
+      this.info = ''
+      this.$nextTick(() => {this.info = info})
+    },
   },
 }
 </script>

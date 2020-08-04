@@ -3,7 +3,7 @@
     <v-col align="center">
       <v-row>
         <v-col :cols="smallScreen ? 12 : 4">
-          <v-card class="mx-auto rounded-lg" max-width="400" tile style="font-family: var(--main-font);">
+          <v-card class="mx-auto" max-width="400" tile style="font-family: var(--main-font);">
             <v-card-title style="font-weight: bold;">
               Key Topics
               <v-btn

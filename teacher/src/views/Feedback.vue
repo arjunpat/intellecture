@@ -1,11 +1,6 @@
 <template>
   <span>
-    <AutoSnackbar
-      :text="error"
-      color="error"
-    ></AutoSnackbar>
-    <FeedbackForm 
-      message="The lecture has ended"
+    <FeedbackForm
       :questions="questions"
       redirectToPage="Dashboard"
       @updateOverallRating="updateOverallRating"
@@ -17,7 +12,6 @@
 
 <script>
 import FeedbackForm from '@/components/FeedbackForm'
-import AutoSnackbar from '@/components/AutoSnackbar'
 import { post } from '@/helpers.js'
 import { mapState } from 'vuex'
 
@@ -29,7 +23,6 @@ export default {
   },
 
   components: {
-    AutoSnackbar,
     FeedbackForm,
   },
 
@@ -37,11 +30,13 @@ export default {
     if (!this.fromLectureEnd  && !this.testing) {
       this.$router.replace({ name: 'Dashboard' })
     }
+
+    this.$emit('info', 'The lecture has ended')
   },
 
   data() {
     return {
-      testing: true,
+      testing: false,
       error: '',
       id: 0,
       questions: [
@@ -66,8 +61,10 @@ export default {
   },
 
   methods: {
+    showError() {
+      this.$emit('error', 'There was a problem trying to submit your feedback')
+    },
     updateOverallRating(rating) {
-      this.error = ''
       if(!this.id) {
         post('/feedback/create', {
           stars: rating
@@ -76,7 +73,7 @@ export default {
             throw result
           this.id = result.data.id;
         }).catch((err) => {
-          this.error = 'There was a problem trying to submit your feedback'
+          this.showError()
         })
       } else {
         post('/feedback/update', {
@@ -86,12 +83,11 @@ export default {
           if (!result.success)
             throw result
         }).catch((err) => {
-          this.error = 'There was a problem trying to submit your feedback'
+          this.showError()
         })
       }
     },
     updateEaseOfUseRating(rating) {
-      this.error = ''
       post('/feedback/update', {
         id: this.id,
         diff_stars: rating
@@ -99,11 +95,10 @@ export default {
         if (!result.success)
           throw result
       }).catch((err) => {
-        this.error = 'There was a problem trying to submit your feedback'
+        this.showError()
       })
     },
     updateHelpfulnessRating(rating) {
-      this.error = ''
       post('/feedback/update', {
         id: this.id,
         helpful_stars: rating
@@ -111,11 +106,10 @@ export default {
         if (!result.success)
           throw result
       }).catch((err) => {
-        this.error = 'There was a problem trying to submit your feedback'
+        this.showError()
       })
     },
     updateTechDiff(techDiff) {
-      this.error = ''
       post('/feedback/update', {
         id: this.id,
         tech_comments: techDiff
@@ -123,11 +117,10 @@ export default {
         if (!result.success)
           throw result
       }).catch((err) => {
-        this.error = 'There was a problem trying to submit your feedback'
+        this.showError()
       })
     },
     updateAdditionalInfo(additionalInfo) {
-      this.error = ''
       post('/feedback/update', {
         id: this.id,
         comments: additionalInfo
@@ -135,7 +128,7 @@ export default {
         if (!result.success)
           throw result
       }).catch((err) => {
-        this.error = 'There was a problem trying to submit your feedback'
+        this.showError()
       })
     },
   },

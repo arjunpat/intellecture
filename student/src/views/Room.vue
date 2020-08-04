@@ -1,13 +1,5 @@
 <template>
   <div class="fill-height">
-    <AutoSnackbar
-      :text="error"
-      color="error"
-    />
-    <AutoSnackbar
-      :text="info"
-      color="info"
-    />
     <v-overlay :value="!authUser" opacity="0.7" :dark="false">
       <NotSignedIn />
     </v-overlay>
@@ -193,7 +185,6 @@
 <script>
 import UnderstandingSlider from '@/components/UnderstandingSlider'
 import NotSignedIn from '@/components/NotSignedIn'
-import AutoSnackbar from '@/components/AutoSnackbar'
 import AskQuestionDialog from '@/components/AskQuestionDialog'
 import UserAvatarContent from '@/components/UserAvatarContent'
 import TutorialDisplay from '@/components/TutorialDisplay'
@@ -230,8 +221,6 @@ export default {
       lastQuestionElapsed: 0,
       showQuestionDialog: false,
       showTutorial: -1,
-      error: '',
-      info: '',
       tutorialQuestions: {
         tutorial: {
           "type":"new_question",
@@ -283,7 +272,6 @@ export default {
   components: {
     UnderstandingSlider,
     NotSignedIn,
-    AutoSnackbar,
     AskQuestionDialog,
     UserAvatarContent,
     TutorialDisplay,
@@ -348,7 +336,7 @@ export default {
 
               this.updateQuestions(result.data)
             }).catch((err) => {
-              this.error = 'There was an error fetching questions!'
+              this.$emit('error', 'There was an error fetching questions!')
             })
             break
           case 'new_question':
@@ -388,25 +376,22 @@ export default {
         post(`/lectures/live/student/${this.id}/score`, {
           score
         }).catch((err) => {
-          this.error = 'There was an error updating your score!'
+          this.$emit('error', 'There was an error updating your score!')
           log(err)
         })
       }
     },
     askQuestion(question) {
-      this.error = ''
-      this.info = ''
       post(`/lectures/live/student/${this.id}/question`, {
         question
       }).then(() => {
-        this.info = 'Question submitted!'
+        this.$emit('info', 'Question submitted!')
       }).catch((err) => {
-        this.error = 'There was an error submitting your question!'
+        this.$emit('error', 'There was an error submitting your question!')
         log(err)
       })
     },
     upvoteQuestion(uid) {
-      this.error = ''
       if (!this.questions[uid].upvoted) {
         post(`/lectures/live/student/${this.id}/upvote`, {
           question_uid: uid
@@ -416,7 +401,7 @@ export default {
             this.$delete(this.questions, uid)
           }, 150)
         }).catch((err) => {
-          this.error = 'There was an error upvoting the question!'
+          this.$emit('error', 'There was an error upvoting the question!')
           log(err)
         })
       }
@@ -452,15 +437,14 @@ export default {
           this.myQuestions = result.data
           this.myQuestionsVisible = true
         }).catch((err) => {
-          this.error = 'There was an error getting your questions!'
+          this.$emit('error', 'There was an error getting your questions!')
           log(err)
         })
       }
     },
     spammingSliderTooMuch() {
-      this.info = ''
       this.$nextTick(() => {
-        this.info = 'You moved the slider too much! It has been disabled for 1 minute.'  
+        this.$emit('info', 'You moved the slider too much! It has been disabled for 1 minute.') 
       })
     },
   },

@@ -1,6 +1,5 @@
 <template>
   <span>
-    <AutoSnackbar :text="message" color="info" />
     <v-container class="text-center fill-height" style="position:relative;">
       <v-row justify="center" class="fill-height">
         <v-col
@@ -112,20 +111,17 @@
 </template>
 
 <script>
-import AutoSnackbar from '@/components/AutoSnackbar'
 import ShowMoreContainer from '@/components/ShowMoreContainer'
 
 export default {
   name: 'FeedbackForm',
 
   props: {
-    message: { type: String, default: '' },
     questions: { type: Array, required: true },
     redirectToPage: { type: String, required: true },
   },
 
   components: {
-    AutoSnackbar,
     ShowMoreContainer,
   },
 
