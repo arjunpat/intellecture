@@ -73,7 +73,7 @@ export async function validateGoogleAccessToken(token: string) {
 }
 
 export function addToMailchimp(email_address: string, FNAME: string, LNAME: string) {
-  return fetch(`${MAILCHIMP.ORIGIN}/3.0/lists/${MAILCHIMP.AUDIENCE_ID}/members/`, {
+  return fetch(`${MAILCHIMP.ORIGIN}/3.0/lists/${MAILCHIMP.LIST_ID}/members`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -85,7 +85,8 @@ export function addToMailchimp(email_address: string, FNAME: string, LNAME: stri
       merge_fields: {
         FNAME,
         LNAME
-      }
+      },
+      tags: ['User']
     })
   }).then(res => res.json());
 }

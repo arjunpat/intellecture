@@ -52,3 +52,8 @@ app.all('*', (_, res) => {
 server.listen(process.env.PORT, () => {
   console.log('Server started', process.env.PORT);
 });
+
+import { addToMailchimp } from './lib/helpers';
+addToMailchimp('annie.liu@mvla.net', 'Annie', 'Liu').then(d => {
+  console.log(d);
+})
