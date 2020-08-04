@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
 const badWords = require("../../lib/bad_words.json");
+import { MAILCHIMP, SLACK_WEBHOOK } from './config';
 
 export function genId(len: number): string {
   let options = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
@@ -69,4 +70,34 @@ export async function validateGoogleAccessToken(token: string) {
 
   if (!res.email_verified || res.error) return false;
   return res;
+}
+
+export function addToMailchimp(email_address: string, FNAME: string, LNAME: string) {
+  return fetch(`${MAILCHIMP.ORIGIN}/3.0/lists/${MAILCHIMP.AUDIENCE_ID}/members/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Basic ' + MAILCHIMP.API_KEY
+    },
+    body: JSON.stringify({
+      email_address,
+      status: 'subscribed',
+      merge_fields: {
+        FNAME,
+        LNAME
+      }
+    })
+  }).then(res => res.json());
+}
+
+export function messageSlack(text: string) {
+  return fetch(SLACK_WEBHOOK, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      text
+    })
+  }).then(res => res.json());
 }

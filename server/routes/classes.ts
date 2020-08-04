@@ -7,6 +7,7 @@ import * as responses from '../lib/responses';
 
 import db from '../models';
 
+import { SERVER_NAME } from '../lib/config'
 import { Request } from '../types';
 
 router.use(mw.auth);
@@ -16,6 +17,12 @@ router.post('/create', async (req: Request, res) => {
 
   let class_uid = helpers.genId(15);
   await db.classes.createClass(class_uid, req.uid, name || 'Untitled Class', section || 'Untitled Section');
+
+  if (SERVER_NAME === 'prod') {
+    db.accounts.getBasicInfo(req.uid).then(user => {
+      helpers.messageSlack(`${user.first_name} ${user.last_name} (${user.email}) created a class: ${name} - ${section}`);
+    })
+  }
 
   res.send(responses.success({
     class_uid

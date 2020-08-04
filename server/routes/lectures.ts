@@ -5,7 +5,8 @@ import * as mw from '../middleware';
 import * as responses from '../lib/responses';
 import { Request } from '../types';
 
-import { genId } from '../lib/helpers';
+import { SERVER_NAME } from '../lib/config'
+import { genId, messageSlack } from '../lib/helpers';
 import db from '../models';
 
 import live from './live/';
@@ -15,7 +16,6 @@ router.use(mw.auth);
 router.post('/create', async (req: Request, res) => {
   let { name, class_uid } = req.body;
   let resp = await db.classes.ownsClass(class_uid, req.uid);
-
   if (!resp) return res.send(responses.error());
 
   let lecture_uid = genId(20);
@@ -24,6 +24,12 @@ router.post('/create', async (req: Request, res) => {
     class_uid,
     name || 'Untitled Lecture'
   );
+
+  if (SERVER_NAME === 'prod') {
+    db.accounts.getBasicInfo(req.uid).then(user => {
+      messageSlack(`${user.first_name} ${user.last_name} (${user.email}) created a lecture: ${name}`);
+    })
+  }
 
   res.send(
     responses.success({

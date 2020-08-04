@@ -7,9 +7,10 @@ import { JWT_SECRET } from "../lib/config";
 
 import db from "../models";
 import * as mw from "../middleware";
-import { validateGoogleAccessToken, genId } from "../lib/helpers";
+import { validateGoogleAccessToken, genId, addToMailchimp, messageSlack } from "../lib/helpers";
 
 import { Request } from "../types";
+import { SERVER_NAME } from '../lib/config';
 const { NODE_ENV } = process.env;
 
 const cookieOpts: any = {
@@ -37,6 +38,12 @@ router.post("/google-signin", async (req, res) => {
     user.family_name,
     user.picture
   );
+
+  if (status === 'new' && SERVER_NAME === 'prod') {
+    // not awaiting so we dont block
+    addToMailchimp(user.email, user.given_name, user.family_name);
+    messageSlack(`${user.given_name} ${user.family_name} (${user.email}) just created an account`);
+  }
 
   let token = jwt.sign(
     {
