@@ -140,7 +140,7 @@ export default {
       return this.$route.name === 'ClassLectures'
     },
     analytics: function () {
-      return this.$route.name === 'LectureAnalyticsStudent'
+      return this.$route.name === 'LectureAnalyticsOverview'
     },
     feedback: function () {
       return this.$route.name === 'Feedback'

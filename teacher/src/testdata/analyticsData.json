@@ -122,5 +122,22 @@
     "watwat": 6,
     "coolcool": 7,
     "123": 3
-  } 
+  }, 
+  "avgUs": {
+    "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2": 6,
+    "rUJyP317iuZErNlhrnnyn8eT7uY2": 10,
+    "asdf": 2,
+    "watwat": 6,
+    "coolcool": 7,
+    "123": 3
+  },
+  "student": {
+    "account_uid": "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2",
+    "email": "100021830@mvla.net",
+    "first_name": "Arjun",
+    "last_name": "Patrawala",
+    "photo": "https://lh3.googleusercontent.com/a-/AOh14GjTxiWisVwbIJetGx01unMZobe2xXI6Gd3GiYzEUQ"
+  },
+  "studentPresent": 690538,
+  "studentUnderstanding": 32
 }

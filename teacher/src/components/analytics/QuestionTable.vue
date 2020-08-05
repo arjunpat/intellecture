@@ -21,6 +21,7 @@
       :items="data"
       :search="search"
       sort-by="upvotes"
+      :sort-desc="true"
       must-sort
     >
     </v-data-table>

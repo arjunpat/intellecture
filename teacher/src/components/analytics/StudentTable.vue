@@ -34,6 +34,8 @@
       :custom-sort="customSort"
       sort-by="name"
       must-sort
+      :item-class="() => 'student-table-row'"
+      @click:row="studentClicked"
     >
       <template v-slot:item.name="{ item }">
         <v-row align="center" class="pl-2">
@@ -67,6 +69,12 @@
     </Dialog>
   </span>
 </template>
+
+<style>
+  .student-table-row {
+    cursor: pointer;
+  }
+</style>
 
 <script>
 import Dialog from '@/components/Dialog'
@@ -108,6 +116,9 @@ export default {
   },
 
   methods: {
+    studentClicked(item) {
+      this.$emit('studentClicked', item.account_uid)
+    },
     getScaledPresent(present) {
       return Math.round(present/this.highestPresent * 100)
     },
