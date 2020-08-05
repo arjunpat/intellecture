@@ -135,15 +135,15 @@ export default {
         this.avgUs = analyticsData.avgUs
       } else {
         let vals = await Promise.all(
-          ['/info', '/students', '/general', '/question-counts', '/upvote-counts', '/questions'].map(e => this.get(e))
+          ['/info', '/students', '/stats', '/questions'].map(e => this.get(e))
         );
         this.lectureInfo = vals[0]
         this.students = vals[1]
         this.present = vals[2].present
         this.avgUs = vals[2].avg_us
-        this.quesCount = vals[3]
-        this.upvoteCount = vals[4]
-        this.questions = vals[5]
+        this.quesCount = vals[2].question_counts;
+        this.upvoteCount = vals[2].upvote_counts;
+        this.questions = vals[3]
       }
     },
     getPresent(uid) {

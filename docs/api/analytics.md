@@ -48,9 +48,7 @@ Get all the students who ever joined a lecture.
 }
 ```
 
-## GET /analytics/lecture/:lecture_uid/present
-
-Gives you the total ms that a particular user was present for.
+## GET /analytics/lecture/:lecture_uid/stats
 
 ###### Example response:
 
@@ -58,35 +56,21 @@ Gives you the total ms that a particular user was present for.
 {
   "success": true,
   "data": {
-    "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2": 4502,
-    "kADb6ebSfIO5yS5JYI3Cm0T1fG93": 32737,
-    "rUJyP317iuZErNlhrnnyn8eT7uY2": 68795
-  }
-}
-```
-
-## GET /analytics/lecture/:lecture_uid/question-counts
-
-Gives you number of questions by user.
-
-###### Example response:
-
-```javascript
-{
-  "success": true,
-  "data": {
-    "38Sl3JbcF0Yug9dfytpZw8nFOmH3": 3,
-    "5pWooeQwUJaxjK4ZurJK5hjEuSC2": 1,
-    "BlymmQ7rh3XN9A8AUtJgQfjxMHt2": 1,
-    "cQRgFHyD3ISaKuLKQ2gRls9sq8T2": 2,
-    "dJbSdXUjrePnmjSoqWUMBhNcRa22": 1,
-    "gPFTLJj7b3gkjyMEGfr9VKCc3Uq2": 1,
-    "kADb6ebSfIO5yS5JYI3Cm0T1fG93": 5,
-    "LaUlHEbfXmODLl3HcJBa922qWR63": 6,
-    "MLXP5Qgm8EWMbwk0apeyt3qHpn43": 1,
-    "pPoHtpMUOZfp56BfhhsECIt4lYh2": 1,
-    "QgCI4XmED4ciHyX9XNn3sJ7zS232": 1,
-    "Y5kRaSi7GdOQ5VKYLbkmB2NHTND2": 3
+    "present": { // total ms that a particular user was present for
+      "Bn4S5wNVufYd1jKSCbi6D7JRsKTW": 402627,
+      "GpWCy7G74szGjPEKqY9j24DtzC06": 390198
+    },
+    "avg_us": {
+      "Bn4S5wNVufYd1jKSCbi6D7JRsKTW": 6.99,
+      "GpWCy7G74szGjPEKqY9j24DtzC06": 5
+    },
+    "question_counts": { // number of questions by user
+      "Bn4S5wNVufYd1jKSCbi6D7JRsKTW": 9,
+      "GpWCy7G74szGjPEKqY9j24DtzC06": 6
+    },
+    "upvote_counts": { // number of upvotes by user
+      "Bn4S5wNVufYd1jKSCbi6D7JRsKTW": 6
+    }
   }
 }
 ```
@@ -216,24 +200,6 @@ All the upvotes from a particular student and the time they upvoted.
       "question_uid": "WWEYUQVueSYZLjS",
       "elapsed": 87935
     }
-  ]
-}
-```
-
-## GET /analytics/lecture/:lecture_uid/student/:account_uid/questions
-
-All the questions a particular student asked.
-
-###### Example response:
-
-```javascript
-{
-  "success": true,
-  "data": [
-    "hMakyiEMhrCD0z1",
-    "OvIyHaOcsS5rYHy",
-    "tPsMjR4WRtzdIKd",
-    "WWEYUQVueSYZLjS"
   ]
 }
 ```

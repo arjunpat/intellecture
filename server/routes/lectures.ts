@@ -18,7 +18,7 @@ router.post('/create', async (req: Request, res) => {
   let resp = await db.classes.ownsClass(class_uid, req.uid);
   if (!resp) return res.send(responses.error());
 
-  let lecture_uid = genId(20);
+  let lecture_uid = genId(10);
   await db.lectures.createLecture(
     lecture_uid,
     class_uid,

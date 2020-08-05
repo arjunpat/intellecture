@@ -27,7 +27,7 @@ router.post("/google-signin", async (req, res) => {
   
   let uid = await db.accounts.getUidByEmail(user.email);
   if (!uid) { // new account
-    uid = genId(28);
+    uid = genId(14);
     status = 'new';
   }
 

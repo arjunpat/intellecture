@@ -21,6 +21,7 @@ async function lecturePerms(req, res, next) {
 
 function ended(req, res, next) {
   if (typeof req.lecture.end_time === 'number') {
+    res.set('Cache-Control', 'max-age=3600'); // 1 hour
     return next();
   }
   res.send(responses.error('lecture_not_ended'));
@@ -34,24 +35,20 @@ router.get('/lecture/:lecture_uid/students', lecturePerms, ended, async (req, re
   res.send(responses.success(await db.lectures.getStudents(lecture_uid)));
 });
 
-router.get('/lecture/:lecture_uid/general', lecturePerms, ended, async (req: Request, res) => {
+router.get('/lecture/:lecture_uid/stats', lecturePerms, ended, async (req: Request, res) => {
   let { lecture_uid } = req.params;
-  const log = await db.lectureStudentLog.getLecture(lecture_uid);
-  const scoreLog = await db.lectureLog.getLecture(lecture_uid);
-  
-  res.send(responses.success(
-    getPresentnessAndUnderstandingScores(req.lecture, log, scoreLog)
-  ));
-});
+  const [ log, scoreLog, question_counts, upvote_counts ] = await Promise.all([
+    db.lectureStudentLog.getLecture(lecture_uid),
+    db.lectureLog.getLecture(lecture_uid),
+    db.lectureQs.getQuestionCountsByLectureUid(lecture_uid),
+    db.lectureQUpvotes.getUpvoteCountsByLectureUid(lecture_uid)
+  ]);
 
-router.get('/lecture/:lecture_uid/question-counts', lecturePerms, ended, async (req: Request, res) => {
-  let { lecture_uid } = req.params;
-  res.send(responses.success(await db.lectureQs.getQuestionCountsByLectureUid(lecture_uid)));
-});
-
-router.get('/lecture/:lecture_uid/upvote-counts', lecturePerms, ended, async (req: Request, res) => {
-  let { lecture_uid } = req.params;
-  res.send(responses.success(await db.lectureQUpvotes.getUpvoteCountsByLectureUid(lecture_uid)));
+  res.send(responses.success({
+    ...getPresentnessAndUnderstandingScores(req.lecture, log, scoreLog),
+    question_counts,
+    upvote_counts
+  }));
 });
 
 router.get('/lecture/:lecture_uid/info', lecturePerms, ended, async (req: Request, res) => {
@@ -77,12 +74,12 @@ router.get('/lecture/:lecture_uid/student/:account_uid/upvotes', lecturePerms, e
   let { lecture_uid, account_uid } = req.params;
   res.send(responses.success(await db.lectureQUpvotes.getByStudent(lecture_uid, account_uid)));
 });
-
+/* 
 router.get('/lecture/:lecture_uid/student/:account_uid/questions', lecturePerms, ended, async (req: Request, res) => {
   let { lecture_uid, account_uid } = req.params;
   let data = await db.lectureQs.getQuestionsUidByUser(lecture_uid, account_uid);
   res.send(responses.success(data.map(d => d.uid)));
-});
+}); */
 
 /* QUESTION ANALYTICS */
 router.get('/lecture/:lecture_uid/question/:question_uid/upvotes', lecturePerms, async (req, res) => {
