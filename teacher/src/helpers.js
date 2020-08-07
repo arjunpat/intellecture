@@ -37,7 +37,8 @@ export function signInGoogle() {
     return googleUser.getAuthResponse()
   }).then((response) => {
     return post('/auth/google-signin', {
-      google_access_token: response.access_token
+      google_access_token: response.access_token,
+      teacher: true
     })
   }).then((result) => {
     if (!result.success)

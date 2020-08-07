@@ -117,7 +117,7 @@ export default {
 
   methods: {
     studentClicked(item) {
-      this.$emit('studentClicked', item.account_uid)
+      //this.$emit('studentClicked', item.account_uid)
     },
     getScaledPresent(present) {
       return Math.round(present/this.highestPresent * 100)
