@@ -6,6 +6,7 @@ import Dashboard from '@/views/Dashboard.vue'
 import Lecture from '@/views/Lecture.vue'
 import New from '@/views/New.vue'
 import Feedback from '@/views/Feedback.vue'
+import LectureAnalytics from '@/views/lecture-analytics/LectureAnalytics'
 import LectureAnalyticsOverview from '@/views/lecture-analytics/Overview'
 import LectureAnalyticsStudent from '@/views/lecture-analytics/Student'
 import ClassLectures from '@/views/ClassLectures'
@@ -52,22 +53,27 @@ const routes = [
     props: true,
   },
   {
-    path: '/lecture-analytics/:lecture_uid',
-    name: 'LectureAnalyticsOverview',
-    component: LectureAnalyticsOverview,
-    props: true,
-  },
-  {
-    path: '/lecture-analytics/:lecture_uid/student/:student_uid',
-    name: 'LectureAnalyticsStudent',
-    component: LectureAnalyticsStudent,
-    props: true,
-  },
-  {
     path: '/lectures/:class_uid',
     name: 'ClassLectures',
     component: ClassLectures,
     props: true
+  },
+  {
+    path: '/lecture-analytics/:lecture_uid',
+    component: LectureAnalytics,
+    props: true,
+    children: [
+      {
+        path: '',
+        name: 'LectureAnalytics',
+        component: LectureAnalyticsOverview,
+      },
+      {
+        path: 'student/:student_uid',
+        name: 'LectureAnalyticsStudent',
+        component: LectureAnalyticsStudent,
+      },
+    ]
   }
 ]
 
