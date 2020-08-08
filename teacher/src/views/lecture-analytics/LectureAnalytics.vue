@@ -39,10 +39,13 @@ export default {
 
       lectureInfo: {},
       students: [],
-      present: {},
-      avgUs: {},
-      quesCount: {},
-      upvoteCount: {},
+      stats: {
+        first_join: {},
+        question_counts: {},
+        upvote_counts: {},
+        avg_us: {},
+        present: {}
+      },
       questions: [],
     }
   },
@@ -50,13 +53,15 @@ export default {
   computed: {
     studentTableData() {
       return this.students.map((student) => {
+        let uid = student.account_uid
         return {
           ...student,
           name: `${student.first_name} ${student.last_name}`,
-          present: this.getPresent(student.account_uid),
-          understanding: this.getAvgUs(student.account_uid),
-          quesCount: this.getQuesCount(student.account_uid),
-          upvoteCount: this.getUpvoteCount(student.account_uid),
+          present: this.getPresent(uid),
+          understanding: this.getAvgUs(uid),
+          quesCount: this.getQuesCount(uid),
+          upvoteCount: this.getUpvoteCount(uid),
+          firstJoin: this.getFirstJoin(uid)
         }
       })
     },
@@ -86,24 +91,24 @@ export default {
         );
         this.lectureInfo = vals[0]
         this.students = vals[1]
-        this.present = vals[2].present
-        this.avgUs = vals[2].avg_us
-        this.quesCount = vals[2].question_counts;
-        this.upvoteCount = vals[2].upvote_counts;
+        this.stats = vals[2]
         this.questions = vals[3]
       }
     },
     getPresent(uid) {
-      return Math.round((this.present[uid] / this.lectureLength) * 100)
+      return Math.round((this.stats.present[uid] / this.lectureLength) * 100)
     },
     getQuesCount(uid) {
-      return this.quesCount[uid] || 0
+      return this.stats.question_counts[uid] || 0
     },
     getUpvoteCount(uid) {
-      return this.upvoteCount[uid] || 0
+      return this.stats.upvote_counts[uid] || 0
     },
     getAvgUs(uid) {
-      return Math.round((this.avgUs[uid] / this.maxUnderstanding) * 100) || 'ERR'
+      return this.stats.avg_us[uid] ? Math.round((this.stats.avg_us[uid] / this.maxUnderstanding) * 100) : 'ERR'
+    },
+    getFirstJoin(uid) {
+      return new Date(this.stats.first_join[uid]).toLocaleTimeString('en-us', { timeStyle: 'short' })
     },
     get(addy) {
       return get(`/analytics/lecture/${this.lecture_uid}${addy}`).then(d => {
