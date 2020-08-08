@@ -4,7 +4,7 @@ const router = Router();
 import * as mw from '../../middleware';
 import  * as responses from '../../lib/responses';
 
-import { getPresentnessAndUnderstandingScores } from './helpers';
+import { getStats } from './helpers';
 import { Request } from '../../types';
 import db from '../../models';
 
@@ -45,7 +45,7 @@ router.get('/lecture/:lecture_uid/stats', lecturePerms, ended, async (req: Reque
   ]);
 
   res.send(responses.success({
-    ...getPresentnessAndUnderstandingScores(req.lecture, log, scoreLog),
+    ...getStats(req.lecture, log, scoreLog),
     question_counts,
     upvote_counts
   }));

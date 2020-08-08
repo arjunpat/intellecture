@@ -56,8 +56,10 @@ function getIncorrect(log: Status[], scoreLog: Score[]): Set<string> {
   return badUids;
 }
 
-export function getPresentnessAndUnderstandingScores(lecture: Lecture, log: Status[], scoreLog: Score[]) {
-  const lectureLength = <number>lecture.end_time - <number>lecture.start_time;
+export function getStats(lecture: Lecture, log: Status[], scoreLog: Score[]) {
+  const startTime = <number>lecture.start_time;
+  const endTime = <number>lecture.end_time;
+  const lectureLength = endTime - startTime;
   log.sort((a, b) => a.elapsed - b.elapsed);
   scoreLog.sort((a, b) => a.elapsed - b.elapsed);
 
@@ -65,8 +67,6 @@ export function getPresentnessAndUnderstandingScores(lecture: Lecture, log: Stat
   let badUids = getIncorrect(log, scoreLog);
   if (badUids.size !== 0) {
     console.error(Date.now(), '(1) present/avg us error for lecture_uid', lecture.uid, 'with uids', badUids);
-    log = log.filter(e => !badUids.has(e.account_uid));
-    scoreLog = scoreLog.filter(e => !badUids.has(e.account_uid));
   }
 
   const logMap: { [key: string]: Status[] } = {};
@@ -75,10 +75,21 @@ export function getPresentnessAndUnderstandingScores(lecture: Lecture, log: Stat
     logMap[each.account_uid].push(each);
   }
 
+  const first_join: { [key: string]: number } = {};
+  for (let each in logMap) {
+    first_join[each] = logMap[each][0].elapsed + startTime;
+  }
+
   const scoreLogMap: { [key: string]: Score[] } = {};
   for (let each of scoreLog) {
     if (!scoreLogMap[each.account_uid]) scoreLogMap[each.account_uid] = [];
     scoreLogMap[each.account_uid].push(each);
+  }
+
+  // remove bad uids
+  for (let each in badUids) {
+    delete logMap[each];
+    delete scoreLogMap[each];
   }
 
   const present: { [key: string]: number } = {};
@@ -126,12 +137,12 @@ export function getPresentnessAndUnderstandingScores(lecture: Lecture, log: Stat
   }
 
   for (let each in avg_us) {
-    avg_us[each] = round(avg_us[each] / present[each], 2); // gets average us
-    if (avg_us[each] < 0 || avg_us[each] > 10) {
+    avg_us[each] = Math.round((avg_us[each] / present[each]) * 10); // gets average us and convert to percent
+    if (avg_us[each] < 0 || avg_us[each] > 100) {
       console.error(Date.now(), '(3) avg us compute error for lecture_uid', lecture.uid, 'and uid', each);
       delete avg_us[each];
     }
   }
 
-  return { present, avg_us };
+  return { present, avg_us, first_join };
 }

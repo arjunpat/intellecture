@@ -99,9 +99,10 @@ export default {
       headers: [
         { text: 'Name', value: 'name' },
         { text: 'Present-ness', value: 'present', filterable: false },
-        { text: 'Average Understanding', value: 'understanding', filterable: false },
+        { text: 'Avg Understanding', value: 'understanding', filterable: false },
         { text: 'Questions Asked', value: 'quesCount', filterable: false },
         { text: 'Questions Upvoted', value: 'upvoteCount', filterable: false },
+        { text: 'Joined At', value: 'firstJoin', filterable: false }
       ],
     }
   },
