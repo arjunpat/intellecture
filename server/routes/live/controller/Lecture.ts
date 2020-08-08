@@ -288,10 +288,11 @@ export default class Lecture {
     // TODO above code can be optimized
     // waiting for feature set to be solidified
     // before optimizing
-    this.sendToTeachers(<WS.Bulk> {
-      type: 'bulk',
-      messages
-    });
+    if (messages.length !== 0)
+      this.sendToTeachers(<WS.Bulk> {
+        type: 'bulk',
+        messages
+      });
   }
 
   getScore() {

@@ -429,6 +429,10 @@ export default {
       localStorage['notfirst'] = true
     }
   },
+  beforeDestroy() {
+    this.socket.close()
+    store.commit('setEndLecture', false)
+  },
   computed: {
     ...mapState(['endLecture', 'showCode']),
     smallScreen() {
