@@ -11,12 +11,13 @@ export default class Lectures {
     // this.redis = redis;
   }
 
-  createLecture(lecture_uid: string, class_uid: string, name: string) {
+  createLecture(lecture_uid: string, class_uid: string, name: string, scheduled_start: number | null) {
     return this.mysql.insert('lectures', {
       uid: lecture_uid,
       created_at: Date.now(),
       class_uid,
-      name
+      name,
+      scheduled_start
     });
   }
 
@@ -87,6 +88,7 @@ export default class Lectures {
         name,
         start_time,
         end_time,
+        scheduled_start,
         (SELECT COUNT(DISTINCT account_uid) FROM lecture_student_log WHERE lecture_uid = uid) as student_count
       FROM lectures WHERE class_uid = ?`,
       [ class_uid ]

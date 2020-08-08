@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS lectures (
   name VARCHAR(50),
   start_time BIGINT UNSIGNED,
   end_time BIGINT UNSIGNED,
+  scheduled_start BIGINT UNSIGNED,
   join_code VARCHAR(5),
   UNIQUE KEY (join_code),
   FOREIGN KEY (class_uid) REFERENCES classes(uid) ON DELETE CASCADE

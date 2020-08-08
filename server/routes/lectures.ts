@@ -14,15 +14,18 @@ router.use('/live', live);
 router.use(mw.auth);
 
 router.post('/create', async (req: Request, res) => {
-  let { name, class_uid } = req.body;
+  let { name, class_uid, scheduled_start } = req.body;
   let resp = await db.classes.ownsClass(class_uid, req.uid);
   if (!resp) return res.send(responses.error());
+  if (scheduled_start && scheduled_start <= Date.now())
+    return res.send(responses.error('scheduled_start must be in the future'));
 
   let lecture_uid = genId(10);
   await db.lectures.createLecture(
     lecture_uid,
     class_uid,
-    name || 'Untitled Lecture'
+    name || 'Untitled Lecture',
+    scheduled_start || null
   );
 
   if (SERVER_NAME === 'prod') {

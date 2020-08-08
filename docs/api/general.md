@@ -11,7 +11,8 @@ Create a new lecture in a class.
 ```javascript
 {
   "class_uid": "GsF2nERLrwvLe0T",
-  "name": "Electric Fields"
+  "name": "Electric Fields",
+  "scheduled_start": 1928302192302 // optional field, so can be null/undefined
 }
 ```
 
@@ -39,20 +40,23 @@ Get all the lectures from a particular class
     {
       "uid": "rwvLerwvLERL0ERLe0",
       "name": "Circuits",
-      "start_time": null,
-      "end_time": null
+      "start_time": 1283909212321,
+      "end_time": null,
+      "scheduled_start": null
     },
     {
       "uid": "wvLwERe0ERLrLrvLe0",
       "name": "Electric Fields",
       "start_time": null,
-      "end_time": null
+      "end_time": null,
+      "scheduled_start": 93019238212
     },
     {
       "uid": "e0ERLrwvERLrwvLLe0",
       "name": "Flux",
       "start_time": null,
-      "end_time": null
+      "end_time": null,
+      "scheduled_start": 1829302921287
     }
   ]
 }
