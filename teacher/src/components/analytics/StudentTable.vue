@@ -50,6 +50,9 @@
       <template v-slot:item.present="{ item }">
         {{ scalePresent ? `${getScaledPresent(item.present)}%` : `${item.present}%` }}
       </template>
+      <template v-slot:item.understanding="{ item }">
+        {{ `${item.understanding}%` }}
+      </template>
     </v-data-table>
     <Dialog 
       v-model="settingsDialog"
@@ -118,7 +121,7 @@ export default {
 
   methods: {
     studentClicked(item) {
-      //this.$emit('studentClicked', item.account_uid)
+      this.$emit('studentClicked', item.account_uid)
     },
     getScaledPresent(present) {
       return Math.round(present/this.highestPresent * 100)
