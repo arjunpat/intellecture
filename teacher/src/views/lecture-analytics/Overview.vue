@@ -116,7 +116,7 @@ export default {
           ...student,
           name: `${student.first_name} ${student.last_name}`,
           present: this.getPresent(uid),
-          understanding: this.stats.avg_us[uid] ? this.stats.avg_us[uid] + '%' : 'ERR',
+          understanding: this.stats.avg_us[uid] || 'ERR',
           quesCount: this.stats.question_counts[uid] || 0,
           upvoteCount: this.stats.upvote_counts[uid] || 0,
           firstJoin: new Date(this.stats.first_join[uid]).toLocaleTimeString('en-us', { timeStyle: 'short' })
@@ -131,6 +131,7 @@ export default {
   methods: {
     async init() {
       if (this.testing) {
+        // needs to be updated to support new format
         this.lectureInfo = analyticsData.lectureInfo
         this.students = analyticsData.students
         this.intervalsPresent = analyticsData.intervals_present
@@ -138,6 +139,7 @@ export default {
         this.quesCount = analyticsData.question_count
         this.upvoteCount = analyticsData.upvotes
         this.avgUs = analyticsData.avgUs
+        // needs to be updated to support new format
       } else {
         let vals = await Promise.all(
           ['/info', '/students', '/stats', '/questions'].map(e => this.get(e))

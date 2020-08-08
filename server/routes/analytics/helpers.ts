@@ -137,7 +137,7 @@ export function getStats(lecture: Lecture, log: Status[], scoreLog: Score[]) {
   }
 
   for (let each in avg_us) {
-    avg_us[each] = Math.round((avg_us[each] / present[each]) * 10); // gets average us and convert to percent
+    avg_us[each] = round(avg_us[each] / present[each], 2); // gets average us and convert to percent
     if (avg_us[each] < 0 || avg_us[each] > 100) {
       console.error(Date.now(), '(3) avg us compute error for lecture_uid', lecture.uid, 'and uid', each);
       delete avg_us[each];
