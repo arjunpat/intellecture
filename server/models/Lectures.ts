@@ -102,7 +102,7 @@ export default class Lectures {
         end_time,
         class_uid
       FROM lectures
-      WHERE class_uid IN (SELECT uid FROM classes WHERE account_uid = ?) 
+      WHERE class_uid IN (SELECT uid FROM classes WHERE account_uid = ?) AND start_time IS NOT NULL
       ORDER BY start_time DESC LIMIT ${limit}`,
       [account_uid]
     );
