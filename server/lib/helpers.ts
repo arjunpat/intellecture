@@ -88,7 +88,7 @@ export function addToMailchimp(email_address: string, FNAME: string, LNAME: stri
       },
       tags: ['Teacher']
     })
-  }).then(res => res.json());
+  });
 }
 
 export function messageSlack(text: string) {
@@ -100,5 +100,5 @@ export function messageSlack(text: string) {
     body: JSON.stringify({
       text
     })
-  }).then(res => res.json());
+  });
 }

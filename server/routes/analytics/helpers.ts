@@ -1,18 +1,5 @@
 import { Lecture } from '../../types';
 
-export function sum(arr: number[]) {
-  let sum = 0;
-  for (let each of arr) sum += each;
-  return sum;
-}
-
-export function diff(arr: number[]): number[] {
-  let res: number[] = [];
-  res.length = arr.length - 1;
-  for (let i = 0; i < arr.length - 1; i++) res[i] = arr[i + 1] - arr[i];
-  return res;
-}
-
 export function round(num: number, places: number = 0): number {
   let p = 10 ** places;
   return Math.round((num + Number.EPSILON) * p) / p;
