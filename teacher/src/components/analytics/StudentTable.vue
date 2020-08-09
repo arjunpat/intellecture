@@ -34,6 +34,9 @@
       :custom-sort="customSort"
       sort-by="name"
       must-sort
+      :footer-props="{
+        'items-per-page-options': [100, -1],
+      }"
       :item-class="() => 'student-table-row'"
       @click:row="studentClicked"
     >
@@ -49,6 +52,9 @@
       </template>
       <template v-slot:item.present="{ item }">
         {{ scalePresent ? `${getScaledPresent(item.present)}%` : `${item.present}%` }}
+      </template>
+      <template v-slot:item.firstJoin="{ item }">
+        {{ getFirstJoinString(item.firstJoin) }}
       </template>
     </v-data-table>
     <Dialog 
@@ -123,6 +129,9 @@ export default {
     getScaledPresent(present) {
       return Math.round(present/this.highestPresent * 100)
     },
+    getFirstJoinString(firstJoin) {
+      return new Date(firstJoin).toLocaleTimeString('en-us', { timeStyle: 'short' })
+    },
     customSort(items, index, isDesc) {
       items.sort((a, b) => {
         if (index[0] === 'name') {
@@ -140,10 +149,17 @@ export default {
           }
         } else {
           if (a[index] !== null && b[index] !== null) {
-            if (!isDesc[0])
-              return compareString(a[index], b[index])
-            else
-              return compareString(b[index], a[index])
+            if (typeof a[index] === 'number') {
+              if (!isDesc[0])
+                return b[index] - a[index]
+              else
+                return a[index] - b[index]
+            } else {
+              if (!isDesc[0])
+                return compareString(a[index], b[index])
+              else
+                return compareString(b[index], a[index])
+            }
           }
         } 
       })

@@ -89,11 +89,8 @@ export default {
       if (this.testing) {
         this.lectureInfo = analyticsData.lectureInfo
         this.students = analyticsData.students
-        this.intervalsPresent = analyticsData.intervals_present
-        this.present = analyticsData.present
-        this.quesCount = analyticsData.question_count
-        this.upvoteCount = analyticsData.upvotes
-        this.avgUs = analyticsData.avgUs
+        this.stats = analyticsData.stats
+        this.questions = analyticsData.questions
       } else {
         let vals = await Promise.all(
           ['/info', '/students', '/stats', '/questions'].map(e => this.get(e))
@@ -117,7 +114,7 @@ export default {
       return this.stats.avg_us[uid] || 'ERR'
     },
     getFirstJoin(uid) {
-      return new Date(this.stats.first_join[uid]).toLocaleTimeString('en-us', { timeStyle: 'short' })
+      return this.stats.first_join[uid]
     },
     getStudent(uid) {
       return this.students.find(student => student.account_uid === uid)

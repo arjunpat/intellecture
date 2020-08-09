@@ -26,8 +26,8 @@
           cols="12"
           sm="auto"
         >
-          <v-icon>mdi-update</v-icon>
-          {{ timeSinceEndTimeString }}
+          <v-icon>mdi-clock-outline</v-icon>
+          {{ startTimeString }}
         </v-col>
       </v-row>
     </v-card-text>
@@ -49,6 +49,11 @@ export default {
     },
     timeSinceEndTimeString() {
       return dateToString(this.lectureInfo.end_time)
+    },
+    startTimeString() {
+      let date = new Date(this.lectureInfo.start_time).toLocaleString('en-us', { year: 'numeric', month: 'long', day: 'numeric' })
+      let time = new Date(this.lectureInfo.start_time).toLocaleString('en-us', { timeStyle: 'short' })
+      return `${date} at ${time}`
     },
     lectureLength() {
       return this.lectureInfo ? this.lectureInfo.end_time - this.lectureInfo.start_time : 0
