@@ -53,91 +53,83 @@
       "photo": "https://lh3.googleusercontent.com/a-/AOh14GjTxiWisVwbIJetGx01unMZobe2xXI6Gd3GiYzEUQ"
     }
   ],
-  "intervals_present": {
-    "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2": [
-      [
-        1593381727386,
-        1593382495924
-      ]
-    ],
-    "rUJyP317iuZErNlhrnnyn8eT7uY2": [
-      [
-        1593381727386,
-        1593382435924
-      ]
-    ],
-    "asdf": [
-      [
-        1593381757386,
-        1593382439924
-      ]
-    ],
-    "watwat": [
-      [
-        1593381797386,
-        1593382495924
-      ]
-    ],
-    "coolcool": [
-      [
-        1593381727386,
-        1593381797386
-      ],
-      [
-        1593381897386,
-        1593381907386
-      ],
-      [
-        1593381947386,
-        1593382495924
-      ]
-    ],
-    "123": [
-      [
-        1593381727386,
-        1593382495924
-      ]
-    ]
+  "stats": {
+    "present": {
+      "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2": 690538,
+      "rUJyP317iuZErNlhrnnyn8eT7uY2": 708538,
+      "asdf": 682538,
+      "watwat": 698538,
+      "coolcool": 628538,
+      "123": 690538
+    },
+    "avg_us": {
+      "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2": 6,
+      "rUJyP317iuZErNlhrnnyn8eT7uY2": 10,
+      "asdf": 2,
+      "watwat": 6,
+      "coolcool": 7,
+      "123": 3
+    },
+    "question_counts": {
+      "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2": 1,
+      "rUJyP317iuZErNlhrnnyn8eT7uY2": 3,
+      "asdf": 5,
+      "watwat": 3,
+      "coolcool": 2,
+      "123": 0
+    },
+    "upvote_counts": {
+      "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2": 6,
+      "rUJyP317iuZErNlhrnnyn8eT7uY2": 10,
+      "asdf": 2,
+      "watwat": 6,
+      "coolcool": 7,
+      "123": 3
+    },
+    "first_join": {
+      "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2": 1593381927386,
+      "rUJyP317iuZErNlhrnnyn8eT7uY2": 1593381727386,
+      "asdf": 1593383727386,
+      "watwat": 1593385727386,
+      "coolcool": 1593389727386,
+      "123": 1593382727386
+    }
   },
-  "present": {
-    "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2": 690538,
-    "rUJyP317iuZErNlhrnnyn8eT7uY2": 708538,
-    "asdf": 682538,
-    "watwat": 698538,
-    "coolcool": 628538,
-    "123": 690538
-  },
-  "question_count": {
-    "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2": 1,
-    "rUJyP317iuZErNlhrnnyn8eT7uY2": 3,
-    "asdf": 5,
-    "watwat": 3,
-    "coolcool": 2,
-    "123": 0
-  },
-  "upvotes": {
-    "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2": 6,
-    "rUJyP317iuZErNlhrnnyn8eT7uY2": 10,
-    "asdf": 2,
-    "watwat": 6,
-    "coolcool": 7,
-    "123": 3
-  }, 
-  "avgUs": {
-    "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2": 6,
-    "rUJyP317iuZErNlhrnnyn8eT7uY2": 10,
-    "asdf": 2,
-    "watwat": 6,
-    "coolcool": 7,
-    "123": 3
-  },
-  "student": {
-    "account_uid": "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2",
-    "email": "100021830@mvla.net",
-    "first_name": "Arjun",
-    "last_name": "Patrawala",
-    "photo": "https://lh3.googleusercontent.com/a-/AOh14GjTxiWisVwbIJetGx01unMZobe2xXI6Gd3GiYzEUQ"
-  },
-  "studentPresent": 690538,
-  "studentUnderstanding": 32
+  "questions": [
+    {
+      "question_uid": "tPsMjR4WRtzdIKd",
+      "creator_uid": "4qZpEpLkqFgUMdiyjuwWt8lY6Hy2",
+      "elapsed": 91572,
+      "question": "yessir",
+      "upvotes": 1
+    },
+    {
+      "question_uid": "hMakyiEMhrCD0z1",
+      "creator_uid": "rUJyP317iuZErNlhrnnyn8eT7uY2",
+      "elapsed": 76788,
+      "question": "anotheer",
+      "upvotes": 1
+    },
+    {
+      "question_uid": "WWEYUQVueSYZLjS",
+      "creator_uid": "asdf",
+      "elapsed": 64543,
+      "question": "hello",
+      "upvotes": 1
+    },
+    {
+      "question_uid": "OvIyHaOcsS5rYHy",
+      "creator_uid": "watwat",
+      "elapsed": 53930,
+      "question": "why is it having issues",
+      "upvotes": 1
+    },
+    {
+      "question_uid": "XgXbSyfMDvW5pAF",
+      "creator_uid": "coolcool",
+      "elapsed": 23682,
+      "question": "asdfjasdflk",
+      "upvotes": 1
+    }
+  ]
 }

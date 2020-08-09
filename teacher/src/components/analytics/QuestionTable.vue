@@ -23,6 +23,9 @@
       sort-by="upvotes"
       :sort-desc="true"
       must-sort
+      :footer-props="{
+        'items-per-page-options': [100, -1],
+      }"
     >
       <template v-slot:item.question="{ item }">
         {{ item.question }}

@@ -33,11 +33,33 @@
             </v-tab>
 
             <v-tab-item value="questions-tab">
-              Hi
+              <v-list>
+                <template 
+                  v-for="(question, i) in questions"
+                >
+                  <v-divider v-if="i !== 0" :key="`divider-${i}`"></v-divider>
+                  <v-list-item :key="i">
+                    <v-list-item-content>
+                      {{ question.question }}
+                    </v-list-item-content>
+                  </v-list-item>
+                </template>
+              </v-list>
             </v-tab-item>
 
             <v-tab-item value="upvoted-tab">
-              Sup
+              <v-list>
+                <template 
+                  v-for="(upvote, i) in upvotedQuestions"
+                >
+                  <v-divider v-if="i !== 0" :key="`divider-${i}`"></v-divider>
+                  <v-list-item :key="i">
+                    <v-list-item-content>
+                      {{ upvote.question.question }}
+                    </v-list-item-content>
+                  </v-list-item>
+                </template>
+              </v-list>
             </v-tab-item>
           </v-tabs>
         </v-card>
@@ -58,6 +80,8 @@ export default {
     understanding: { type: Number, required: true },
     quesCount: { type: Number, required: true },
     upvoteCount: { type: Number, required: true },
+    questions: { type: Array, required: true },
+    upvotedQuestions: { type: Array, required: true },
     maxUnderstanding: { type: Number, required: true },
   },
 
