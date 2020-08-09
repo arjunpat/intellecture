@@ -15,7 +15,7 @@ const { NODE_ENV } = process.env;
 
 const cookieOpts: any = {
   maxAge: 3 * (24 * 60 * 60 * 1000), // 3 days
-  sameSite: NODE_ENV === "production" ? "None" : undefined,
+  sameSite: NODE_ENV === "production" ? "none" : undefined,
   secure: NODE_ENV === "production" ? true : undefined,
 };
 
