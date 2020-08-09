@@ -75,7 +75,7 @@ Get all the students who ever joined a lecture.
 }
 ```
 
-## GET/analytics/lecture/:lecture_uid/question/:question_uid/upvotes
+## GET /analytics/lecture/:lecture_uid/question/:question_uid/upvotes
 
 Get all students who upvoted a question and when they upvoted.
 
@@ -146,25 +146,32 @@ Get all questions (and corresponding upvotes) from a lecture.
 }
 ```
 
-## GET /analytics/lecture/:lecture_uid/student/:account_uid/scores
+## GET /analytics/lecture/:lecture_uid/student/:account_uid/intervals
 
-All the understanding scores a student put throughout the lecture. Elapsed is basically x and score is basically y.
+Complete computed log of student behavior during lecture.
 
 ###### Example response:
 
 ```javascript
 {
   "success": true,
-  "data": {
-    "elapsed": [
-      5315,
-      19635
-    ],
-    "score": [
-      5,
-      8
-    ]
-  }
+  "data": [
+    {
+      "from": 912801,
+      "to": 913836,
+      "score": 5
+    },
+    {
+      "from": 913836,
+      "to": 914255,
+      "score": 5
+    },
+    {
+      "from": 1014255,
+      "to": 1161124,
+      "score": 7
+    }
+  ]
 }
 ```
 

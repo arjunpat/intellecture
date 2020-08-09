@@ -31,22 +31,20 @@ interface Score extends Event {
   score: number
 }
 
-function getIncorrect(log: Status[], scoreLog: Score[]): Set<string> {
+export function getIncorrect(events: Event[]): Set<string> {
   let badUids = new Set<string>();
   let inLecture: { [key: string]: boolean } = {};
-  let events: any = [...log, ...scoreLog];
-  events.sort((a, b) => a.elapsed - b.elapsed);
   
   for (let each of events) {
     if (
-      (each.status === 'j' && inLecture[each.account_uid]) ||
-      (each.status === 'l' && !inLecture[each.account_uid]) ||
-      (typeof each.score === 'number' && !inLecture[each.account_uid])
+      ((<Status>each).status === 'j' && inLecture[each.account_uid]) ||
+      ((<Status>each).status === 'l' && !inLecture[each.account_uid]) ||
+      (typeof (<Score>each).score === 'number' && !inLecture[each.account_uid])
     )
       badUids.add(each.account_uid);
     
-    if (typeof each.status === 'string')
-      inLecture[each.account_uid] = each.status === 'j' ? true : false; 
+    if (typeof (<Status>each).status === 'string')
+      inLecture[each.account_uid] = (<Status>each).status === 'j' ? true : false; 
   }
 
   for (let each in inLecture)
@@ -56,54 +54,13 @@ function getIncorrect(log: Status[], scoreLog: Score[]): Set<string> {
   return badUids;
 }
 
-export function getStats(lecture: Lecture, log: Status[], scoreLog: Score[]) {
-  const startTime = <number>lecture.start_time;
-  const endTime = <number>lecture.end_time;
-  const lectureLength = endTime - startTime;
-  log.sort((a, b) => a.elapsed - b.elapsed);
-  scoreLog.sort((a, b) => a.elapsed - b.elapsed);
+interface StudentInterval {
+  score: number,
+  from: number,
+  to: number
+}
 
-  // perform correctness check (at least for now)
-  let badUids = getIncorrect(log, scoreLog);
-  if (badUids.size !== 0) {
-    console.error(Date.now(), '(1) present/avg us error for lecture_uid', lecture.uid, 'with uids', badUids);
-  }
-
-  const logMap: { [key: string]: Status[] } = {};
-  for (let each of log) {
-    if (!logMap[each.account_uid]) logMap[each.account_uid] = [];
-    logMap[each.account_uid].push(each);
-  }
-
-  const first_join: { [key: string]: number } = {};
-  for (let each in logMap) {
-    first_join[each] = logMap[each][0].elapsed + startTime;
-  }
-
-  const scoreLogMap: { [key: string]: Score[] } = {};
-  for (let each of scoreLog) {
-    if (!scoreLogMap[each.account_uid]) scoreLogMap[each.account_uid] = [];
-    scoreLogMap[each.account_uid].push(each);
-  }
-
-  // remove bad uids
-  for (let each in badUids) {
-    delete logMap[each];
-    delete scoreLogMap[each];
-  }
-
-  const present: { [key: string]: number } = {};
-  for (let each in logMap) {
-    present[each] = sum(diff(logMap[each].map(e => e.elapsed)));
-
-    if (present[each] > lectureLength) {
-      console.error(Date.now(), '(2) present parse error for lecture_uid', lecture.uid, 'and uid', each);
-      delete present[each];
-    }
-  }
-
-  // calculate avg understanding for each
-
+export function genStudentIntervals(events: Event[]): StudentInterval[] {
   /*
    * lots of assumptions made in this code, including
    * 1) all score changes are between join and leaves
@@ -113,34 +70,87 @@ export function getStats(lecture: Lecture, log: Status[], scoreLog: Score[]) {
    * theses assumptions are assumed because of correctness check above
    * which removes all uids who do not satisfy these assumptions
    */
-  let avg_us: { [key: string]: number } = {};
-  for (let uid in logMap) {
-    avg_us[uid] = 0;
-    scoreLogMap[uid] = scoreLogMap[uid] || []; // edge case: never changed score
-    let arr: any[] = [...logMap[uid], ...scoreLogMap[uid]];
-    arr.sort((a, b) => a.elapsed - b.elapsed); // asc order
+  let res: StudentInterval[] = [];
 
-    let startTs: number = 0;
-    let score: number = 5;
-    for (let e of arr) {
-      if (e.status) { // Status
-        if (e.status === 'j')
-          startTs = e.elapsed;
-        else
-          avg_us[uid] += (e.elapsed - startTs) * score;
-      } else {
-        avg_us[uid] += (e.elapsed - startTs) * score;
+  let startTs: number = 0;
+  let score: number = 5;
+  for (let e of events) {
+    if ((<Status>e).status) { // Status
+      if ((<Status>e).status === 'j')
         startTs = e.elapsed;
-        score = e.score;
-      }
+      else
+        res.push({
+          from: startTs,
+          to: e.elapsed,
+          score
+        });
+    } else { // Score
+      res.push({
+        from: startTs,
+        to: e.elapsed,
+        score
+      });
+      startTs = e.elapsed;
+      score = (<Score>e).score;
     }
   }
 
-  for (let each in avg_us) {
-    avg_us[each] = round(avg_us[each] / present[each], 2); // gets average us and convert to percent
-    if (avg_us[each] < 0 || avg_us[each] > 100) {
-      console.error(Date.now(), '(3) avg us compute error for lecture_uid', lecture.uid, 'and uid', each);
-      delete avg_us[each];
+  return res;
+}
+
+export function getStats(lecture: Lecture, log: Status[], scoreLog: Score[]) {
+  const startTime = <number>lecture.start_time;
+  const endTime = <number>lecture.end_time;
+  const lectureLength = endTime - startTime;
+  let events: Event[] = [...log, ...scoreLog];
+  events.sort((a, b) => a.elapsed - b.elapsed);
+
+  let badUids = getIncorrect(events);
+  if (badUids.size !== 0) {
+    console.error(Date.now(), '(1) present/avg us error for lecture_uid', lecture.uid, 'with uids', badUids);
+  }
+
+  // fill map by account_uid
+  const map: { [key: string]: Event[] } = {};
+  for (let each of events) {
+    if (!map[each.account_uid]) map[each.account_uid] = [];
+    map[each.account_uid].push(each);
+  }
+
+  const first_join: { [key: string]: number } = {};
+  for (let each in map) {
+    first_join[each] = map[each][0].elapsed + startTime;
+  }
+
+  // remove bad uids
+  for (let each in badUids) {
+    delete map[each];
+  }
+
+  const present: { [key: string]: number } = {};
+  const avg_us: { [key: string]: number } = {};
+  for (let uid in map) {
+    let intervals = genStudentIntervals(map[uid]);
+
+    // calculate present and avg_us
+    present[uid] = 0;
+    avg_us[uid] = 0;
+    for (let each of intervals) {
+      present[uid] += each.to - each.from;
+      avg_us[uid] += (each.to - each.from) * each.score;
+    }
+
+    avg_us[uid] = round(avg_us[uid] / present[uid], 2); // gets average us and rounds
+
+    // sanity checks
+    if (avg_us[uid] < 0 || avg_us[uid] > 10) {
+      console.error(Date.now(), '(2) avg us compute error for lecture_uid', lecture.uid, 'and uid', uid);
+      delete avg_us[uid];
+    }
+
+    if (present[uid] > lectureLength) {
+      console.error(Date.now(), '(3) present parse error for lecture_uid', lecture.uid, 'and uid', uid);
+      delete present[uid];
     }
   }
 

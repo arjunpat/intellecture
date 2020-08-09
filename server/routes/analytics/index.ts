@@ -1,10 +1,10 @@
-import { Router } from 'express';
+import e, { Router } from 'express';
 const router = Router();
 
 import * as mw from '../../middleware';
 import  * as responses from '../../lib/responses';
 
-import { getStats } from './helpers';
+import { getStats, getIncorrect, genStudentIntervals } from './helpers';
 import { Request } from '../../types';
 import db from '../../models';
 
@@ -61,25 +61,33 @@ router.get('/lecture/:lecture_uid/questions', lecturePerms, ended, async (req: R
 });
 
 /* STUDENT ANALYTICS */
-router.get('/lecture/:lecture_uid/student/:account_uid/scores', lecturePerms, ended, async (req: Request, res) => {
+router.get('/lecture/:lecture_uid/student/:account_uid/intervals', lecturePerms, ended, async (req: Request, res) => {
   let { lecture_uid, account_uid } = req.params;
-  let data = await db.lectureLog.getByStudent(lecture_uid, account_uid);
-  res.send(responses.success({
-    elapsed: data.map(d => d.elapsed),
-    score: data.map(d => d.score)
-  }));
+
+
+  let log = await db.lectureStudentLog.getStudent(lecture_uid, account_uid);
+  let scoreLog = await db.lectureLog.getByStudent(lecture_uid, account_uid);
+
+  // add account_uid to make it a Status/Score
+  log = log.map(e => { return { ...e, account_uid }; });
+  scoreLog = scoreLog.map(e => { return { ...e, account_uid }; });
+  let combined = [...log, ...scoreLog];
+  combined.sort((a, b) => a.elapsed - b.elapsed);
+
+  if (getIncorrect(combined).size !== 0) {
+    console.error('(4) parse error for student', account_uid, 'in lecture', lecture_uid);
+    return res.send(responses.error('data_error'));
+  }
+
+  res.send(responses.success(
+    genStudentIntervals(combined)
+  ));
 });
 
 router.get('/lecture/:lecture_uid/student/:account_uid/upvotes', lecturePerms, ended, async (req: Request, res) => {
   let { lecture_uid, account_uid } = req.params;
   res.send(responses.success(await db.lectureQUpvotes.getByStudent(lecture_uid, account_uid)));
 });
-/* 
-router.get('/lecture/:lecture_uid/student/:account_uid/questions', lecturePerms, ended, async (req: Request, res) => {
-  let { lecture_uid, account_uid } = req.params;
-  let data = await db.lectureQs.getQuestionsUidByUser(lecture_uid, account_uid);
-  res.send(responses.success(data.map(d => d.uid)));
-}); */
 
 /* QUESTION ANALYTICS */
 router.get('/lecture/:lecture_uid/question/:question_uid/upvotes', lecturePerms, async (req, res) => {

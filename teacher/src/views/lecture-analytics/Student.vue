@@ -49,6 +49,7 @@
 <script>
 import analyticsData from '@/testdata/analyticsData.json'
 import StudentInfoCard from '@/components/analytics/StudentInfoCard'
+import { get, post } from '../../helpers'
 
 export default {
   props: {
@@ -62,6 +63,10 @@ export default {
 
   components: {
     StudentInfoCard,
+  },
+
+  mounted() {
+    get(`/analytics/lecture/${this.$route.params.lecture_uid}/student/${this.$route.params.student_uid}/intervals`)
   },
 
   data() {

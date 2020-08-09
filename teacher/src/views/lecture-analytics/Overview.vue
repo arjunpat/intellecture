@@ -94,7 +94,7 @@ export default {
 
   methods: {
     redirectStudentPage(student_uid) {
-      this.$router.push({ name: 'LectureAnalyticsStudent', params: { lecture_uid: this.lecture_uid, student_uid: student_uid } })
+      this.$router.push({ name: 'LectureAnalyticsStudent', params: { lecture_uid: this.lecture_uid, student_uid } })
     },
   },
 }
