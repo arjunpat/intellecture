@@ -1,21 +1,25 @@
 <template>
-  <router-view
-    v-if="$route.name === 'LectureAnalytics'"
-    :lecture_uid="lecture_uid"
-    :lectureInfo="lectureInfo"
-    :numStudents="students.length"
-    :studentTableData="studentTableData"
-    :questionTableData="questionTableData"
-  ></router-view>
-  <router-view
-    v-else-if="$route.name === 'LectureAnalyticsStudent'"
-    :student="curStudent"
-    :present="getPresent(student_uid)"
-    :understanding="getAvgUs(student_uid)"
-    :quesCount="getQuesCount(student_uid)"
-    :upvoteCount="getUpvoteCount(student_uid)"
-    :maxUnderstanding="maxUnderstanding"
-  ></router-view> 
+  <span v-if="loaded">
+    <router-view
+      v-if="$route.name === 'LectureAnalytics'"
+      :lecture_uid="lecture_uid"
+      :lectureInfo="lectureInfo"
+      :numStudents="students.length"
+      :studentTableData="studentTableData"
+      :questionTableData="questionTableData"
+    ></router-view>
+    <router-view
+      v-else-if="$route.name === 'LectureAnalyticsStudent'"
+      :student="curStudent"
+      :present="getPresent(student_uid)"
+      :understanding="getAvgUs(student_uid)"
+      :quesCount="getQuesCount(student_uid)"
+      :upvoteCount="getUpvoteCount(student_uid)"
+      :questions="getQuestions(student_uid)"
+      :upvotedQuestions="getUpvotedQuestions(student_uid)"
+      :maxUnderstanding="maxUnderstanding"
+    ></router-view> 
+  </span>
 </template>
 
 <script>
@@ -32,9 +36,23 @@ export default {
     this.init()
   },
 
+  watch: {
+    $route: {
+      immediate: true,
+      handler(route) {
+        if (route.name === 'LectureAnalyticsStudent') {
+          this.loaded = false
+          this.initStudentPage()
+        }
+      }
+    }
+  },
+
   data() {
     return {
       testing: false,
+
+      loaded: false,
 
       maxUnderstanding: 10,
 
@@ -48,6 +66,7 @@ export default {
         present: {}
       },
       questions: [],
+      upvotes: [],
     }
   },
   
@@ -100,6 +119,11 @@ export default {
         this.stats = vals[2]
         this.questions = vals[3]
       }
+      this.loaded = true
+    },
+    async initStudentPage() {
+      this.upvotes = await this.get(`/student/${this.student_uid}/upvotes`)
+      this.loaded = true
     },
     getPresent(uid) {
       return Math.round((this.stats.present[uid] / this.lectureLength) * 100)
@@ -118,6 +142,21 @@ export default {
     },
     getStudent(uid) {
       return this.students.find(student => student.account_uid === uid)
+    },
+    getQuestions(uid) {
+      return this.questions.filter(question => question.creator_uid === uid)
+    },
+    getQuestion(question_uid) {
+      return this.questions.find(question => question.question_uid === question_uid)
+    },
+    getUpvotedQuestions(uid) {
+      let upvotedQuestions = this.upvotes.map(upvote => {
+        return {
+          ...upvote,
+          question: this.getQuestion(upvote.question_uid)
+        }
+      })
+      return upvotedQuestions
     },
     get(addy) {
       return get(`/analytics/lecture/${this.lecture_uid}${addy}`).then(d => {
