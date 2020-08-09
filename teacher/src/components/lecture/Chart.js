@@ -33,7 +33,7 @@ export default {
           display: false
         },
         maintainAspectRatio: false,
-        responsive: true
+        responsive: true,
       }
     }
   },

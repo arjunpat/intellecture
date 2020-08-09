@@ -10,15 +10,9 @@
     ></router-view>
     <router-view
       v-else-if="$route.name === 'LectureAnalyticsStudent'"
-      :student="curStudent"
-      :present="getPresent(student_uid)"
-      :understanding="getAvgUs(student_uid)"
-      :quesCount="getQuesCount(student_uid)"
-      :upvoteCount="getUpvoteCount(student_uid)"
-      :questions="getQuestions(student_uid)"
-      :upvotedQuestions="upvotedQuestions"
-      :intervals="intervals"
+      :studentData="curStudentData"
       :maxUnderstanding="maxUnderstanding"
+      :lectureInfo="lectureInfo"
     ></router-view> 
   </span>
 </template>
@@ -106,10 +100,19 @@ export default {
     lectureLength() {
       return this.lectureInfo ? this.lectureInfo.end_time - this.lectureInfo.start_time : 0
     },
-    curStudent() {
+    curStudentData() {
       if (!this.student_uid) 
         return null
-      return this.getStudent(this.student_uid)
+      return {
+        student: this.getStudent(this.student_uid),
+        present: this.getPresent(this.student_uid),
+        understanding: this.getAvgUs(this.student_uid),
+        quesCount: this.getQuesCount(this.student_uid),
+        upvoteCount: this.getUpvoteCount(this.student_uid),
+        questions: this.getQuestions(this.student_uid),
+        upvotedQuestions: this.upvotedQuestions,
+        intervals: this.intervals,
+      }
     },
     upvotedQuestions() {
       // Get current student's upvoted questions

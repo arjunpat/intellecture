@@ -255,6 +255,7 @@ export default {
           {
             label: 'Understanding',
             backgroundColor: '#4FC3F7',
+            lineTension: 0,
             data: y,
           },
         ],

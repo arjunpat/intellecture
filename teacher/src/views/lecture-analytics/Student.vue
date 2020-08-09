@@ -8,14 +8,20 @@
         lg="8"
       >
         <StudentInfoCard
-          :student="student"
-          :present="present"
-          :understanding="understanding"
-          :quesCount="quesCount"
-          :upvoteCount="upvoteCount"
+          :student="studentData.student"
+          :present="studentData.present"
+          :understanding="studentData.understanding"
+          :quesCount="studentData.quesCount"
+          :upvoteCount="studentData.upvoteCount"
           :maxUnderstanding="maxUnderstanding"
           class="mb-4"
         /> 
+        
+        <div :class="$vuetify.breakpoint.xs ? 'text-h6' : 'text-h4'" class="mb-2">Understanding (%)</div>
+        <LineChart 
+          :chart-data="chartData"
+          class="mb-4"
+        />
 
         <v-card>
           <v-tabs
@@ -35,13 +41,19 @@
             <v-tab-item value="questions-tab">
               <v-list>
                 <template 
-                  v-for="(question, i) in questions"
+                  v-for="(question, i) in studentData.questions"
                 >
                   <v-divider v-if="i !== 0" :key="`divider-${i}`"></v-divider>
                   <v-list-item :key="i">
                     <v-list-item-content>
-                      {{ question.question }}
+                      <v-list-item-title>{{ question.question }}</v-list-item-title>
+                      <v-list-item-subtitle>{{ elapsedToTimeString(question.elapsed) }}</v-list-item-subtitle>
                     </v-list-item-content>
+
+                    <v-list-item-icon>
+                      <v-icon color="green lighten-3">mdi-arrow-up-bold</v-icon>
+                      {{ question.upvotes }}
+                    </v-list-item-icon>
                   </v-list-item>
                 </template>
               </v-list>
@@ -50,13 +62,19 @@
             <v-tab-item value="upvoted-tab">
               <v-list>
                 <template 
-                  v-for="(upvote, i) in upvotedQuestions"
+                  v-for="(upvote, i) in studentData.upvotedQuestions"
                 >
                   <v-divider v-if="i !== 0" :key="`divider-${i}`"></v-divider>
                   <v-list-item :key="i">
                     <v-list-item-content>
-                      {{ upvote.question.question }}
+                      <v-list-item-title>{{ upvote.question.question }}</v-list-item-title>
+                      <v-list-item-subtitle>{{ elapsedToTimeString(upvote.elapsed) }}</v-list-item-subtitle>
                     </v-list-item-content>
+
+                    <v-list-item-icon>
+                      <v-icon color="green lighten-3">mdi-arrow-up-bold</v-icon>
+                      {{ upvote.question.upvotes }}
+                    </v-list-item-icon>
                   </v-list-item>
                 </template>
               </v-list>
@@ -71,27 +89,23 @@
 <script>
 import analyticsData from '@/testdata/analyticsData.json'
 import StudentInfoCard from '@/components/analytics/StudentInfoCard'
+import LineChart from '@/components/lecture/Chart'
 import { get, post } from '../../helpers'
 
 export default {
   props: {
-    student: { type: Object, required: true },
-    present: { type: Number, required: true },
-    understanding: { type: Number, required: true },
-    quesCount: { type: Number, required: true },
-    upvoteCount: { type: Number, required: true },
-    questions: { type: Array, required: true },
-    upvotedQuestions: { type: Array, required: true },
-    intervals: { type: Array, required: true },
+    studentData: { type: Object, required: true },
     maxUnderstanding: { type: Number, required: true },
+    lectureInfo: { type: Object, required: true },
   },
 
   components: {
     StudentInfoCard,
+    LineChart,
   },
 
-  mounted() {
-    get(`/analytics/lecture/${this.$route.params.lecture_uid}/student/${this.$route.params.student_uid}/intervals`)
+  created() {
+    this.initChartData()
   },
 
   data() {
@@ -109,6 +123,56 @@ export default {
           id: '#upvoted-tab',
         }
       ],
+
+      chartData: null,
+    }
+  },
+
+  computed: {
+    lectureStart() {
+      return this.lectureInfo.start_time
+    },
+    lectureEnd() {
+      return this.lectureInfo.end_time
+    },
+  },
+
+  methods: {
+    elapsedToTimeString(elapsed) {
+      return new Date(this.lectureStart + elapsed).toLocaleTimeString()
+    },
+    initChartData() {
+      let x = [this.lectureStart]
+      let y = [null]
+
+      this.studentData.intervals.forEach((interval, i) => {
+        if (i > 0) {
+          let diff = interval.from - this.studentData.intervals[i-1].to
+          if (diff > 0) {
+            x.push(this.lectureStart + interval.from)
+            y.push(null)
+          }
+        }
+        x.push(this.lectureStart + interval.from)
+        x.push(this.lectureStart + interval.to)
+        y.push(interval.score*10)
+        y.push(interval.score*10)
+      })
+
+      x.push(this.lectureEnd)
+      y.push(null)
+
+      this.chartData = {
+        labels: x,
+        datasets: [
+          {
+            label: 'Understanding',
+            backgroundColor: '#4FC3F7',
+            lineTension: 0,
+            data: y,
+          },
+        ],
+      }
     }
   },
 }
