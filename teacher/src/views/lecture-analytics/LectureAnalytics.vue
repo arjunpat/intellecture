@@ -16,7 +16,8 @@
       :quesCount="getQuesCount(student_uid)"
       :upvoteCount="getUpvoteCount(student_uid)"
       :questions="getQuestions(student_uid)"
-      :upvotedQuestions="getUpvotedQuestions(student_uid)"
+      :upvotedQuestions="upvotedQuestions"
+      :intervals="intervals"
       :maxUnderstanding="maxUnderstanding"
     ></router-view> 
   </span>
@@ -33,16 +34,22 @@ export default {
   },
 
   mounted() {
-    this.init()
+    this.loaded = false
+    this.init().then(() => {
+      if (this.$route.name === 'LectureAnalyticsStudent')
+        return this.initStudentPage()
+      return
+    }).then(() => {
+      this.loaded = true
+    })
   },
 
   watch: {
     $route: {
-      immediate: true,
       handler(route) {
         if (route.name === 'LectureAnalyticsStudent') {
           this.loaded = false
-          this.initStudentPage()
+          this.initStudentPage().then(() => this.loaded = true)
         }
       }
     }
@@ -53,9 +60,9 @@ export default {
       testing: false,
 
       loaded: false,
-
       maxUnderstanding: 10,
-
+      
+      // Overall lecture data
       lectureInfo: {},
       students: [],
       stats: {
@@ -66,7 +73,10 @@ export default {
         present: {}
       },
       questions: [],
+
+      // Student-specific data
       upvotes: [],
+      intervals: [],
     }
   },
   
@@ -101,6 +111,15 @@ export default {
         return null
       return this.getStudent(this.student_uid)
     },
+    upvotedQuestions() {
+      // Get current student's upvoted questions
+      return this.upvotes.map(upvote => {
+        return {
+          ...upvote,
+          question: this.getQuestion(upvote.question_uid)
+        }
+      })
+    },
   },
 
   methods: {
@@ -119,11 +138,10 @@ export default {
         this.stats = vals[2]
         this.questions = vals[3]
       }
-      this.loaded = true
     },
     async initStudentPage() {
       this.upvotes = await this.get(`/student/${this.student_uid}/upvotes`)
-      this.loaded = true
+      this.intervals = await this.get(`/student/${this.student_uid}/intervals`)
     },
     getPresent(uid) {
       return Math.round((this.stats.present[uid] / this.lectureLength) * 100)
@@ -148,15 +166,6 @@ export default {
     },
     getQuestion(question_uid) {
       return this.questions.find(question => question.question_uid === question_uid)
-    },
-    getUpvotedQuestions(uid) {
-      let upvotedQuestions = this.upvotes.map(upvote => {
-        return {
-          ...upvote,
-          question: this.getQuestion(upvote.question_uid)
-        }
-      })
-      return upvotedQuestions
     },
     get(addy) {
       return get(`/analytics/lecture/${this.lecture_uid}${addy}`).then(d => {

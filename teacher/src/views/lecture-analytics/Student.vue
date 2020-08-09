@@ -82,6 +82,7 @@ export default {
     upvoteCount: { type: Number, required: true },
     questions: { type: Array, required: true },
     upvotedQuestions: { type: Array, required: true },
+    intervals: { type: Array, required: true },
     maxUnderstanding: { type: Number, required: true },
   },
 

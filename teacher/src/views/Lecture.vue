@@ -70,7 +70,10 @@
             class="tabs-bar"
             grow
           >
-            <v-tab v-for="item in items" :key="item">{{ item }}</v-tab>
+            <v-tab v-for="item in items" :key="item">
+              <span v-if="item === 'Students'">{{ item }} <v-chip>{{ numStudents }}</v-chip></span>
+              <span v-else>{{ item }}</span>
+            </v-tab>
           </v-tabs>
         </TutorialDisplay>
 
@@ -449,6 +452,9 @@ export default {
       if (this.smallScreen) {
         return '80vw'
       }
+    },
+    numStudents() {
+      return Object.values(this.students).filter(student => student.inLecture).length
     },
   },
   watch: {

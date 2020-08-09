@@ -157,7 +157,7 @@ export default {
     window.addEventListener('mouseup', this.stopDrag)
 
     // Reset sliderMoveAmt every 60 seconds
-    setTimeout(() => {
+    setInterval(() => {
       this.sliderMoveAmt = 0
     }, 60000)
 
