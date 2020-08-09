@@ -24,6 +24,10 @@
       :sort-desc="true"
       must-sort
     >
+      <template v-slot:item.question="{ item }">
+        {{ item.question }}
+        <span class="text-caption">{{ ` - ${item.student.first_name} ${item.student.last_name}` }}</span>
+      </template>
     </v-data-table>
   </span>
 </template>
@@ -42,12 +46,6 @@ export default {
         { text: 'Upvotes', value: 'upvotes', filterable: false },
       ],
     }
-  },
-
-  computed: {
-    smallScreen() {
-      return this.$vuetify.breakpoint.smAndDown
-    },
   },
 }
 </script>

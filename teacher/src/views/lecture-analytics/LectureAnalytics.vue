@@ -5,7 +5,7 @@
     :lectureInfo="lectureInfo"
     :numStudents="students.length"
     :studentTableData="studentTableData"
-    :questions="questions"
+    :questionTableData="questionTableData"
   ></router-view>
   <router-view
     v-else-if="$route.name === 'LectureAnalyticsStudent'"
@@ -14,6 +14,7 @@
     :understanding="getAvgUs(student_uid)"
     :quesCount="getQuesCount(student_uid)"
     :upvoteCount="getUpvoteCount(student_uid)"
+    :maxUnderstanding="maxUnderstanding"
   ></router-view> 
 </template>
 
@@ -65,13 +66,21 @@ export default {
         }
       })
     },
+    questionTableData() {
+      return this.questions.map((question) => {
+        return {
+          ...question,
+          student: this.getStudent(question.creator_uid)
+        }
+      })
+    },
     lectureLength() {
       return this.lectureInfo ? this.lectureInfo.end_time - this.lectureInfo.start_time : 0
     },
     curStudent() {
       if (!this.student_uid) 
         return null
-      return this.students.find(student => student.account_uid === this.student_uid)
+      return this.getStudent(this.student_uid)
     },
   },
 
@@ -105,10 +114,13 @@ export default {
       return this.stats.upvote_counts[uid] || 0
     },
     getAvgUs(uid) {
-      return this.stats.avg_us[uid] ? Math.round((this.stats.avg_us[uid] / this.maxUnderstanding) * 100) : 'ERR'
+      return this.stats.avg_us[uid] || 'ERR'
     },
     getFirstJoin(uid) {
       return new Date(this.stats.first_join[uid]).toLocaleTimeString('en-us', { timeStyle: 'short' })
+    },
+    getStudent(uid) {
+      return this.students.find(student => student.account_uid === uid)
     },
     get(addy) {
       return get(`/analytics/lecture/${this.lecture_uid}${addy}`).then(d => {

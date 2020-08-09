@@ -50,9 +50,6 @@
       <template v-slot:item.present="{ item }">
         {{ scalePresent ? `${getScaledPresent(item.present)}%` : `${item.present}%` }}
       </template>
-      <template v-slot:item.understanding="{ item }">
-        {{ `${item.understanding}%` }}
-      </template>
     </v-data-table>
     <Dialog 
       v-model="settingsDialog"
@@ -102,7 +99,7 @@ export default {
       headers: [
         { text: 'Name', value: 'name' },
         { text: 'Present-ness', value: 'present', filterable: false },
-        { text: 'Avg Understanding', value: 'understanding', filterable: false },
+        { text: 'Avg Understanding (1-10)', value: 'understanding', filterable: false },
         { text: 'Questions Asked', value: 'quesCount', filterable: false },
         { text: 'Questions Upvoted', value: 'upvoteCount', filterable: false },
         { text: 'Joined At', value: 'firstJoin', filterable: false }

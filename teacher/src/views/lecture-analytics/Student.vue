@@ -13,9 +13,11 @@
           :understanding="understanding"
           :quesCount="quesCount"
           :upvoteCount="upvoteCount"
+          :maxUnderstanding="maxUnderstanding"
+          class="mb-4"
         /> 
 
-        <!--<v-card>
+        <v-card>
           <v-tabs
             v-model="tab"
             grow
@@ -29,25 +31,16 @@
               <v-icon>{{ tab.icon }}</v-icon>
               {{ tab.title }}
             </v-tab>
-            
-            <v-tab-item
-              value="students-tab"
-            >
-              <StudentTable
-                :data="studentTableData"
-                @studentClicked="redirectStudentPage"
-              />
+
+            <v-tab-item value="questions-tab">
+              Hi
             </v-tab-item>
 
-            <v-tab-item
-              value="questions-tab"
-            >
-              <QuestionTable
-                :data="questions"
-              />
+            <v-tab-item value="upvoted-tab">
+              Sup
             </v-tab-item>
           </v-tabs>
-        </v-card>-->
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
@@ -63,11 +56,30 @@ export default {
     present: { type: Number, required: true },
     understanding: { type: Number, required: true },
     quesCount: { type: Number, required: true },
-    upvoteCount: { type: Number, required: true }
+    upvoteCount: { type: Number, required: true },
+    maxUnderstanding: { type: Number, required: true },
   },
 
   components: {
     StudentInfoCard,
+  },
+
+  data() {
+    return {
+      tab: null,
+      tabs: [
+        {
+          icon: 'mdi-forum',
+          title: 'Questions Asked',
+          id: '#questions-tab',
+        },
+        {
+          icon: 'mdi-arrow-up-bold',
+          title: 'Upvoted Questions',
+          id: '#upvoted-tab',
+        }
+      ],
+    }
   },
 }
 </script>

@@ -32,20 +32,16 @@
               {{ tab.title }}
             </v-tab>
             
-            <v-tab-item
-              value="students-tab"
-            >
+            <v-tab-item value="students-tab">
               <StudentTable
                 :data="studentTableData"
                 @studentClicked="redirectStudentPage"
               />
             </v-tab-item>
 
-            <v-tab-item
-              value="questions-tab"
-            >
+            <v-tab-item value="questions-tab">
               <QuestionTable
-                :data="questions"
+                :data="questionTableData"
               />
             </v-tab-item>
           </v-tabs>
@@ -68,7 +64,7 @@ export default {
     lectureInfo: { type: Object, required: true },
     numStudents: { type: Number, required: true },
     studentTableData: { type: Array, required: true },
-    questions: { type: Array, required: true },
+    questionTableData: { type: Array, required: true },
   },
 
   components: {

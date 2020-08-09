@@ -30,14 +30,14 @@
           cols="12"
           sm="3"
         >
-          <div class="mb-2">Avg. Understanding</div>
+          <div class="mb-2">Avg. Understanding (1-10)</div>
           <v-progress-circular
-            :color="getColor(understanding)"
+            :color="getColor(understandingPercent)"
             :width="3"
-            :value="understanding"
+            :value="understandingPercent"
             :size="size"
             :rotate="-90"
-          >{{ `${understanding}%` }}</v-progress-circular>
+          >{{ understanding }}</v-progress-circular>
         </v-col>
         <v-col
           cols="12"
@@ -93,11 +93,18 @@ export default {
     understanding: { type: Number, required: true },
     quesCount: { type: Number, required: true },
     upvoteCount: { type: Number, required: true }, 
+    maxUnderstanding: { type: Number, required: true },
   },
 
   data() {
     return {
       size: 100,
+    }
+  },
+
+  computed: {
+    understandingPercent() {
+      return this.understanding/this.maxUnderstanding * 100
     }
   },
 
