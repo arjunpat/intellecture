@@ -18,8 +18,8 @@
       <v-col cols="12" lg="5" md="5" sm="8">
         <v-card class="mainfont px-2 py-2 inner-shadow" id="newLectureCard" :style="{ height: newLectureHeight, backgroundColor: '#f7f7f7' }">
           <v-card-title class="font-weight-regular">Create a new lecture</v-card-title>
-          <v-btn id="addBtn" fab dark :medium="!showNewLecture" :small="showNewLecture" :color="addColor" :style="{ transform: addRotate, top: '10px', right: '10px' }" @click="animateNewLecture()">
-            <v-icon dark :large="!showNewLecture">mdi-plus</v-icon>
+          <v-btn id="addBtn" fab dark :color="addColor" :style="{ transform: addRotate, top: '10px', right: '10px' }" @click="animateNewLecture()">
+            <v-icon dark large>mdi-plus</v-icon>
           </v-btn>
            <v-slide-y-transition>
              <v-row v-if="showNewLecture">
