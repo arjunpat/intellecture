@@ -1,4 +1,4 @@
-import e, { Router } from 'express';
+import { Router } from 'express';
 const router = Router();
 
 import * as mw from '../../middleware';
@@ -58,6 +58,15 @@ router.get('/lecture/:lecture_uid/info', lecturePerms, ended, async (req: Reques
 router.get('/lecture/:lecture_uid/questions', lecturePerms, ended, async (req: Request, res) => {
   let { lecture_uid } = req.params;
   res.send(responses.success(await db.lectureQs.getQuestionsByLectureUid(lecture_uid)));
+});
+
+router.get('/lecture/:lecture_uid/scores', lecturePerms, ended, async (req: Request, res) => {
+  let { lecture_uid } = req.params;
+  let vals = await db.lectureUs.getByLectureUid(lecture_uid);
+  res.send(responses.success({
+    elapsed: vals.map(e => e.elapsed),
+    score: vals.map(e => e.score)
+  }));
 });
 
 /* STUDENT ANALYTICS */

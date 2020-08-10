@@ -75,6 +75,23 @@ Get all the students who ever joined a lecture.
 }
 ```
 
+## GET /analytics/lecture/:lecture_uid/scores
+
+Gets the total understanding score from the lecture at different time points.
+
+###### Example response:
+
+```javascript
+{
+  "elapsed": [ // basically x-axis
+    21198, 22301, 28861, 48079, 50812, 76339, 79185
+  ],
+  "score": [ // bsically y-axis
+    50, 70, 90, 70, 85, 80, null
+  ]
+}
+```
+
 ## GET /analytics/lecture/:lecture_uid/question/:question_uid/upvotes
 
 Get all students who upvoted a question and when they upvoted.

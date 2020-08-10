@@ -140,6 +140,7 @@ export default {
         this.students = vals[1]
         this.stats = vals[2]
         this.questions = vals[3]
+        this.scores = await this.get('/scores'); // can delayed until after the others
       }
     },
     async initStudentPage() {
