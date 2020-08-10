@@ -40,44 +40,51 @@
 
             <v-tab-item value="questions-tab">
               <v-list>
-                <template 
-                  v-for="(question, i) in studentData.questions"
-                >
-                  <v-divider v-if="i !== 0" :key="`divider-${i}`"></v-divider>
-                  <v-list-item :key="i">
-                    <v-list-item-content>
-                      <v-list-item-title>{{ question.question }}</v-list-item-title>
-                      <v-list-item-subtitle>{{ elapsedToTimeString(question.elapsed) }}</v-list-item-subtitle>
-                    </v-list-item-content>
+                <span v-if="studentData.questions.length > 0">
+                  <template 
+                    v-for="(question, i) in studentData.questions"
+                  >
+                    <v-divider v-if="i !== 0" :key="`divider-${i}`"></v-divider>
+                    <v-list-item :key="i">
+                      <v-list-item-content>
+                        <v-list-item-title>{{ question.question }}</v-list-item-title>
+                        <v-list-item-subtitle>Asked at {{ elapsedToTimeString(question.elapsed) }}</v-list-item-subtitle>
+                      </v-list-item-content>
 
-                    <v-list-item-icon>
-                      <v-icon color="green lighten-3">mdi-arrow-up-bold</v-icon>
-                      {{ question.upvotes }}
-                    </v-list-item-icon>
-                  </v-list-item>
-                </template>
+                      <v-list-item-icon>
+                        <v-icon color="green lighten-3">mdi-arrow-up-bold</v-icon>
+                        {{ question.upvotes }}
+                      </v-list-item-icon>
+                    </v-list-item>
+                  </template>
+                </span>
+                <div v-else class="text-center">No questions asked.</div>
               </v-list>
             </v-tab-item>
 
             <v-tab-item value="upvoted-tab">
               <v-list>
-                <template 
-                  v-for="(upvote, i) in studentData.upvotedQuestions"
-                >
-                  <v-divider v-if="i !== 0" :key="`divider-${i}`"></v-divider>
-                  <v-list-item :key="i">
-                    <v-list-item-content>
-                      <v-list-item-title>{{ upvote.question.question }}</v-list-item-title>
-                      <v-list-item-subtitle>{{ elapsedToTimeString(upvote.elapsed) }}</v-list-item-subtitle>
-                    </v-list-item-content>
+                <span v-if="studentData.upvotedQuestions.length > 0">
+                  <template 
+                    v-for="(upvote, i) in studentData.upvotedQuestions"
+                  >
+                    <v-divider v-if="i !== 0" :key="`divider-${i}`"></v-divider>
+                    <v-list-item :key="i">
+                      <v-list-item-content>
+                        <v-list-item-title>{{ upvote.question.question }}</v-list-item-title>
+                        <v-list-item-subtitle>Upvoted at {{ elapsedToTimeString(upvote.elapsed) }}</v-list-item-subtitle>
+                      </v-list-item-content>
 
-                    <v-list-item-icon>
-                      <v-icon color="green lighten-3">mdi-arrow-up-bold</v-icon>
-                      {{ upvote.question.upvotes }}
-                    </v-list-item-icon>
-                  </v-list-item>
-                </template>
+                      <v-list-item-icon>
+                        <v-icon color="green lighten-3">mdi-arrow-up-bold</v-icon>
+                        {{ upvote.question.upvotes }}
+                      </v-list-item-icon>
+                    </v-list-item>
+                  </template>
+                </span>
+                <div v-else class="text-center">No questions upvoted.</div>
               </v-list>
+              
             </v-tab-item>
           </v-tabs>
         </v-card>
