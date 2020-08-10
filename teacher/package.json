@@ -13,15 +13,18 @@
     "core-js": "^3.6.5",
     "firebase": "^7.16.0",
     "js-cookie": "^2.2.1",
+    "luxon": "^1.24.1",
     "vue": "^2.6.11",
     "vue-axios": "^2.1.5",
     "vue-chartjs": "^3.5.0",
+    "vue-datetime": "^1.0.0-beta.13",
     "vue-google-oauth2": "^1.5.5",
     "vue-router": "^3.3.4",
     "vuefire": "^2.2.3",
     "vuetify": "^2.3.4",
     "vuex": "^3.5.1",
-    "vuex-persistedstate": "^3.0.1"
+    "vuex-persistedstate": "^3.0.1",
+    "weekstart": "^1.0.1"
   },
   "devDependencies": {
     "@mdi/js": "^5.3.45",
