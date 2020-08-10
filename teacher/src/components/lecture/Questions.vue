@@ -78,21 +78,17 @@
               v-show="!question.dismissed"
             >
               <v-banner :style="{ textAlign: 'left' }">
-                <v-tooltip right>
-                  <template v-slot:activator="{ on }">
-                    <span v-on="on">{{question.question}}</span>
-                  </template>
-                  <span>
+                  {{question.question}}
+                  <div id="questionAskedBy" class="ml-3">
                     {{ students[question.creator_uid].first_name }} {{ students[question.creator_uid].last_name }}
-                    <v-avatar size="20px" class="ml-1">
+                    <!--<v-avatar size="20px" class="ml-1">
                       <img
                         alt="Avatar"
                         :src="students[question.creator_uid].photo"
                         style="background-color: #F5F5F5;"
                       />
-                    </v-avatar>
-                  </span>
-                </v-tooltip>
+                    </v-avatar>-->
+                  </div>
                 <template v-slot:actions>
                   <v-tooltip top>
                     <template v-slot:activator="{ on }">
@@ -202,4 +198,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+#questionAskedBy {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 15px;
+  display: inline-block;
+  text-align: center;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
 </style>

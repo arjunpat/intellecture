@@ -33,8 +33,8 @@
         <template v-slot:content>{{ dialogText }}</template>
       </Dialog>
       <v-btn
-        v-if="newlecture || lectures || analytics"
-        @click="$router.push({ path: '/dashboard' })"
+        v-if="!dashboard && !livelecture && !feedback"
+        @click="$router.push({ name: backRoute })"
       >Back</v-btn>
       <v-btn class="red" v-if="started && livelecture" @click="endlecture()">End Lecture</v-btn>
       <v-btn
@@ -136,6 +136,7 @@ export default {
         'You must create a class in order to start a lecture. Create a new class by hitting the new class button.',
       error: '',
       info: '',
+      backRoute: 'Dashboard'
     }
   },
   computed: {
@@ -193,6 +194,12 @@ export default {
       if (to.name == 'Dashboard') {
         this.started = false
       }
+      if (to.name == 'LectureAnalytics') {
+        this.backRoute = 'Dashboard';
+      } else {
+        this.backRoute = from.name;
+      }
+
       this.redirectAuthUser()
     },
     authUser: function (val) {
