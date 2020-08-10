@@ -9,6 +9,7 @@
       </v-avatar>
       <span 
         :class="$vuetify.breakpoint.xs ? 'text-h6' : 'text-h4'"
+        style="font-weight: bold;"
       >{{ `${student.first_name} ${student.last_name}` }}</span>
     </v-card-title> 
     <v-card-text>

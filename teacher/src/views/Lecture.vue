@@ -629,14 +629,6 @@ span {
   opacity: 0;
 }
 
-#upvotes {
-  display: inline-block;
-  background-color: #dcedc8;
-  padding: 0px 5px;
-  border-radius: 5px;
-  font-size: 20px;
-}
-
 html::-webkit-scrollbar {
   display: none;
 }

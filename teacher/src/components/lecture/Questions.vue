@@ -96,7 +96,8 @@
                 <template v-slot:actions>
                   <v-tooltip top>
                     <template v-slot:activator="{ on }">
-                      <div v-on="on" id="upvotes">{{question.upvotes}}</div>
+                      <v-icon color="green lighten-3">mdi-arrow-up-bold</v-icon>
+                      <div v-on="on">{{ question.upvotes }}</div>
                     </template>
                     <span>
                       <div v-if="question.upvotedStudents.length > 0">
