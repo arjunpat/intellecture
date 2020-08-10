@@ -14,4 +14,8 @@ export default class LectureUs {
       score
     });
   }
+
+  getByLectureUid(lecture_uid: string) {
+    return this.mysql.query('SELECT elapsed, score FROM lecture_us WHERE lecture_uid = ?', [lecture_uid]);
+  }
 }

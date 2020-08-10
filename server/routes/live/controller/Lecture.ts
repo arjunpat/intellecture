@@ -25,6 +25,8 @@ export default class Lecture {
   private timing: any;
   public ended: boolean = false;
 
+  private currentScore: number | null = null;
+
   private timeoutScore: NodeJS.Timer | undefined;
   private timeoutQs: NodeJS.Timer | undefined;
 
@@ -201,7 +203,8 @@ export default class Lecture {
     }
 
     let score = this.getScore();
-    db.lectureUs.recordScoreChange(this.lecture_uid, this.elapsed(now), score);
+    if (this.currentScore !== score)
+      db.lectureUs.recordScoreChange(this.lecture_uid, this.elapsed(now), score);
     this.sendToTeachers(<WS.UsUpdate> {
       type: 'us_update',
       score
@@ -209,6 +212,7 @@ export default class Lecture {
     
     // recordkeeping / stats
     this.timing.lastTeacherUpdate = Date.now();
+    this.currentScore = score;
   }
 
   async updateTeachersQuestions() {
