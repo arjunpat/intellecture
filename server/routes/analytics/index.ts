@@ -99,11 +99,14 @@ router.get('/lecture/:lecture_uid/student/:account_uid/upvotes', lecturePerms, e
 });
 
 /* QUESTION ANALYTICS */
-router.get('/lecture/:lecture_uid/question/:question_uid/upvotes', lecturePerms, async (req, res) => {
+router.get('/lecture/:lecture_uid/question/:question_uid/upvotes', lecturePerms, async (req: Request, res) => {
   let { question_uid, lecture_uid } = req.params;
 
-  if (await db.lectureQs.getLectureUid(question_uid) === lecture_uid)
+  if (await db.lectureQs.getLectureUid(question_uid) === lecture_uid) {
+    if (typeof req.lecture.end_time === 'number')
+      res.set('Cache-Control', 'max-age=3600'); // 1 hour
     return res.send(responses.success(await db.lectureQUpvotes.getStudentUpvoters(question_uid)));
+  }
 
   res.send(responses.error('permissions'));
 });

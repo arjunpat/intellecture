@@ -131,3 +131,7 @@ export function compareString(a, b) {
   else 
     return a.toString().toLowerCase().localeCompare(b.toString().toLowerCase())
 }
+
+export function elapsedToTimeString(startTime, elapsed) {
+  return new Date(startTime + elapsed).toLocaleTimeString()
+}

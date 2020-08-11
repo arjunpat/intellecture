@@ -1,5 +1,5 @@
 <template>
-  <span v-if="loaded">
+  <div v-if="loaded">
     <router-view
       v-if="$route.name === 'LectureAnalytics'"
       :lecture_uid="lecture_uid"
@@ -7,7 +7,7 @@
       :studentTableData="studentTableData"
       :questionTableData="questionTableData"
       :curQuestionUpvoters="curQuestionUpvoters"
-      @showUpvoters="loadUpvoters"
+      @show-upvoters="loadUpvoters"
     ></router-view>
     <router-view
       v-else-if="$route.name === 'LectureAnalyticsStudent'"
@@ -15,13 +15,22 @@
       :overallUnderstanding="scores"
       :maxUnderstanding="maxUnderstanding"
       :lectureInfo="lectureInfo"
-    ></router-view> 
-  </span>
+      @show-upvoters="loadUpvoters"
+    ></router-view>
+
+    <QuestionUpvoters
+      :show="dialog"
+      :upvoters="curQuestionUpvoters"
+      :startTime="lectureInfo.start_time"
+      @close="dialog = false"
+    />
+  </div>
 </template>
 
 <script>
-import { get, log } from '@/helpers.js'
+import { get, log, elapsedToTimeString } from '@/helpers.js'
 import analyticsData from '@/testdata/analyticsData.json'
+import QuestionUpvoters from '@/components/analytics/QuestionUpvoters.vue'
 
 export default {
   props: {
@@ -29,15 +38,19 @@ export default {
     student_uid: { type: String, default: '' },
   },
 
+  components: { QuestionUpvoters },
+
   mounted() {
     this.loaded = false
-    this.init().then(() => {
-      if (this.$route.name === 'LectureAnalyticsStudent')
-        return this.initStudentPage()
-      return
-    }).then(() => {
-      this.loaded = true
-    })
+    this.init()
+      .then(() => {
+        if (this.$route.name === 'LectureAnalyticsStudent')
+          return this.initStudentPage()
+        return
+      })
+      .then(() => {
+        this.loaded = true
+      })
   },
 
   watch: {
@@ -45,10 +58,10 @@ export default {
       handler(route) {
         if (route.name === 'LectureAnalyticsStudent') {
           this.loaded = false
-          this.initStudentPage().then(() => this.loaded = true)
+          this.initStudentPage().then(() => (this.loaded = true))
         }
-      }
-    }
+      },
+    },
   },
 
   data() {
@@ -57,7 +70,7 @@ export default {
 
       loaded: false,
       maxUnderstanding: 10,
-      
+
       // Overall lecture data
       lectureInfo: {},
       students: [],
@@ -66,7 +79,7 @@ export default {
         question_counts: {},
         upvote_counts: {},
         avg_us: {},
-        present: {}
+        present: {},
       },
       questions: [],
       scores: {},
@@ -76,10 +89,11 @@ export default {
       intervals: [],
 
       // Specific question data
+      dialog: false,
       curQuestionUpvoters: null, // null means loading upvoters
     }
   },
-  
+
   computed: {
     studentTableData() {
       return this.students.map((student) => {
@@ -91,7 +105,7 @@ export default {
           understanding: this.getAvgUs(uid),
           quesCount: this.getQuesCount(uid),
           upvoteCount: this.getUpvoteCount(uid),
-          firstJoin: this.getFirstJoin(uid)
+          firstJoin: this.getFirstJoin(uid),
         }
       })
     },
@@ -99,16 +113,17 @@ export default {
       return this.questions.map((question) => {
         return {
           ...question,
-          student: this.getStudent(question.creator_uid)
+          student: this.getStudent(question.creator_uid),
         }
       })
     },
     lectureLength() {
-      return this.lectureInfo ? this.lectureInfo.end_time - this.lectureInfo.start_time : 0
+      return this.lectureInfo
+        ? this.lectureInfo.end_time - this.lectureInfo.start_time
+        : 0
     },
     curStudentData() {
-      if (!this.student_uid) 
-        return null
+      if (!this.student_uid) return null
       return {
         student: this.getStudent(this.student_uid),
         present: this.getPresent(this.student_uid),
@@ -122,10 +137,10 @@ export default {
     },
     upvotedQuestions() {
       // Get current student's upvoted questions
-      return this.upvotes.map(upvote => {
+      return this.upvotes.map((upvote) => {
         return {
           ...upvote,
-          question: this.getQuestion(upvote.question_uid)
+          question: this.getQuestion(upvote.question_uid),
         }
       })
     },
@@ -140,13 +155,13 @@ export default {
         this.questions = analyticsData.questions
       } else {
         let vals = await Promise.all(
-          ['/info', '/students', '/stats', '/questions'].map(e => this.get(e))
-        );
+          ['/info', '/students', '/stats', '/questions'].map((e) => this.get(e))
+        )
         this.lectureInfo = vals[0]
         this.students = vals[1]
         this.stats = vals[2]
         this.questions = vals[3]
-        this.scores = await this.get('/scores'); // can delayed until after the others
+        this.scores = await this.get('/scores') // can delayed until after the others
       }
     },
     async initStudentPage() {
@@ -154,6 +169,7 @@ export default {
       this.intervals = await this.get(`/student/${this.student_uid}/intervals`)
     },
     async loadUpvoters(question_uid) {
+      this.dialog = true
       this.curQuestionUpvoters = null
       let upvotes = await this.get(`/question/${question_uid}/upvotes`)
       this.curQuestionUpvoters = upvotes.map((upvote) => {
@@ -179,18 +195,19 @@ export default {
       return this.stats.first_join[uid]
     },
     getStudent(uid) {
-      return this.students.find(student => student.account_uid === uid)
+      return this.students.find((student) => student.account_uid === uid)
     },
     getQuestions(uid) {
-      return this.questions.filter(question => question.creator_uid === uid)
+      return this.questions.filter((question) => question.creator_uid === uid)
     },
     getQuestion(question_uid) {
-      return this.questions.find(question => question.question_uid === question_uid)
+      return this.questions.find(
+        (question) => question.question_uid === question_uid
+      )
     },
     get(addy) {
-      return get(`/analytics/lecture/${this.lecture_uid}${addy}`).then(d => {
-        if (d.success)
-          return d.data
+      return get(`/analytics/lecture/${this.lecture_uid}${addy}`).then((d) => {
+        if (d.success) return d.data
         log('failed', d.error)
       })
     },
