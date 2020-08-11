@@ -16,9 +16,9 @@ export default class LectureQUpvotes {
   }
 
   // analytics/aggregation
-  getStudents(question_uid: string): object {
+  getStudentUpvoters(question_uid: string): object {
     return this.mysql.query(
-      `SELECT account_uid, elapsed FROM lecture_q_upvotes WHERE question_uid = ?`,
+      `SELECT account_uid, elapsed FROM lecture_q_upvotes WHERE question_uid = ? ORDER BY elapsed ASC`,
       [question_uid]
     );
   }

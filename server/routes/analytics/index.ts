@@ -103,7 +103,7 @@ router.get('/lecture/:lecture_uid/question/:question_uid/upvotes', lecturePerms,
   let { question_uid, lecture_uid } = req.params;
 
   if (await db.lectureQs.getLectureUid(question_uid) === lecture_uid)
-    return res.send(responses.success(await db.lectureQUpvotes.getStudents(question_uid)));
+    return res.send(responses.success(await db.lectureQUpvotes.getStudentUpvoters(question_uid)));
 
   res.send(responses.error('permissions'));
 });

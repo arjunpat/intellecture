@@ -36,10 +36,6 @@ export default class Lecture {
     this.initTimings();
   }
 
-  log(data: any) {
-    // console.log('[lecture ' + this.lecture_uid + ']', data);
-  }
-
   async readLectureInfo() {
     let data = await db.lectures.getLecture(this.lecture_uid);
     if (data) data.creator = await db.accounts.getBasicInfo(data.account_uid);
@@ -47,7 +43,6 @@ export default class Lecture {
   }
 
   async init() {
-    this.log('init');
     await db.lectures.startLecture(this.lecture_uid, Date.now(), genLectureJoinCode());
     this.lectureInfo = await this.readLectureInfo();
   }
@@ -57,7 +52,6 @@ export default class Lecture {
       return;
 
     this.timing.lastMsg = Date.now();
-    this.log(data);
     
     switch (data.type) {
       case 'ssu': // student score update
@@ -154,8 +148,8 @@ export default class Lecture {
       type: 'student_join',
       ...stu
     });
-    this.scores[student_uid] = 5;
     this.studentData[student_uid] = stu;
+    this.updateStudentScore(student_uid, 5);
   }
 
   async removeStudent(student_uid: string) {
@@ -170,6 +164,8 @@ export default class Lecture {
   }
   
   async updateStudentScore(student_uid: string, score: number) {
+    if (this.scores[student_uid] === score) return;
+
     await db.lectureLog.recordScoreChange(
       this.lecture_uid,
       this.elapsed(),
