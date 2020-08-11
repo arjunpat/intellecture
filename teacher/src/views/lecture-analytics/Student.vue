@@ -174,10 +174,15 @@ export default {
         }
       })
 
+      // makes sure graph spans entire length
+      overallGraphData.unshift({ x: this.lectureStart, y: null })
+      // final data point
+      overallGraphData.push({ x: this.lectureEnd, y: overallGraphData[overallGraphData.length - 1].y })
+
       if (overallGraphData.length > 100) {
         log('Points before', overallGraphData.length)
         let lectureLength = this.lectureEnd - this.lectureStart
-        for (let i = 0; i < overallGraphData.length - 1; i++) {
+        for (let i = 1; i < overallGraphData.length - 2; i++) {
           if (!overallGraphData[i].y || !overallGraphData[i + 1].y) continue // null
 
           let dy = Math.abs(overallGraphData[i].y - overallGraphData[i + 1].y)
@@ -201,8 +206,8 @@ export default {
           {
             label: 'Class Understanding',
             backgroundColor: '#C1E3B3',
-            lineTension: 0,
-            steppedLine: true,
+            // lineTension: 0,
+            // steppedLine: true,
             data: overallGraphData,
           },
         ],
