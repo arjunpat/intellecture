@@ -4,9 +4,10 @@
       v-if="$route.name === 'LectureAnalytics'"
       :lecture_uid="lecture_uid"
       :lectureInfo="lectureInfo"
-      :numStudents="students.length"
       :studentTableData="studentTableData"
       :questionTableData="questionTableData"
+      :curQuestionUpvoters="curQuestionUpvoters"
+      @showUpvoters="loadUpvoters"
     ></router-view>
     <router-view
       v-else-if="$route.name === 'LectureAnalyticsStudent'"
@@ -71,6 +72,9 @@ export default {
       // Student-specific data
       upvotes: [],
       intervals: [],
+
+      // Specific question data
+      curQuestionUpvoters: null, // null means loading upvoters
     }
   },
   
@@ -146,6 +150,16 @@ export default {
     async initStudentPage() {
       this.upvotes = await this.get(`/student/${this.student_uid}/upvotes`)
       this.intervals = await this.get(`/student/${this.student_uid}/intervals`)
+    },
+    async loadUpvoters(question_uid) {
+      this.curQuestionUpvoters = null
+      let upvotes = await this.get(`/question/${question_uid}/upvotes`)
+      this.curQuestionUpvoters = upvotes.map((upvote) => {
+        return {
+          ...this.getStudent(upvote.account_uid),
+          upvoteTime: upvote.elapsed,
+        }
+      })
     },
     getPresent(uid) {
       return Math.round((this.stats.present[uid] / this.lectureLength) * 100)

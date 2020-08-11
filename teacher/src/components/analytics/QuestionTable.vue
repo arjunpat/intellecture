@@ -31,6 +31,14 @@
         {{ item.question }}
         <span class="text-caption">{{ ` - ${item.student.first_name} ${item.student.last_name}` }}</span>
       </template>
+      <template v-slot:item.upvotes="{ item }">
+        <v-chip @click.stop="$emit('showUpvoters', item.question_uid)">
+          <v-avatar left>
+            <v-icon color="green lighten-3">mdi-arrow-up-bold</v-icon>
+          </v-avatar>
+          {{ item.upvotes }}
+        </v-chip>
+      </template>
     </v-data-table>
   </span>
 </template>
