@@ -12,6 +12,7 @@
     <router-view
       v-else-if="$route.name === 'LectureAnalyticsStudent'"
       :studentData="curStudentData"
+      :overallUnderstanding="scores"
       :maxUnderstanding="maxUnderstanding"
       :lectureInfo="lectureInfo"
     ></router-view> 
@@ -68,6 +69,7 @@ export default {
         present: {}
       },
       questions: [],
+      scores: {},
 
       // Student-specific data
       upvotes: [],

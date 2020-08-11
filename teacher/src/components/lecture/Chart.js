@@ -4,6 +4,12 @@ const { reactiveProp } = mixins
 export default {
   extends: Line,
   mixins: [reactiveProp],
+
+  props: {
+    chartData: { type: Object, required: true },
+    showLegend: { type: Boolean, default: false },
+  },
+
   data() {
     return {
       options: {
@@ -30,7 +36,7 @@ export default {
           }]
         },
         legend: {
-          display: false
+          display: this.showLegend
         },
         maintainAspectRatio: false,
         responsive: true,

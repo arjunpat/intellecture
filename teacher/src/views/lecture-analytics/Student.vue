@@ -20,6 +20,7 @@
         <div :class="$vuetify.breakpoint.xs ? 'text-h6' : 'text-h4'" class="mb-2">Understanding (%)</div>
         <LineChart 
           :chart-data="chartData"
+          :showLegend="true"
           class="mb-4"
         />
 
@@ -102,6 +103,7 @@ import { get, post } from '../../helpers'
 export default {
   props: {
     studentData: { type: Object, required: true },
+    overallUnderstanding: { type: Object, required: true },
     maxUnderstanding: { type: Number, required: true },
     lectureInfo: { type: Object, required: true },
   },
@@ -149,35 +151,60 @@ export default {
       return new Date(this.lectureStart + elapsed).toLocaleTimeString()
     },
     initChartData() {
-      let x = [this.lectureStart]
-      let y = [null]
+      // This student's specific understanding
+      let studentGraphData = [{
+        x: this.lectureStart,
+        y: null,
+      }]
 
       this.studentData.intervals.forEach((interval, i) => {
         if (i > 0) {
           let diff = interval.from - this.studentData.intervals[i-1].to
           if (diff > 0) {
-            x.push(this.lectureStart + interval.from)
-            y.push(null)
+            studentGraphData.push({
+              x: this.lectureStart + interval.from,
+              y: null,
+            })
           }
         }
-        x.push(this.lectureStart + interval.from)
-        x.push(this.lectureStart + interval.to)
-        y.push(interval.score*10)
-        y.push(interval.score*10)
+        studentGraphData.push({
+          x: this.lectureStart + interval.from,
+          y: interval.score*10,
+        })
+        studentGraphData.push({
+          x: this.lectureStart + interval.to,
+          y: interval.score*10,
+        })
       })
 
-      x.push(this.lectureEnd)
-      y.push(null)
+      studentGraphData.push({
+        x: this.lectureEnd,
+        y: null,
+      })
+
+      // Overall understanding during the lecture
+      let overallGraphData = this.overallUnderstanding.score.map((score, i) => {
+        return {
+          x: this.lectureStart + this.overallUnderstanding.elapsed[i],
+          y: score
+        }
+      })
 
       this.chartData = {
-        labels: x,
         datasets: [
           {
-            label: 'Understanding',
+            label: 'Student Understanding',
             backgroundColor: '#4FC3F7',
             lineTension: 0,
-            data: y,
+            data: studentGraphData,
           },
+          {
+            label: 'Class Understanding',
+            backgroundColor: '#C1E3B3',
+            lineTension: 0,
+            steppedLine: true,
+            data: overallGraphData, 
+          }
         ],
       }
     }
