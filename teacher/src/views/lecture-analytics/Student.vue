@@ -98,7 +98,7 @@
 import analyticsData from '@/testdata/analyticsData.json'
 import StudentInfoCard from '@/components/analytics/StudentInfoCard'
 import LineChart from '@/components/lecture/Chart'
-import { get, post } from '../../helpers'
+import { get, post, log } from '../../helpers'
 
 export default {
   props: {
@@ -190,6 +190,23 @@ export default {
         }
       })
 
+
+      if (overallGraphData.length > 100) {
+        log('Points before', overallGraphData.length)
+        let lectureLength = this.lectureEnd - this.lectureStart
+        for (let i = 0; i < overallGraphData.length - 1; i++) {
+          if (!overallGraphData[i].y || !overallGraphData[i + 1].y) continue // null
+
+          let dy = Math.abs(overallGraphData[i].y - overallGraphData[i + 1].y)
+          let dx = overallGraphData[i + 1].x - overallGraphData[i].x
+          if (dy <= 2 && dx < .01 * lectureLength) {
+            overallGraphData.splice(i + 1, 1)
+            i--
+          }
+        }
+        log('Points after', overallGraphData.length)
+      }
+      
       this.chartData = {
         datasets: [
           {
