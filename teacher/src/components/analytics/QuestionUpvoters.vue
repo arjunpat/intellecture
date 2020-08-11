@@ -12,7 +12,7 @@
         <v-list v-else>
           <v-list-item v-for="upvoter in upvoters" :key="upvoter.account_uid">
             <v-list-item-avatar>
-              <v-img :src="upvoter.photo"></v-img>
+              <img :src="upvoter.photo">
             </v-list-item-avatar>
 
             <v-list-item-content>

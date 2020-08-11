@@ -30,7 +30,7 @@
                     <v-list-item :key="question.question_uid">
                       <v-list-item-content>
                         <v-list-item-title>{{ question.question }}</v-list-item-title>
-                        <v-list-item-subtitle>Asked at {{ elapsedToTimeString(question.elapsed) }}</v-list-item-subtitle>
+                        <v-list-item-subtitle>Asked at {{ elapsedToTimeString(lectureStart, question.elapsed) }}</v-list-item-subtitle>
                       </v-list-item-content>
 
                       <v-chip @click.stop="$emit('show-upvoters', question.question_uid)">
@@ -54,7 +54,7 @@
                     <v-list-item :key="upvote.question_uid">
                       <v-list-item-content>
                         <v-list-item-title>{{ upvote.question.question }}</v-list-item-title>
-                        <v-list-item-subtitle>Upvoted at {{ elapsedToTimeString(upvote.elapsed) }}</v-list-item-subtitle>
+                        <v-list-item-subtitle>Upvoted at {{ elapsedToTimeString(lectureStart, upvote.elapsed) }}</v-list-item-subtitle>
                       </v-list-item-content>
 
                       <v-chip @click.stop="$emit('show-upvoters', upvote.question_uid)">
@@ -80,7 +80,7 @@
 import analyticsData from '@/testdata/analyticsData.json'
 import StudentInfoCard from '@/components/analytics/StudentInfoCard'
 import LineChart from '@/components/lecture/Chart'
-import { get, post, log } from '../../helpers'
+import { get, post, log, elapsedToTimeString } from '../../helpers'
 
 export default {
   props: {
@@ -129,9 +129,7 @@ export default {
   },
 
   methods: {
-    elapsedToTimeString(elapsed) {
-      return new Date(this.lectureStart + elapsed).toLocaleTimeString()
-    },
+    elapsedToTimeString,
     initChartData() {
       // This student's specific understanding
       let studentGraphData = [

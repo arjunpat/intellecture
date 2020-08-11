@@ -1,7 +1,7 @@
 <template>
-  <div v-if="loaded">
+  <span>
     <router-view
-      v-if="$route.name === 'LectureAnalytics'"
+      v-if="overviewLoaded && $route.name === 'LectureAnalytics'"
       :lecture_uid="lecture_uid"
       :lectureInfo="lectureInfo"
       :studentTableData="studentTableData"
@@ -10,7 +10,7 @@
       @show-upvoters="loadUpvoters"
     ></router-view>
     <router-view
-      v-else-if="$route.name === 'LectureAnalyticsStudent'"
+      v-if="loaded && $route.name === 'LectureAnalyticsStudent'"
       :studentData="curStudentData"
       :overallUnderstanding="scores"
       :maxUnderstanding="maxUnderstanding"
@@ -24,7 +24,7 @@
       :startTime="lectureInfo.start_time"
       @close="dialog = false"
     />
-  </div>
+  </span>
 </template>
 
 <script>
@@ -42,6 +42,7 @@ export default {
 
   mounted() {
     this.loaded = false
+    this.overviewLoaded = false
     this.init()
       .then(() => {
         if (this.$route.name === 'LectureAnalyticsStudent')
@@ -69,6 +70,7 @@ export default {
       testing: false,
 
       loaded: false,
+      overviewLoaded: false,
       maxUnderstanding: 10,
 
       // Overall lecture data
@@ -161,6 +163,8 @@ export default {
         this.students = vals[1]
         this.stats = vals[2]
         this.questions = vals[3]
+        this.overviewLoaded = true
+
         this.scores = await this.get('/scores') // can delayed until after the others
       }
     },
