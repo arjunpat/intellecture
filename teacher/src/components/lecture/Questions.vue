@@ -78,33 +78,24 @@
               v-show="!question.dismissed"
             >
               <v-banner :style="{ textAlign: 'left' }">
-                  {{question.question}}
-                  <div id="questionAskedBy" class="ml-3">
-                    {{ students[question.creator_uid].first_name }} {{ students[question.creator_uid].last_name }}
-                    <!--<v-avatar size="20px" class="ml-1">
+                {{question.question}}
+                <div id="questionAskedBy" class="ml-3">
+                  {{ students[question.creator_uid].first_name }} {{ students[question.creator_uid].last_name }}
+                  <!--<v-avatar size="20px" class="ml-1">
                       <img
                         alt="Avatar"
                         :src="students[question.creator_uid].photo"
                         style="background-color: #F5F5F5;"
                       />
-                    </v-avatar>-->
-                  </div>
+                  </v-avatar>-->
+                </div>
                 <template v-slot:actions>
-                  <v-tooltip top>
-                    <template v-slot:activator="{ on }">
+                  <v-chip @click.stop="$emit('show-upvoters', question.question_uid)">
+                    <v-avatar left>
                       <v-icon color="green lighten-3">mdi-arrow-up-bold</v-icon>
-                      <div v-on="on">{{ question.upvotes }}</div>
-                    </template>
-                    <span>
-                      <div v-if="question.upvotedStudents.length > 0">
-                        <div
-                          v-for="student in question.upvotedStudents"
-                          v-bind:key="student.account_uid"
-                        >{{student.first_name}} {{student.last_name}}</div>
-                      </div>
-                      <div v-else>No upvotes</div>
-                    </span>
-                  </v-tooltip>
+                    </v-avatar>
+                    {{ question.upvotes }}
+                  </v-chip>
                   <v-btn
                     text
                     color="primary"
@@ -172,7 +163,7 @@ export default {
   computed: {
     smallScreen() {
       return this.$vuetify.breakpoint.smAndDown
-    }
+    },
   },
   methods: {
     resetTutorial() {
@@ -185,20 +176,19 @@ export default {
       this.$emit('clickTab', num)
     },
     topicBackground(index) {
-      if(this.selectedIndex == index) {
+      if (this.selectedIndex == index) {
         return '#E0E0E0'
-      } else if(this.hoveredIndex == index) {
+      } else if (this.hoveredIndex == index) {
         return '#F5F5F5'
       } else {
         return '#EEEEEE'
       }
-    }
+    },
   },
 }
 </script>
 
 <style lang="scss" scoped>
-
 #questionAskedBy {
   background-color: rgba(0, 0, 0, 0.5);
   color: white;
@@ -208,5 +198,4 @@ export default {
   padding: 2px 4px;
   border-radius: 3px;
 }
-
 </style>

@@ -3,59 +3,40 @@
     <v-row align="center" justify="center">
       <v-col cols="8">
         <ul style="list-style-type: none">
-          <li
-            v-for="student in students"
-            v-bind:key="student.uid"
-            v-show="student.inLecture"
-          >
-            <v-hover v-slot:default="{ hover }">
-              <v-banner style="font-family: var(--main-font);">
-                <span>
-                  <v-avatar size="42px" class="mr-3">
-                    <img
-                      alt="Avatar"
-                      :src="student.photo"
-                      style="background-color: #F5F5F5;"
-                    />
-                  </v-avatar>
-                  {{ student.first_name }} {{ student.last_name }}
-                  <transition name="fade">
-                    <v-btn
-                      v-if="hover"
-                      class="ml-3"
-                      text
-                      color="red"
-                      @click.stop="
-                        showDialog = true;
-                        setActive(student);
-                      "
-                      >Remove</v-btn
-                    >
-                  </transition>
-                </span>
-                <template v-slot:actions>
-                  <span style="font-size: 15px; color: #BDBDBD;"
-                    >Joined {{ formatUnix(student.ts) }}</span
-                  >
-                </template>
-              </v-banner>
-            </v-hover>
+          <li v-for="student in students" v-bind:key="student.uid" v-show="student.inLecture">
+            <v-banner style="font-family: var(--main-font);">
+              <span>
+                <v-avatar size="42px" class="mr-3">
+                  <img alt="Avatar" :src="student.photo" style="background-color: #F5F5F5;" />
+                </v-avatar>
+                {{ student.first_name }} {{ student.last_name }}
+                <v-btn
+                  class="ml-3"
+                  text
+                  color="red"
+                  @click.stop="
+                    showDialog = true;
+                    setActive(student);
+                  "
+                >Remove</v-btn>
+              </span>
+              <template v-slot:actions>
+                <span style="font-size: 15px; color: #BDBDBD;">Joined {{ formatUnix(student.ts) }}</span>
+              </template>
+            </v-banner>
           </li>
 
           <li v-if="showNoStudentsMsg">
             <div
               class="text-center heading-4"
               :style="{ fontWeight: 'normal', fontSize: '25px' }"
-            >
-              No students have joined the lecture!
-            </div>
+            >No students have joined the lecture!</div>
             <div class="text-center">
               Have students go to
               <a>join.intellecture.app</a> and enter the code
               <span
                 style="background-color: #eee; padding: 3px 5px; border-radius: 5px; font-weight: bold;"
-                >{{ joinCode }}</span
-              >
+              >{{ joinCode }}</span>
               to join.
             </div>
           </li>
@@ -90,10 +71,10 @@
             bottom
           >
             <template v-slot:title>Students</template>
-            <template v-slot:explanation
-              >Here, you can see a list of all the students that have joined
-              your lecture.</template
-            >
+            <template v-slot:explanation>
+              Here, you can see a list of all the students that have joined
+              your lecture.
+            </template>
             <v-expand-transition>
               <li v-if="showTutorial == 6">
                 <v-banner style="font-family: var(--main-font);">
@@ -103,12 +84,10 @@
                       alt="Avatar"
                       src="https://i.imgur.com/4Wj8Wz2.jpg"
                       style="background-color: #F5F5F5;"
-                    /> </v-avatar
-                  >Joe Smoe
+                    />
+                  </v-avatar>Joe Smoe
                   <template v-slot:actions>
-                    <span style="font-size: 15px; color: #BDBDBD;"
-                      >Joined 8:00 AM</span
-                    >
+                    <span style="font-size: 15px; color: #BDBDBD;">Joined 8:00 AM</span>
                   </template>
                 </v-banner>
               </li>
@@ -121,84 +100,84 @@
 </template>
 
 <script>
-import TutorialDisplay from "./TutorialDisplay";
-import LineChart from "./Chart";
-import Dialog from "@/components/Dialog";
-import { post } from "@/helpers.js";
+import TutorialDisplay from './TutorialDisplay'
+import LineChart from './Chart'
+import Dialog from '@/components/Dialog'
+import { post } from '@/helpers.js'
 
 export default {
-  name: "Students",
+  name: 'Students',
   props: {
     topics: Array,
     students: Object,
     showTutorial: Number,
     shortened: Boolean,
     totalStudents: Array,
-    joinCode: String
+    joinCode: String,
   },
   data() {
     return {
       preventFromJoining: false,
-      activeStudent: "",
+      activeStudent: '',
       showDialog: false,
-      noStudentsToShow: true
-    };
+      noStudentsToShow: true,
+    }
   },
   components: {
     TutorialDisplay,
     LineChart,
-    Dialog
+    Dialog,
   },
   computed: {
     dialogHeader() {
       return (
-        "Are you sure you want to remove " +
+        'Are you sure you want to remove ' +
         this.activeStudent.first_name +
-        " " +
+        ' ' +
         this.activeStudent.last_name +
-        "?"
-      );
+        '?'
+      )
     },
     smallScreen() {
-      return this.$vuetify.breakpoint.smAndDown;
+      return this.$vuetify.breakpoint.smAndDown
     },
     showNoStudentsMsg() {
       // Check if any students in lecture
       for (let key in this.students)
-        if (this.students[key].inLecture) return false;
+        if (this.students[key].inLecture) return false
 
       // No students in lecture, check if on tutorial step 6
-      return this.showTutorial !== 6;
-    }
+      return this.showTutorial !== 6
+    },
   },
   methods: {
     resetTutorial() {
-      this.$emit("resetTutorial");
+      this.$emit('resetTutorial')
     },
     nextTutorial() {
-      this.$emit("nextTutorial");
+      this.$emit('nextTutorial')
     },
     formatUnix(unix_timestamp) {
       if (unix_timestamp == undefined) {
-        return "";
+        return ''
       }
-      let date = new Date(unix_timestamp);
-      return date.toLocaleTimeString();
+      let date = new Date(unix_timestamp)
+      return date.toLocaleTimeString()
     },
     setActive(student) {
-      this.activeStudent = student;
+      this.activeStudent = student
     },
     clickTab(num) {
-      this.$emit("clickTab", num);
+      this.$emit('clickTab', num)
     },
     removeStudent() {
-      this.$emit("kickStudent", {
+      this.$emit('kickStudent', {
         student_uid: this.activeStudent.uid,
-        banned: this.preventFromJoining
-      });
-      this.showDialog = false;
-      this.preventFromJoining = false;
-    }
-  }
-};
+        banned: this.preventFromJoining,
+      })
+      this.showDialog = false
+      this.preventFromJoining = false
+    },
+  },
+}
 </script>

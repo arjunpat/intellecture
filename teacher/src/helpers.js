@@ -128,3 +128,7 @@ export function getQuantityString(quantity, singular, plural = singular + 's') {
 export function compareString(a, b) {
   return a.toString().toLowerCase().localeCompare(b.toString().toLowerCase())
 }
+
+export function elapsedToTimeString(startTime, elapsed) {
+  return new Date(startTime + elapsed).toLocaleTimeString()
+}

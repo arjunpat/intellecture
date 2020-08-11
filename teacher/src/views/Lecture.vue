@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <div>
     <v-container fluid v-show="showCode" class="window roomContainer" ref="start-window">
       <v-col>
         <v-row class="close">
@@ -47,9 +47,7 @@
         </div>
 
         <v-card-title>
-          <h2
-          id="lecture-title"
-          >{{ lectureInfo.lecture_name || 'Untitled Lecture' }}</h2>
+          <h2 id="lecture-title">{{ lectureInfo.lecture_name || 'Untitled Lecture' }}</h2>
         </v-card-title>
 
         <TutorialDisplay
@@ -71,7 +69,10 @@
             grow
           >
             <v-tab v-for="item in items" :key="item">
-              <span v-if="item === 'Students'">{{ item }} <v-chip>{{ numStudents }}</v-chip></span>
+              <span v-if="item === 'Students'">
+                {{ item }}
+                <v-chip>{{ numStudents }}</v-chip>
+              </span>
               <span v-else>{{ item }}</span>
             </v-tab>
           </v-tabs>
@@ -109,8 +110,9 @@
                 @showCategory="showCategory"
                 @showAllQuestions="showAllQuestions"
                 @dismiss="dismiss"
-                :displayQuestions="displayQuestions"
                 @clickTab="clickTab"
+                @show-upvoters="showUpvoters"
+                :displayQuestions="displayQuestions"
               />
             </v-card>
           </v-tab-item>
@@ -164,7 +166,14 @@
         </TutorialDisplay>
       </div>
     </v-container>
-  </span>
+
+    <QuestionUpvoters
+      :upvoters="curUpvoters"
+      :show="questionUpvotersShow"
+      @close="questionUpvotersShow = false"
+      :startTime="lectureInfo.start_time"
+    />
+  </div>
 </template>
 
 <script>
@@ -177,6 +186,7 @@ import Understanding from '@/components/lecture/Understanding'
 import Questions from '@/components/lecture/Questions'
 import Students from '@/components/lecture/Students'
 
+import QuestionUpvoters from '@/components/analytics/QuestionUpvoters'
 import TutorialDisplay from '@/components/lecture/TutorialDisplay'
 
 import sampleQuestions from '@/testdata/questions.json'
@@ -189,6 +199,7 @@ export default {
     Understanding,
     Students,
     Questions,
+    QuestionUpvoters,
   },
   props: {
     id: { type: String },
@@ -213,9 +224,25 @@ export default {
       snackbarMessage: '',
       showTutorial: -1,
       endCalled: false,
+
+
+      curUpvoters: null,
+      questionUpvotersShow: false
     }
   },
   methods: {
+    async showUpvoters(question_uid) {
+      this.curUpvoters = null
+      this.questionUpvotersShow = true
+      this.curUpvoters = await get(`/analytics/lecture/${this.lectureInfo.uid}/question/${question_uid}/upvotes`).then(d => {
+        return d.data.map(e => {
+          return {
+            ...this.getStudentById(e.account_uid),
+            upvoteTime: e.elapsed
+          }
+        })
+      });
+    },
     dismiss(question_uid) {
       post(`/lectures/live/teacher/${this.lectureInfo.uid}/dismiss`, {
         question_uid,
@@ -262,7 +289,6 @@ export default {
       }
     },
     endLectureMethod() {
-      // window.onbeforeunload = undefined
       this.endCalled = true
       post(`/lectures/live/teacher/${this.id}/end`)
       this.socket.close()
@@ -365,7 +391,10 @@ export default {
         } else {
           this.understandingScore = '--'
         }
-      } else if (data.type === 'new_question' && !this.getQuestionById(data.question_uid)) {
+      } else if (
+        data.type === 'new_question' &&
+        !this.getQuestionById(data.question_uid)
+      ) {
         this.questions.push({
           ...data,
           dismissed: false,
@@ -380,14 +409,6 @@ export default {
         let question = this.getQuestionById(data.question_uid)
         question.upvotes = data.upvotes
         this.sortQuestions()
-
-        // this request should be made on hover
-        /* get(`/analytics/lecture/${this.id}/question/${data.question_uid}/upvotes`).then(result => {
-          if (result.success) {
-            question.upvotedStudents = result.data
-            this.sortQuestions()
-          }
-        }) */
       } else if (data.type === 'question_dismissed') {
         let index = this.getQuestionIndexById(data.question_uid)
         let question = this.questions[index]
@@ -411,9 +432,9 @@ export default {
   },
   mounted() {
     //Testing code
-     //this.displayQuestions = sampleQuestions["questions"];
-     //this.topics = sampleTopics["topics"];
-     //this.students = sampleStudents;
+    //this.displayQuestions = sampleQuestions["questions"];
+    //this.topics = sampleTopics["topics"];
+    //this.students = sampleStudents;
 
     this.socket = new WebSocket(
       `${socketServerOrigin}/lectures/live/teacher/${this.id}`
@@ -425,9 +446,6 @@ export default {
   },
   created() {
     this.initChart()
-    /*  window.onbeforeunload = function () {
-      return 'Reloading the page will end your lecture'
-    } */
     if (!localStorage['notfirst']) {
       this.showTutorial = 0
       localStorage['notfirst'] = true
@@ -455,7 +473,8 @@ export default {
       }
     },
     numStudents() {
-      return Object.values(this.students).filter(student => student.inLecture).length
+      return Object.values(this.students).filter((student) => student.inLecture)
+        .length
     },
   },
   watch: {
@@ -481,21 +500,6 @@ export default {
     },
     showTutorial(val) {},
   },
-  /* beforeRouteLeave(to, from, next) {
-    if (!this.endCalled) {
-      const answer = window.confirm(
-        'Do you really want to leave? you have unsaved changes!'
-      )
-      if (answer) {
-        this.endLectureMethod()
-        next()
-      } else {
-        next(false)
-      }
-    } else {
-      next()
-    }
-  }, */
 }
 </script>
 
@@ -505,10 +509,10 @@ html {
 }
 
 #lecture-title {
-  font-family: 'Poppins'; 
-  font-weight: bold; 
-  font-size: 35px; 
-  border-left: 2px solid #aae691ff; 
+  font-family: 'Poppins';
+  font-weight: bold;
+  font-size: 35px;
+  border-left: 2px solid #aae691ff;
   line-height: 50px;
   padding: 0px 5px;
 }
@@ -598,7 +602,7 @@ span {
 
 .topic:hover {
   cursor: pointer;
-  background-color: #F5F5F5;
+  background-color: #f5f5f5;
 }
 
 #topic-quantity {
