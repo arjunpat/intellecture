@@ -126,8 +126,5 @@ export function getQuantityString(quantity, singular, plural = singular + 's') {
 }
 
 export function compareString(a, b) {
-  if (a === null || b === null)
-    return 0
-  else 
-    return a.toString().toLowerCase().localeCompare(b.toString().toLowerCase())
+  return a.toString().toLowerCase().localeCompare(b.toString().toLowerCase())
 }

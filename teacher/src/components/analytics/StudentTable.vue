@@ -132,21 +132,28 @@ export default {
     getFirstJoinString(firstJoin) {
       return new Date(firstJoin).toLocaleTimeString('en-us', { timeStyle: 'short' })
     },
+    compareNames(name1, name2, isDesc, sortNameBy) { 
+      // First tries to sort name by sortNameBy, if they are equal, sorts by the other name
+      let name1Primary = sortNameBy === 'First name' ? name1.first_name : name1.last_name
+      let name2Primary = sortNameBy === 'First name' ? name2.first_name : name2.last_name
+      let name1Secondary = sortNameBy === 'First name' ? name1.last_name : name1.first_name
+      let name2Secondary = sortNameBy === 'First name' ? name2.last_name : name2.first_name
+
+      if (!isDesc) {
+        let compare = compareString(name1Primary, name2Primary)
+        return compare === 0 ? compareString(name1Secondary, name2Secondary) : compare
+      } else {
+        let compare = compareString(name2Primary, name1Primary)
+        return compare === 0 ? compareString(name2Secondary, name1Secondary) : compare
+      }
+    },
     customSort(items, index, isDesc) {
       items.sort((a, b) => {
         if (index[0] === 'name') {
           // Sort based on first name or last name
-          if (this.sortNameBy === 'First name') {
-            if (!isDesc[0])
-              return compareString(a.first_name, b.first_name)
-            else 
-              return compareString(b.first_name, a.first_name)
-          } else {
-            if (!isDesc[0])
-              return compareString(a.last_name, b.last_name)
-            else
-              return compareString(b.last_name, a.last_name)
-          }
+          a.first_name += ''; a.last_name += '' // Convert null names to 'null' strings
+          b.first_name += ''; b.last_name += ''
+          return this.compareNames(a, b, isDesc[0], this.sortNameBy)
         } else {
           if (a[index] !== null && b[index] !== null) {
             if (typeof a[index] === 'number') {
