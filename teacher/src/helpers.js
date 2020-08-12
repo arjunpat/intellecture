@@ -48,7 +48,7 @@ export function signInGoogle() {
   }).then((result) => {
     if (result.success) {
       store.commit('setAuthUser', result.data)
-      getClasses()
+      loadClasses()
     } else {
       throw result
     }
@@ -65,7 +65,8 @@ export function signOut() {
   })
 }
 
-export function getClasses() {
+export function loadClasses(forceReload = false) {
+  if (store.state.classes.length !== 0 && !forceReload) return;
   return get('/classes/mine').then((result) => {
     if (!result.success)
       throw result
@@ -131,4 +132,9 @@ export function compareString(a, b) {
 
 export function elapsedToTimeString(startTime, elapsed) {
   return new Date(startTime + elapsed).toLocaleTimeString()
+}
+
+export function pad(str, len) {
+  while (str.length < len) str = ' ' + str
+  return str
 }

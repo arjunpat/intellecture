@@ -46,7 +46,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { post, get, getClasses } from '@/helpers.js'
+import { post, get, loadClasses } from '@/helpers.js'
 
 export default {
   name: 'ModalForm',
@@ -65,7 +65,7 @@ export default {
       }).then((response) => {
         this.className = ''
         this.classSection = ''
-        getClasses()
+        loadClasses(true)
       })
     },
   },

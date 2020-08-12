@@ -95,7 +95,7 @@
 
 <script>
 import store from './store'
-import { post, get, getClasses, signOut } from '@/helpers.js'
+import { post, get, loadClasses, signOut } from '@/helpers.js'
 import { mapState } from 'vuex'
 import Dialog from '@/components/Dialog'
 import AutoSnackbar from '@/components/AutoSnackbar'
@@ -111,7 +111,7 @@ export default {
       .then((result) => {
         if (result.success) {
           this.$store.commit('setAuthUser', result.data)
-          getClasses()
+          loadClasses()
         } else {
           this.$store.commit('setAuthUser', null)
           this.$store.commit('setClasses', null)
