@@ -73,6 +73,10 @@
                 {{ item }}
                 <v-chip>{{ numStudents }}</v-chip>
               </span>
+              <span v-else-if="item === 'Questions'">
+                {{ item }}
+                <v-chip>{{ numQuestions }}</v-chip>
+              </span>
               <span v-else>{{ item }}</span>
             </v-tab>
           </v-tabs>
@@ -224,10 +228,9 @@ export default {
       snackbarMessage: '',
       showTutorial: -1,
       endCalled: false,
-
-
       curUpvoters: null,
-      questionUpvotersShow: false
+      questionUpvotersShow: false,
+      prevNumQuestions: 0
     }
   },
   methods: {
@@ -476,6 +479,11 @@ export default {
     numStudents() {
       return Object.values(this.students).filter((student) => student.inLecture)
         .length
+    },
+    numQuestions() {
+      const length = Object.values(this.questions).filter((question) => !question.dismissed).length
+      if(this.items[this.tab] == 'Questions') this.prevNumQuestions = length;
+      return length
     },
   },
   watch: {

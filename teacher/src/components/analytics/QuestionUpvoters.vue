@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="showLocal" max-width="400" content-class="ma-0">
-    <v-card>
+    <v-card style="font-family: var(--main-font)">
       <v-card-title>Upvoters</v-card-title>
       <v-divider></v-divider>
 

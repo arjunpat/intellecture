@@ -87,20 +87,20 @@
           v-slot:explanation
         >This is where the main topics of the questions asked by your students will show up.</template>
         <v-expand-transition>
-          <v-card width="90vw" min-height="70px" style="padding: 5px 10px;">
+          <v-card flat width="90vw" min-height="70px" style="padding: 5px 10px; background-color: ">
             <v-row>
               <v-col align="left">
                 <div
                   v-for="n in topics.length"
                   v-bind:key="n"
-                  style="float: left; margin-bottom: 7px; height: 5vh;"
+                  style="float: left; margin-bottom: 7px; height: 55px;"
                   class="mr-3 topic"
                 >
-                  <h1 style="font-size: 20px;">{{ topics[n-1].value }}</h1>
+                  <h1 style="font-size: 30px;">{{ topics[n-1].value }}</h1>
                 </div>
                 <v-expand-transition>
                   <div
-                    style="float: left; margin-bottom: 7px; height: 5vh;"
+                    style="float: left; margin-bottom: 7px; height: 55px;"
                     class="mr-3 topic"
                     v-if="showTutorial == 2"
                   >
