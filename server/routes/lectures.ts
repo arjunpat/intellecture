@@ -52,6 +52,23 @@ router.get('/recent', async (req: Request, res) => {
   res.send(responses.success(await db.lectures.getRecentLectures(req.uid, 4)));
 });
 
+router.get('/scheduled', async (req: Request, res) => {
+  let d = new Date();
+  let from = d.setHours(0, 0, 0, 0);
+  let to = d.setDate(d.getDate() + 1);
+  res.send(responses.success(await db.lectures.genScheduledLectures(req.uid, 4, from, to)))
+});
+
+router.post('/delete', async (req: Request, res) => {
+  let lecture = await db.lectures.getLecture(req.body.lecture_uid);
+  if (!lecture || lecture.account_uid !== req.uid) {
+    return res.send(responses.error());
+  }
+  
+  await db.lectures.deleteLecture(req.body.lecture_uid);
+  res.send(responses.success());
+});
+
 router.get('/exists/:join_code', async (req, res) => {
   let lecture_uid = await db.lectures.getLectureUidByJoinCode(
     req.params.join_code

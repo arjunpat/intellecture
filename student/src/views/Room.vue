@@ -318,6 +318,9 @@ export default {
           case 'lecture_info':
             this.lectureInfo = data
 
+            // Send initial slider value
+            setTimeout(() => this.updateUnderstanding(), 500); // give a bit for db to register user
+
             // Get previously asked questions
             const questionData = JSON.parse(window.localStorage.getItem('questionData'))
             if (questionData === null || questionData.lectureId !== this.id) {

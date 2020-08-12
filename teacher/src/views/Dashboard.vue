@@ -15,19 +15,20 @@
 
     <v-row class="pl-3 pt-2 mb-10">
       <div v-for="a in scheduledLectures" :key="a.uid" style="display: 'inline-block';">
-        <v-card
-          :width="recentLectureCardSize"
-          min-height="175"
-          outlined
-          class="mr-3 mainfont"
-        >
+        <v-card :width="recentLectureCardSize" min-height="175" outlined class="mr-3 mainfont">
           <v-card-title class="font-weight-bold">{{ a.name }}</v-card-title>
-          <v-card-subtitle> {{ dateToString(a.scheduled_start) }}</v-card-subtitle>
-          <v-card-text >{{ getClassNameAndSection(a.class_uid) }}</v-card-text>
+          <v-card-subtitle>{{ dateToString(a.scheduled_start) }}</v-card-subtitle>
+          <v-card-text>{{ getClassNameAndSection(a.class_uid) }}</v-card-text>
 
-          <v-card-actions >
+          <v-card-actions>
             <v-row align="center" justify="center">
-            <v-btn dark hover color="#aae691ff" class="mb-2" @click="$router.push({ path: `/lecture/${a.uid}` })">Start Now</v-btn>
+              <v-btn
+                dark
+                hover
+                color="#aae691ff"
+                class="mb-2"
+                @click="$router.push({ path: `/lecture/${a.uid}` })"
+              >Start Now</v-btn>
             </v-row>
           </v-card-actions>
         </v-card>
@@ -49,7 +50,7 @@
           <v-card-title class="font-weight-bold">{{ a.name }}</v-card-title>
           <v-card-subtitle v-if="!a.live">{{ dateToString(a.end_time) }}</v-card-subtitle>
           <v-card-subtitle v-if="a.live" style="color: red; font-weight: bold;">CURRENTLY LIVE</v-card-subtitle>
-          <v-card-text >{{ getClassNameAndSection(a.class_uid) }}</v-card-text>
+          <v-card-text>{{ getClassNameAndSection(a.class_uid) }}</v-card-text>
 
           <v-card-actions>
             <v-btn text color="#66BB6A" v-if="!a.live">See Analytics</v-btn>
@@ -183,23 +184,20 @@ export default {
         }
       })
     },
-    async genRecentLectures() {
-      let d = await get('/lectures/recent').then((d) => d.data)
-      d.forEach((e) => {
+    prepareLectures(l) {
+      l.forEach((e) => {
         if (e.name.length > 21) e.name = e.name.slice(0, 12) + '...'
         e.live = typeof e.end_time !== 'number'
       })
-      this.recentLectures = d
+      return l
+    },
+    async genRecentLectures() {
+      let d = await get('/lectures/recent').then((d) => d.data)
+      this.recentLectures = this.prepareLectures(d)
     },
     async genScheduledLectures() {
-      for(let i=0; i<this.classes.length; i++) {
-        let d = await get(`/lectures/by-class/${this.classes[i].uid}`).then((d) => d.data)
-        d.forEach((e) => {
-          if (e.scheduled_start > Date.now() && !e.end_time) {
-            this.scheduledLectures.push(e);
-          }
-        })
-      }
+      let d = await get('/lectures/scheduled').then((d) => d.data)
+      this.scheduledLectures = this.prepareLectures(d)
     },
     classRedirect(classId) {
       this.$router.push({ path: `/lectures/${classId}` })
@@ -246,11 +244,6 @@ export default {
           return '275'
       }
     },
-  },
-  watch: {
-    classes(val) {
-      this.genScheduledLectures();
-    }
   }
 }
 </script>

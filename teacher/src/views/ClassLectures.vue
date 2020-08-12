@@ -28,9 +28,40 @@
                   label="Lecture name"
                   hint="What's the name of the new lecture?"
                   v-model="newLectureName"
+                  @keyup.enter="create"
                 ></v-text-field>
+                <v-dialog v-model="dialog" persistent max-width="290">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      style="font-family: var(--main-font);align-self:center;margin-left:10px;"
+                      dark
+                      outlined
+                      small
+                      v-bind="attrs"
+                      v-on="on"
+                      color="light-green lighten-2"
+                      >{{ scheduled ? parsedTime : "now"}}
+                  </v-btn>
+                  </template>
+                  <v-card class="modal">
+                     <v-time-picker v-if="page==1"
+                      v-model="time"
+                      ampm-in-title
+                      color="#65bb6aff"
+                    ></v-time-picker>
+                    <v-date-picker v-model="date" v-if="page==2" color="#65bb6aff"></v-date-picker>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn color="red" text dark @click="dialog = false" v-if="page==1">Cancel</v-btn>
+                      <v-btn color="#aae691ff" dark text @click="page+=1" v-if="page==1&&this.time!=``">Next</v-btn>
+                      <v-btn color="red" text dark @click="page-=1" v-if="page==2">Back</v-btn>
+                      <v-btn color="#aae691ff" dark text @click="confirmSchedule" v-if="page==2&&new Date(this.date + `T` + this.time + `:00`).getTime()>new Date().getTime()">Done</v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
                  <v-btn small text color="#aae691ff" dark class="mt-5 mr-4 ml-1" @click="create">
-                   <v-icon>arrow_forward</v-icon>
+                   <v-icon v-if="!scheduled">arrow_forward</v-icon>
+                   <v-icon v-else>event</v-icon>
                  </v-btn>
              </v-row>
            </v-slide-y-transition>
@@ -45,7 +76,7 @@
       :key="lecture.uid"
     >
       <v-col cols="12" lg="5" md="5" sm="8">
-        <v-card hover outlined class="mainfont px-2 py-2" :to="'/lecture-analytics/' + lecture.uid">
+        <v-card hover outlined class="mainfont px-2 py-2" :to="lecture.end_time<lecture.start_time ? '/lecture/' + lecture.uid : '/lecture-analytics/' + lecture.uid" >
           <v-card-title id="lectureTitle">{{ lecture.name }}</v-card-title>
           <v-row class="pl-3">
             <v-col cols="4">
@@ -55,9 +86,14 @@
               }}
               long
             </h3>
-            <h3 class="live" v-else>
-              LIVE
-            </h3>
+            <div v-else>
+              <h3 class='future' v-if="lecture.scheduled_start>new Date().getTime()">
+              FUTURE 
+              </h3>
+              <h3 class="live" v-else>
+                LIVE
+              </h3>
+            </div>
             </v-col>
             <v-col cols="4">
             <h3 class="subtitle font-weight-regular">
@@ -70,7 +106,9 @@
               {{
                 timeSinceEndTimeString(lecture.end_time)
               }}
-              
+            </h3>
+            <h3 class="subtitle font-weight-regular" v-else-if="lecture.scheduled_start>new Date().getTime()">
+              Live in {{(Math.abs(lecture.scheduled_start - new Date()) / 36e5).toFixed(1)}} hours
             </h3>
             <h3 class="subtitle font-weight-regular" v-else>
               Live Now
@@ -107,7 +145,13 @@ export default {
       testing: false,
       lectures: [],
       classInfo: {},
+      time:"",
+      picker:false,
+      page:1,
+      date:"",
+      scheduled:false,
       classes: [],
+      dialog: false,
       showNewLecture: false,
       newLectureName: '',
       newLectureHeight: '80px',
@@ -115,9 +159,11 @@ export default {
       addRotate: 'rotate(0deg)'
     };
   },
-
-  computed: {},
-
+  computed: {
+    parsedTime() {
+      return `${new Date(this.date + "T" + this.time + ":00").getMonth()}/${new Date(this.date + "T" + this.time + ":00").getDay()}, ${new Date(this.date + "T" + this.time + ":00").getHours()}:${String(new Date(this.date + "T" + this.time + ":00").getMinutes()).pad(2)}`
+    }
+  },
   methods: {
     async init() {
       if (this.testing) {
@@ -158,6 +204,14 @@ export default {
     timeSinceEndTimeString(endTime) {
       return dateToString(endTime);
     },
+    confirmSchedule() {
+      let datetime = new Date(this.date + "T" + this.time + ":00");
+      if (datetime.getTime()>new Date().getTime()) {
+        this.dialog=false;
+        this.scheduled=true;
+      }
+    },
+    
     animateNewLecture() {
       if(!this.showNewLecture) {
         this.showNewLecture = true
@@ -172,22 +226,50 @@ export default {
       }
     },
     create() {
-      post("/lectures/create", {
-        class_uid: this.classInfo.uid,
-        name: this.newLectureName,
-      }).then((data) => {
-        this.$router.push({ path: "/lecture/" + data.data.lecture_uid })
-      })
+      if (!this.scheduled) {
+          post("/lectures/create", {
+            class_uid: this.classInfo.uid,
+            name: this.newLectureName,
+          }).then((data) => {
+            this.$router.push({ path: "/lecture/" + data.data.lecture_uid })
+          })
+        } else {
+          var datetime = Date.parse(this.date + "T" + this.time + ":00")
+          post("/lectures/create", {
+            class_uid: this.classInfo.uid,
+            name: this.newLectureName,
+            scheduled_start: datetime
+          }).then(data => {
+            console.log(data);
+            if (!data.success) {
+              this.error = "Scheduled time must be in the future";
+              this.formErrors = true;
+            } else {
+              this.$router.push({ name: 'Dashboard' });
+            }
+          });
+        }
     }
   },
 
   mounted() {
     this.init();
+    String.prototype.pad = function(String, len) { 
+              var str = this; 
+              while (str.length < len) 
+                  str = String + str; 
+              return str; 
+          } 
   }
 };
 </script>
 
 <style scoped>
+.modal {
+  width:100%;
+  height:450px;
+  overflow:hidden;
+}
 #classTitle {
   font-size: 50px;
   font-weight: 900;
@@ -198,6 +280,14 @@ export default {
   border-radius:20px;
   padding:7px;
   width:70px;
+  text-align:center;
+}
+.future {
+  background-color:#aae691ff;;
+  color:white;
+  border-radius:20px;
+  padding:7px;
+  width:100px;
   text-align:center;
 }
 #lectureTitle {
