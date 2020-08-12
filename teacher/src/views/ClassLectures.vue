@@ -66,11 +66,14 @@
             </h3>
             </v-col>
             <v-col cols="4">
-            <h3 class="subtitle font-weight-regular">
+            <h3 class="subtitle font-weight-regular" v-if="lecture.end_time>lecture.start_time">
               {{
                 timeSinceEndTimeString(lecture.end_time)
               }}
               
+            </h3>
+            <h3 class="subtitle font-weight-regular" v-else>
+              Live Now
             </h3>
             </v-col>
           </v-row>

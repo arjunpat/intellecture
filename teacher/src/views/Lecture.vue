@@ -281,8 +281,9 @@ export default {
         datasets: [
           {
             label: 'Understanding',
-            backgroundColor: '#4FC3F7',
-            lineTension: 0,
+            backgroundColor: '#aae691ff',
+            cubicInterpolationMode:"default",
+            lineTension: .2,
             data: y,
           },
         ],
