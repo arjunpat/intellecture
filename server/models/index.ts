@@ -17,7 +17,14 @@ import LectureStudentLog from "./LectureStudentLog";
 import Redis from "../lib/Redis";
 const redis = new Redis();
 
-const mysql = new MySQL(MYSQL_USER, MYSQL_PASS, MYSQL_DB, MYSQL_HOST);
+const hitsCounter: {
+  [key: string]: {
+    totalMs: number,
+    count: number
+  }
+} = {};
+
+const mysql = new MySQL(MYSQL_USER, MYSQL_PASS, MYSQL_DB, MYSQL_HOST, hitsCounter);
 mysql.init(fs.readFileSync(__dirname + "/../../schema.sql").toString());
 
 export default {
@@ -31,4 +38,5 @@ export default {
   lectureQUpvotes: new LectureQUpvotes(mysql),
   lectureStudentLog: new LectureStudentLog(mysql),
   redis,
+  hitsCounter,
 };

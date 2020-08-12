@@ -165,33 +165,7 @@ export default {
       })
 
       // Overall understanding during the lecture
-      let overallGraphData = this.overallUnderstanding.score.map((score, i) => {
-        return {
-          x: this.lectureStart + this.overallUnderstanding.elapsed[i],
-          y: score,
-        }
-      })
-
-      // makes sure graph spans entire length
-      overallGraphData.unshift({ x: this.lectureStart, y: null })
-      // final data point
-      overallGraphData.push({ x: this.lectureEnd, y: overallGraphData[overallGraphData.length - 1].y })
-
-      if (overallGraphData.length > 100) {
-        log('Points before', overallGraphData.length)
-        let lectureLength = this.lectureEnd - this.lectureStart
-        for (let i = 1; i < overallGraphData.length - 2; i++) {
-          if (!overallGraphData[i].y || !overallGraphData[i + 1].y) continue // null
-
-          let dy = Math.abs(overallGraphData[i].y - overallGraphData[i + 1].y)
-          let dx = overallGraphData[i + 1].x - overallGraphData[i].x
-          if (dy <= 2 && dx < 0.01 * lectureLength) {
-            overallGraphData.splice(i + 1, 1)
-            i--
-          }
-        }
-        log('Points after', overallGraphData.length)
-      }
+      let overallGraphData = this.prepareOverallData(this.overallUnderstanding)
 
       this.chartData = {
         datasets: [
@@ -211,6 +185,49 @@ export default {
         ],
       }
     },
+    prepareOverallData(data) {
+      let us = data.score.map((score, i) => {
+        return {
+          x: this.lectureStart + data.elapsed[i],
+          y: score,
+        }
+      })
+
+      // adds points right before null
+      for (let i = 1; i < us.length; i++) {
+        if (typeof us[i - 1].y === 'number' && !us[i].y) {
+          us.splice(i, 0, {
+            x: us[i].x - 1,
+            y: us[i - 1].y
+          })
+          i++
+        }
+      }
+
+      // makes sure graph spans entire length
+      us.unshift({ x: this.lectureStart, y: null })
+      // final us point
+      us.push({ x: this.lectureEnd, y: us[us.length - 1].y })
+
+      // removes unnecessary points
+      if (us.length > 100) {
+        log('Points before', us.length)
+        let lectureLength = this.lectureEnd - this.lectureStart
+        for (let i = 1; i < us.length - 2; i++) {
+          if (!us[i].y || !us[i + 1].y) continue // null
+
+          let dy = Math.abs(us[i].y - us[i + 1].y)
+          let dx = us[i + 1].x - us[i].x
+          if (dy <= 2 && dx < 0.01 * lectureLength) {
+            us.splice(i + 1, 1)
+            i--
+          }
+        }
+        log('Points after', us.length)
+      }
+      
+      return us
+    }
   },
 }
 </script>

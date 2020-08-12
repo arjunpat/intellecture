@@ -3,9 +3,9 @@ import mysql from 'mysql';
 export default class MySQL {
   // private conn: mysql.Connection;
   private conn: mysql.Pool;
+  private hitsCounter: object;
 
-  constructor(user: string, password: string, database: string, host: string) {
-    let creds = { user, password, database, host };
+  constructor(user: string, password: string, database: string, host: string, hitsCounter: object) {
     //this.conn = mysql.createConnection(creds);
     this.conn = mysql.createPool({
       connectionLimit: 10,
@@ -14,6 +14,7 @@ export default class MySQL {
       database,
       host
     });
+    this.hitsCounter = hitsCounter;
   }
 
   init(sql: string) {
@@ -33,12 +34,24 @@ export default class MySQL {
   }
 
   query(sql: string, vals: any[]): Promise<any> {
-    // let loggable = sql.replace(/\r?\n|\r|\t|\s+/g, ' ');
+    let loggable = sql.replace(/\r?\n|\r|\t|\s+/g, ' ').replace(/\r?\n|\r|\t|\s+/g, ' ');
+
+    if (!this.hitsCounter[loggable]) {
+      this.hitsCounter[loggable] = {
+        count: 0,
+        totalMs: 0
+      };
+    }
+
+    this.hitsCounter[loggable].count++;
     return new Promise((resolve, reject) => {
+      let start = process.hrtime();
       this.conn.query(sql, vals, (err, res: any) => {
         if (err)
           reject(err);
-
+        
+        let end = process.hrtime(start);
+        this.hitsCounter[loggable].totalMs += end[1] / 1000000;
         resolve(res);
       });
     });

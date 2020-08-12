@@ -109,6 +109,28 @@ export default class Lectures {
       [account_uid]
     );
   }
+
+  genScheduledLectures(account_uid: string, limit: number, from: number, to: number) {
+    return this.mysql.query(
+      `SELECT
+        uid,
+        name,
+        scheduled_start,
+        class_uid
+      FROM lectures
+      WHERE 
+        class_uid IN (SELECT uid FROM classes WHERE account_uid = ?)
+        AND start_time IS NULL
+        AND scheduled_start > ?
+        AND scheduled_start < ?
+      ORDER BY scheduled_start ASC LIMIT ${limit}`,
+      [account_uid, from, to]
+    )
+  }
+
+  deleteLecture(lecture_uid: string) {
+    return this.mysql.query('DELETE FROM lectures WHERE uid = ?', [lecture_uid]);
+  }
   
   getStudents(lecture_uid: string): object {
     return this.mysql.query(

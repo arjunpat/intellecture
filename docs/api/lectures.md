@@ -1,6 +1,4 @@
-# General Routes
-
-Use the **/auth/** routes to get the cookie set that is needed to access these routes.
+# Lectures
 
 ## POST /lectures/create
 
@@ -64,7 +62,7 @@ Get all the lectures from a particular class
 
 ## GET /lectures/recent
 
-Gets up to four recent lectures from the past week; could return 0 lectures. All lectures here are guaranteed to have an end_time.
+Gets up to four recent lectures from the past week; could return 0 lectures.
 
 ###### Example response:
 ```javascript
@@ -88,6 +86,26 @@ Gets up to four recent lectures from the past week; could return 0 lectures. All
       "name": "Flux",
       "start_time": 123809832932,
       "end_time": 1238098329432
+    }
+  ]
+}
+```
+
+## GET /lectures/scheduled
+
+Gets the lectures scheduled for that day.
+
+###### Example response:
+
+```javascript
+{
+  "success": true,
+  "data": [
+    {
+      "uid": "MX4o4gapG0",
+      "name": "asfd",
+      "scheduled_start": 1597256640000,
+      "class_uid": "eMZ5mdgLHwYdrxK"
     }
   ]
 }
