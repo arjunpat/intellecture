@@ -63,7 +63,7 @@
         <v-card-text>
           <ButtonWithImage @click="signInWithGoogle" class="mb-2 mt-2" style="width: 100%" :src="require('@/assets/img/google_logo.svg')" text="Continue with Google" />
           <div v-if="signUp">
-            <p class="text-center text-caption">By signing up, you agree to our <a href="https://drive.google.com/file/d/125XXyn-Vk978m-cpqxQVr0HFhkuWmUZZ/preview" target="_blank">Privacy Policy</a> and consent to receiving emails from us about new features and opportunities. You can unsubscribe at any time.</p>
+            <p class="text-center text-caption">By signing up, you agree to our <a href="" @click.prevent="$router.push({ name: 'PrivacyPolicy' })">Privacy Policy</a> and consent to receiving emails from us about new features and opportunities. You can unsubscribe at any time.</p>
             <p class="text-center">Already have an account? <a href="" @click.prevent="signUp = false">Sign in</a></p>
           </div>
           <div v-else class="text-center">
