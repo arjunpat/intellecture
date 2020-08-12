@@ -13,7 +13,7 @@
           <template
             v-slot:explanation
           >The aggregated understanding score from your students will show up here.</template>
-          <div style="padding: 10px; min-width: 300px;">
+          <div style="padding: 10px; min-width: 350px;">
             <v-card-text style="text-align: center;">
               <span style="font-size: 23px; color: black; font-weight: bold;">
                 <span

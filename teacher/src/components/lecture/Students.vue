@@ -1,7 +1,6 @@
 <template>
   <v-row align="center" justify="center">
-    <v-row align="center" justify="center">
-      <v-col cols="8">
+      <v-col :cols="$vuetify.breakpoint.smAndDown ? 12 : 8">
         <ul style="list-style-type: none">
           <li v-for="student in students" v-bind:key="student.uid" v-show="student.inLecture">
             <v-banner style="font-family: var(--main-font);">
@@ -29,9 +28,9 @@
           <li v-if="showNoStudentsMsg">
             <div
               class="text-center heading-4"
-              :style="{ fontWeight: 'normal', fontSize: '25px' }"
+              :style="{ fontWeight: 'normal', fontSize: '25px', fontFamily: 'var(--main-font)' }"
             >No students have joined the lecture!</div>
-            <div class="text-center">
+            <div class="text-center" style="font-family: var(--main-font)">
               Have students go to
               <a>join.intellecture.app</a> and enter the code
               <span
@@ -95,7 +94,6 @@
           </TutorialDisplay>
         </ul>
       </v-col>
-    </v-row>
   </v-row>
 </template>
 
