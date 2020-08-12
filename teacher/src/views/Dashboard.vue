@@ -10,6 +10,29 @@
       Enable notifications
       <v-icon small>mdi-bell</v-icon>
     </v-btn>
+
+    <h1 class="poppins mb-4 header" v-if="recentLectures.length > 0">Scheduled Lectures</h1>
+
+    <v-row class="pl-3 pt-2 mb-10">
+      <div v-for="a in scheduledLectures" :key="a.uid" style="display: 'inline-block';">
+        <v-card
+          :width="recentLectureCardSize"
+          min-height="175"
+          hover
+          outlined
+          class="mr-3 mainfont"
+        >
+          <v-card-title class="font-weight-bold">{{ a.name }}</v-card-title>
+          <v-card-subtitle> {{ dateToString(a.scheduled_start) }}</v-card-subtitle>
+          <v-card-text >{{ getClassNameAndSection(a.class_uid) }}</v-card-text>
+
+          <v-card-actions>
+            <v-btn text color="#66BB6A" @click="$router.push({ path: `/lecture/${a.uid}` })">Start Now</v-btn>
+          </v-card-actions>
+        </v-card>
+      </div>
+    </v-row>
+
     <h1 class="poppins mb-4 header" v-if="recentLectures.length > 0">Recent Lectures</h1>
 
     <v-row class="pl-3 pt-2">
@@ -73,7 +96,7 @@
               <v-list-item>
                 <v-list-item-title>
                   <EditClass
-                    @removed="genRecentLectures()"
+                    @removed="genRecentLectures(); genScheduledLectures()"
                     :remove="true"
                     :className="cla.name"
                     :classId="cla.uid"
@@ -119,6 +142,7 @@ export default {
       search: '',
       skeleton: [{ end_time: null, name: '', start_time: null, className: '' }],
       recentLectures: [],
+      scheduledLectures: [],
       headers: [
         {
           text: 'Class Name',
@@ -166,6 +190,16 @@ export default {
       })
       this.recentLectures = d
     },
+    async genScheduledLectures() {
+      for(let i=0; i<this.classes.length; i++) {
+        let d = await get(`/lectures/by-class/${this.classes[i].uid}`).then((d) => d.data)
+        d.forEach((e) => {
+          if (e.scheduled_start > Date.now() && !e.end_time) {
+            this.scheduledLectures.push(e);
+          }
+        })
+      }
+    },
     classRedirect(classId) {
       this.$router.push({ path: `/lectures/${classId}` })
     },
@@ -179,6 +213,7 @@ export default {
   },
   mounted() {
     this.genRecentLectures()
+    this.genScheduledLectures()
   },
   computed: {
     ...mapState(['classes', 'lectures', 'authUser']),
@@ -211,6 +246,11 @@ export default {
       }
     },
   },
+  watch: {
+    classes(val) {
+      this.genScheduledLectures();
+    }
+  }
 }
 </script>
 

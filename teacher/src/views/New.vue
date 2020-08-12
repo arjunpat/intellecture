@@ -68,11 +68,7 @@
                 >
               </v-slide-x-transition>
               <v-slide-x-transition leave-absolute>
-                <v-row
-                  v-if="showSchedule"
-                  justify="center"
-                  align="center"
-                >
+                <v-row v-if="showSchedule" justify="center" align="center">
                   <!--
                   <datetime
                     class="ml-2 theme-green"
@@ -83,46 +79,70 @@
                     :phrases="{ ok: 'Ok', cancel: 'Cancel' }"
                   ></datetime>-->
                   <v-col cols="3" class="mx-0">
-                    <v-text-field
-                      label="Date"
-                      required
-                      :value="date"
-                      @focus="showDatePicker = true; showTimePicker = false;"
-                      readonly
-                      dense
-                      outlined
-                    ></v-text-field>
-                    <v-fade-transition leave-absolute>
+                    <v-menu
+                      ref="dateMenu"
+                      v-model="showDatePicker"
+                      :close-on-content-click="false"
+                      transition="scale-transition"
+                      offset-y
+                      max-width="290px"
+                      min-width="290px"
+                    >
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field
+                          v-model="dateFormatted"
+                          label="Date"
+                          hint="MM/DD/YYYY"
+                          v-bind="attrs"
+                          @blur="date = parseDate(dateFormatted)"
+                          v-on="on"
+                          outlined
+                          dense
+                        ></v-text-field>
+                      </template>
                       <v-date-picker
-                        id="datePicker"
-                        v-if="showDatePicker && !showTimePicker"
-                        @change="hideDatePicker()"
                         v-model="date"
                         color="green lighten-1"
-                      ></v-date-picker
-                    ></v-fade-transition>
+                        no-title
+                        @input="showDatePicker = false"
+                      ></v-date-picker> </v-menu
+                    >
                   </v-col>
                   <v-col cols="2" class="mx-0 pr-1 pl-0">
-                    <v-text-field
-                      label="Time"
-                      required
-                      :value="time"
-                      @focus="showTimePicker = true; showDatePicker = false;"
-                      readonly
-                      dense
-                      outlined
-                    ></v-text-field>
                     <v-fade-transition leave-absolute>
+                      
+                      <v-menu
+                      ref="timeMenu"
+                      v-model="showTimePicker"
+                      :close-on-content-click="false"
+                      transition="scale-transition"
+                      offset-y
+                      max-width="290px"
+                      min-width="290px"
+                    >
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field
+                          v-model="timeFormatted"
+                          label="Time"
+                          v-bind="attrs"
+                          @blur="time = parseTime(timeFormatted)"
+                          v-on="on"
+                          readonly
+                          outlined
+                          dense
+                        ></v-text-field>
+                      </template>
                       <v-time-picker
-                        id="timePicker"
-                        v-if="showTimePicker"
                         v-model="time"
                         color="green lighten-1"
                         ><v-spacer></v-spacer>
-                        <v-btn text color="black" @click="showTimePicker = false"
+                        <v-btn
+                          text
+                          color="black"
+                          @click="showTimePicker = false"
                           >Ok</v-btn
                         ></v-time-picker
-                      >
+                      ></v-menu>
                     </v-fade-transition>
                   </v-col>
                   <v-btn
@@ -157,8 +177,6 @@
 import store from "@/store";
 import { mapState } from "vuex";
 import { post, get } from "@/helpers.js";
-import { Datetime } from "vue-datetime";
-import "vue-datetime/dist/vue-datetime.css";
 
 export default {
   data() {
@@ -168,16 +186,16 @@ export default {
       formErrors: false,
       classIndex: 0,
       error: "Fill out all the fields.",
-      date: "",
+      date: new Date().toISOString().substr(0, 10),
+      dateFormatted: this.formatDate(new Date().toISOString().substr(0, 10)),
+      timeFormatted: this.formatTime(new Date().getHours() + ":" + new Date().getMinutes()),
       time: "",
       showSchedule: false,
       showDatePicker: false,
       showTimePicker: false
     };
   },
-  components: {
-    datetime: Datetime
-  },
+  components: {},
   methods: {
     create() {
       if (this.classes.length == 0) {
@@ -193,15 +211,18 @@ export default {
             this.$router.push({ path: "/lecture/" + data.data.lecture_uid });
           });
         } else {
-          console.log(new Date(this.date).getTime());
+          var datetime = Date.parse(this.date + "T" + this.time + ":00")
           post("/lectures/create", {
             class_uid: this.chosenClass,
             name: this.lectureName,
-            scheduled_start: new Date(this.date).getTime()
+            scheduled_start: datetime
           }).then(data => {
+            console.log(data);
             if (!data.success) {
               this.error = "Scheduled time must be in the future";
               this.formErrors = true;
+            } else {
+              this.$router.push({ name: 'Dashboard' });
             }
           });
         }
@@ -219,6 +240,50 @@ export default {
       setTimeout(() => {
         this.showDatePicker = false;
       }, 300);
+    },
+    formatDate(date) {
+      if (!date) return null;
+
+      const [year, month, day] = date.split("-");
+      return `${month}/${day}/${year}`;
+    },
+    parseDate(date) {
+      if (!date) return null;
+
+      const [month, day, year] = date.split("/");
+      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+    },
+    formatTime(time) {
+      if(!time) return null;
+
+      var [hours, minutes] = time.split(":");
+      console.log(hours + "   " + minutes)
+      var am = true;
+      if(parseInt(hours) >= 12) {
+        am = false;
+      }
+
+      if(am) {
+        if(parseInt(hours) == 0) {
+          hours = '12';
+        }
+        return hours + ":" + minutes + " am";
+      } else {
+        return (parseInt(hours)-12) + ":" + minutes + " pm";
+      }
+    },
+    parseTime(time) {
+      if(!time) return null;
+
+      const [hours, minutes] = time.split(":");
+      if(minutes.split(" ")[1] == "am") {
+        if(hours == '12') {
+          hours = '00';
+        }
+        return hours + ":" + minutes.split(" ")[0];
+      } else {
+        return (parseInt(hours)+12) + ":" + minutes.split(" ")[0]
+      }
     }
   },
   mounted() {
@@ -234,11 +299,17 @@ export default {
         fontSize: "15px",
         borderRadius: "5px"
       };
+    },
+    computedDateFormatted() {
+      return this.formatDate(this.date);
     }
   },
   watch: {
     date(val) {
-      console.log(val);
+      this.dateFormatted = this.formatDate(this.date);
+    },
+    time(val) {
+      this.timeFormatted = this.formatTime(this.time);
     }
   }
 };
@@ -248,30 +319,6 @@ export default {
 h1 {
   color: #424242;
   text-align: center;
-}
-
-.slide-fade-enter-active {
-  transition: all 1s ease;
-}
-.slide-fade-leave-active {
-  transition: all 0.5s cubic-bezier(1, 0.5, 0.8, 1);
-}
-.slide-fade-enter,
-.slide-fade-leave-to {
-  transform: translateX(10px);
-  opacity: 0;
-}
-
-.theme-green .vdatetime-popup__header,
-.theme-green .vdatetime-calendar__month__day--selected > span > span,
-.theme-green .vdatetime-calendar__month__day--selected:hover > span > span {
-  background: #ff9800;
-}
-
-.theme-green .vdatetime-year-picker__item--selected,
-.theme-green .vdatetime-time-picker__item--selected,
-.theme-green .vdatetime-popup__actions__button {
-  color: #ff9800;
 }
 
 #datePicker,
@@ -284,5 +331,4 @@ h1 {
 #main {
   padding-bottom: 400px;
 }
-
 </style>
