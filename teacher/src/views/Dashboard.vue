@@ -244,7 +244,7 @@ export default {
           return '275'
       }
     },
-  }
+  },
 }
 </script>
 

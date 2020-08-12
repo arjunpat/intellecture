@@ -69,7 +69,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { post, get, getClasses } from '@/helpers.js'
+import { post, get, loadClasses } from '@/helpers.js'
 
 export default {
   name: 'EditClass',
@@ -95,7 +95,7 @@ export default {
         }).then((response) => {
           this.dialog = false
           this.$emit('removed')
-          getClasses()
+          loadClasses(true)
         })
       }
     },
@@ -105,7 +105,7 @@ export default {
         name: this.newClassName,
         section: this.newClassSection,
       }).then((response) => {
-        getClasses()
+        loadClasses(true)
       })
     },
   },
