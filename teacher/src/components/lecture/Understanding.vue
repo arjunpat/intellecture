@@ -87,24 +87,24 @@
           v-slot:explanation
         >This is where the main topics of the questions asked by your students will show up.</template>
         <v-expand-transition>
-          <v-card flat width="90vw" min-height="70px" style="padding: 5px 10px; background-color: ">
+          <v-card flat width="90vw" min-height="70px" :style="{paddingLeft: $vuetify.breakpoint.smAndDown ? '0px' : '50px'}">
             <v-row>
               <v-col align="left">
+                <div class="mr-3 topicsChip" :style="{marginTop: '3px'}">
+                </div>
                 <div
                   v-for="n in topics.length"
                   v-bind:key="n"
-                  style="float: left; margin-bottom: 7px; height: 55px;"
-                  class="mr-3 topic"
+                  class="mr-3 topic topicsChip"
                 >
-                  <h1 style="font-size: 30px;">{{ topics[n-1].value }}</h1>
+                  {{ topics[n-1].value }}
                 </div>
                 <v-expand-transition>
                   <div
-                    style="float: left; margin-bottom: 7px; height: 55px;"
-                    class="mr-3 topic"
+                    class="mr-3 topic topicsChip"
                     v-if="showTutorial == 2"
                   >
-                    <h1 style="font-size: 20px;">This is a topic</h1>
+                    This is a topic
                   </div>
                 </v-expand-transition>
               </v-col>
@@ -178,3 +178,16 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+
+.topicsChip {
+  float: left;
+  margin-bottom: 7px;
+  height: 45px;
+  font-size: 25px;
+  font-family: var(--main-font);
+  font-weight: bold;
+}
+
+</style>

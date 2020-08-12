@@ -41,7 +41,7 @@
             questions that fall under that category. Click on a topic to see all
             the questions that fall under it.</template
           >
-          <v-expand-transition>
+          <v-fade-transition :group="true">
             <v-list-item v-if="showTutorial == 4">
               <v-list-item-content>
                 <v-list-item-title>
@@ -55,7 +55,7 @@
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-          </v-expand-transition>
+          </v-fade-transition>
         </TutorialDisplay>
       </v-col>
     </v-row>
@@ -67,7 +67,7 @@
           </h1>
         </div>
         <ul style="list-style-type: none; font-family: var(--main-font);">
-            <v-expand-transition>
+            <v-slide-y-transition :group="true">
           <li
             v-for="question in displayQuestions"
             v-bind:key="question.question_uid"
@@ -104,7 +104,7 @@
               </template>
             </v-banner>
           </li>
-            </v-expand-transition>
+            </v-slide-y-transition>
           <!-- EXAMPLE QUESTION -->
           <TutorialDisplay
             :show="showTutorial == 5"

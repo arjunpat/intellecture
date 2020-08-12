@@ -75,7 +75,7 @@
               </span>
               <span v-else-if="item === 'Questions'">
                 {{ item }}
-                <v-chip>{{ numQuestions }}</v-chip>
+                <v-chip id="numQuestionsChip" :color="numQuestionsColor">{{ numQuestions }}</v-chip>
               </span>
               <span v-else>{{ item }}</span>
             </v-tab>
@@ -482,9 +482,17 @@ export default {
     },
     numQuestions() {
       const length = Object.values(this.questions).filter((question) => !question.dismissed).length
+
       if(this.items[this.tab] == 'Questions') this.prevNumQuestions = length;
       return length
     },
+    numQuestionsColor() {
+      if(Object.values(this.questions).filter((question) => !question.dismissed).length > this.prevNumQuestions) {
+        return '#F0F4C3'
+      } else {
+        return '#E0E0E0'
+      }
+    }
   },
   watch: {
     endLecture(val) {
@@ -666,5 +674,9 @@ html {
 /* Fix for small screens */
 .v-slide-group__prev {
   display: none !important;
+}
+
+#numQuestionsChip {
+  transition: 0.3s all;
 }
 </style>
