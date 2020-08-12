@@ -49,11 +49,14 @@
           <v-card-title id="lectureTitle">{{ lecture.name }}</v-card-title>
           <v-row class="pl-3">
             <v-col cols="4">
-            <h3 class="subtitle font-weight-regular">
+            <h3 class="subtitle font-weight-regular" v-if="lecture.end_time>lecture.start_time">
               {{
                 lectureLengthString(lecture.end_time - lecture.start_time)
               }}
               long
+            </h3>
+            <h3 class="live" v-else>
+              LIVE
             </h3>
             </v-col>
             <v-col cols="4">
@@ -186,7 +189,14 @@ export default {
   font-size: 50px;
   font-weight: 900;
 }
-
+.live {
+  background-color:red;
+  color:white;
+  border-radius:20px;
+  padding:7px;
+  width:70px;
+  text-align:center;
+}
 #lectureTitle {
   font-weight: bold;
   font-size: 25px;
