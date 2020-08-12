@@ -11,14 +11,13 @@
       <v-icon small>mdi-bell</v-icon>
     </v-btn>
 
-    <h1 class="poppins mb-4 header" v-if="recentLectures.length > 0">Scheduled Lectures</h1>
+    <h1 class="poppins mb-4 header" v-if="scheduledLectures.length > 0">Scheduled Lectures</h1>
 
     <v-row class="pl-3 pt-2 mb-10">
       <div v-for="a in scheduledLectures" :key="a.uid" style="display: 'inline-block';">
         <v-card
           :width="recentLectureCardSize"
           min-height="175"
-          hover
           outlined
           class="mr-3 mainfont"
         >
@@ -26,8 +25,10 @@
           <v-card-subtitle> {{ dateToString(a.scheduled_start) }}</v-card-subtitle>
           <v-card-text >{{ getClassNameAndSection(a.class_uid) }}</v-card-text>
 
-          <v-card-actions>
-            <v-btn text color="#66BB6A" @click="$router.push({ path: `/lecture/${a.uid}` })">Start Now</v-btn>
+          <v-card-actions >
+            <v-row align="center" justify="center">
+            <v-btn dark hover color="#aae691ff" class="mb-2" @click="$router.push({ path: `/lecture/${a.uid}` })">Start Now</v-btn>
+            </v-row>
           </v-card-actions>
         </v-card>
       </div>
