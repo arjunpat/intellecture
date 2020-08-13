@@ -35,22 +35,23 @@
                   <v-text-field label="Lecture name" outlined v-model="lectureName" required></v-text-field>
                 </v-col>
               </v-row>
-              <v-row align="center" justify="center" style="margin-bottom: 15px;">
+              <!--<v-row align="center" justify="center" style="margin-bottom: 15px;">
                 <v-checkbox
                   v-model="startNow"
                   :label="`Start this lecture now`"
                 ></v-checkbox>
-              </v-row>
-              <v-row align="center" justify="center" class="my-0 py-0" style="min-height: 50px; margin-bottom: 15px;" v-show="!startNow">
+              </v-row>-->
+              <v-row align="center" justify="center" class="my-0 py-0" style="min-height: 50px; margin-bottom: 15px;">
                 <v-slide-y-transition leave-absolute>
                   <v-btn
                     @click="schedule"
                     style="font-family: var(--main-font); margin-top: -40px;"
                     dark
                     outlined
-                    small
+                    medium
                     color="light-green lighten-2"
                     v-if="!showSchedule"
+                    
                   >Schedule a time</v-btn>
                 </v-slide-y-transition>
                 <v-slide-y-transition leave-absolute>
@@ -61,7 +62,7 @@
                     align="center"
                     style="position: absolute;"
                   >
-                    <v-col cols="3" class="mx-0">
+                    <v-col cols="4" class="mx-0">
                       <v-menu
                         ref="dateMenu"
                         v-model="showDatePicker"
@@ -91,7 +92,7 @@
                         ></v-date-picker>
                       </v-menu>
                     </v-col>
-                    <v-col cols="2" class="mx-0 pr-1 pl-0">
+                    <v-col cols="3" class="mx-0 pr-1 pl-0">
                       <v-fade-transition leave-absolute>
                         <v-menu
                           ref="timeMenu"
@@ -126,20 +127,33 @@
                       dark
                       color="error"
                       class="ml-2"
-                      small
+                      medium
                       style="margin-top: -25px;"
                     >Cancel</v-btn>
                   </v-row>
                 </v-slide-y-transition>
               </v-row>
               <v-row align="center" justify="center">
+                <v-fade-transition leave-absolute>
                 <v-btn
                   @click="create"
-                  style="font-family: var(--main-font)"
+                  style="font-family: var(--main-font);"
                   large
                   dark
                   color="light-green lighten-2"
-                >Create</v-btn>
+                  v-if="!showSchedule"
+                >Start now</v-btn>
+                </v-fade-transition>
+                <v-fade-transition leave-absolute>
+                <v-btn
+                  @click="create"
+                  style="font-family: var(--main-font);"
+                  large
+                  dark
+                  color="light-green lighten-2"
+                  v-if="showSchedule"
+                >Schedule</v-btn>
+                </v-fade-transition>
               </v-row>
             </v-form>
 
@@ -174,7 +188,7 @@ export default {
       date: new Date().toISOString().substr(0, 10),
       dateFormatted: this.formatDate(new Date().toISOString().substr(0, 10)),
       timeFormatted: this.formatTime(
-        new Date().getHours() + ":" + new Date().getMinutes()
+        new Date().toTimeString().split(":")[0] + ":" + new Date().toTimeString().split(":")[1]
       ),
       time: this.parseTime(this.timeFormatted),
       showSchedule: false,
@@ -250,6 +264,7 @@ export default {
       if (parseInt(hours) >= 12) {
         am = false;
       }
+      console.log(minutes);
 
       if (am) {
         if (parseInt(hours) == 0) {
