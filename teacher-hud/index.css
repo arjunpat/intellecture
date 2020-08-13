@@ -6,12 +6,3 @@ body {
   background-color: #81C784;
   color: white;
 }
-
-#drag {
-  -webkit-app-region: drag;
-  font-size: 30px;
-  position: absolute;
-  right: 0;
-  top: 0;
-  padding: 5px;
-}

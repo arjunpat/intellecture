@@ -42,6 +42,7 @@ export function signInGoogle() {
   return Vue.gAuth.signIn().then((googleUser) => {
     return googleUser.getAuthResponse()
   }).then((response) => {
+    log('Google Access Token: ', response.access_token)
     return post('/auth/google-signin', {
       google_access_token: response.access_token,
       teacher: true
