@@ -94,7 +94,7 @@
               </div>
             </v-col>
             <v-col cols="12" sm="4" :class="$vuetify.breakpoint.smAndUp && 'text-center'">
-              <h3 class="subtitle font-weight-regular">
+              <h3 class="subtitle font-weight-regular" v-if="lecture.end_time">
                 {{ lecture.student_count }}
                 students
               </h3>
@@ -283,11 +283,13 @@ export default {
   color: white;
   border-radius: 20px;
   padding: 7px;
+  width:80px;
   text-align: center;
 }
 .future {
   background-color: #aae691ff;
   color: white;
+  width:140px;
   border-radius: 20px;
   padding: 7px;
   text-align: center;
