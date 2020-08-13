@@ -4,9 +4,11 @@
       <v-col cols="12" lg="7" md="9" sm="12">
         <v-card class="mainfont px-2 py-2">
           <v-card-title id="classTitle">{{ classInfo.name }}</v-card-title>
-          <v-card-subtitle class="mt-2 subtitle" style="line-height: 30px;"
-            >{{ classInfo.section }}<br />{{ lectures.length }} lectures</v-card-subtitle
-          >
+          <v-card-subtitle class="mt-2 subtitle" style="line-height: 30px;">
+            {{ classInfo.section }}
+            <br />
+            {{ lectures.length }} lectures
+          </v-card-subtitle>
         </v-card>
       </v-col>
     </v-row>
@@ -71,30 +73,24 @@
       </v-col>
     </v-row>
 
-    <v-row
-      class="fill-height"
-      justify="center"
-      v-for="lecture in lectures"
-      :key="lecture.uid"
-    >
+    <v-row class="fill-height" justify="center" v-for="lecture in lectures" :key="lecture.uid">
       <v-col cols="12" lg="6" md="8" sm="11">
-        <v-card hover outlined class="mainfont px-2 py-2" :to="lecture.end_time<lecture.start_time ? '/lecture/' + lecture.uid : '/lecture-analytics/' + lecture.uid" >
+        <v-card
+          hover
+          outlined
+          class="mainfont px-2 py-2"
+          :to="lecture.end_time ? '/lecture-analytics/' + lecture.uid : '/lecture/' + lecture.uid"
+        >
           <v-card-title id="lectureTitle">{{ lecture.name }}</v-card-title>
           <v-row class="px-3">
             <v-col cols="12" sm="4" :class="$vuetify.breakpoint.smAndUp && 'text-left'">
-              <h3 class="subtitle font-weight-regular" v-if="lecture.end_time>lecture.start_time">
-                {{
-                  lectureLengthString(lecture.end_time - lecture.start_time)
-                }}
+              <h3 class="subtitle font-weight-regular" v-if="lecture.end_time">
+                {{ lectureLengthString(lecture.end_time - lecture.start_time) }}
                 long
               </h3>
               <div v-else>
-                <h3 class='future' v-if="lecture.scheduled_start>new Date().getTime()">
-                FUTURE 
-                </h3>
-                <h3 class="live" v-else>
-                  LIVE
-                </h3>
+                <h3 class="live" v-if="lecture.start_time && !lecture.end_time">LIVE</h3>
+                <h3 class="future" v-else-if="lecture.scheduled_start">SCHEDULED</h3>
               </div>
             </v-col>
             <v-col cols="12" sm="4" :class="$vuetify.breakpoint.smAndUp && 'text-center'">
@@ -104,17 +100,15 @@
               </h3>
             </v-col>
             <v-col cols="12" sm="4" :class="$vuetify.breakpoint.smAndUp && 'text-right'">
-              <h3 class="subtitle font-weight-regular" v-if="lecture.end_time>lecture.start_time">
-                {{
-                  timeSinceEndTimeString(lecture.end_time)
-                }}
-              </h3>
-              <h3 class="subtitle font-weight-regular" v-else-if="lecture.scheduled_start>new Date().getTime()">
-                Live in {{(Math.abs(lecture.scheduled_start - new Date()) / 36e5).toFixed(1)}} hours
-              </h3>
-              <h3 class="subtitle font-weight-regular" v-else>
-                Live Now
-              </h3>
+              <h3
+                class="subtitle font-weight-regular"
+                v-if="lecture.end_time"
+              >{{ timeSinceEndTimeString(lecture.end_time) }}</h3>
+              <h3 class="subtitle font-weight-regular" v-else-if="lecture.start_time && !lecture.end_time">Live Now</h3>
+              <h3
+                class="subtitle font-weight-regular"
+                v-else-if="lecture.scheduled_start>new Date().getTime()"
+              >Scheduled for {{ new Date(lecture.scheduled_start).toLocaleString() }}</h3>
             </v-col>
           </v-row>
         </v-card>
@@ -149,14 +143,15 @@ import {
   log,
   durationToString,
   dateToString,
-  getClasses
-} from "@/helpers.js";
-import { mdiAndroidStudio } from "@mdi/js";
-import { mapState } from "vuex";
+  pad,
+  loadClasses
+} from '@/helpers.js'
+import { mdiAndroidStudio } from '@mdi/js'
+import { mapState } from 'vuex'
 
 export default {
   props: {
-    class_uid: { type: String }
+    class_uid: { type: String },
   },
 
   data() {
@@ -164,18 +159,17 @@ export default {
       testing: false,
       lectures: [],
       classInfo: {},
-      time:"",
-      picker:false,
-      page:1,
-      date:"",
-      scheduled:false,
-      classes: [],
+      time: '',
+      picker: false,
+      page: 1,
+      date: '',
+      scheduled: false,
       dialog: false,
       showNewLecture: false,
       newLectureName: '',
       addColor: '#81c784ff',
-      addRotate: 'rotate(0deg)'
-    };
+      addRotate: 'rotate(0deg)',
+    }
   },
   computed: {
     parsedTime() {
@@ -185,58 +179,54 @@ export default {
       return `${this.datetime.getMonth() + 1}/${this.datetime.getDate()}/${this.datetime.getFullYear().toString().substring(2)}`
     },
     datetime() {
-      return new Date(this.date + "T" + this.time + ":00")
-    }
+      return new Date(this.date + 'T' + this.time + ':00')
+    },
+    ...mapState(['classes'])
   },
   methods: {
+    getTimeFromLecture(lecture) {
+      return lecture.end_time || lecture.start_time || lecture.scheduled_start
+    },
     async init() {
       if (this.testing) {
       } else {
-        this.classes = await get("/classes/mine").then(result => {
-          if (!result.success) throw result;
-          result.data.sort((a, b) => (a.name > b.name ? 1 : -1));
-          return result.data;
-        });
-
+        await loadClasses();
         this.classInfo = this.classes.find(cla => cla.uid == this.class_uid);
 
         this.lectures = await get(`/lectures/by-class/${this.class_uid}`).then(
-          d => {
-            if (d.success) return d.data;
-            log("failed", e);
+          (d) => {
+            if (d.success) return d.data
+            log('failed', e)
           }
-        );
-        this.lectures.sort((a, b) => (a.end_time < b.end_time) ? 1 : -1)
-
-        /*this.lectureLength = this.lectureInfo.end_time - this.lectureInfo.start_time
-        this.students = students*/
+        )
+        this.lectures.sort((a, b) => this.getTimeFromLecture(b) - this.getTimeFromLecture(a))
       }
     },
     lectureLengthString(lectureLength) {
-      var duration = durationToString(lectureLength, true);
-      var durationArray = duration.split(" ");
-      if (durationArray[durationArray.length - 1].includes("second")) {
+      var duration = durationToString(lectureLength, true)
+      var durationArray = duration.split(' ')
+      if (durationArray[durationArray.length - 1].includes('second')) {
         if (durationArray.length == 2) {
-          duration = "< 1 minute";
+          duration = '< 1 minute'
         } else {
-          durationArray.splice(durationArray.length - 2, 2);
-          duration = durationArray.join(" ");
+          durationArray.splice(durationArray.length - 2, 2)
+          duration = durationArray.join(' ')
         }
       }
-      return duration;
+      return duration
     },
     timeSinceEndTimeString(endTime) {
-      return dateToString(endTime);
+      return dateToString(endTime)
     },
     confirmSchedule() {
-      if (this.datetime.getTime()>new Date().getTime()) {
-        this.dialog=false;
-        this.scheduled=true;
+      if (this.datetime.getTime() > new Date().getTime()) {
+        this.dialog = false
+        this.scheduled = true
       }
     },
-    
+
     animateNewLecture() {
-      if(!this.showNewLecture) {
+      if (!this.showNewLecture) {
         this.showNewLecture = true
         this.addColor = 'red'
         this.addRotate = 'rotate(45deg)'
@@ -248,68 +238,59 @@ export default {
     },
     create() {
       if (!this.scheduled) {
-          post("/lectures/create", {
-            class_uid: this.classInfo.uid,
-            name: this.newLectureName,
-          }).then((data) => {
-            this.$router.push({ path: "/lecture/" + data.data.lecture_uid })
-          })
-        } else {
-          var datetime = Date.parse(this.date + "T" + this.time + ":00")
-          post("/lectures/create", {
-            class_uid: this.classInfo.uid,
-            name: this.newLectureName,
-            scheduled_start: datetime
-          }).then(data => {
-            log(data);
-            if (!data.success) {
-              this.$emit('error', 'Scheduled time must be in the future');
-              this.formErrors = true;
-            } else {
-              this.$router.push({ name: 'Dashboard' });
-            }
-          });
-        }
-    }
+        post('/lectures/create', {
+          class_uid: this.classInfo.uid,
+          name: this.newLectureName,
+        }).then((data) => {
+          this.$router.push({ path: '/lecture/' + data.data.lecture_uid })
+        })
+      } else {
+        post('/lectures/create', {
+          class_uid: this.classInfo.uid,
+          name: this.newLectureName,
+          scheduled_start: this.datetime,
+        }).then((data) => {
+          console.log(data)
+          if (!data.success) {
+            this.$emit('error', 'Scheduled time must be in the future');
+            this.formErrors = true
+          } else {
+            this.$router.push({ name: 'Dashboard' })
+          }
+        })
+      }
+    },
   },
 
   mounted() {
-    this.init();
-    String.prototype.pad = function(String, len) { 
-      var str = this; 
-      while (str.length < len) 
-        str = String + str; 
-      return str; 
-    } 
-  }
-};
+    this.init()
+  },
+}
 </script>
 
 <style scoped>
 .modal {
-  width:100%;
-  height:450px;
-  overflow:hidden;
+  width: 100%;
+  height: 450px;
+  overflow: hidden;
 }
 #classTitle {
   font-size: 50px;
   font-weight: 900;
 }
 .live {
-  background-color:red;
-  color:white;
-  border-radius:20px;
-  padding:7px;
-  width:70px;
-  text-align:center;
+  background-color: red;
+  color: white;
+  border-radius: 20px;
+  padding: 7px;
+  text-align: center;
 }
 .future {
-  background-color:#aae691ff;;
-  color:white;
-  border-radius:20px;
-  padding:7px;
-  width:100px;
-  text-align:center;
+  background-color: #aae691ff;
+  color: white;
+  border-radius: 20px;
+  padding: 7px;
+  text-align: center;
 }
 #lectureTitle {
   font-weight: bold;
@@ -333,5 +314,4 @@ export default {
 .inner-shadow {
   box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.25) !important;
 }
-
 </style>

@@ -11,9 +11,7 @@
           </v-toolbar>
 
           <v-card-text>
-            <br />
-            <br />
-            <v-form>
+            <v-form class="mt-6">
               <h1 class="mb-2">Select a class</h1>
               <v-row align="center" justify="center">
                 <v-col :cols="$vuetify.breakpoint.xs ? 12 : 8">
@@ -43,19 +41,8 @@
                   ></v-text-field>
                 </v-col>
               </v-row>
-            </v-form>
-            <v-row align="center" justify="center">
-              <v-btn
-                @click="create"
-                style="font-family: var(--main-font)"
-                large
-                dark
-                color="light-green lighten-2"
-                >Create</v-btn
-              >
-            </v-row>
-            <v-row align="center" justify="center" style="min-height: 100px;">
-              <v-slide-x-transition leave-absolute>
+            <v-row align="center" justify="center" class="my-0 py-0" style="min-height: 50px;">
+              <v-slide-y-transition leave-absolute>
                 <v-btn
                   @click="schedule"
                   style="font-family: var(--main-font); margin-top: -40px;"
@@ -66,18 +53,9 @@
                   v-if="!showSchedule"
                   >Schedule a time</v-btn
                 >
-              </v-slide-x-transition>
-              <v-slide-x-transition leave-absolute>
-                <v-row v-if="showSchedule" justify="center" align="center">
-                  <!--
-                  <datetime
-                    class="ml-2 theme-green"
-                    v-model="date"
-                    type="datetime"
-                    use12-hour
-                    :input-style="dateInputStyle"
-                    :phrases="{ ok: 'Ok', cancel: 'Cancel' }"
-                  ></datetime>-->
+              </v-slide-y-transition>
+              <v-slide-y-transition leave-absolute>
+                <v-row v-if="showSchedule" justify="center" class="my-0 py-0" align="center" style="position: absolute;">
                   <v-col cols="3" class="mx-0">
                     <v-menu
                       ref="dateMenu"
@@ -155,8 +133,19 @@
                     >Cancel</v-btn
                   >
                 </v-row>
-              </v-slide-x-transition>
+              </v-slide-y-transition>
             </v-row>
+            <v-row align="center" justify="center">
+              <v-btn
+                @click="create"
+                style="font-family: var(--main-font)"
+                large
+                dark
+                color="light-green lighten-2"
+                >Create</v-btn
+              >
+            </v-row>
+            </v-form>
 
             <br />
             <v-row align="center" justify="center">
@@ -189,7 +178,7 @@ export default {
       date: new Date().toISOString().substr(0, 10),
       dateFormatted: this.formatDate(new Date().toISOString().substr(0, 10)),
       timeFormatted: this.formatTime(new Date().getHours() + ":" + new Date().getMinutes()),
-      time: "",
+      time: this.parseTime(this.timeFormatted),
       showSchedule: false,
       showDatePicker: false,
       showTimePicker: false
@@ -217,7 +206,7 @@ export default {
             name: this.lectureName,
             scheduled_start: datetime
           }).then(data => {
-            console.log(data);
+            console.log("Scheduled at " + this.date + "T" + this.time + ":00");
             if (!data.success) {
               this.error = "Scheduled time must be in the future";
               this.formErrors = true;
@@ -269,20 +258,26 @@ export default {
         }
         return hours + ":" + minutes + " am";
       } else {
-        return (parseInt(hours)-12) + ":" + minutes + " pm";
+        if(parseInt(hours) != 12) {
+          hours = parseInt(hours)-12;
+        }
+        return hours + ":" + minutes + " pm";
       }
     },
     parseTime(time) {
       if(!time) return null;
 
-      const [hours, minutes] = time.split(":");
+      var [hours, minutes] = time.split(":");
       if(minutes.split(" ")[1] == "am") {
         if(hours == '12') {
           hours = '00';
         }
         return hours + ":" + minutes.split(" ")[0];
       } else {
-        return (parseInt(hours)+12) + ":" + minutes.split(" ")[0]
+        if(hours != '12') {
+          hours = parseInt(hours)+12;
+        }
+        return hours + ":" + minutes.split(" ")[0]
       }
     }
   },

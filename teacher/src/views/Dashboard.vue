@@ -11,30 +11,6 @@
       <v-icon small>mdi-bell</v-icon>
     </v-btn>
 
-    <h1 class="poppins mb-4 header" v-if="scheduledLectures.length > 0">Scheduled Lectures</h1>
-
-    <v-row class="pl-3 pt-2 mb-10">
-      <div v-for="a in scheduledLectures" :key="a.uid" style="display: 'inline-block';">
-        <v-card :width="recentLectureCardSize" min-height="175" outlined class="mr-3 mainfont">
-          <v-card-title class="font-weight-bold">{{ a.name }}</v-card-title>
-          <v-card-subtitle>{{ dateToString(a.scheduled_start) }}</v-card-subtitle>
-          <v-card-text>{{ getClassNameAndSection(a.class_uid) }}</v-card-text>
-
-          <v-card-actions>
-            <v-row align="center" justify="center">
-              <v-btn
-                dark
-                hover
-                color="#aae691ff"
-                class="mb-2"
-                @click="$router.push({ path: `/lecture/${a.uid}` })"
-              >Start Now</v-btn>
-            </v-row>
-          </v-card-actions>
-        </v-card>
-      </div>
-    </v-row>
-
     <h1 class="poppins mb-4 header" v-if="recentLectures.length > 0">Recent Lectures</h1>
 
     <v-row class="pl-3 pt-2">
@@ -120,13 +96,37 @@
         </v-card>
       </div>
     </v-row>
+
+    <h1 class="poppins mb-4 mt-10 header" v-if="scheduledLectures.length > 0">Upcoming</h1>
+
+    <v-row class="pl-3 pt-2 mb-10">
+      <div v-for="a in scheduledLectures" :key="a.uid" style="display: 'inline-block';">
+        <v-card :width="recentLectureCardSize" min-height="175" outlined class="mr-3 mainfont">
+          <v-card-title class="font-weight-bold">{{ a.name }}</v-card-title>
+          <v-card-subtitle>{{ dateTimeToString(a.scheduled_start) }}</v-card-subtitle>
+          <v-card-text>{{ getClassNameAndSection(a.class_uid) }}</v-card-text>
+
+          <v-card-actions>
+            <v-row>
+              <v-btn
+                dark
+                hover
+                color="#aae691ff"
+                class="mb-2 ml-4"
+                @click="$router.push({ path: `/lecture/${a.uid}` })"
+              >Start Now</v-btn>
+            </v-row>
+          </v-card-actions>
+        </v-card>
+      </div>
+    </v-row>
   </v-container>
 </template>
 
 <script>
 import ModalForm from '@/components/ModalForm'
 import EditClass from '@/components/EditClass'
-import { post, get, dateToString } from '@/helpers.js'
+import { post, get, dateToString, dateTimeToString } from '@/helpers.js'
 import { mapState } from 'vuex'
 
 export default {
@@ -162,6 +162,7 @@ export default {
   },
   methods: {
     dateToString,
+    dateTimeToString,
     formatUnix(unix_timestamp) {
       if (unix_timestamp == undefined) {
         return ''
@@ -244,7 +245,7 @@ export default {
           return '275'
       }
     },
-  }
+  },
 }
 </script>
 
