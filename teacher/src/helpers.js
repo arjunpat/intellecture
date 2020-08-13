@@ -94,6 +94,13 @@ export function dateToString(date) {
   });
 }
 
+export function dateTimeToString(date) {
+  let oldDate = new Date(date).toLocaleString('en-US');
+  oldDate = oldDate.split(":");
+  let formatted = oldDate[0] + ":" + oldDate[1] + oldDate[2].substring(2);
+  return formatted;
+}
+
 export function durationToString(ms, descriptive = false) {
   // Descriptive determines whether to display hours with minutes, and minutes with seconds
 
