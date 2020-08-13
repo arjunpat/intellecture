@@ -104,7 +104,7 @@
             <v-card flat class="pt-3" style="min-height: 75vh;">
               <Questions
                 :questions="questions"
-                :topics="topics"
+                :topics="quesTopics"
                 :showTutorial="showTutorial"
                 :datacollection="datacollection"
                 :shortened="shortened"
@@ -219,6 +219,7 @@ export default {
       students: {},
       displayQuestions: [],
       topics: [],
+      quesTopics: [],
       tab: 0,
       items: ['Understanding', 'Questions', 'Students'],
       understandingData: [],
@@ -300,7 +301,7 @@ export default {
     },
     showCategory(index) {
       this.displayQuestions = [...this.questions]
-      const q = this.topics[index].questions
+      const q = this.quesTopics[index].questions
       this.displayQuestions = this.displayQuestions.filter((question) =>
         q.includes(question.question_uid)
       )
@@ -403,6 +404,9 @@ export default {
         this.displayNotification('New Question', data.question)
       } else if (data.type === 'ques_categor') {
         this.topics = data.categories
+        this.topics.forEach(cat => {cat.value = cat.value.charAt(0).toUpperCase() + cat.value.slice(1)})
+        this.quesTopics = [...this.topics];
+        this.quesTopics.unshift({value: 'All questions', questions: this.questions})
       } else if (data.type === 'question_update') {
         let question = this.getQuestionById(data.question_uid)
         question.upvotes = data.upvotes
