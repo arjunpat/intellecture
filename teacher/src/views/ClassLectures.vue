@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row class="fill-height" justify="center">
-      <v-col cols="12" lg="6" md="6" sm="9">
+      <v-col cols="12" lg="7" md="9" sm="12">
         <v-card class="mainfont px-2 py-2">
           <v-card-title id="classTitle">{{ classInfo.name }}</v-card-title>
           <v-card-subtitle class="mt-2 subtitle" style="line-height: 30px;"
@@ -15,56 +15,58 @@
       class="fill-height"
       justify="center"
     >
-      <v-col cols="12" lg="5" md="5" sm="8">
-        <v-card class="mainfont px-2 py-2 inner-shadow" id="newLectureCard" :style="{ height: newLectureHeight, backgroundColor: '#f7f7f7' }">
-          <v-card-title class="font-weight-regular">Create a new lecture</v-card-title>
+      <v-col cols="12" lg="6" md="8" sm="11">
+        <v-card class="mainfont px-2 py-2 inner-shadow" id="newLectureCard" :style="{ backgroundColor: '#f7f7f7' }">
+          <v-card-title 
+            class="font-weight-regular ml-n2"
+            :style="{
+              fontSize: $vuetify.breakpoint.xs ? '18px' : '20px'
+            }"
+          >Create a new lecture</v-card-title>
           <v-btn id="addBtn" fab dark :color="addColor" :style="{ transform: addRotate, top: '10px', right: '10px' }" @click="animateNewLecture()">
             <v-icon dark large>mdi-plus</v-icon>
           </v-btn>
-           <v-slide-y-transition>
-             <v-row v-if="showNewLecture">
-                <v-text-field
-                  class="mainfont ml-7"
-                  label="Lecture name"
-                  hint="What's the name of the new lecture?"
-                  v-model="newLectureName"
-                  @keyup.enter="create"
-                ></v-text-field>
-                <v-dialog v-model="dialog" persistent max-width="290">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      style="font-family: var(--main-font);align-self:center;margin-left:10px;"
-                      dark
-                      outlined
-                      small
-                      v-bind="attrs"
-                      v-on="on"
-                      color="light-green lighten-2"
-                      >{{ scheduled ? parsedTime : "now"}}
+          <v-expand-transition>
+            <div v-show="showNewLecture" class="px-4">
+              <v-row  
+                align="center"
+                class="mb-0"
+              >
+                <v-col class="pa-0">
+                  <v-text-field
+                    class="mainfont white"
+                    label="Lecture name"
+                    hint="What's the name of the new lecture?"
+                    v-model="newLectureName"
+                    hide-details
+                    outlined
+                    autocomplete="off"
+                    @keyup.enter="create"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="auto" class="pr-0">
+                  <v-btn small text fab color="#aae691ff" @click="create">
+                    <v-icon v-if="!scheduled">arrow_forward</v-icon>
+                    <v-icon v-else>check</v-icon>
                   </v-btn>
-                  </template>
-                  <v-card class="modal">
-                     <v-time-picker v-if="page==1"
-                      v-model="time"
-                      ampm-in-title
-                      color="#65bb6aff"
-                    ></v-time-picker>
-                    <v-date-picker v-model="date" v-if="page==2" color="#65bb6aff"></v-date-picker>
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn color="red" text dark @click="dialog = false" v-if="page==1">Cancel</v-btn>
-                      <v-btn color="#aae691ff" dark text @click="page+=1" v-if="page==1&&this.time!=``">Next</v-btn>
-                      <v-btn color="red" text dark @click="page-=1" v-if="page==2">Back</v-btn>
-                      <v-btn color="#aae691ff" dark text @click="confirmSchedule" v-if="page==2&&new Date(this.date + `T` + this.time + `:00`).getTime()>new Date().getTime()">Done</v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-                 <v-btn small text color="#aae691ff" dark class="mt-5 mr-4 ml-1" @click="create">
-                   <v-icon v-if="!scheduled">arrow_forward</v-icon>
-                   <v-icon v-else>event</v-icon>
-                 </v-btn>
-             </v-row>
-           </v-slide-y-transition>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-btn
+                  style="font-family: var(--main-font);"
+                  class="my-2"
+                  dark
+                  outlined
+                  small
+                  :block="$vuetify.breakpoint.xs"
+                  color="light-green lighten-2"
+                  @click.stop="dialog = true"
+                >
+                  {{ scheduled ? parsedTime : "now"}}
+                </v-btn>
+              </v-row>
+            </div>
+          </v-expand-transition>
         </v-card>
       </v-col>
     </v-row>
@@ -75,49 +77,68 @@
       v-for="lecture in lectures"
       :key="lecture.uid"
     >
-      <v-col cols="12" lg="5" md="5" sm="8">
+      <v-col cols="12" lg="6" md="8" sm="11">
         <v-card hover outlined class="mainfont px-2 py-2" :to="lecture.end_time<lecture.start_time ? '/lecture/' + lecture.uid : '/lecture-analytics/' + lecture.uid" >
           <v-card-title id="lectureTitle">{{ lecture.name }}</v-card-title>
-          <v-row class="pl-3">
-            <v-col cols="4">
-            <h3 class="subtitle font-weight-regular" v-if="lecture.end_time>lecture.start_time">
-              {{
-                lectureLengthString(lecture.end_time - lecture.start_time)
-              }}
-              long
-            </h3>
-            <div v-else>
-              <h3 class='future' v-if="lecture.scheduled_start>new Date().getTime()">
-              FUTURE 
+          <v-row class="px-3">
+            <v-col cols="12" sm="4" :class="$vuetify.breakpoint.smAndUp && 'text-left'">
+              <h3 class="subtitle font-weight-regular" v-if="lecture.end_time>lecture.start_time">
+                {{
+                  lectureLengthString(lecture.end_time - lecture.start_time)
+                }}
+                long
               </h3>
-              <h3 class="live" v-else>
-                LIVE
+              <div v-else>
+                <h3 class='future' v-if="lecture.scheduled_start>new Date().getTime()">
+                FUTURE 
+                </h3>
+                <h3 class="live" v-else>
+                  LIVE
+                </h3>
+              </div>
+            </v-col>
+            <v-col cols="12" sm="4" :class="$vuetify.breakpoint.smAndUp && 'text-center'">
+              <h3 class="subtitle font-weight-regular">
+                {{ lecture.student_count }}
+                students
               </h3>
-            </div>
             </v-col>
-            <v-col cols="4">
-            <h3 class="subtitle font-weight-regular">
-              {{ lecture.student_count }}
-              students
-            </h3>
-            </v-col>
-            <v-col cols="4">
-            <h3 class="subtitle font-weight-regular" v-if="lecture.end_time>lecture.start_time">
-              {{
-                timeSinceEndTimeString(lecture.end_time)
-              }}
-            </h3>
-            <h3 class="subtitle font-weight-regular" v-else-if="lecture.scheduled_start>new Date().getTime()">
-              Live in {{(Math.abs(lecture.scheduled_start - new Date()) / 36e5).toFixed(1)}} hours
-            </h3>
-            <h3 class="subtitle font-weight-regular" v-else>
-              Live Now
-            </h3>
+            <v-col cols="12" sm="4" :class="$vuetify.breakpoint.smAndUp && 'text-right'">
+              <h3 class="subtitle font-weight-regular" v-if="lecture.end_time>lecture.start_time">
+                {{
+                  timeSinceEndTimeString(lecture.end_time)
+                }}
+              </h3>
+              <h3 class="subtitle font-weight-regular" v-else-if="lecture.scheduled_start>new Date().getTime()">
+                Live in {{(Math.abs(lecture.scheduled_start - new Date()) / 36e5).toFixed(1)}} hours
+              </h3>
+              <h3 class="subtitle font-weight-regular" v-else>
+                Live Now
+              </h3>
             </v-col>
           </v-row>
         </v-card>
       </v-col>
     </v-row>
+    
+    <!-- Date/time picker -->
+    <v-dialog v-model="dialog" persistent max-width="290">
+      <v-card class="modal">
+        <v-time-picker v-if="page==1"
+          v-model="time"
+          ampm-in-title
+          color="#65bb6aff"
+        ></v-time-picker>
+        <v-date-picker v-model="date" v-if="page==2" color="#65bb6aff"></v-date-picker>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="red" text dark @click="dialog = false" v-if="page==1">Cancel</v-btn>
+          <v-btn color="#aae691ff" dark text @click="page+=1" v-if="page==1&&this.time!=``">Next</v-btn>
+          <v-btn color="red" text dark @click="page-=1" v-if="page==2">Back</v-btn>
+          <v-btn color="#aae691ff" text @click="confirmSchedule" v-if="page==2" :disabled="!(datetime.getTime()>new Date().getTime())">Done</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -134,8 +155,6 @@ import { mdiAndroidStudio } from "@mdi/js";
 import { mapState } from "vuex";
 
 export default {
-  // mdi-timer-outline
-  // mdi-update OR mdi-calendar-range
   props: {
     class_uid: { type: String }
   },
@@ -154,14 +173,19 @@ export default {
       dialog: false,
       showNewLecture: false,
       newLectureName: '',
-      newLectureHeight: '80px',
       addColor: '#81c784ff',
       addRotate: 'rotate(0deg)'
     };
   },
   computed: {
     parsedTime() {
-      return `${new Date(this.date + "T" + this.time + ":00").getMonth()}/${new Date(this.date + "T" + this.time + ":00").getDay()}, ${new Date(this.date + "T" + this.time + ":00").getHours()}:${String(new Date(this.date + "T" + this.time + ":00").getMinutes()).pad(2)}`
+      return `${this.dateString}, ${this.datetime.toLocaleString('en-US', { timeStyle: 'short' })}`
+    },
+    dateString() {
+      return `${this.datetime.getMonth() + 1}/${this.datetime.getDate()}/${this.datetime.getFullYear().toString().substring(2)}`
+    },
+    datetime() {
+      return new Date(this.date + "T" + this.time + ":00")
     }
   },
   methods: {
@@ -205,8 +229,7 @@ export default {
       return dateToString(endTime);
     },
     confirmSchedule() {
-      let datetime = new Date(this.date + "T" + this.time + ":00");
-      if (datetime.getTime()>new Date().getTime()) {
+      if (this.datetime.getTime()>new Date().getTime()) {
         this.dialog=false;
         this.scheduled=true;
       }
@@ -215,12 +238,10 @@ export default {
     animateNewLecture() {
       if(!this.showNewLecture) {
         this.showNewLecture = true
-        this.newLectureHeight = '150px'
         this.addColor = 'red'
         this.addRotate = 'rotate(45deg)'
       } else {
         this.showNewLecture = false
-        this.newLectureHeight = '80px'
         this.addColor = '#81c784ff'
         this.addRotate = 'rotate(0deg)'
       }
@@ -240,9 +261,9 @@ export default {
             name: this.newLectureName,
             scheduled_start: datetime
           }).then(data => {
-            console.log(data);
+            log(data);
             if (!data.success) {
-              this.error = "Scheduled time must be in the future";
+              this.$emit('error', 'Scheduled time must be in the future');
               this.formErrors = true;
             } else {
               this.$router.push({ name: 'Dashboard' });
@@ -255,11 +276,11 @@ export default {
   mounted() {
     this.init();
     String.prototype.pad = function(String, len) { 
-              var str = this; 
-              while (str.length < len) 
-                  str = String + str; 
-              return str; 
-          } 
+      var str = this; 
+      while (str.length < len) 
+        str = String + str; 
+      return str; 
+    } 
   }
 };
 </script>
@@ -307,7 +328,6 @@ export default {
 
 #newLectureCard {
   transition: 0.3s all;
-  height: 80px;
 }
 
 .inner-shadow {
