@@ -193,8 +193,7 @@ export default {
       time: this.parseTime(this.timeFormatted),
       showSchedule: false,
       showDatePicker: false,
-      showTimePicker: false,
-      startNow: true,
+      showTimePicker: false
     };
   },
   components: {},
@@ -205,7 +204,7 @@ export default {
         this.formErrors = true;
       } else if (this.chosenClass !== "" && this.lectureName !== "") {
         this.formErrors = false;
-        if (!this.showSchedule || this.startNow) {
+        if (!this.showSchedule) {
           post("/lectures/create", {
             class_uid: this.chosenClass,
             name: this.lectureName,
