@@ -248,7 +248,7 @@ export default {
         post('/lectures/create', {
           class_uid: this.classInfo.uid,
           name: this.newLectureName,
-          scheduled_start: this.datetime,
+          scheduled_start: this.datetime ? Date.parse(this.datetime) : undefined,
         }).then((data) => {
           console.log(data)
           if (!data.success) {

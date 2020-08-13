@@ -368,10 +368,7 @@ export default {
           inLecture: true,
         })
         this.showSnackBar(`${data.first_name} ${data.last_name} joined`)
-        this.displayNotification(
-          'Student joined',
-          `${data.first_name} ${data.last_name} joined`
-        )
+        // this.displayNotification('Student joined', `${data.first_name} ${data.last_name} joined`)
       } else if (data.type === 'student_leave') {
         let left = this.students[data.uid]
         this.$set(this.students, data.uid, {
@@ -379,10 +376,7 @@ export default {
           inLecture: false,
         })
         this.showSnackBar(`${left.first_name} ${left.last_name} left`)
-        this.displayNotification(
-          'Student left',
-          `${left.first_name} ${left.last_name} left`
-        )
+        // this.displayNotification('Student left', `${left.first_name} ${left.last_name} left`)
       } else if (data.type === 'us_update') {
         if (data.score != null) {
           let d = (Date.now() - this.start) / 1000

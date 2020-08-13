@@ -7,29 +7,35 @@ export const log = config.printErrors ? console.log : () => { }
 
 log(`-----------------\nUSING ${config.api} SERVER\n-----------------`)
 
-export function get(url) {
+export function http(method, url, body) {
   if (!url.includes('http')) {
-    url = serverOrigin + url;
-  }
-
-  return fetch(url, {
-    credentials: 'include'
-  }).then(res => res.json());
-}
-
-export function post(url, json) {
-  if (!url.includes('http')) {
-    url = serverOrigin + url;
+    url = serverOrigin + url
   }
 
   return window.fetch(url, {
-    method: 'POST',
+    method,
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(json)
-  }).then(res => res.json());
+    body
+  }).then(res => res.json())
+}
+
+export function get(url) {
+  return http('GET', url, undefined)
+}
+
+export function post(url, json) {
+  return http('POST', url, JSON.stringify(json))
+}
+
+export function put(url, json) {
+  return http('PUT', url, JSON.stringify(json))
+}
+
+export function httpDelete(url) {
+  return http('DELETE', url, undefined)
 }
 
 export function signInGoogle() {
@@ -47,8 +53,8 @@ export function signInGoogle() {
     return get('/auth/profile')
   }).then((result) => {
     if (result.success) {
-      store.commit('setAuthUser', result.data)
       loadClasses()
+      store.commit('setAuthUser', result.data)
     } else {
       throw result
     }

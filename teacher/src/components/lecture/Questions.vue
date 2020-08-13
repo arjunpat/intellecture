@@ -75,16 +75,16 @@
           >
             <v-banner :style="{ textAlign: 'left' }">
               {{ question.question }}
-              <div id="questionAskedBy" class="ml-3">
+              <div class="question-asked-by ml-3">
+                <v-avatar size="20px" class="mr-1">
+                  <img
+                    alt="Avatar"
+                    :src="students[question.creator_uid].photo"
+                    style="background-color: #F5F5F5;"
+                  />
+                </v-avatar>
                 {{ students[question.creator_uid].first_name }}
                 {{ students[question.creator_uid].last_name }}
-                <!--<v-avatar size="20px" class="ml-1">
-                      <img
-                        alt="Avatar"
-                        :src="students[question.creator_uid].photo"
-                        style="background-color: #F5F5F5;"
-                      />
-                  </v-avatar>-->
               </div>
               <template v-slot:actions>
                 <v-chip
@@ -206,13 +206,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#questionAskedBy {
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  font-size: 15px;
+.question-asked-by {
+  background-color: rgba(0, 0, 0, 0.09);
+  color: black;
+  font-size: 12px;
   display: inline-block;
   text-align: center;
-  padding: 2px 4px;
+  padding: 4px 6px;
   border-radius: 3px;
 }
 </style>
