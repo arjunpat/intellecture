@@ -55,7 +55,7 @@
               </v-row>
               <v-row>
                 <v-btn
-                  style="font-family: var(--main-font);"
+                  style="font-family: var(--main-font);width:100%;"
                   class="my-2"
                   dark
                   outlined
