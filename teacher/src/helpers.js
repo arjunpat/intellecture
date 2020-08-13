@@ -72,7 +72,7 @@ export function signOut() {
 }
 
 export function loadClasses(forceReload = false) {
-  if (store.state.classes.length !== 0 && !forceReload) return;
+  if (store.state.classes && store.state.classes.length !== 0 && !forceReload) return;
   return get('/classes/mine').then((result) => {
     if (!result.success)
       throw result
