@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row align="center" justify="center">
-      <v-col :cols="8"  align="center" justify="center">
+      <v-col :cols="12"  align="center" justify="center">
         <v-list-item v-for="(topic, index) in topics" v-bind:key="index" style="display: inline-block;">
           <v-list-item-content>
             <v-list-item-title>
@@ -11,7 +11,8 @@
                 :style="{
                   display: 'inline-block',
                   fontSize: '20px',
-                  backgroundColor: topicBackground(index)
+                  backgroundColor: topicBackground(index),
+                  color: topicFontColor(index)
                 }"
                 @mouseover="hoveredIndex = index"
                 @mouseleave="hoveredIndex = -1"
@@ -164,7 +165,7 @@ export default {
   },
   data() {
     return {
-      selectedIndex: -1,
+      selectedIndex: 0,
       hoveredIndex: -1
     };
   },
@@ -185,20 +186,31 @@ export default {
     },
     topicBackground(index) {
       if (this.selectedIndex == index) {
-        return "#E0E0E0";
+        return "#757575";
       } else if (this.hoveredIndex == index) {
         return "#F5F5F5";
       } else {
         return "#EEEEEE";
       }
     },
+    topicFontColor(index) {
+      if (this.selectedIndex == index) {
+        return "white";
+      } else {
+        return "black";
+      }
+    },
     showTopic(index) {
       if (index != this.selectedIndex) {
-        this.$emit("showCategory", index);
+        if(index != 0) {
+          this.$emit("showCategory", index);
+        } else {
+          this.$emit("showAllQuestions");
+        }
         this.selectedIndex = index;
       } else {
         this.$emit("showAllQuestions");
-        this.selectedIndex = -1;
+        this.selectedIndex = 0;
       }
     }
   }
