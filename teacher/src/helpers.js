@@ -77,7 +77,13 @@ export function loadClasses(forceReload = false) {
   return get('/classes/mine').then((result) => {
     if (!result.success)
       throw result
-    result.data.sort((a, b) => (a.name > b.name) ? 1 : -1)
+    // sort by section first
+    result.data.sort((a, b) => {
+      if (a.section === b.section) {
+        return a.name > b.name ? 1 : -1
+      }
+      return a.section > b.section ? 1 : -1
+    })
     store.commit('setClasses', result.data)
   })
 }

@@ -61,6 +61,21 @@ export namespace WS {
     type: 'end_lecture'
   }
 
+  // When teacher creates a poll, server will send everyone this message
+  export interface NewPoll extends Message {
+    type: 'new_poll',
+    poll_uid: string,
+    prompt: string,
+    options: string[] // an array of poll options
+    elapsed: number // when the poll was created
+  }
+
+  // When teacher ends a poll, server will send this message to everyone
+  export interface EndPoll extends Message {
+    type: 'end_poll',
+    poll_uid: string
+  }
+
   /* -------------------- messages ONLY sent to teacher -------------------- */
   // When the server wants to send many messages all at once but in one message for efficiency.
   export interface Bulk extends Message {

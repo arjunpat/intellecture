@@ -126,3 +126,15 @@ Check if lecture exists.
   }
 }
 ```
+
+## POST /lectures/delete
+
+Delete a lecture
+
+###### Example request:
+
+```javascript
+{
+  "lecture_uid": "asdfjasdflk"
+}
+```
