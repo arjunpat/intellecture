@@ -11,6 +11,7 @@ import LectureAnalyticsOverview from '@/views/lecture-analytics/Overview'
 import LectureAnalyticsStudent from '@/views/lecture-analytics/Student'
 import ClassLectures from '@/views/ClassLectures'
 import PrivacyPolicy from '@/views/PrivacyPolicy'
+import about from '@/views/AboutUs'
 
 Vue.use(VueRouter)
 const isProd = process.env.NODE_ENV === 'production'
@@ -35,6 +36,11 @@ const routes = [
     path: '/privacy-policy',
     name: 'PrivacyPolicy',
     component: PrivacyPolicy,
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: about,
   },
   {
     path: '/dashboard',
