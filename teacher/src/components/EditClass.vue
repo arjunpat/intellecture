@@ -69,7 +69,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { post, get, loadClasses } from '@/helpers.js'
+import { post, get, loadClasses, httpDelete } from '@/helpers.js'
 
 export default {
   name: 'EditClass',
@@ -90,9 +90,7 @@ export default {
   methods: {
     removeClass() {
       if (this.confirm == this.className) {
-        post('/classes/delete', {
-          class_uid: this.classId,
-        }).then((response) => {
+        httpDelete(`/classes/${encodeURIComponent(this.classId)}`).then((res) => {
           this.dialog = false
           this.$emit('removed')
           loadClasses(true)

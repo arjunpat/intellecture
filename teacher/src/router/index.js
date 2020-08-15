@@ -11,7 +11,7 @@ import LectureAnalyticsOverview from '@/views/lecture-analytics/Overview'
 import LectureAnalyticsStudent from '@/views/lecture-analytics/Student'
 import ClassLectures from '@/views/ClassLectures'
 import PrivacyPolicy from '@/views/PrivacyPolicy'
-import about from '@/views/AboutUs'
+import About from '@/views/About'
 
 Vue.use(VueRouter)
 const isProd = process.env.NODE_ENV === 'production'
@@ -40,7 +40,7 @@ const routes = [
   {
     path: '/about',
     name: 'about',
-    component: about,
+    component: About,
   },
   {
     path: '/dashboard',
