@@ -115,7 +115,7 @@ export default {
       error: "Fill out all the fields.",
       scheduleInfo: {
         show: false,
-        datetime: new Date()
+        datetime: Date.now()
       }
     };
   },

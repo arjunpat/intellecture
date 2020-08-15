@@ -156,7 +156,7 @@ export default {
       addRotate: 'rotate(0deg)',
       scheduleInfo: {
         show: false,
-        datetime: new Date()
+        datetime: Date.now()
       },
     }
   },
@@ -225,7 +225,7 @@ export default {
     resetNewLecture() {
       this.scheduleInfo = {
         show: false,
-        datetime: new Date()
+        datetime: Date.now()
       }
       this.newLectureName = ''
       this.showNewLecture = false
@@ -244,7 +244,6 @@ export default {
           name: this.newLectureName,
           scheduled_start: this.scheduleInfo.datetime,
         }).then((data) => {
-          console.log(data)
           if (!data.success) {
             this.$emit('error', 'Scheduled time must be in the future')
           } else {

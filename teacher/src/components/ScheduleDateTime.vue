@@ -31,7 +31,7 @@
           v-model="date"
           color="green lighten-1"
           no-title
-          @input="showDatePicker = false"
+          @input="showDatePicker = false; update()"
         ></v-date-picker>
       </v-menu>
     </v-col>
@@ -60,7 +60,7 @@
               class="white"
             ></v-text-field>
           </template>
-          <v-time-picker v-model="time" color="green lighten-1">
+          <v-time-picker v-model="time" @input="update" color="green lighten-1">
             <v-spacer></v-spacer>
             <v-btn text color="black" @click="showTimePicker = false">Ok</v-btn>
           </v-time-picker>
@@ -88,50 +88,52 @@ export default {
     event: 'update'
   },
 
+  created() {
+    this.setDateAndTime(this.scheduleInfo.datetime)
+  },
+
   data() {
     return {
       showDatePicker: false,
       showTimePicker: false,
-      date: this.scheduleInfo.datetime.toISOString().substr(0, 10),
-      dateFormatted: this.formatDate(this.scheduleInfo.datetime.toISOString().substr(0, 10)),
-      time: this.parseTime(this.timeFormatted),
-      timeFormatted: this.formatTime(
-        this.scheduleInfo.datetime.toTimeString().split(":")[0] + ":" + this.scheduleInfo.datetime.toTimeString().split(":")[1]
-      ),
+      date: null,
+      time: null,
     }
   },
 
   computed: {
     datetime() {
       return Date.parse(this.date + "T" + this.time + ":00");
-    }
+    },
+    dateFormatted() {
+      return this.formatDate(this.date)
+    },
+    timeFormatted() {
+      return this.formatTime(this.time)
+    },
   },
 
   watch: {
-    date(val) {
-      this.dateFormatted = this.formatDate(this.date);
-      this.$emit('update', {
-        show: this.scheduleInfo.show,
-        datetime: this.datetime
-      })
-    },
-    time(val) {
-      this.timeFormatted = this.formatTime(this.time);
-      this.$emit('update', {
-        show: this.scheduleInfo.show,
-        datetime: this.datetime
-      })
+    scheduleInfo(cur, old) {
+      if (cur.datetime !== old.datetime) {
+        this.setDateAndTime(cur.datetime)
+      }
     },
   },
 
   methods: {
+    setDateAndTime(datetime) {
+      this.date = new Date(datetime).toISOString().substr(0, 10)
+      this.time = new Date(datetime).toTimeString().split(":")[0] + ":" + new Date(datetime).toTimeString().split(":")[1]
+    },
+    update() {
+      this.$emit('update', {
+        show: this.scheduleInfo.show,
+        datetime: this.datetime
+      })
+    },
     close() {
-      this.date = new Date().toISOString().substr(0, 10)
-      this.dateFormatted = this.formatDate(new Date().toISOString().substr(0, 10))
-      this.timeFormatted = this.formatTime(
-        new Date().toTimeString().split(":")[0] + ":" + new Date().toTimeString().split(":")[1]
-      )
-      this.time = this.parseTime(this.timeFormatted)
+      this.setDateAndTime(Date.now())
 
       this.$emit('update', {
         show: false,
