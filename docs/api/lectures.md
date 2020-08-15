@@ -127,14 +127,6 @@ Check if lecture exists.
 }
 ```
 
-## POST /lectures/delete
+## DELETE /lectures/:lecture_uid
 
 Delete a lecture
-
-###### Example request:
-
-```javascript
-{
-  "lecture_uid": "asdfjasdflk"
-}
-```
