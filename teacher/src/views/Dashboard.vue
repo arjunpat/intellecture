@@ -66,9 +66,16 @@
             transition="slide-x-transition"
           >
             <template v-slot:activator="{ on }">
-              <a v-on="on" style="position: absolute; right: 0px; top: 40px;">
+              <v-btn 
+                v-on="on" 
+                icon 
+                style="position: absolute; right: 10px; top: 40px;" 
+                @click.prevent=""
+                @mousedown.stop 
+                @touchstart.native.stop
+              >
                 <v-icon large id="menu-icon">more_vert</v-icon>
-              </a>
+              </v-btn>
             </template>
             <v-list class="poppins">
               <v-list-item>

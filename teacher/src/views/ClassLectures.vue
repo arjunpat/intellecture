@@ -86,7 +86,41 @@
           class="mainfont px-2 py-2"
           :to="lecture.end_time ? '/lecture-analytics/' + lecture.uid : '/lecture/' + lecture.uid"
         >
-          <v-card-title id="lectureTitle">{{ lecture.name }}</v-card-title>
+          <v-card-title id="lectureTitle">
+            <span class="mr-2">{{ lecture.name }}</span> 
+            <v-menu
+              :close-on-content-click="false"
+              offset-y
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn 
+                  v-if="isScheduled(lecture)" 
+                  class="px-2" 
+                  color="primary" 
+                  text
+                  v-on="on"
+                  v-bind="attrs"
+                  @click.prevent="copyLink(lecture.uid)"
+                  @mousedown.stop 
+                  @touchstart.native.stop
+                >
+                  <v-icon>mdi-link-variant</v-icon>
+                  Copy link
+                </v-btn>
+              </template>
+              <v-card>
+                <v-card-text>
+                  <v-text-field
+                    :value="getLink(lecture.uid)"
+                    :id="`room-link-${lecture.uid}`"
+                    label="Room link"
+                    outlined
+                    hide-details
+                  ></v-text-field>
+                </v-card-text>
+              </v-card>
+            </v-menu>
+          </v-card-title>
           <v-row class="px-3">
             <v-col cols="12" sm="4" :class="$vuetify.breakpoint.smAndUp && 'text-left'">
               <h3 class="subtitle font-weight-regular" v-if="lecture.end_time">
@@ -112,7 +146,7 @@
               <h3 class="subtitle font-weight-regular" v-else-if="lecture.start_time && !lecture.end_time">Live Now</h3>
               <h3
                 class="subtitle font-weight-regular"
-                v-else-if="lecture.scheduled_start>new Date().getTime()"
+                v-else-if="isScheduled(lecture)"
               >Scheduled for {{ new Date(lecture.scheduled_start).toLocaleString() }}</h3>
             </v-col>
           </v-row>
@@ -130,7 +164,8 @@ import {
   durationToString,
   dateToString,
   pad,
-  loadClasses
+  loadClasses,
+  getLinkToRoom,
 } from '@/helpers.js'
 import { mdiAndroidStudio } from '@mdi/js'
 import { mapState } from 'vuex'
@@ -178,6 +213,9 @@ export default {
   },
 
   methods: {
+    isScheduled(lecture) {
+      return lecture.scheduled_start && !lecture.start_time && !lecture.end_time
+    },
     getTimeFromLecture(lecture) {
       return lecture.end_time || lecture.start_time || lecture.scheduled_start
     },
@@ -212,7 +250,6 @@ export default {
     timeSinceEndTimeString(endTime) {
       return dateToString(endTime)
     },
-
     animateNewLecture(show) {
       if (show) {
         this.addColor = 'red'
@@ -253,6 +290,22 @@ export default {
           }
         })
       }
+    },
+    copyLink(lecture_uid) {
+      setTimeout(() => {
+        let codeToCopy = document.getElementById(`room-link-${lecture_uid}`)
+        codeToCopy.select()
+
+        try {
+          var successful = document.execCommand('copy')
+          this.$emit('info', 'Room link copied to clipboard')
+        } catch (err) {
+          this.$emit('error', 'There was an error copying the link')
+        }
+      }, 300)
+    },
+    getLink(lecture_uid) {
+      return getLinkToRoom(lecture_uid)
     },
   },
 
