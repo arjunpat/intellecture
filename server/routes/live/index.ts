@@ -213,6 +213,21 @@ router.post('/student/:lecture_uid/upvote', mw.auth, attachLecture, joinedLectur
   res.send(responses.received());
 });
 
+router.post('/student/:lecture_uid/poll-vote', mw.auth, attachLecture, joinedLecture, async (req: Request, res) => {
+  let { poll_uid, choice } = req.body;
+  if (!poll_uid || !choice || !Number.isInteger(choice))
+    return res.send(responses.error());
+  
+  publish(req.params.lecture_uid, {
+    type: 'pv',
+    student_uid: req.uid,
+    poll_uid,
+    choice,
+  });
+
+  res.send(responses.received());
+});
+
 router.post('/teacher/:lecture_uid/end', mw.auth, attachLecture, async (req: Request, res) => {
   if (req.lecture.account_uid !== req.uid) {
     return res.send(responses.error('permissions'));
@@ -250,6 +265,38 @@ router.post('/teacher/:lecture_uid/dismiss', mw.auth, attachLecture, async (req:
     type: 'qds',
     question_uid: req.body.question_uid
   });
+  res.send(responses.received());
+});
+
+router.post('/teacher/:lecture_uid/poll', mw.auth, attachLecture, async (req: Request, res) => {
+  if (req.lecture.account_uid !== req.uid) {
+    return res.send(responses.error('permissions'));
+  }
+  let { prompt, options } = req.body;
+
+  if (!(options instanceof Array) || options.length >= 100 || !options.every(e => typeof e === 'string') || typeof prompt !== 'string') {
+    return res.send(responses.error());
+  }
+
+  publish(req.params.lecture_uid, {
+    type: 'crp',
+    prompt,
+    options
+  });
+  
+  res.send(responses.received());
+});
+
+router.post('/teacher/:lecture_uid/end-poll', mw.auth, attachLecture, async (req: Request, res) => {
+  if (req.lecture.account_uid !== req.uid) {
+    return res.send(responses.error('permissions'));
+  }
+
+  publish(req.params.lecture_uid, {
+    type: 'ep',
+    poll_uid: req.body.poll_uid
+  });
+
   res.send(responses.received());
 });
 

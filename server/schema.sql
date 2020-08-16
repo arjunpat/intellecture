@@ -90,3 +90,22 @@ CREATE TABLE IF NOT EXISTS lecture_student_log (
   FOREIGN KEY (lecture_uid) REFERENCES lectures(uid) ON DELETE CASCADE,
   FOREIGN KEY (account_uid) REFERENCES accounts(uid) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS polls (
+  uid VARCHAR(20) PRIMARY KEY,
+  lecture_uid VARCHAR(20),
+  elapsed BIGINT UNSIGNED,
+  prompt TINYTEXT,
+  options TEXT,
+  FOREIGN KEY (lecture_uid) REFERENCES lectures(uid) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS poll_responses (
+  poll_uid VARCHAR(20),
+  account_uid VARCHAR(36),
+  choice TINYINT UNSIGNED,
+  elapsed BIGINT UNSIGNED,
+  CONSTRAINT PRIMARY KEY (poll_uid, account_uid),
+  FOREIGN KEY (poll_uid) REFERENCES polls(uid) ON DELETE CASCADE,
+  FOREIGN KEY (account_uid) REFERENCES accounts(uid) ON DELETE CASCADE
+);

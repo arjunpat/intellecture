@@ -1,10 +1,10 @@
 import db from '../../../models';
-const { redis } = db;
 import { genUnderstandingScore, toStudent, toTeacher } from '../helpers';
-import { genId, genLectureJoinCode } from '../../../lib/helpers';
+import { genId, genLectureJoinCode, messageSlack } from '../../../lib/helpers';
 import extract from './extract';
 import Questions from './Questions';
-import { Question, Student , WS } from '../types';
+import Poll from './Poll';
+import { Question, Student, WS } from '../types';
 
 const SCORE_UPDATE_MAX_INTERVAL = 1000;
 const QUESTION_CAT_MAX_INTERVAL = 10000;
@@ -16,8 +16,9 @@ interface Last {
 }
 
 export default class Lecture {
-  private lecture_uid: string;
-  private questions: Questions =  new Questions();
+  private uid: string;
+  private questions: Questions = new Questions();
+  private polls: Poll[] = [];
   private scores: { [key: string]: number } = {};
   private studentData: { [key: string]: Student } = {};
   private last: Last = { q: {} };
@@ -31,19 +32,19 @@ export default class Lecture {
   private timeoutQs: NodeJS.Timer | undefined;
 
   constructor(lecture_uid: string) {
-    this.lecture_uid = lecture_uid;
+    this.uid = lecture_uid;
 
     this.initTimings();
   }
 
   async readLectureInfo() {
-    let data = await db.lectures.getLecture(this.lecture_uid);
+    let data = await db.lectures.getLecture(this.uid);
     if (data) data.creator = await db.accounts.getBasicInfo(data.account_uid);
     return data;
   }
 
   async init() {
-    await db.lectures.startLecture(this.lecture_uid, Date.now(), genLectureJoinCode());
+    await db.lectures.startLecture(this.uid, Date.now(), genLectureJoinCode());
     this.lectureInfo = await this.readLectureInfo();
   }
 
@@ -52,7 +53,7 @@ export default class Lecture {
       return;
 
     this.timing.lastMsg = Date.now();
-    
+
     switch (data.type) {
       case 'ssu': // student score update
         this.updateStudentScore(data.student_uid, data.score);
@@ -64,7 +65,7 @@ export default class Lecture {
         this.removeStudent(data.student_uid);
         break;
       case 'q': // question
-        this.addQuestion(data.student_uid, data.q);
+        this.createQuestion(data.student_uid, data.q);
         break;
       case 'qu': // question upvote
         this.upvoteQuestion(data.question_uid, data.student_uid);
@@ -78,6 +79,15 @@ export default class Lecture {
       case 'tj': // teacher join
         this.teacherJoined();
         break;
+      case 'crp': // create poll
+        this.createPoll(data.prompt, data.options);
+        break;
+      case 'pv': // poll vote
+        this.voteOnPoll(data.poll_uid, data.student_uid, data.choice);
+        break;
+      case 'ep': // end poll
+        this.endPoll(data.poll_uid);
+        break;
       case 'end': // end lecture
         this.end();
         break;
@@ -86,21 +96,21 @@ export default class Lecture {
 
   async end() {
     let now = Date.now();
-    this.blast(<WS.EndLecture> { type: 'end_lecture' });
+    this.blast(<WS.EndLecture>{ type: 'end_lecture' });
     this.ended = true;
-    redis.endLecture(this.lecture_uid);
-    
+    db.redis.endLecture(this.uid);
+
     let remainingStudents = Object.keys(this.scores);
     if (remainingStudents.length > 0)
-      await db.lectureStudentLog.leaveBulk(this.lecture_uid, remainingStudents, this.elapsed(now));
-    await db.lectures.endLecture(this.lecture_uid, now);
+      await db.lectureStudentLog.leaveBulk(this.uid, remainingStudents, this.elapsed(now));
+    await db.lectures.endLecture(this.uid, now);
   }
 
   async upvoteQuestion(question_uid: string, student_uid: string) {
     if (this.questions.validUpvote(question_uid, student_uid)) {
       await db.lectureQUpvotes.add(question_uid, student_uid, this.elapsed());
 
-      this.sendToTeachers(<WS.QuestionUpdate> {
+      this.sendToTeachers(<WS.QuestionUpdate>{
         type: 'question_update',
         question_uid,
         upvotes: this.questions.upvote(question_uid, student_uid)
@@ -108,7 +118,51 @@ export default class Lecture {
     }
   }
 
-  async addQuestion(creator_uid: string, question: string) {
+  async createPoll(prompt: string, options: string[]) {
+    // check if poll is currently running
+    if (this.polls.some(e => e.isRunning()))
+      return;
+
+    let uid = genId(20);
+    let elapsed = this.elapsed();
+    await db.polls.create(uid, this.uid, elapsed, prompt, options);
+    this.polls.push(new Poll(uid, elapsed, prompt, options));
+
+    this.blast(<WS.NewPoll>{
+      type: 'new_poll',
+      poll_uid: uid,
+      prompt,
+      options,
+      elapsed
+    });
+  }
+
+  async voteOnPoll(poll_uid: string, student_uid: string, choice: number) {
+    let poll = this.polls.find(e => e.getUid() === poll_uid);
+    if (poll && poll.vote(student_uid, choice)) {
+      await db.pollResponses.create(poll_uid, student_uid, choice, this.elapsed());
+
+      this.sendToTeachers(<WS.PollUpdate>{
+        type: 'poll_update',
+        poll_uid,
+        counts: poll.getVoterSummary()
+      });
+    }
+  }
+
+  async endPoll(poll_uid: string) {
+    let poll = this.polls.find(e => e.getUid() === poll_uid);
+    if (poll && poll.isRunning()) {
+      poll.end();
+
+      this.blast(<WS.EndPoll>{
+        type: 'end_poll',
+        poll_uid
+      });
+    }
+  }
+
+  async createQuestion(creator_uid: string, question: string) {
     let elapsed = this.elapsed();
     if (elapsed - this.last.q[creator_uid] < 10000) { // 10 second cooldown
       return;
@@ -123,13 +177,13 @@ export default class Lecture {
 
     await db.lectureQs.add(
       q.question_uid,
-      this.lecture_uid,
+      this.uid,
       elapsed,
       creator_uid,
       question
     );
     this.questions.add(q);
-    this.blast(<WS.NewQuestion> {
+    this.blast(<WS.NewQuestion>{
       type: 'new_question',
       ...q
     });
@@ -138,13 +192,13 @@ export default class Lecture {
 
   async addStudent(student_uid: string) {
     let elapsed = this.elapsed();
-    await db.lectureStudentLog.join(this.lecture_uid, student_uid, elapsed);
+    await db.lectureStudentLog.join(this.uid, student_uid, elapsed);
     let stu: Student = {
       ...await db.accounts.getBasicInfo(student_uid),
       elapsed,
       uid: student_uid
     };
-    this.sendToTeachers(<WS.StudentJoin> {
+    this.sendToTeachers(<WS.StudentJoin>{
       type: 'student_join',
       ...stu
     });
@@ -154,20 +208,20 @@ export default class Lecture {
 
   async removeStudent(student_uid: string) {
     let elapsed = this.elapsed();
-    await db.lectureStudentLog.leave(this.lecture_uid, student_uid, elapsed);
+    await db.lectureStudentLog.leave(this.uid, student_uid, elapsed);
     delete this.scores[student_uid];
-    this.sendToTeachers(<WS.StudentLeave> {
+    this.sendToTeachers(<WS.StudentLeave>{
       type: 'student_leave',
       uid: student_uid
     });
     this.updateTeachers()
   }
-  
+
   async updateStudentScore(student_uid: string, score: number) {
     if (this.scores[student_uid] === score) return;
 
     await db.lectureLog.recordScoreChange(
-      this.lecture_uid,
+      this.uid,
       this.elapsed(),
       student_uid,
       score
@@ -177,8 +231,8 @@ export default class Lecture {
   }
 
   kickStudent(student_uid: string, banned: boolean) {
-    if (banned) redis.ban(this.lecture_uid, student_uid);
-    this.sendToStudents(<WS.KickStudent> {
+    if (banned) db.redis.ban(this.uid, student_uid);
+    this.sendToStudents(<WS.KickStudent>{
       to: student_uid,
       type: 'kick_student'
     });
@@ -200,12 +254,12 @@ export default class Lecture {
 
     let score = this.getScore();
     if (this.currentScore !== score)
-      db.lectureUs.recordScoreChange(this.lecture_uid, this.elapsed(now), score);
-    this.sendToTeachers(<WS.UsUpdate> {
+      db.lectureUs.recordScoreChange(this.uid, this.elapsed(now), score);
+    this.sendToTeachers(<WS.UsUpdate>{
       type: 'us_update',
       score
     });
-    
+
     // recordkeeping / stats
     this.timing.lastTeacherUpdate = Date.now();
     this.currentScore = score;
@@ -227,7 +281,7 @@ export default class Lecture {
     }
 
     let result = await extract(qs);
-    this.sendToTeachers(<WS.QuesCategor> {
+    this.sendToTeachers(<WS.QuesCategor>{
       type: 'ques_categor',
       categories: result.slice(0, 5)
     });
@@ -236,9 +290,9 @@ export default class Lecture {
   }
 
   async dismissQuestion(question_uid: string) {
-    await db.lectureQs.dismissQuestion(this.lecture_uid, question_uid);
+    await db.lectureQs.dismissQuestion(this.uid, question_uid);
     this.questions.dismiss(question_uid);
-    this.blast(<WS.QuestionDismissed> {
+    this.blast(<WS.QuestionDismissed>{
       type: 'question_dismissed',
       question_uid
     });
@@ -256,14 +310,14 @@ export default class Lecture {
     // must send ALL students so that
     // teacher page can relate to questions
     for (let student_uid in this.studentData) {
-      messages.push(<WS.StudentJoin> {
+      messages.push(<WS.StudentJoin>{
         type: 'student_join',
         ...this.studentData[student_uid]
       });
 
       // not live, per say
       if (typeof this.scores[student_uid] !== 'number') {
-        messages.push(<WS.StudentLeave> {
+        messages.push(<WS.StudentLeave>{
           type: 'student_leave',
           uid: student_uid
         });
@@ -272,24 +326,48 @@ export default class Lecture {
 
     // send nondismissed questions
     for (let each of this.questions.getNondismissed()) {
-      messages.push(<WS.NewQuestion> {
+      messages.push(<WS.NewQuestion>{
         type: 'new_question',
         ...each
       });
 
       // question upvotes
-      messages.push(<WS.QuestionUpdate> {
+      messages.push(<WS.QuestionUpdate>{
         type: 'question_update',
         question_uid: each.question_uid,
         upvotes: this.questions.getUpvoteCount(each.question_uid)
       });
     }
 
+    // send all polls
+    for (let each of this.polls) {
+      messages.push(<WS.NewPoll>{
+        type: 'new_poll',
+        poll_uid: each.getUid(),
+        prompt: each.getPrompt(),
+        options: each.getOptions(),
+        elapsed: each.getElapsed()
+      });
+
+      messages.push(<WS.PollUpdate>{
+        type: 'poll_update',
+        poll_uid: each.getUid(),
+        counts: each.getVoterSummary()
+      });
+
+      if (!each.isRunning()) {
+        messages.push(<WS.EndPoll>{
+          type: 'end_poll',
+          poll_uid: each.getUid()
+        })
+      }
+    }
+
     // TODO above code can be optimized
     // waiting for feature set to be solidified
     // before optimizing
     if (messages.length !== 0)
-      this.sendToTeachers(<WS.Bulk> {
+      this.sendToTeachers(<WS.Bulk>{
         type: 'bulk',
         messages
       });
@@ -322,11 +400,11 @@ export default class Lecture {
   }
 
   sendToTeachers(obj: WS.Message) {
-    redis.conn.publish(toTeacher(this.lecture_uid), JSON.stringify(obj));
+    db.redis.conn.publish(toTeacher(this.uid), JSON.stringify(obj));
   }
 
   sendToStudents(obj: WS.Message) {
-    redis.conn.publish(toStudent(this.lecture_uid), JSON.stringify(obj));
+    db.redis.conn.publish(toStudent(this.uid), JSON.stringify(obj));
   }
 
   getSummary(): object {

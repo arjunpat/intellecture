@@ -140,3 +140,14 @@ Can be used to get all the past questions during a lecture.
   ]
 }
 ```
+
+## POST /lectures/live/student/:lecture_uid/poll-vote
+
+###### Example request:
+
+```javascript
+{
+  "poll_uid": "238jslsIDFJsdfl",
+  "choice": 2 // the index of the option in the options array
+}
+```

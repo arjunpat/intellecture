@@ -120,6 +120,13 @@ export namespace WS {
     score: number
   }
 
+  // when students vote in a poll, teachers will receive this summarizing message
+  export interface PollUpdate extends Message {
+    type: 'poll_update',
+    poll_uid: string,
+    counts: number[] // array where each index corresponds to an option (respectively)
+  }
+
   /* -------------------- messages ONLY sent to student -------------------- */
   // If student gets this message and "to" has their uid, they have been kicked from the lecture.
   export interface KickStudent extends Message {

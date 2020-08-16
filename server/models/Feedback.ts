@@ -8,10 +8,11 @@ export default class Accounts {
   }
 
   create(account_uid: string, ts: number, stars: number) {
-    return this.mysql.query(
-      'INSERT INTO feedback (account_uid, ts, stars) VALUES (?, ?, ?)',
-      [account_uid, ts, stars]
-    );
+    this.mysql.insert('feedback', {
+      account_uid,
+      ts,
+      stars
+    });
   }
 
   update(account_uid: string, ts: number, stars: number | null, comments: string | null, tech_comments: string | null, diff_stars: number | null, helpful_stars: number | null) {
