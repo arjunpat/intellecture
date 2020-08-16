@@ -228,7 +228,6 @@ export default {
       snackbar: false,
       snackbarMessage: '',
       showTutorial: -1,
-      endCalled: false,
       curUpvoters: null,
       questionUpvotersShow: false,
       prevNumQuestions: 0
@@ -294,7 +293,6 @@ export default {
       }
     },
     endLectureMethod() {
-      this.endCalled = true
       post(`/lectures/live/teacher/${this.id}/end`)
       this.socket.close()
       store.commit('setEndLecture', false)

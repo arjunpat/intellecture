@@ -13,27 +13,32 @@
       </v-col>
     </v-row>
 
-    <v-row
-      class="fill-height"
-      justify="center"
-    >
+    <v-row class="fill-height" justify="center">
       <v-col cols="12" lg="6" md="8" sm="11">
-        <v-card class="mainfont px-2 py-2 inner-shadow" id="newLectureCard" :style="{ backgroundColor: '#f7f7f7' }">
-          <v-card-title 
+        <v-card
+          class="mainfont px-2 py-2 inner-shadow"
+          id="newLectureCard"
+          :style="{ backgroundColor: '#f7f7f7' }"
+        >
+          <v-card-title
             class="font-weight-regular ml-n2"
             :style="{
               fontSize: $vuetify.breakpoint.xs ? '18px' : '20px'
             }"
           >Create a new lecture</v-card-title>
-          <v-btn id="addBtn" fab dark :color="addColor" :style="{ transform: addRotate, top: '10px', right: '10px' }" @click="showNewLecture = !showNewLecture">
+          <v-btn
+            id="addBtn"
+            fab
+            dark
+            :color="addColor"
+            :style="{ transform: addRotate, top: '10px', right: '10px' }"
+            @click="showNewLecture = !showNewLecture"
+          >
             <v-icon dark large>mdi-plus</v-icon>
           </v-btn>
           <v-expand-transition>
             <div v-show="showNewLecture" class="px-4">
-              <v-row  
-                align="center"
-                class="mb-0"
-              >
+              <v-row align="center" class="mb-0">
                 <v-col class="pa-0">
                   <v-text-field
                     class="mainfont white"
@@ -57,7 +62,7 @@
                 <v-expand-transition leave-absolute>
                   <v-btn
                     v-if="!scheduleInfo.show"
-                    block 
+                    block
                     color="light-green lighten-2"
                     outlined
                     style="font-family: var(--main-font);"
@@ -66,9 +71,7 @@
                 </v-expand-transition>
                 <v-col cols="12" class="py-0">
                   <v-fade-transition leave-absolute>
-                    <ScheduleDateTime
-                      v-model="scheduleInfo"
-                    />
+                    <ScheduleDateTime v-model="scheduleInfo" />
                   </v-fade-transition>
                 </v-col>
               </v-row>
@@ -78,80 +81,30 @@
       </v-col>
     </v-row>
 
-    <v-row class="fill-height" justify="center" v-for="lecture in lectures" :key="lecture.uid">
+    <v-row class="fill-height" justify="center">
       <v-col cols="12" lg="6" md="8" sm="11">
-        <v-card
-          :hover="isScheduled(lecture) ? false : true"
-          outlined
-          class="mainfont px-2 py-2"
-          :to="lecture.end_time ? '/lecture-analytics/' + lecture.uid : $router.path"
-        >
-          <v-card-title id="lectureTitle">
-            <span class="mr-2">{{ lecture.name }}</span> 
-            <v-menu
-              :close-on-content-click="false"
-              offset-y
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn 
-                  v-if="isScheduled(lecture)" 
-                  class="px-2" 
-                  color="primary" 
-                  text
-                  v-on="on"
-                  v-bind="attrs"
-                  @click.prevent="copyLink(lecture.uid)"
-                  @mousedown.stop 
-                  @touchstart.native.stop
-                >
-                  <v-icon>mdi-link-variant</v-icon>
-                  Copy link
-                </v-btn>
-              </template>
-              <v-card>
-                <v-card-text>
-                  <v-text-field
-                    :value="getLink(lecture.uid)"
-                    :id="`room-link-${lecture.uid}`"
-                    label="Room link"
-                    outlined
-                    hide-details
-                  ></v-text-field>
-                </v-card-text>
-              </v-card>
-            </v-menu>
-          </v-card-title>
-          <v-row class="px-3">
-            <v-col cols="12" sm="4" :class="$vuetify.breakpoint.smAndUp && 'text-left'">
-              <h3 class="subtitle font-weight-regular" v-if="lecture.end_time">
-                {{ lectureLengthString(lecture.end_time - lecture.start_time) }}
-                long
-              </h3>
-              <div v-else>
-                <h3 class="live" v-if="lecture.start_time && !lecture.end_time">LIVE</h3>
-                <h3 v-else-if="lecture.scheduled_start" class="future">SCHEDULED</h3>
-              </div>
-            </v-col>
-            <v-col cols="12" sm="4" :class="$vuetify.breakpoint.smAndUp && 'text-center'">
-              <h3 class="subtitle font-weight-regular" v-if="lecture.end_time">
-                {{ lecture.student_count }}
-                students
-              </h3>
-              <v-btn v-else-if="lecture.scheduled_start" text color="success" @click="$router.replace({ path: '/lecture/' + lecture.uid})">Start now</v-btn>
-            </v-col>
-            <v-col cols="12" sm="4" :class="$vuetify.breakpoint.smAndUp && 'text-right'">
-              <h3
-                class="subtitle font-weight-regular"
-                v-if="lecture.end_time"
-              >{{ timeSinceEndTimeString(lecture.end_time) }}</h3>
-              <h3 class="subtitle font-weight-regular" v-else-if="lecture.start_time && !lecture.end_time">Live Now</h3>
-              <h3
-                class="subtitle font-weight-regular"
-                v-else-if="isScheduled(lecture)"
-              >Scheduled for {{ new Date(lecture.scheduled_start).toLocaleString() }}</h3>
-            </v-col>
-          </v-row>
-        </v-card>
+        <div v-if="lectures.filter(e => !e.end_time).length !== 0">
+          <h1>Upcoming/Live Lectures</h1>
+          <v-divider></v-divider>
+          <LectureCard
+            v-for="lecture in lectures.filter(e => !e.end_time)"
+            :key="lecture.uid"
+            :lecture="lecture"
+            @notify="notify"
+          ></LectureCard>
+          <br />
+          <br />
+        </div>
+        <div v-if="lectures.filter(e => !!e.end_time).length !== 0">
+          <h1>Lecture History</h1>
+          <v-divider></v-divider>
+          <LectureCard
+            v-for="lecture in lectures.filter(e => !!e.end_time)"
+            :key="lecture.uid"
+            :lecture="lecture"
+            @notify="notify"
+          ></LectureCard>
+        </div>
       </v-col>
     </v-row>
   </v-container>
@@ -163,13 +116,12 @@ import {
   get,
   log,
   durationToString,
-  dateToString,
   pad,
   loadClasses,
-  getLinkToRoom,
 } from '@/helpers.js'
 import { mdiAndroidStudio } from '@mdi/js'
 import { mapState } from 'vuex'
+import LectureCard from '@/components/class-lectures/LectureCard'
 import ScheduleDateTime from '@/components/ScheduleDateTime'
 
 export default {
@@ -178,13 +130,15 @@ export default {
   },
 
   components: {
-    ScheduleDateTime
+    ScheduleDateTime,
+    LectureCard,
   },
 
   data() {
     return {
       testing: false,
       lectures: [],
+
       classInfo: {},
       showNewLecture: false,
       newLectureName: '',
@@ -192,7 +146,7 @@ export default {
       addRotate: 'rotate(0deg)',
       scheduleInfo: {
         show: false,
-        datetime: Date.now()
+        datetime: Date.now(),
       },
     }
   },
@@ -201,30 +155,26 @@ export default {
     scheduled() {
       return this.scheduleInfo.show
     },
-    ...mapState(['classes'])
+    ...mapState(['classes']),
   },
 
   watch: {
     showNewLecture(showNewLecture) {
       this.animateNewLecture(showNewLecture)
 
-      if (!showNewLecture)
-        this.resetNewLecture()
-    }
+      if (!showNewLecture) this.resetNewLecture()
+    },
   },
 
   methods: {
-    isScheduled(lecture) {
-      return lecture.scheduled_start && !lecture.start_time && !lecture.end_time
-    },
     getTimeFromLecture(lecture) {
       return lecture.end_time || lecture.start_time || lecture.scheduled_start
     },
     async init() {
       if (this.testing) {
       } else {
-        await loadClasses();
-        this.classInfo = this.classes.find(cla => cla.uid == this.class_uid);
+        await loadClasses()
+        this.classInfo = this.classes.find((cla) => cla.uid == this.class_uid)
 
         this.lectures = await get(`/lectures/by-class/${this.class_uid}`).then(
           (d) => {
@@ -232,24 +182,10 @@ export default {
             log('failed', e)
           }
         )
-        this.lectures.sort((a, b) => this.getTimeFromLecture(b) - this.getTimeFromLecture(a))
+        this.lectures.sort(
+          (a, b) => this.getTimeFromLecture(b) - this.getTimeFromLecture(a)
+        )
       }
-    },
-    lectureLengthString(lectureLength) {
-      var duration = durationToString(lectureLength, true)
-      var durationArray = duration.split(' ')
-      if (durationArray[durationArray.length - 1].includes('second')) {
-        if (durationArray.length == 2) {
-          duration = '< 1 minute'
-        } else {
-          durationArray.splice(durationArray.length - 2, 2)
-          duration = durationArray.join(' ')
-        }
-      }
-      return duration
-    },
-    timeSinceEndTimeString(endTime) {
-      return dateToString(endTime)
     },
     animateNewLecture(show) {
       if (show) {
@@ -263,7 +199,7 @@ export default {
     resetNewLecture() {
       this.scheduleInfo = {
         show: false,
-        datetime: Date.now()
+        datetime: Date.now(),
       }
       this.newLectureName = ''
       this.showNewLecture = false
@@ -292,22 +228,9 @@ export default {
         })
       }
     },
-    copyLink(lecture_uid) {
-      setTimeout(() => {
-        let codeToCopy = document.getElementById(`room-link-${lecture_uid}`)
-        codeToCopy.select()
-
-        try {
-          var successful = document.execCommand('copy')
-          this.$emit('info', 'Room link copied to clipboard')
-        } catch (err) {
-          this.$emit('error', 'There was an error copying the link')
-        }
-      }, 300)
-    },
-    getLink(lecture_uid) {
-      return getLinkToRoom(lecture_uid)
-    },
+    notify([type, text]) {
+      this.$emit(type, text);
+    }
   },
 
   mounted() {
@@ -326,31 +249,6 @@ export default {
   font-size: 50px;
   font-weight: 900;
 }
-.live {
-  background-color: red;
-  color: white;
-  border-radius: 20px;
-  padding: 7px;
-  width:80px;
-  text-align: center;
-}
-.future {
-  background-color: #aae691ff;
-  color: white;
-  width:140px;
-  border-radius: 20px;
-  padding: 7px;
-  text-align: center;
-}
-#lectureTitle {
-  font-weight: bold;
-  font-size: 25px;
-}
-
-.subtitle {
-  font-size: 18px;
-  color: gray;
-}
 
 #addBtn {
   position: absolute;
@@ -363,5 +261,10 @@ export default {
 
 .inner-shadow {
   box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+.subtitle {
+  font-size: 18px;
+  color: #444;
 }
 </style>
