@@ -34,7 +34,7 @@
       </Dialog>
       <v-btn
         v-if="!dashboard && !feedback"
-        @click="$router.push({ name: backRoute })"
+        @click="$router.push({ path: backRoute })"
         :style="{marginRight: livelecture? '10px' : '0px'}"
       >Back</v-btn>
       <v-btn class="red" v-if="started && livelecture" @click="endlecture()">End Lecture</v-btn>
@@ -192,10 +192,10 @@ export default {
       if (to.name == 'Dashboard') {
         this.started = false
       }
-      if (to.name == 'LectureAnalytics' || to.name == 'Lecture' || to.name == 'ClassLectures') {
-        this.backRoute = 'Dashboard';
+      if (from.name == 'LectureAnalytics' || to.name == 'Lecture' || from.name == 'New') {
+        this.backRoute = '/dashboard';
       } else {
-        this.backRoute = from.name;
+        this.backRoute = from.path;
       }
 
       this.redirectAuthUser()

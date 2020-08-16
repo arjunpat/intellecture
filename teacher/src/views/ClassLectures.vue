@@ -81,10 +81,10 @@
     <v-row class="fill-height" justify="center" v-for="lecture in lectures" :key="lecture.uid">
       <v-col cols="12" lg="6" md="8" sm="11">
         <v-card
-          hover
+          :hover="isScheduled(lecture) ? false : true"
           outlined
           class="mainfont px-2 py-2"
-          :to="lecture.end_time ? '/lecture-analytics/' + lecture.uid : '/lecture/' + lecture.uid"
+          :to="lecture.end_time ? '/lecture-analytics/' + lecture.uid : $router.path"
         >
           <v-card-title id="lectureTitle">
             <span class="mr-2">{{ lecture.name }}</span> 
@@ -129,7 +129,7 @@
               </h3>
               <div v-else>
                 <h3 class="live" v-if="lecture.start_time && !lecture.end_time">LIVE</h3>
-                <h3 class="future" v-else-if="lecture.scheduled_start">SCHEDULED</h3>
+                <h3 v-else-if="lecture.scheduled_start" class="future">SCHEDULED</h3>
               </div>
             </v-col>
             <v-col cols="12" sm="4" :class="$vuetify.breakpoint.smAndUp && 'text-center'">
@@ -137,6 +137,7 @@
                 {{ lecture.student_count }}
                 students
               </h3>
+              <v-btn v-else-if="lecture.scheduled_start" text color="success" @click="$router.replace({ path: '/lecture/' + lecture.uid})">Start now</v-btn>
             </v-col>
             <v-col cols="12" sm="4" :class="$vuetify.breakpoint.smAndUp && 'text-right'">
               <h3
