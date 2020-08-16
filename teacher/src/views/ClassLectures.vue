@@ -83,8 +83,8 @@
 
     <v-row class="fill-height" justify="center">
       <v-col cols="12" lg="6" md="8" sm="11">
-        <div v-if="lectures.filter(e => !e.end_time).length !== 0">
-          <h1>Upcoming/Live Lectures</h1>
+        <div v-if="lectures.filter(e => !e.end_time).length !== 0" class="mb-12">
+          <h1>Current Lectures</h1>
           <v-divider></v-divider>
           <LectureCard
             v-for="lecture in lectures.filter(e => !e.end_time)"
@@ -92,8 +92,6 @@
             :lecture="lecture"
             @notify="notify"
           ></LectureCard>
-          <br />
-          <br />
         </div>
         <div v-if="lectures.filter(e => !!e.end_time).length !== 0">
           <h1>Lecture History</h1>
