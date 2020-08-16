@@ -109,7 +109,7 @@
         >
       </v-col>
     </v-row>
-<!--
+
     <v-menu
       offset-x
       nudge-top
@@ -131,20 +131,61 @@
       </template>
       <v-list class="poppins">
         <v-list-item>
+            <v-btn
+            color="red"
+            text
+            @click.stop="dialog = true"
+          >
+            Delete
+          </v-btn>
+
           <v-list-item-title>
-           Remove
+           <v-dialog
+              v-model="dialog"
+              max-width="290"
+            >
+              <v-card>
+                <v-card-title class="headline">Delete lecture?</v-card-title>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+
+                  <v-btn
+                    color="green"
+                    text
+                    @click="dialog = false"
+                  >
+                    Cancel
+                  </v-btn>
+
+                  <v-btn
+                    color="red"
+                    text
+                    @click="dialog = false;deleteLecture(lecture.uid)"
+                  >
+                    Delete
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
           </v-list-item-title>
         </v-list-item>
       </v-list>
-    </v-menu>-->
+    </v-menu>
   </v-card>
 </template>
 
 <script>
-import { getLinkToRoom, durationToString, dateToString } from "@/helpers";
+import { getLinkToRoom, durationToString, dateToString, httpDelete } from "@/helpers";
 export default {
-  props: ["lecture"],
+  props: ["lecture"], data() {
+    return {
+      dialog:false,
+    }
+  },
   methods: {
+    deleteLecture(uid) {
+      httpDelete(`/lectures/${uid}`).then(()=>this.$emit('refreshSchedule'));
+    },
     getLinkToRoom,
     dateToString,
     isScheduled(lecture) {

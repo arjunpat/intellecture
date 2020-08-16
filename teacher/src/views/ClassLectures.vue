@@ -91,6 +91,7 @@
             :key="lecture.uid"
             :lecture="lecture"
             @notify="notify"
+            @refreshSchedule="init()"
           ></LectureCard>
         </div>
         <div v-if="lectures.filter(e => !!e.end_time).length !== 0">
@@ -100,6 +101,7 @@
             v-for="lecture in lectures.filter(e => !!e.end_time)"
             :key="lecture.uid"
             :lecture="lecture"
+            @refreshSchedule="init()"
             @notify="notify"
           ></LectureCard>
         </div>

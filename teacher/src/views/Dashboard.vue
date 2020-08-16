@@ -127,10 +127,10 @@
                     >Start Now</v-btn>
                   </template>
                   <v-card>
-                    <v-card-title class="headline">Are you sure you want to start you lecture now?</v-card-title>
+                    <v-card-title class="headline">Are you sure?</v-card-title>
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn color="red" text @click="modalOpen = false">Cancel</v-btn>
+                      <v-btn color="red" text @click="modalOpen = false">No</v-btn>
                       <v-btn color="green darken-1" text @click="modalOpen = false;$router.push({ path: `/lecture/${a.uid}` })">Start</v-btn>
                     </v-card-actions>
                   </v-card>
@@ -146,7 +146,7 @@
 <script>
 import ModalForm from '@/components/ModalForm'
 import EditClass from '@/components/EditClass'
-import { post, get, dateToString, dateTimeToString } from '@/helpers.js'
+import { post, get, httpDelete, dateToString, dateTimeToString } from '@/helpers.js'
 import { mapState } from 'vuex'
 
 export default {
@@ -163,6 +163,7 @@ export default {
       notification: Notification.permission == 'granted' ? true : false,
       search: '',
       modalOpen:false,
+      deleteModalOpen: false,
       skeleton: [{ end_time: null, name: '', start_time: null, className: '' }],
       recentLectures: [],
       scheduledLectures: [],
