@@ -33,8 +33,9 @@
         <template v-slot:content>{{ dialogText }}</template>
       </Dialog>
       <v-btn
-        v-if="!dashboard && !livelecture && !feedback"
+        v-if="!dashboard && !feedback"
         @click="$router.push({ name: backRoute })"
+        :style="{marginRight: livelecture? '10px' : '0px'}"
       >Back</v-btn>
       <v-btn class="red" v-if="started && livelecture" @click="endlecture()">End Lecture</v-btn>
       <v-btn
@@ -194,7 +195,7 @@ export default {
       if (to.name == 'Dashboard') {
         this.started = false
       }
-      if (to.name == 'LectureAnalytics') {
+      if (to.name == 'LectureAnalytics' || to.name == 'livelecture') {
         this.backRoute = 'Dashboard';
       } else {
         this.backRoute = from.name;
