@@ -96,7 +96,7 @@
 
 <script>
 import store from './store'
-import { post, get, loadClasses, signOut } from '@/helpers.js'
+import { post, get, loadClasses, signOut, getLinkToRoom } from '@/helpers.js'
 import { mapState } from 'vuex'
 import Dialog from '@/components/Dialog'
 import AutoSnackbar from '@/components/AutoSnackbar'
@@ -167,10 +167,7 @@ export default {
       return this.$route.name === 'Feedback'
     },
     linkToRoom() {
-      const isProd = process.env.NODE_ENV === 'production'
-      return `https://join.intellecture.app/${isProd ? '#/' : ''}room/${
-        this.id
-      }`
+      return getLinkToRoom(this.id)
     },
     smallScreen() {
       switch (this.$vuetify.breakpoint.name) {

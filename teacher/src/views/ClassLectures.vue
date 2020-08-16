@@ -25,7 +25,7 @@
               fontSize: $vuetify.breakpoint.xs ? '18px' : '20px'
             }"
           >Create a new lecture</v-card-title>
-          <v-btn id="addBtn" fab dark :color="addColor" :style="{ transform: addRotate, top: '10px', right: '10px' }" @click="animateNewLecture()">
+          <v-btn id="addBtn" fab dark :color="addColor" :style="{ transform: addRotate, top: '10px', right: '10px' }" @click="showNewLecture = !showNewLecture">
             <v-icon dark large>mdi-plus</v-icon>
           </v-btn>
           <v-expand-transition>
@@ -54,18 +54,23 @@
                 </v-col>
               </v-row>
               <v-row>
-                <v-btn
-                  style="font-family: var(--main-font);width:100%;"
-                  class="my-2"
-                  dark
-                  outlined
-                  small
-                  :block="$vuetify.breakpoint.xs"
-                  color="light-green lighten-2"
-                  @click.stop="dialog = true"
-                >
-                  {{ scheduled ? parsedTime : "now"}}
-                </v-btn>
+                <v-expand-transition leave-absolute>
+                  <v-btn
+                    v-if="!scheduleInfo.show"
+                    block 
+                    color="light-green lighten-2"
+                    outlined
+                    style="font-family: var(--main-font);"
+                    @click="scheduleInfo.show = true"
+                  >Schedule a time</v-btn>
+                </v-expand-transition>
+                <v-col cols="12" class="py-0">
+                  <v-fade-transition leave-absolute>
+                    <ScheduleDateTime
+                      v-model="scheduleInfo"
+                    />
+                  </v-fade-transition>
+                </v-col>
               </v-row>
             </div>
           </v-expand-transition>
@@ -81,7 +86,41 @@
           class="mainfont px-2 py-2"
           :to="lecture.end_time ? '/lecture-analytics/' + lecture.uid : '/lecture/' + lecture.uid"
         >
-          <v-card-title id="lectureTitle">{{ lecture.name }}</v-card-title>
+          <v-card-title id="lectureTitle">
+            <span class="mr-2">{{ lecture.name }}</span> 
+            <v-menu
+              :close-on-content-click="false"
+              offset-y
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn 
+                  v-if="isScheduled(lecture)" 
+                  class="px-2" 
+                  color="primary" 
+                  text
+                  v-on="on"
+                  v-bind="attrs"
+                  @click.prevent="copyLink(lecture.uid)"
+                  @mousedown.stop 
+                  @touchstart.native.stop
+                >
+                  <v-icon>mdi-link-variant</v-icon>
+                  Copy link
+                </v-btn>
+              </template>
+              <v-card>
+                <v-card-text>
+                  <v-text-field
+                    :value="getLink(lecture.uid)"
+                    :id="`room-link-${lecture.uid}`"
+                    label="Room link"
+                    outlined
+                    hide-details
+                  ></v-text-field>
+                </v-card-text>
+              </v-card>
+            </v-menu>
+          </v-card-title>
           <v-row class="px-3">
             <v-col cols="12" sm="4" :class="$vuetify.breakpoint.smAndUp && 'text-left'">
               <h3 class="subtitle font-weight-regular" v-if="lecture.end_time">
@@ -107,32 +146,13 @@
               <h3 class="subtitle font-weight-regular" v-else-if="lecture.start_time && !lecture.end_time">Live Now</h3>
               <h3
                 class="subtitle font-weight-regular"
-                v-else-if="lecture.scheduled_start>new Date().getTime()"
+                v-else-if="isScheduled(lecture)"
               >Scheduled for {{ new Date(lecture.scheduled_start).toLocaleString() }}</h3>
             </v-col>
           </v-row>
         </v-card>
       </v-col>
     </v-row>
-    
-    <!-- Date/time picker -->
-    <v-dialog v-model="dialog" persistent max-width="290">
-      <v-card class="modal">
-        <v-time-picker v-if="page==1"
-          v-model="time"
-          ampm-in-title
-          color="#65bb6aff"
-        ></v-time-picker>
-        <v-date-picker v-model="date" v-if="page==2" color="#65bb6aff"></v-date-picker>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="red" text dark @click="dialog = false" v-if="page==1">Cancel</v-btn>
-          <v-btn color="#aae691ff" dark text @click="page+=1" v-if="page==1&&this.time!=``">Next</v-btn>
-          <v-btn color="red" text dark @click="page-=1" v-if="page==2">Back</v-btn>
-          <v-btn color="#aae691ff" text @click="confirmSchedule" v-if="page==2" :disabled="!(datetime.getTime()>new Date().getTime())">Done</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </v-container>
 </template>
 
@@ -144,14 +164,20 @@ import {
   durationToString,
   dateToString,
   pad,
-  loadClasses
+  loadClasses,
+  getLinkToRoom,
 } from '@/helpers.js'
 import { mdiAndroidStudio } from '@mdi/js'
 import { mapState } from 'vuex'
+import ScheduleDateTime from '@/components/ScheduleDateTime'
 
 export default {
   props: {
     class_uid: { type: String },
+  },
+
+  components: {
+    ScheduleDateTime
   },
 
   data() {
@@ -159,31 +185,37 @@ export default {
       testing: false,
       lectures: [],
       classInfo: {},
-      time: '',
-      picker: false,
-      page: 1,
-      date: '',
-      scheduled: false,
-      dialog: false,
       showNewLecture: false,
       newLectureName: '',
       addColor: '#81c784ff',
       addRotate: 'rotate(0deg)',
+      scheduleInfo: {
+        show: false,
+        datetime: Date.now()
+      },
     }
   },
+
   computed: {
-    parsedTime() {
-      return `${this.dateString}, ${this.datetime.toLocaleString('en-US', { timeStyle: 'short' })}`
-    },
-    dateString() {
-      return `${this.datetime.getMonth() + 1}/${this.datetime.getDate()}/${this.datetime.getFullYear().toString().substring(2)}`
-    },
-    datetime() {
-      return new Date(this.date + 'T' + this.time + ':00')
+    scheduled() {
+      return this.scheduleInfo.show
     },
     ...mapState(['classes'])
   },
+
+  watch: {
+    showNewLecture(showNewLecture) {
+      this.animateNewLecture(showNewLecture)
+
+      if (!showNewLecture)
+        this.resetNewLecture()
+    }
+  },
+
   methods: {
+    isScheduled(lecture) {
+      return lecture.scheduled_start && !lecture.start_time && !lecture.end_time
+    },
     getTimeFromLecture(lecture) {
       return lecture.end_time || lecture.start_time || lecture.scheduled_start
     },
@@ -218,23 +250,22 @@ export default {
     timeSinceEndTimeString(endTime) {
       return dateToString(endTime)
     },
-    confirmSchedule() {
-      if (this.datetime.getTime() > new Date().getTime()) {
-        this.dialog = false
-        this.scheduled = true
-      }
-    },
-
-    animateNewLecture() {
-      if (!this.showNewLecture) {
-        this.showNewLecture = true
+    animateNewLecture(show) {
+      if (show) {
         this.addColor = 'red'
         this.addRotate = 'rotate(45deg)'
       } else {
-        this.showNewLecture = false
         this.addColor = '#81c784ff'
         this.addRotate = 'rotate(0deg)'
       }
+    },
+    resetNewLecture() {
+      this.scheduleInfo = {
+        show: false,
+        datetime: Date.now()
+      }
+      this.newLectureName = ''
+      this.showNewLecture = false
     },
     create() {
       if (!this.scheduled) {
@@ -248,17 +279,33 @@ export default {
         post('/lectures/create', {
           class_uid: this.classInfo.uid,
           name: this.newLectureName,
-          scheduled_start: this.datetime ? Date.parse(this.datetime) : undefined,
+          scheduled_start: this.scheduleInfo.datetime,
         }).then((data) => {
-          console.log(data)
           if (!data.success) {
-            this.$emit('error', 'Scheduled time must be in the future');
-            this.formErrors = true
+            this.$emit('error', 'Scheduled time must be in the future')
           } else {
-            this.$router.push({ name: 'Dashboard' })
+            this.$emit('info', 'Your lecture has been scheduled!')
+            this.resetNewLecture()
+            this.init()
           }
         })
       }
+    },
+    copyLink(lecture_uid) {
+      setTimeout(() => {
+        let codeToCopy = document.getElementById(`room-link-${lecture_uid}`)
+        codeToCopy.select()
+
+        try {
+          var successful = document.execCommand('copy')
+          this.$emit('info', 'Room link copied to clipboard')
+        } catch (err) {
+          this.$emit('error', 'There was an error copying the link')
+        }
+      }, 300)
+    },
+    getLink(lecture_uid) {
+      return getLinkToRoom(lecture_uid)
     },
   },
 

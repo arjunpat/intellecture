@@ -59,13 +59,14 @@ router.get('/scheduled', async (req: Request, res) => {
   res.send(responses.success(await db.lectures.genScheduledLectures(req.uid, 4, from, to)))
 });
 
-router.post('/delete', async (req: Request, res) => {
-  let lecture = await db.lectures.getLecture(req.body.lecture_uid);
+router.delete('/:lecture_uid', async (req: Request, res) => {
+  let lecture_uid = req.params.lecture_uid;
+  let lecture = await db.lectures.getLecture(lecture_uid);
   if (!lecture || lecture.account_uid !== req.uid) {
     return res.send(responses.error());
   }
   
-  await db.lectures.deleteLecture(req.body.lecture_uid);
+  await db.lectures.deleteLecture(lecture_uid);
   res.send(responses.success());
 });
 

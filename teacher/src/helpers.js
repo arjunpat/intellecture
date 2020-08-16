@@ -158,3 +158,8 @@ export function pad(str, len) {
   while (str.length < len) str = ' ' + str
   return str
 }
+
+export function getLinkToRoom(lecture_uid) {
+  const isProd = process.env.NODE_ENV === 'production'
+  return `https://join.intellecture.app/${isProd ? '#/' : ''}room/${lecture_uid}`
+}

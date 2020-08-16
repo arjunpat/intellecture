@@ -66,9 +66,16 @@
             transition="slide-x-transition"
           >
             <template v-slot:activator="{ on }">
-              <a v-on="on" style="position: absolute; right: 0px; top: 40px;">
+              <v-btn 
+                v-on="on" 
+                icon 
+                style="position: absolute; right: 10px; top: 40px;" 
+                @click.prevent=""
+                @mousedown.stop 
+                @touchstart.native.stop
+              >
                 <v-icon large id="menu-icon">more_vert</v-icon>
-              </a>
+              </v-btn>
             </template>
             <v-list class="poppins">
               <v-list-item>
@@ -108,13 +115,26 @@
 
           <v-card-actions>
             <v-row>
-              <v-btn
-                dark
-                hover
-                color="#aae691ff"
-                class="mb-2 ml-4"
-                @click="$router.push({ path: `/lecture/${a.uid}` })"
-              >Start Now</v-btn>
+                <v-dialog v-model="modalOpen" persistent max-width="30%">
+                  <template v-slot:activator="{ on, attrs }">
+                   <v-btn
+                      hover
+                      text
+                      color="#66BB6A"
+                      class="mb-2 ml-4"
+                      v-bind="attrs"
+                      v-on="on"
+                    >Start Now</v-btn>
+                  </template>
+                  <v-card>
+                    <v-card-title class="headline">Are you sure you want to start you lecture now?</v-card-title>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn color="red" text @click="modalOpen = false">Cancel</v-btn>
+                      <v-btn color="green darken-1" text @click="modalOpen = false;$router.push({ path: `/lecture/${a.uid}` })">Start</v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
             </v-row>
           </v-card-actions>
         </v-card>
@@ -142,6 +162,7 @@ export default {
     return {
       notification: Notification.permission == 'granted' ? true : false,
       search: '',
+      modalOpen:false,
       skeleton: [{ end_time: null, name: '', start_time: null, className: '' }],
       recentLectures: [],
       scheduledLectures: [],

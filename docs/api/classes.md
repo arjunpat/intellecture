@@ -56,16 +56,9 @@ View all of the users classes.
 }
 ```
 
-## POST /classes/delete
+## DELETE /classes/:class_uid
 
 Delete a class.
-
-###### Request body:
-```javascript
-{
-  "class_uid": "j3fmOXvJyq5Dlww"
-}
-```
 
 ## POST /classes/rename
 

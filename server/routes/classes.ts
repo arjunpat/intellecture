@@ -29,8 +29,8 @@ router.post('/create', async (req: Request, res) => {
   }));
 });
 
-router.post('/delete', async (req: Request, res) => {
-  let { class_uid } = req.body;
+router.delete('/:class_uid', async (req: Request, res) => {
+  let { class_uid } = req.params;
   if (!class_uid) return res.send(responses.error('missing_data'));
   
   // class ownership does not need to be checked because it is handled
