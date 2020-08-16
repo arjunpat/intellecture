@@ -192,7 +192,7 @@ export default {
       if (to.name == 'Dashboard') {
         this.started = false
       }
-      if (to.name == 'LectureAnalytics' || to.name == 'livelecture') {
+      if (to.name == 'LectureAnalytics' || to.name == 'Lecture' || to.name == 'ClassLectures') {
         this.backRoute = 'Dashboard';
       } else {
         this.backRoute = from.name;

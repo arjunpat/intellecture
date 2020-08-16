@@ -123,7 +123,19 @@ export default {
 
   methods: {
     setDateAndTime(datetime) {
-      this.date = new Date(datetime).toISOString().substr(0, 10)
+      this.date = new Date(datetime).toLocaleString().split(",")[0].split("/");/*
+      this.date.forEach((item, index) => {
+        if(item.length == 1) {
+          this[index] = "0" + item;
+          console.log("Setting " + index + " to " + this[index])
+        }
+      }, this.date);*/
+      for(let i=0; i<this.date.length; i++) {
+        if(this.date[i].length == 1) {
+          this.date[i] = "0" + this.date[i];
+        }
+      }
+      this.date = this.date[2] + "-" + this.date[0] + "-" + this.date[1];
       this.time = new Date(datetime).toTimeString().split(":")[0] + ":" + new Date(datetime).toTimeString().split(":")[1]
     },
     update() {
