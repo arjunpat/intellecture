@@ -415,4 +415,8 @@ export default class Lecture {
       ended: this.ended
     }
   }
+
+  getNumberOfActiveStudents() {
+    return Object.keys(this.scores).length;
+  }
 }

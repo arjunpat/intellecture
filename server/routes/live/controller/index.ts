@@ -21,7 +21,7 @@ setInterval(() => {
 
     if (lecture.ended) {
       removeLecture(lecture_uid);
-    } else if (lecture.idleTime(now) > MAX_IDLE_MS) {
+    } else if (lecture.idleTime(now) > MAX_IDLE_MS && lecture.getNumberOfActiveStudents() === 0) {
       lecture.end();
     }
     
