@@ -15,7 +15,7 @@
         > 
           <div id="flex-container" class="fill-height">
             <v-expand-transition>
-              <span v-if="!myQuestionsVisible">
+              <span v-show="!myQuestionsVisible">
                 <!-- TODO: make class name font size smaller when the name is longer -->
                 <TutorialDisplay :show="showTutorial == 0" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" bottom>
                   <template v-slot:title>
@@ -302,9 +302,11 @@ export default {
         const data = JSON.parse(event.data)
         switch (data.type) {
           case 'error':
-            if (data.error === 'does_not_exist' || data.error === 'lecture_not_initialized') {
+            if (data.error === 'does_not_exist') {
               if (!this.testing)
                 this.$router.replace({name: 'Join', params: {error: 'The lecture you tried to join does not exist!'} })
+            } else if (data.error === 'lecture_not_initialized') {
+              this.$router.replace({name: 'Join', params: {info: 'The lecture you tried to join has not started yet!'} })
             } else if (data.error === 'already_ended') {
               this.$router.replace({name: 'Join', params: {error: 'The lecture you tried to join has already ended!'} })
             } else if (data.error === 'already_joined') {
