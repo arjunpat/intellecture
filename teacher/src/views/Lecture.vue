@@ -443,6 +443,13 @@ export default {
       const data = JSON.parse(event.data)
       this.handleMessage(data)
     }
+
+    function sendActive() {
+      get(`/lectures/live/teacher/${this.id}/active`);
+      setTimeout(() => sendActive(), 2 * 60 * 1000);
+    }
+
+    setTimeout(() => sendActive(), 2 * 60 * 1000 /* 2 minutes */);
   },
   created() {
     this.initChart()

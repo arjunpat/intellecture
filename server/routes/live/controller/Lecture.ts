@@ -88,6 +88,9 @@ export default class Lecture {
       case 'ep': // end poll
         this.endPoll(data.poll_uid);
         break;
+      case 'act': // active
+        // do nothing; just send a message
+        break;
       case 'end': // end lecture
         this.end();
         break;
