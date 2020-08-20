@@ -5,6 +5,9 @@ import * as mw from "../middleware";
 import * as responses from "../lib/responses";
 import { Request } from "../types";
 
+import { SERVER_NAME } from '../lib/config'
+import { genId, messageSlack } from '../lib/helpers';
+
 import db from "../models";
 
 router.use(mw.auth);
@@ -52,6 +55,11 @@ router.post("/update", async (req: Request, res) => {
     isValidStars(diff_stars) ? diff_stars : null,
     isValidStars(helpful_stars) ? helpful_stars : null
   );
+
+  if (SERVER_NAME === 'prod' && (typeof comments === 'string' || typeof tech_comments === 'string')) {
+    let user = await db.accounts.getBasicInfo(req.uid);
+    messageSlack(`${user.first_name} ${user.last_name} (${user.email}) just submitted some textual feedback:\nComments: ${comments}\nTech Comments: ${tech_comments}`);
+  }
 
   res.send(responses.success());
 });
