@@ -444,12 +444,10 @@ export default {
       this.handleMessage(data)
     }
 
-    function sendActive() {
-      get(`/lectures/live/teacher/${this.id}/active`);
-      setTimeout(() => sendActive(), 2 * 60 * 1000);
-    }
-
-    setTimeout(() => sendActive(), 2 * 60 * 1000 /* 2 minutes */);
+    let loc = `/lectures/live/teacher/${this.id}/active`;
+    this.interval = setInterval(() => {
+      post(loc);
+    }, 2 * 60 * 1000);
   },
   created() {
     this.initChart()
@@ -459,6 +457,7 @@ export default {
     }
   },
   beforeDestroy() {
+    clearInterval(this.interval);
     this.socket.close()
     store.commit('setEndLecture', false)
   },
