@@ -268,6 +268,9 @@ export default {
     document.addEventListener('click', () => {
       this.$emit('enableNoSleep', true)
     }, {once: true})
+    document.addEventListener('touchmove', () => {
+      this.$emit('enableNoSleep', true)
+    }, {once: true})
   },
 
   beforeDestroy() {
