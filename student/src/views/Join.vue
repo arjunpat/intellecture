@@ -193,6 +193,7 @@ export default {
           this.$refs['form'].validate()
         } else {
           // Redirect to room page
+          this.$emit('enableNoSleep', true)
           this.$router.push({ name: 'Room', params: { id: response.data.lecture_uid } })
         }
       }).catch((err) => {

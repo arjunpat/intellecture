@@ -46,7 +46,7 @@
       </v-app-bar>
 
       <v-main>
-        <router-view @error="showError" @info="showInfo"/>
+        <router-view @error="showError" @info="showInfo" @enableNoSleep="enableNoSleep"/>
       </v-main>
     </v-app>
     <LoadingScreen :show="!loaded" />
@@ -59,6 +59,7 @@ import UserAvatarContent from '@/components/UserAvatarContent'
 import AutoSnackbar from '@/components/AutoSnackbar'
 import LoadingScreen from '@/components/LoadingScreen'
 import { get, signOut } from '@/helpers'
+import NoSleep from 'nosleep.js'
 
 export default {
   name: 'App',
@@ -68,6 +69,7 @@ export default {
       error: '',
       info: '',
       loaded: false,
+      noSleep: new NoSleep(),
     }
   },
 
@@ -85,6 +87,10 @@ export default {
       this.redirectAuthUser()
       this.loaded = true
     })
+  },
+
+  beforeDestroy() {
+    this.enableNoSleep(false)
   },
 
   components: {
@@ -137,6 +143,12 @@ export default {
       this.info = ''
       this.$nextTick(() => {this.info = info})
     },
+    enableNoSleep(enable) {
+      if (enable)
+        this.noSleep.enable()
+      else
+        this.noSleep.disable()
+    }
   },
 }
 </script>

@@ -193,7 +193,6 @@ import QuestionDisplay from '@/components/QuestionDisplay'
 import { mapState } from 'vuex'
 import { get, post, socketServerOrigin, log } from '@/helpers'
 import testData from '@/test/test.json'
-import NoSleep from 'nosleep.js'
 
 export default {
   name: 'Room',
@@ -231,8 +230,6 @@ export default {
       },
       testLectureInfo: testData.testLectureInfo,
       testQuestions: testData.testQuestions,
-
-      noSleep: new NoSleep(),
     }
   },
 
@@ -267,16 +264,16 @@ export default {
       window.localStorage.setItem('tutorialShown', '')
     }
 
-    // NoSleep
+    // NoSleep (in case user reloads)
     document.addEventListener('click', () => {
-      this.noSleep.enable()
+      this.$emit('enableNoSleep', true)
     }, {once: true})
   },
 
   beforeDestroy() {
     clearInterval(this.wsInterval)
     this.socket.close()
-    this.noSleep.disable();
+    this.$emit('enableNoSleep', false)
   },
 
   components: {
