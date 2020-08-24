@@ -183,7 +183,7 @@ export default {
       // Check if room exists
       this.validRoomCode = true
       this.$refs['form'].validate()
-      get(`/lectures/exists/${this.roomCode}`).then((response) => {
+      get(`/lectures/exists/${this.roomCode.trim()}`).then((response) => {
         if (!response.success)
           throw response.error
 
