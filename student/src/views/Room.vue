@@ -143,6 +143,41 @@
           </div>
         </v-col>
       </v-row>
+      <v-dialog
+        :value="Object.keys(poll).length > 0"
+        persistent
+        max-width="400" 
+        content-class="ma-0"
+      >
+        <v-card>
+          <v-card-text class="pb-0 pt-4">
+            <div class="text-h6 black--text mb-2">{{ poll.prompt }}</div>
+            <v-radio-group 
+              v-model="pollOptionSelected" 
+              class="mt-0"
+              :error-messages="pollError"
+            >
+              <v-radio 
+                v-for="(option, i) in poll.options"
+                :key="i"
+                :label="option"
+                :value="i"
+              >
+              </v-radio>
+            </v-radio-group>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              text
+              color="primary"
+              @click="submitPoll"
+            >
+              Submit
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-container>
   </div>
 </template>
@@ -204,6 +239,12 @@ export default {
   data() {
     return {
       testing: false,
+
+      // General
+      socket: null,
+      lectureInfo: null,
+      
+      // Slider
       sliderValue: 5,
       sliderMax: 10,
       throttleDelay: 1000,    // Limit understanding to only be updated once every `throttleDelay` ms
@@ -213,13 +254,20 @@ export default {
       levels: ['I\'m lost', 'I\'m confused', 'I kinda get it', 'I think I get it', 'I completely understand'],
       colors: ['rgb(240, 53, 36)', 'rgb(255, 183, 0)', 'rgb(250, 225, 0)', 'rgb(126, 196, 4)', '#B2FF59'],
       color: '',
-      socket: null,
-      lectureInfo: null,
+
+      // Questions
       questions: {},
       myQuestions: [],
       myQuestionsVisible: false,
       lastQuestionElapsed: 0,
       showQuestionDialog: false,
+      
+      // Polls
+      poll: {},
+      pollOptionSelected: -1,
+      pollError: '',
+
+      // Tutorial
       showTutorial: -1,
       tutorialQuestions: {
         tutorial: {
@@ -228,8 +276,6 @@ export default {
           "question":"Why is the sky blue?"
         },
       },
-      testLectureInfo: testData.testLectureInfo,
-      testQuestions: testData.testQuestions,
     }
   },
 
@@ -249,13 +295,18 @@ export default {
       };
       window.localStorage.setItem('questionData', JSON.stringify(questionData))
     },
+    pollOptionSelected(option) {
+      if (option !== -1 && this.pollError)
+        this.pollError = ''
+    },
   },
 
   created() {
     // FOR TESTING: 
     if (this.testing) {
-      this.lectureInfo = this.testLectureInfo
-      this.questions = this.testQuestions
+      this.lectureInfo = testData.testLectureInfo
+      this.questions = testData.testQuestions
+      this.poll = testData.testPoll
     }
 
     // Show tutorial if first time
@@ -458,6 +509,18 @@ export default {
       this.$nextTick(() => {
         this.$emit('info', 'You moved the slider too much! It has been disabled for 1 minute.') 
       })
+    },
+    submitPoll() {
+      if (this.pollOptionSelected === -1)
+        this.pollError = 'Please select an option!'
+      else {
+        // Post to poll-vote api, then
+        this.resetPoll()
+      }
+    },
+    resetPoll() {
+      this.poll = {}
+      this.pollOptionSelected = -1
     },
   },
 }
