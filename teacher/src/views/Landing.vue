@@ -365,7 +365,6 @@ grey {
   opacity: 1.0;
   font-size: 13px;
   transition: 0.3s all;
-  text-decoration-thickness: .125em;
   text-underline-offset: 1.5px;
 }
 #student-link:hover {

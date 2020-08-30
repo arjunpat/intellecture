@@ -44,7 +44,7 @@
     <v-row class="pl-3 pt-2">
       <div id="noclasses" v-if="!classes || classes.length == 0">
         <v-img style="margin-left: 150px;" width="50px" src="@/assets/img/arrow.png"></v-img>
-        <h1>Create your first class!</h1>
+        <h1>Create your first class<br v-if="$vuetify.breakpoint.smAndDown"> or watch this <a @click="showvid = true" style="color: #AED581; text-decoration: underline;">tutorial</a>!</h1>
       </div>
       <div class="mr-3 mb-3" v-for="cla in classes" :key="cla.uid" style="display: 'inline-block';">
         <v-card
@@ -140,6 +140,25 @@
         </v-card>
       </div>
     </v-row>
+
+    <v-fade-transition>
+    <v-container id="vid-container" class="fill-height" fluid v-if="showvid">
+      <v-btn text id="close-vid" @click="showvid = false"
+        ><v-icon large>close</v-icon></v-btn
+      >
+
+      <v-row justify="center">
+        <iframe
+          width="972"
+          height="547"
+          src="https://www.youtube.com/embed/LaDN3ShhF0E?autoplay=1&modestbranding=1&rel=0"
+          frameborder="0"
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      </v-row>
+    </v-container>
+    </v-fade-transition>
   </v-container>
 </template>
 
@@ -161,6 +180,7 @@ export default {
   data() {
     return {
       notification: Notification.permission == 'granted' ? true : false,
+      showvid: false,
       search: '',
       modalOpen:false,
       deleteModalOpen: false,
@@ -275,6 +295,21 @@ export default {
 .header {
   font-weight: 900;
   font-size: 50px;
+}
+
+#vid-container {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  background-color: rgba(0, 0, 0, 0.25);
+  z-index: 100;
+}
+
+#close-vid {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: white;
 }
 
 .v-sheet--offset {
