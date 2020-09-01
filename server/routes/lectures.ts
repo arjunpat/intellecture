@@ -65,12 +65,21 @@ router.delete('/:lecture_uid', async (req: Request, res) => {
   if (!lecture || lecture.account_uid !== req.uid) {
     return res.send(responses.error());
   }
+
+  if (typeof lecture.start_time === 'number' && typeof lecture.end_time !== 'number')
+    return res.send(responses.error('live_lecture'));
   
   await db.lectures.deleteLecture(lecture_uid);
   res.send(responses.success());
 });
 
 router.get('/exists/:join_code', async (req, res) => {
+  let jc = req.params.join_code;
+  if (typeof jc !== 'string') return res.send(responses.error());
+  
+  jc = jc.normalize().toLowerCase().trim();
+  if (jc.length !== 5) return res.send(responses.error());
+
   let lecture_uid = await db.lectures.getLectureUidByJoinCode(
     req.params.join_code
   );
