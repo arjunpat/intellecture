@@ -54,11 +54,11 @@ const routes = [
       metaTags: [
         {
           name: 'description',
-          content: 'An online tool facilitating real-time lecture feedback between teacher and student'
+          content: 'Intellecture is an online tool facilitating real-time lecture feedback between teacher and student. Sign up for free now!'
         },
         {
           property: 'og:description',
-          content: 'An online tool facilitating real-time lecture feedback between teacher and student'
+          content: 'Intellecture is an online tool facilitating real-time lecture feedback between teacher and student. Sign up for free now!'
         }
       ]
     }
@@ -67,17 +67,56 @@ const routes = [
     path: '/about',
     name: 'about',
     component: About,
+    meta: {
+      title: 'About Us | Intellecture',
+      metaTags: [
+        {
+          name: 'description',
+          content: 'Intellecture is an online tool facilitating real-time lecture feedback between teacher and student. Sign up for free now!'
+        },
+        {
+          property: 'og:description',
+          content: 'Intellecture is an online tool facilitating real-time lecture feedback between teacher and student. Sign up for free now!'
+        }
+      ]
+    }
   },
   {
     path: '/dashboard',
     name: 'Dashboard',
-    component: Dashboard
+    component: Dashboard,
+    meta: {
+      title: 'Dashboard | Intellecture',
+      metaTags: [
+        {
+          name: 'description',
+          content: 'Intellecture is an online tool facilitating real-time lecture feedback between teacher and student. Sign up for free now!'
+        },
+        {
+          property: 'og:description',
+          content: 'Intellecture is an online tool facilitating real-time lecture feedback between teacher and student. Sign up for free now!'
+        }
+      ]
+    }
   },
   {
     path: '/lecture/:id',
     name: 'Lecture',
     component: Lecture,
-    props: true
+    props: true,
+    meta: {
+      title: 'Lecture | Intellecture',
+      metaTags: [
+        {
+          name: 'description',
+          content: 'Intellecture is an online tool facilitating real-time lecture feedback between teacher and student. Sign up for free now!'
+        },
+        {
+          property: 'og:description',
+          content: 'Intellecture is an online tool facilitating real-time lecture feedback between teacher and student. Sign up for free now!'
+        }
+      ]
+    }
   },
   {
     path: '/new',
@@ -120,5 +159,33 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+router.beforeEach((to, from, next) => {
+  const nearestWithTitle = to.matched.slice().reverse().find(r => r.meta && r.meta.title);
+
+  const nearestWithMeta = to.matched.slice().reverse().find(r => r.meta && r.meta.metaTags);
+  const previousNearestWithMeta = from.matched.slice().reverse().find(r => r.meta && r.meta.metaTags);
+
+  if(nearestWithTitle) document.title = nearestWithTitle.meta.title;
+
+  Array.from(document.querySelectorAll('[data-vue-router-controlled]')).map(el => el.parentNode.removeChild(el));
+
+  if(!nearestWithMeta) return next();
+
+  nearestWithMeta.meta.metaTags.map(tagDef => {
+    const tag = document.createElement('meta');
+
+    Object.keys(tagDef).forEach(key => {
+      tag.setAttribute(key, tagDef[key]);
+    });
+
+    tag.setAttribute('data-vue-router-controlled', '');
+
+    return tag;
+  })
+  .forEach(tag => document.head.appendChild(tag));
+
+  next();
+});
 
 export default router
