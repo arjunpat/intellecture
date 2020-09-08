@@ -13,6 +13,19 @@ const routes = [
     name: 'Join',
     component: Join,
     props: true,
+    meta: {
+      title: 'Join Intellecture - Enter a room code here!',
+      metaTags: [
+        {
+          name: 'description',
+          content: 'Join an Intellecture room here! Intellecture is an online tool that provides easy communication between a teacher and student to create a better learning enviornment!'
+        },
+        {
+          property: 'og:description',
+          content: 'Join an Intellecture room here! Intellecture is an online tool that provides easy communication between a teacher and student to create a better learning enviornment!'
+        }
+      ]
+    }
   },
   {
     path: '/room/:id',

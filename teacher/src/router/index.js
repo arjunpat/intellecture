@@ -32,15 +32,15 @@ const routes = [
     name: 'Landing',
     component: Landing,
     meta: {
-      title: 'Intellecture',
+      title: 'Intellecture | Lecture tool',
       metaTags: [
         {
           name: 'description',
-          content: 'An online tool facilitating real-time lecture feedback between teacher and student'
+          content: 'Intellecture is an online tool facilitating real-time lecture feedback between teacher and student. Sign up for free now!'
         },
         {
           property: 'og:description',
-          content: 'An online tool facilitating real-time lecture feedback between teacher and student'
+          content: 'Intellecture is an online tool facilitating real-time lecture feedback between teacher and student. Sign up for free now!'
         }
       ]
     }
