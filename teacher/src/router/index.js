@@ -30,12 +30,38 @@ const routes = [
   {
     path: '/',
     name: 'Landing',
-    component: Landing
+    component: Landing,
+    meta: {
+      title: 'Intellecture',
+      metaTags: [
+        {
+          name: 'description',
+          content: 'An online tool facilitating real-time lecture feedback between teacher and student'
+        },
+        {
+          property: 'og:description',
+          content: 'An online tool facilitating real-time lecture feedback between teacher and student'
+        }
+      ]
+    }
   },
   {
     path: '/privacy-policy',
     name: 'PrivacyPolicy',
     component: PrivacyPolicy,
+    meta: {
+      title: 'Privacy Policy | Intellecture',
+      metaTags: [
+        {
+          name: 'description',
+          content: 'An online tool facilitating real-time lecture feedback between teacher and student'
+        },
+        {
+          property: 'og:description',
+          content: 'An online tool facilitating real-time lecture feedback between teacher and student'
+        }
+      ]
+    }
   },
   {
     path: '/about',
