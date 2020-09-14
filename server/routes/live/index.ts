@@ -215,7 +215,7 @@ router.post('/student/:lecture_uid/upvote', mw.auth, attachLecture, joinedLectur
 
 router.post('/student/:lecture_uid/poll-vote', mw.auth, attachLecture, joinedLecture, async (req: Request, res) => {
   let { poll_uid, choice } = req.body;
-  if (!poll_uid || !choice || !Number.isInteger(choice))
+  if (!poll_uid || !Number.isInteger(choice))
     return res.send(responses.error());
   
   publish(req.params.lecture_uid, {
@@ -307,6 +307,18 @@ router.post('/teacher/:lecture_uid/active', mw.auth, attachLecture, async (req: 
 
   publish(req.params.lecture_uid, {
     type: 'act'
+  });
+
+  res.send(responses.received());
+});
+
+router.post('/teacher/:lecture_uid/reset-scores', mw.auth, attachLecture, async (req: Request, res) => {
+  if (req.lecture.account_uid !== req.uid) {
+    return res.send(responses.error('permissions'));
+  }
+
+  publish(req.params.lecture_uid, {
+    type: 'rst'
   });
 
   res.send(responses.received());
