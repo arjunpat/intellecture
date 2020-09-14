@@ -417,6 +417,10 @@ export default {
           case 'question_dismissed':
             this.dismissQuestion(data.question_uid)
             break
+          case 'reset_scores':
+            this.sliderValue = 5;
+            this.updateUnderstanding();
+            break
           case 'new_poll':
             this.poll = data
             break

@@ -133,5 +133,9 @@ export namespace WS {
     type: 'kick_student',
     to: string
   }
+
+  export interface ResetScores extends Message {
+    type: 'reset_scores'
+  }
 }
 

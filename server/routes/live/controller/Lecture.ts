@@ -91,6 +91,9 @@ export default class Lecture {
       case 'act': // active
         // do nothing; just send a message
         break;
+      case 'rst': // reset
+        this.sendToStudents(<WS.ResetScores> { type: 'reset_scores' });
+        break;
       case 'end': // end lecture
         this.end();
         break;
