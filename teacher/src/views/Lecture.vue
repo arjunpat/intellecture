@@ -135,11 +135,27 @@
                 @nextTutorial="nextTutorial()"
                 @clickTab="clickTab"
                 @invertDialog="invertDialog()"
-                @kickStudent="kickStudent"
               />
             </v-card>
           </v-tab-item>
           <!-- End of Students tab -->
+
+          <!-- Start of Polls tab -->
+          <v-tab-item>
+            <v-card flat class="pt-3" min-height="75vh">
+              <Polls
+                :lectureId="lectureInfo.uid"
+                :votes="votes"
+                :polls="polls"
+                @resetTutorial="resetTutorial()"
+                @nextTutorial="nextTutorial()"
+                @clickTab="clickTab"
+                @invertDialog="invertDialog()"
+                @kickStudent="kickStudent"
+              />
+            </v-card>
+          </v-tab-item>
+          <!-- End of Polls tab -->
         </v-tabs-items>
       </v-card>
 
@@ -189,6 +205,7 @@ import store from '@/store'
 import Understanding from '@/components/lecture/Understanding'
 import Questions from '@/components/lecture/Questions'
 import Students from '@/components/lecture/Students'
+import Polls from '@/components/lecture/Polls'
 
 import QuestionUpvoters from '@/components/analytics/QuestionUpvoters'
 import TutorialDisplay from '@/components/lecture/TutorialDisplay'
@@ -204,6 +221,7 @@ export default {
     Students,
     Questions,
     QuestionUpvoters,
+    Polls
   },
   props: {
     id: { type: String },
@@ -221,7 +239,7 @@ export default {
       topics: [],
       quesTopics: [],
       tab: 0,
-      items: ['Understanding', 'Questions', 'Students'],
+      items: ['Understanding', 'Questions', 'Students', 'Polls'],
       understandingData: [],
       shortened: false,
       shortentext: 'Shorten',
@@ -230,7 +248,9 @@ export default {
       showTutorial: -1,
       curUpvoters: null,
       questionUpvotersShow: false,
-      prevNumQuestions: 0
+      prevNumQuestions: 0,
+      votes: [],
+      polls: []
     }
   },
   methods: {
@@ -418,11 +438,26 @@ export default {
           dismissed: true,
         })
         this.displayQuestions = [...this.questions]
+      } else if(data.type === 'new_poll') {
+        this.polls.push({
+          'poll_uid': data.poll_uid,
+          'prompt': data.prompt,
+          'options': data.options,
+          'elapsed': data.elapsed,
+          'active': true
+        })
+        this.votes = []
+        for(let i=0; i<data.options.length; i++) this.votes.push(0)
+      } else if (data.type === 'poll_update') {
+        this.votes = data.counts
       } else if (data.type === 'end_lecture') {
         this.$router.replace({
           name: 'Feedback',
           params: { fromLectureEnd: true },
         })
+      } else if (data.type === 'end_poll') {
+        this.polls[this.polls.length-1].active = false
+        this.votes = []
       } else if (data.type === 'error') {
         this.$router.replace({ name: 'Dashboard' })
       } else if (data.type === 'bulk') {
