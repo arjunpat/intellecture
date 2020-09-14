@@ -417,6 +417,13 @@ export default {
           case 'question_dismissed':
             this.dismissQuestion(data.question_uid)
             break
+          case 'new_poll':
+            this.poll = data
+            break
+          case 'end_poll':
+            if (this.poll.poll_uid === data.poll_uid) {
+              this.resetPoll()
+            }
         }
       }
 
@@ -514,8 +521,17 @@ export default {
       if (this.pollOptionSelected === -1)
         this.pollError = 'Please select an option!'
       else {
-        // Post to poll-vote api, then
-        this.resetPoll()
+        post(`/lectures/live/student/${this.id}/poll-vote`, {
+          poll_uid: this.poll.poll_uid,
+          choice: this.pollOptionSelected
+        }).then(() => {
+          this.$emit('info', 'Poll submitted!')
+          this.resetPoll()
+        }).catch((err) => {
+          this.$emit('error', 'There was an error submitting the poll!')
+          log(err)
+          this.resetPoll()
+        })
       }
     },
     resetPoll() {
