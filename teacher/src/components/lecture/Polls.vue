@@ -35,12 +35,15 @@
                     label="Question"
                     required
                     autocomplete="off"
+                    style="font-family: var(--main-font)"
                   ></v-text-field>
                 </v-col>
+                <v-slide-y-transition :group="true">
                 <v-col
                   cols="12"
                   v-for="(choice, index) in options"
                   v-bind:key="index"
+                  :style="{marginTop: index != 0 ? '-40px' : '0px'}"
                 >
                   <v-text-field
                     :label="'Choice ' + (index + 1)"
@@ -50,9 +53,10 @@
                     v-model="options[index]"
                   ></v-text-field>
                 </v-col>
+                </v-slide-y-transition>
                 <v-col cols="12">
                   <v-btn @click="options.push('')">+</v-btn>
-                  <v-btn @click="removeOption()">-</v-btn>
+                  <v-btn @click="removeOption()" :disabled="this.options.length == 2">-</v-btn>
                 </v-col>
               </v-row>
             </v-container>

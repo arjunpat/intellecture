@@ -18,6 +18,17 @@ export default {
         },
         maintainAspectRatio: false,
         responsive: true,
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+              min: 0,
+            },
+            gridLines: {
+              display: true
+            }
+          }]
+        },
       }
     }
   },
