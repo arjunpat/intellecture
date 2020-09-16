@@ -20,6 +20,7 @@
                 >Remove</v-btn>
               </span>
               <template v-slot:actions>
+                <span>Current score: {{ individualScores[student.uid] }}</span>
                 <span style="font-size: 15px; color: #BDBDBD;">Joined {{ formatUnix(student.ts) }}</span>
               </template>
             </v-banner>
@@ -112,6 +113,7 @@ export default {
     shortened: Boolean,
     totalStudents: Array,
     joinCode: String,
+    individualScores: Object,
   },
   data() {
     return {

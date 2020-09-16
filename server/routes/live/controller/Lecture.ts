@@ -31,6 +31,8 @@ export default class Lecture {
   private timeoutScore: NodeJS.Timer | undefined;
   private timeoutQs: NodeJS.Timer | undefined;
 
+  private tsEnableIndividualScores: number = -99999;
+
   constructor(lecture_uid: string) {
     this.uid = lecture_uid;
 
@@ -90,6 +92,9 @@ export default class Lecture {
         break;
       case 'act': // active
         // do nothing; just send a message
+        break;
+      case 'eis': // enable individual scores
+        this.enableIndividualScores();
         break;
       case 'rst': // reset
         this.sendToStudents(<WS.ResetScores> { type: 'reset_scores' });
@@ -225,15 +230,23 @@ export default class Lecture {
 
   async updateStudentScore(student_uid: string, score: number) {
     if (this.scores[student_uid] === score) return;
-
+    let elapsed = this.elapsed();
     await db.lectureLog.recordScoreChange(
       this.uid,
-      this.elapsed(),
+      elapsed,
       student_uid,
       score
     );
     this.scores[student_uid] = score;
+
     this.updateTeachers();
+    if (this.tsEnableIndividualScores + 30000 > elapsed)
+      this.sendToTeachers(<WS.IndivScores>{
+        type: 'indiv_scores',
+        scores: {
+          [student_uid]: score
+        }
+      });
   }
 
   kickStudent(student_uid: string, banned: boolean) {
@@ -379,6 +392,14 @@ export default class Lecture {
       });
   }
 
+  enableIndividualScores() {
+    this.tsEnableIndividualScores = this.elapsed();
+    this.sendToTeachers(<WS.IndivScores>{
+      type: 'indiv_scores',
+      scores: this.scores
+    });
+  }
+
   getScore() {
     let score = Math.round(genUnderstandingScore(Object.values(this.scores)));
     return isNaN(score) ? null : score;
@@ -418,6 +439,7 @@ export default class Lecture {
       lectureInfo: this.lectureInfo,
       question_count: this.questions.count(),
       student_count: Object.keys(this.scores).length,
+      poll_count: this.polls.length,
       ended: this.ended
     }
   }

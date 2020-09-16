@@ -131,10 +131,12 @@
                 :students="students"
                 :shortened="shortened"
                 :joinCode="lectureInfo.join_code"
+                :individualScores="individualScores"
                 @resetTutorial="resetTutorial()"
                 @nextTutorial="nextTutorial()"
                 @clickTab="clickTab"
                 @invertDialog="invertDialog()"
+                @kickStudent="kickStudent"
               />
             </v-card>
           </v-tab-item>
@@ -151,7 +153,6 @@
                 @nextTutorial="nextTutorial()"
                 @clickTab="clickTab"
                 @invertDialog="invertDialog()"
-                @kickStudent="kickStudent"
               />
             </v-card>
           </v-tab-item>
@@ -250,7 +251,8 @@ export default {
       questionUpvotersShow: false,
       prevNumQuestions: 0,
       votes: [],
-      polls: []
+      polls: [],
+      individualScores: {},
     }
   },
   methods: {
@@ -458,6 +460,12 @@ export default {
       } else if (data.type === 'end_poll') {
         this.polls[this.polls.length-1].active = false
         this.votes = []
+      } else if (data.type === 'indiv_scores') {
+        for (let key in data.scores) {
+          this.$set(this.individualScores, key, data.scores[key])
+        }
+
+        console.log(JSON.stringify(this.individualScores));
       } else if (data.type === 'error') {
         this.$router.replace({ name: 'Dashboard' })
       } else if (data.type === 'bulk') {
@@ -479,10 +487,8 @@ export default {
       this.handleMessage(data)
     }
 
-    let loc = `/lectures/live/teacher/${this.id}/active`;
-    this.interval = setInterval(() => {
-      post(loc);
-    }, 2 * 60 * 1000);
+    let loc = `/lectures/live/teacher/${this.id}/active`
+    this.interval = setInterval(() => post(loc), 2 * 60 * 1000)
   },
   created() {
     this.initChart()
@@ -492,7 +498,8 @@ export default {
     }
   },
   beforeDestroy() {
-    clearInterval(this.interval);
+    clearInterval(this.interval)
+    clearInterval(this.individualScoresInterval)
     this.socket.close()
     store.commit('setEndLecture', false)
   },
@@ -532,6 +539,17 @@ export default {
     }
   },
   watch: {
+    tab(val) {
+      console.log('bro');
+      if (val === 2) {
+        post(`/lectures/live/teacher/${this.lectureInfo.uid}/enable-individual-scores`)
+        this.individualScoresInterval = setInterval(() => {
+          post(`/lectures/live/teacher/${this.lectureInfo.uid}/enable-individual-scores`)
+        }, 15000); // every 15 seconds
+      } else {
+        clearInterval(this.individualScoresInterval)
+      }
+    },
     endLecture(val) {
       if (this.endLecture) {
         this.endLectureMethod()

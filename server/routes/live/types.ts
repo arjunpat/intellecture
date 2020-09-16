@@ -127,6 +127,12 @@ export namespace WS {
     counts: number[] // array where each index corresponds to an option (respectively)
   }
 
+  // individual score stuff
+  export interface IndivScores extends Message {
+    type: 'indiv_scores',
+    scores: { [key: string]: number }
+  }
+
   /* -------------------- messages ONLY sent to student -------------------- */
   // If student gets this message and "to" has their uid, they have been kicked from the lecture.
   export interface KickStudent extends Message {
