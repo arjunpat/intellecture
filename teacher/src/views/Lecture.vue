@@ -371,6 +371,10 @@ export default {
         banned,
       })
     },
+    playSound(url) {
+      const audio = new Audio(url);
+      audio.play();
+    },
     handleMessage(data) {
       if (data.type === 'lecture_info') {
         this.lectureInfo = data
@@ -421,6 +425,7 @@ export default {
           upvotedStudents: [],
         })
         this.displayQuestions = [...this.questions]
+        this.playSound("@/assets/notification.mp3");
         this.displayNotification('New Question', data.question)
       } else if (data.type === 'ques_categor') {
         this.topics = data.categories
