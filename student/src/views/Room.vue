@@ -151,7 +151,7 @@
       >
         <v-card>
           <v-card-text class="pb-0 pt-4">
-            <div class="text-h6 black--text mb-2">{{ poll.prompt }}</div>
+            <div class="mb-2" style="font-family: 'Poppins'; color: black; font-size: 18px;">{{ poll.prompt }}</div>
             <v-radio-group 
               v-model="pollOptionSelected" 
               class="mt-0"
@@ -162,6 +162,7 @@
                 :key="i"
                 :label="option"
                 :value="i"
+                color="success"
               >
               </v-radio>
             </v-radio-group>
@@ -170,7 +171,7 @@
             <v-spacer></v-spacer>
             <v-btn
               text
-              color="primary"
+              color="success"
               @click="submitPoll"
             >
               Submit

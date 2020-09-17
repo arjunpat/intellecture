@@ -20,8 +20,8 @@
                 >Remove</v-btn>
               </span>
               <template v-slot:actions>
-                <span>Current score: {{ individualScores[student.uid] }}</span>
-                <span style="font-size: 15px; color: #BDBDBD;">Joined {{ formatUnix(student.ts) }}</span>
+                    <v-chip class="mr-3">{{ individualScores[student.uid] + "0%" }} understanding</v-chip>
+                    <span style="font-size: 15px; color: #BDBDBD;">Joined {{ formatUnix(student.ts) }}</span>
               </template>
             </v-banner>
           </li>

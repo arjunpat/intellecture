@@ -23,6 +23,7 @@ export default {
             ticks: {
               beginAtZero: true,
               min: 0,
+              stepSize: 1
             },
             gridLines: {
               display: true

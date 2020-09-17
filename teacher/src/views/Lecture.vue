@@ -540,7 +540,6 @@ export default {
   },
   watch: {
     tab(val) {
-      console.log('bro');
       if (val === 2) {
         post(`/lectures/live/teacher/${this.lectureInfo.uid}/enable-individual-scores`)
         this.individualScoresInterval = setInterval(() => {
