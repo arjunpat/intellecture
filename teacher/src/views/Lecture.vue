@@ -149,6 +149,7 @@
                 :lectureId="lectureInfo.uid"
                 :votes="votes"
                 :polls="polls"
+                :students="students"
                 @resetTutorial="resetTutorial()"
                 @nextTutorial="nextTutorial()"
                 @clickTab="clickTab"
@@ -446,7 +447,7 @@ export default {
         })
         this.displayQuestions = [...this.questions]
       } else if(data.type === 'new_poll') {
-        if (!this.polls.find(e => e.poll_uid !== data.poll_uid)) {
+        if (!this.polls.find(e => e.poll_uid === data.poll_uid)) {
           this.polls.push({
             'poll_uid': data.poll_uid,
             'prompt': data.prompt,
@@ -466,6 +467,7 @@ export default {
         })
       } else if (data.type === 'end_poll') {
         this.polls[this.polls.length-1].active = false
+        this.polls[this.polls.length-1].votes = [...this.votes];
         this.votes = []
       } else if (data.type === 'indiv_scores') {
         for (let key in data.scores) {
