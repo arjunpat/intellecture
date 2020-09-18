@@ -425,7 +425,7 @@ export default {
           upvotedStudents: [],
         })
         this.displayQuestions = [...this.questions]
-        this.playSound("@/assets/notification.mp3");
+        if (!document.hasFocus()) this.playSound("/sounds/notification.mp3");
         this.displayNotification('New Question', data.question)
       } else if (data.type === 'ques_categor') {
         this.topics = data.categories
@@ -446,15 +446,17 @@ export default {
         })
         this.displayQuestions = [...this.questions]
       } else if(data.type === 'new_poll') {
-        this.polls.push({
-          'poll_uid': data.poll_uid,
-          'prompt': data.prompt,
-          'options': data.options,
-          'elapsed': data.elapsed,
-          'active': true
-        })
-        this.votes = []
-        for(let i=0; i<data.options.length; i++) this.votes.push(0)
+        if (!this.polls.find(e => e.poll_uid !== data.poll_uid)) {
+          this.polls.push({
+            'poll_uid': data.poll_uid,
+            'prompt': data.prompt,
+            'options': data.options,
+            'elapsed': data.elapsed,
+            'active': true
+          })
+          this.votes = []
+          for(let i=0; i<data.options.length; i++) this.votes.push(0)
+        }
       } else if (data.type === 'poll_update') {
         this.votes = data.counts
       } else if (data.type === 'end_lecture') {
