@@ -192,7 +192,7 @@ export default {
       return this.showTutorial !== 6;
     },
     datacollection() {
-      let y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      let y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
       Object.keys(this.students).forEach(id => {
         if (this.students[id].inLecture)
           y[this.individualScores[id]]++
