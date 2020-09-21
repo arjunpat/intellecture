@@ -1,5 +1,9 @@
 <template>
   <v-row align="center" justify="center">
+      <v-col :cols="$vuetify.breakpoint.smAndDown ? 12 : 6">
+      
+        <bar-chart :chart-data="datacollection"></bar-chart>
+      </v-col>
       <v-col :cols="$vuetify.breakpoint.smAndDown ? 12 : 8">
         <ul style="list-style-type: none">
           <li v-for="student in students" v-bind:key="student.uid" v-show="student.inLecture">
@@ -20,7 +24,7 @@
                 >Remove</v-btn>
               </span>
               <template v-slot:actions>
-                    <v-chip class="mr-3">{{ individualScores[student.uid] + "0%" }} understanding</v-chip>
+                    <v-chip class="mr-3">{{ individualScores[student.uid] > 0 ? individualScores[student.uid] + "0%" : individualScores[student.uid] + "%" }} understanding</v-chip>
                     <span style="font-size: 15px; color: #BDBDBD;">Joined {{ formatUnix(student.ts) }}</span>
               </template>
             </v-banner>
@@ -101,6 +105,7 @@
 <script>
 import TutorialDisplay from './TutorialDisplay'
 import LineChart from './Chart'
+import BarChart from './BarChart'
 import Dialog from '@/components/Dialog'
 import { post } from '@/helpers.js'
 
@@ -127,6 +132,7 @@ export default {
     TutorialDisplay,
     LineChart,
     Dialog,
+    BarChart
   },
   computed: {
     dialogHeader() {
@@ -149,6 +155,26 @@ export default {
       // No students in lecture, check if on tutorial step 6
       return this.showTutorial !== 6
     },
+    datacollection() {
+      let y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      Object.keys(this.students).forEach(id => y[this.individualScores[id]]++);
+      return {
+        labels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        datasets: [
+          {
+            label: "Amount",
+            backgroundColor: "#aae691ff",
+            hoverBackgroundColor: "#c9e8bc",
+            data: y,
+            borderWidth: 1
+          }
+        ]
+      };
+    }
+  },
+  created() {
+  },
+  watch: {
   },
   methods: {
     resetTutorial() {

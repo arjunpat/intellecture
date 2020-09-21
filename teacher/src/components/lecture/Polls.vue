@@ -3,7 +3,12 @@
     <AutoSnackbar :text="error" color="error" />
     <v-col v-show="activePoll >= 0" cols="12" align="center" justify="center"
       ><h1 style="font-size: 25px;">
-        <v-icon color="green lighten-2" style="margin-right: -125px; font-size: 30px;">poll_box</v-icon> {{ activePoll > -1 ? polls[activePoll].prompt : "" }}
+        <v-icon
+          color="green lighten-2"
+          style="margin-right: -125px; font-size: 30px;"
+          >poll_box</v-icon
+        >
+        {{ activePoll > -1 ? polls[activePoll].prompt : "" }}
       </h1></v-col
     >
     <v-col
@@ -13,12 +18,15 @@
       justify="center"
     >
       <bar-chart :chart-data="datacollection"></bar-chart>
-    <div>
-        <v-chip class="mr-1">{{numResponses(votes)}} response{{numResponses(votes) == 1 ? '' : 's'}}</v-chip><v-chip>{{percentParticipation(votes)}}% participation</v-chip>
+      <div>
+        <v-chip class="mr-1"
+          >{{ numResponses(votes) }} response{{
+            numResponses(votes) == 1 ? "" : "s"
+          }}</v-chip
+        ><v-chip>{{ percentParticipation(votes) }}% participation</v-chip>
       </div>
     </v-col>
     <v-col cols="12" align="center" justify="center">
-      
       <v-btn v-show="activePoll >= 0" color="red" dark @click="endPoll()"
         >End poll</v-btn
       >
@@ -102,28 +110,36 @@
       </v-dialog>
     </v-col>
 
-    <v-slide-y-transition :group="true" leave-absolute style="width: 100%;">
-      <v-col
-        cols="12"
-        v-for="(poll, index) in pollsreversed"
-        v-bind:key="index"
-        justify="center"
-        align="center"
+    <v-col
+      cols="12"
+      v-for="(poll, index) in pollsreversed"
+      v-bind:key="index"
+      justify="center"
+      align="center"
+    >
+      <v-col v-if="!poll.active" cols="12" align="center" justify="center"
+        ><h1 style="font-size: 25px;">
+          <v-icon
+            color="grey lighten-1"
+            style="margin-right: -125px; font-size: 30px;"
+            >poll_box</v-icon
+          >
+          {{ poll.prompt }}
+        </h1></v-col
       >
-        <v-col v-if="!poll.active" cols="12" align="center" justify="center"
-          ><h1 style="font-size: 25px;"><v-icon color="grey lighten-1" style="margin-right: -125px; font-size: 30px;">poll_box</v-icon> {{ poll.prompt }}</h1></v-col
-        >
-        <v-col
-          v-if="!poll.active"
-          :cols="$vuetify.breakpoint.smAndDown ? 12 : 6"
-        >
-          <bar-chart :chart-data="pastData[index]"></bar-chart>
-          <div>
-          <v-chip class="mr-1">{{numResponses(poll.votes)}} response{{numResponses(poll.votes) == 1 ? '' : 's'}}</v-chip><v-chip>{{percentParticipation(poll.votes)}}% participation</v-chip>
-          </div>
-        </v-col>
+      <v-col v-if="!poll.active" :cols="$vuetify.breakpoint.smAndDown ? 12 : 6">
+        <bar-chart :chart-data="pastData[index]"></bar-chart>
+        <div>
+          <v-chip class="mr-1"
+            >{{ numResponses(poll.votes) }} response{{
+              numResponses(poll.votes) == 1 ? "" : "s"
+            }}</v-chip
+          ><v-chip
+            >{{ percentParticipation(poll.votes) }}% participation</v-chip
+          >
+        </div>
       </v-col>
-    </v-slide-y-transition>
+    </v-col>
   </v-row>
 </template>
 
@@ -172,7 +188,7 @@ export default {
         this.showError("You need a question to have a poll!");
       } else if (newOptions.length < 2) {
         this.showError("You more answer choices");
-      } else if(this.presentStudents == 0) {
+      } else if (this.presentStudents == 0) {
         this.showError("Wait until more students join");
       } else {
         this.dialog = false;
@@ -246,7 +262,7 @@ export default {
       };
     },
     preparePastData() {
-      this.pastData = []
+      this.pastData = [];
       for (let i = 0; i < this.pollsreversed.length; i++) {
         this.pastData.push({
           labels: this.pollsreversed[i].options,
@@ -264,16 +280,16 @@ export default {
     },
     numResponses(votes) {
       var sum = 0;
-      for(let i=0; i<votes.length; i++) {
-        sum += votes[i]
+      for (let i = 0; i < votes.length; i++) {
+        sum += votes[i];
       }
       return sum;
     },
     percentParticipation(votes) {
-      console.log(this.students)
+      console.log(this.students);
       var percent = this.numResponses(votes) / this.totalStudents;
       console.log(this.studentsLength);
-      return Math.round(percent * 10000) / 100
+      return Math.round(percent * 10000) / 100;
     }
   },
   created() {
@@ -296,7 +312,8 @@ export default {
       return Object.keys(this.students).length;
     },
     presentStudents() {
-      return Object.values(this.students).filter(student => student.inLecture).length
+      return Object.values(this.students).filter(student => student.inLecture)
+        .length;
     }
   },
   watch: {
