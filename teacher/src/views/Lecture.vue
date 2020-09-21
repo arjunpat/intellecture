@@ -469,8 +469,6 @@ export default {
         for (let key in data.scores) {
           this.$set(this.individualScores, key, data.scores[key])
         }
-
-        console.log(JSON.stringify(this.individualScores));
       } else if (data.type === 'error') {
         this.$router.replace({ name: 'Dashboard' })
       } else if (data.type === 'bulk') {
