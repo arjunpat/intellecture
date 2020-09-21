@@ -193,10 +193,10 @@ export default {
       return this.showTutorial !== 6;
     },
     datacollection() {
-      let y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      let y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
       Object.keys(this.students).forEach(id => y[this.individualScores[id]]++);
       return {
-        labels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        labels: ["0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"],
         datasets: [
           {
             label: "Amount",
