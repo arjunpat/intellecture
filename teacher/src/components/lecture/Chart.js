@@ -18,7 +18,8 @@ export default {
             ticks: {
               beginAtZero: true,
               min: 0,
-              max: 100
+              max: 100,
+              fontFamily: "Poppins",
             },
             gridLines: {
               display: true
@@ -32,6 +33,9 @@ export default {
             distribution: 'linear',
             gridLines: {
               display: false
+            },
+            ticks: {
+              fontFamily: "Poppins",
             }
           }]
         },

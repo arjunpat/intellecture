@@ -23,12 +23,20 @@ export default {
             ticks: {
               beginAtZero: true,
               min: 0,
-              stepSize: 1
+              stepSize: 1,
+              fontFamily: "Poppins",
             },
             gridLines: {
               display: true
             }
-          }]
+          }],
+          xAxes: [
+            {
+              ticks: {
+                fontFamily: 'Poppins'
+              }
+            }
+          ]
         },
       }
     }
