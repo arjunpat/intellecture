@@ -154,8 +154,8 @@ export default {
   name: "Polls",
   props: {
     lectureId: String,
-    votes: Array,
     polls: Array,
+    votes: Array,
     students: Object
   },
   data() {

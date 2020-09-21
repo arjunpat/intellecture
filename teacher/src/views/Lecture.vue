@@ -147,8 +147,8 @@
             <v-card flat class="pt-3" min-height="75vh">
               <Polls
                 :lectureId="lectureInfo.uid"
-                :votes="votes"
                 :polls="polls"
+                :votes="votes"
                 :students="students"
                 @resetTutorial="resetTutorial()"
                 @nextTutorial="nextTutorial()"
@@ -251,8 +251,8 @@ export default {
       curUpvoters: null,
       questionUpvotersShow: false,
       prevNumQuestions: 0,
-      votes: [],
       polls: [],
+      votes: [],
       individualScores: {},
     }
   },
@@ -448,27 +448,23 @@ export default {
         this.displayQuestions = [...this.questions]
       } else if(data.type === 'new_poll') {
         if (!this.polls.find(e => e.poll_uid === data.poll_uid)) {
+          this.votes = Array(data.options.length).fill(0)
           this.polls.push({
-            'poll_uid': data.poll_uid,
-            'prompt': data.prompt,
-            'options': data.options,
-            'elapsed': data.elapsed,
-            'active': true
+            ...data,
+            active: true,
+            votes: Array(data.options.length).fill(0)
           })
-          this.votes = []
-          for(let i=0; i<data.options.length; i++) this.votes.push(0)
         }
       } else if (data.type === 'poll_update') {
+        this.polls.find(e => e.poll_uid === data.poll_uid).votes = data.counts
         this.votes = data.counts
+      } else if (data.type === 'end_poll') {
+        this.polls.find(e => e.poll_uid === data.poll_uid).active = false
       } else if (data.type === 'end_lecture') {
         this.$router.replace({
           name: 'Feedback',
           params: { fromLectureEnd: true },
         })
-      } else if (data.type === 'end_poll') {
-        this.polls[this.polls.length-1].active = false
-        this.polls[this.polls.length-1].votes = [...this.votes];
-        this.votes = []
       } else if (data.type === 'indiv_scores') {
         for (let key in data.scores) {
           this.$set(this.individualScores, key, data.scores[key])

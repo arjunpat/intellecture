@@ -153,7 +153,6 @@ export default {
     students: Object,
     showTutorial: Number,
     shortened: Boolean,
-    totalStudents: Array,
     joinCode: String,
     individualScores: Object
   },
@@ -194,7 +193,10 @@ export default {
     },
     datacollection() {
       let y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-      Object.keys(this.students).forEach(id => y[this.individualScores[id]]++);
+      Object.keys(this.students).forEach(id => {
+        if (this.students[id].inLecture)
+          y[this.individualScores[id]]++
+      });
       return {
         labels: ["0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"],
         datasets: [
