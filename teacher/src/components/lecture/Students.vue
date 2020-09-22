@@ -1,7 +1,7 @@
 <template>
   <v-row align="center" justify="center">
     <v-col
-      v-show="presentStudents > 0"
+      v-if="presentStudents > 0"
       :cols="$vuetify.breakpoint.smAndDown ? 12 : 6"
       justify="center"
       align="center"
