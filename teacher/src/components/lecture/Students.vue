@@ -45,6 +45,7 @@
             </span>
             <template v-slot:actions>
               <v-chip class="mr-3"
+                :color="getUnderstandingColor(individualScores[student.uid])"
                 >{{
                   individualScores[student.uid] > 0
                     ? individualScores[student.uid] + "0"
@@ -161,7 +162,9 @@ export default {
       preventFromJoining: false,
       activeStudent: "",
       showDialog: false,
-      noStudentsToShow: true
+      noStudentsToShow: true,
+      understandingColors: ['rgb(240, 53, 36)', 'rgb(255, 183, 0)', 'rgb(250, 225, 0)', 'rgb(126, 196, 4)', '#B2FF59'],
+      maxUnderstanding: 10,
     };
   },
   components: {
@@ -247,7 +250,13 @@ export default {
       });
       this.showDialog = false;
       this.preventFromJoining = false;
-    }
+    },
+    getUnderstandingColor(score) {
+      const percent = score / this.maxUnderstanding
+      let index = Math.round(percent * (this.understandingColors.length-1))
+      const color = this.understandingColors[index]
+      return color
+    },
   }
 };
 </script>
