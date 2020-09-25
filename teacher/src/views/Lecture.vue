@@ -460,6 +460,7 @@ export default {
         }
       } else if (data.type === 'poll_update') {
         this.votes = data.counts
+        console.log("Poll updated to " + this.votes)
       } else if (data.type === 'end_lecture') {
         this.$router.replace({
           name: 'Feedback',

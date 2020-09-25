@@ -34,12 +34,12 @@
         <template v-slot:activator="{ on, attrs }">
           <v-btn
             v-show="activePoll < 0"
-            color="green"
+            :color="!savedPoll ? 'green' : 'green lighten-3'"
             bottom
             dark
             v-bind="attrs"
             v-on="on"
-            >New poll</v-btn
+            >{{!savedPoll ? 'New' : 'Open'}} poll</v-btn
           >
         </template>
         <v-card>
@@ -100,7 +100,15 @@
                 dialog = false;
                 resetPoll();
               "
-              >Cancel</v-btn
+              >{{savedPoll ? 'Remove' : 'Cancel'}}</v-btn
+            >
+            <v-btn
+              text
+              @click="
+                dialog = false;
+                savePoll();
+              "
+              >Save</v-btn
             >
             <v-btn color="green lighten-1" text @click="createPoll()"
               >Create</v-btn
@@ -167,7 +175,8 @@ export default {
       timeout: 1000,
       error: "",
       datacollection: {},
-      pastData: []
+      pastData: [],
+      savedPoll: false
     };
   },
   components: {
@@ -183,6 +192,7 @@ export default {
   },
   methods: {
     createPoll() {
+      this.savedPoll = false;
       const newOptions = this.options.filter(option => option != "");
       if (this.prompt === "") {
         this.showError("You need a question to have a poll!");
@@ -198,7 +208,6 @@ export default {
           options: this.options
         }).then(result => {
           console.log(result);
-          console.log(this.polls);
           this.resetPoll();
         });
       }
@@ -212,8 +221,12 @@ export default {
       });
     },
     resetPoll() {
+      this.savedPoll = false;
       this.prompt = "";
       this.options = ["", ""];
+    },
+    savePoll() {
+      this.savedPoll = true;
     },
     resetTutorial() {
       this.$emit("resetTutorial");
@@ -286,9 +299,7 @@ export default {
       return sum;
     },
     percentParticipation(votes) {
-      console.log(this.students);
       var percent = this.numResponses(votes) / this.totalStudents;
-      console.log(this.studentsLength);
       return Math.round(percent * 10000) / 100;
     }
   },
@@ -318,6 +329,7 @@ export default {
   },
   watch: {
     votes() {
+      console.log("Votes changed " + this.votes);
       this.initChart();
     },
     polls() {
