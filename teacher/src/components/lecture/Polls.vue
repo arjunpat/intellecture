@@ -299,7 +299,7 @@ export default {
       return sum;
     },
     percentParticipation(votes) {
-      var percent = this.numResponses(votes) / this.presentStudents;
+      var percent = this.numResponses(votes) / this.totalStudents;
       return Math.round(percent * 10000) / 100;
     }
   },
