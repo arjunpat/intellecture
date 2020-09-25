@@ -1,7 +1,7 @@
 <template>
   <v-row align="center" justify="center">
     <v-col
-      v-show="presentStudents > 0"
+      v-if="presentStudents > 0"
       :cols="$vuetify.breakpoint.smAndDown ? 12 : 6"
       justify="center"
       align="center"
@@ -45,6 +45,7 @@
             </span>
             <template v-slot:actions>
               <v-chip class="mr-3"
+                :color="getUnderstandingColor(individualScores[student.uid])"
                 >{{
                   individualScores[student.uid] > 0
                     ? individualScores[student.uid] + "0"
@@ -153,7 +154,6 @@ export default {
     students: Object,
     showTutorial: Number,
     shortened: Boolean,
-    totalStudents: Array,
     joinCode: String,
     individualScores: Object
   },
@@ -162,7 +162,9 @@ export default {
       preventFromJoining: false,
       activeStudent: "",
       showDialog: false,
-      noStudentsToShow: true
+      noStudentsToShow: true,
+      understandingColors: ['rgb(240, 53, 36)', 'rgb(255, 183, 0)', 'rgb(250, 225, 0)', 'rgb(126, 196, 4)', '#B2FF59'],
+      maxUnderstanding: 10,
     };
   },
   components: {
@@ -193,8 +195,11 @@ export default {
       return this.showTutorial !== 6;
     },
     datacollection() {
-      let y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-      Object.keys(this.students).forEach(id => y[this.individualScores[id]]++);
+      let y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      Object.keys(this.students).forEach(id => {
+        if (this.students[id].inLecture)
+          y[this.individualScores[id]]++
+      });
       return {
         labels: ["0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"],
         datasets: [
@@ -245,7 +250,13 @@ export default {
       });
       this.showDialog = false;
       this.preventFromJoining = false;
-    }
+    },
+    getUnderstandingColor(score) {
+      const percent = score / this.maxUnderstanding
+      let index = Math.round(percent * (this.understandingColors.length-1))
+      const color = this.understandingColors[index]
+      return color
+    },
   }
 };
 </script>
