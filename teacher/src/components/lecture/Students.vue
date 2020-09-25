@@ -37,7 +37,7 @@
           to join.
         </div>
       </template>
-      
+
       <v-select
         v-if="!showNoStudentsMsg"
         v-model="sortBy"
@@ -53,47 +53,13 @@
               v-if="i !== 0"
               :key="i"
             ></v-divider>
-            <v-list-item v-bind:key="student.uid">
-              <v-list-item-avatar size="42px">
-                <img
-                  alt="Avatar"
-                  :src="student.photo"
-                  style="background-color: #F5F5F5;"
-                />
-              </v-list-item-avatar>
-              <v-list-item-content style="font-family: var(--main-font);">
-                <v-row align="center">
-                  <v-col cols="auto" class="py-0 pr-0">
-                    <v-list-item-title>{{ student.first_name }} {{ student.last_name }}</v-list-item-title>
-                    <v-list-item-subtitle>Joined {{ formatUnix(student.ts) }}</v-list-item-subtitle>
-                  </v-col>
-
-                  <v-col class="py-0">
-                    <v-btn
-                      text
-                      color="red"
-                      @click.stop="
-                        showDialog = true;
-                        setActive(student);
-                      "
-                    >Remove</v-btn>
-                  </v-col>
-                </v-row>
-              </v-list-item-content>
-
-              <v-list-item-action>
-                <v-chip 
-                  class="mr-3"
-                  :color="getUnderstandingColor(individualScores[student.uid])"
-                >
-                  {{
-                    individualScores[student.uid] > 0
-                      ? individualScores[student.uid] + "0"
-                      : individualScores[student.uid]
-                  }}% understanding
-                </v-chip>
-              </v-list-item-action>
-            </v-list-item>
+            <StudentListItem 
+              v-if="individualScores[student.uid]"
+              :key="student.uid"
+              :student="student"
+              :understanding="individualScores[student.uid]"
+              @removeStudent="(student) => {showDialog = true; setActive(student)}"
+            />
           </template>
         </template>
 
@@ -114,31 +80,16 @@
             lecture.
           </template>
           <v-expand-transition>
-            <v-list-item v-if="showTutorial == 6">
-              <v-list-item-avatar size="42px">
-                <img
-                  alt="Avatar"
-                  src="https://i.imgur.com/4Wj8Wz2.jpg"
-                  style="background-color: #F5F5F5;"
-                /> 
-              </v-list-item-avatar>
-              <v-list-item-content style="font-family: var(--main-font);">
-                <v-row align="center">
-                  <v-col cols="auto" class="py-0 pr-0">
-                    <v-list-item-title>Joe Smoe</v-list-item-title>
-                    <v-list-item-subtitle>Joined 8:00:00 AM</v-list-item-subtitle>
-                  </v-col>
-                  <v-col class="py-0">
-                    <v-btn text color="red">Remove</v-btn>
-                  </v-col>
-                </v-row>
-              </v-list-item-content>
-              <v-list-item-action>
-                <v-chip class="mr-3" :color="getUnderstandingColor(5)">
-                  50% understanding
-                </v-chip>
-              </v-list-item-action>
-            </v-list-item>
+            <StudentListItem 
+              v-if="showTutorial == 6"
+              :student="{
+                photo: 'https://i.imgur.com/4Wj8Wz2.jpg',
+                first_name: 'Joe',
+                last_name: 'Smoe',
+                ts: 1590016800000,
+              }"
+              :understanding="5"
+            />
           </v-expand-transition>
         </TutorialDisplay>
       </v-list>
@@ -164,11 +115,12 @@
 </template>
 
 <script>
-import TutorialDisplay from "./TutorialDisplay";
-import LineChart from "./Chart";
-import BarChart from "./BarChart";
-import Dialog from "@/components/Dialog";
-import { post, compareString } from "@/helpers.js";
+import TutorialDisplay from "./TutorialDisplay"
+import LineChart from "./Chart"
+import BarChart from "./BarChart"
+import Dialog from "@/components/Dialog"
+import StudentListItem from '@/components/lecture/StudentListItem'
+import { post, compareString } from "@/helpers.js"
 
 export default {
   name: "Students",
@@ -182,18 +134,12 @@ export default {
     individualScores: Object
   },
 
-  created() {
-    console.log('STUDENTS: ', this.students)
-  },
-
   data() {
     return {
       preventFromJoining: false,
       activeStudent: "",
       showDialog: false,
       noStudentsToShow: true,
-      understandingColors: ['rgb(240, 53, 36)', 'rgb(255, 183, 0)', 'rgb(250, 225, 0)', 'rgb(126, 196, 4)', '#B2FF59'],
-      maxUnderstanding: 10,
       sortByItems: ['Join time', 'Highest understanding', 'Lowest understanding', 'First name', 'Last name'],
       sortBy: 'Join time',
     }
@@ -203,7 +149,8 @@ export default {
     TutorialDisplay,
     LineChart,
     Dialog,
-    BarChart
+    BarChart,
+    StudentListItem,
   },
 
   computed: {
@@ -279,13 +226,6 @@ export default {
     nextTutorial() {
       this.$emit("nextTutorial");
     },
-    formatUnix(unix_timestamp) {
-      if (unix_timestamp == undefined) {
-        return "";
-      }
-      let date = new Date(unix_timestamp);
-      return date.toLocaleTimeString();
-    },
     setActive(student) {
       this.activeStudent = student;
     },
@@ -299,12 +239,6 @@ export default {
       });
       this.showDialog = false;
       this.preventFromJoining = false;
-    },
-    getUnderstandingColor(score) {
-      const percent = score / this.maxUnderstanding
-      let index = Math.round(percent * (this.understandingColors.length-1))
-      const color = this.understandingColors[index]
-      return color
     },
   }
 }
