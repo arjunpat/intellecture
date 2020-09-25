@@ -16,6 +16,28 @@
       </div>
     </v-col>
     <v-col :cols="$vuetify.breakpoint.smAndDown ? 12 : 8">
+      <template v-if="showNoStudentsMsg">
+        <div
+          class="text-center heading-4"
+          :style="{
+            fontWeight: 'normal',
+            fontSize: '25px',
+            fontFamily: 'var(--main-font)'
+          }"
+        >
+          No students have joined the lecture!
+        </div>
+        <div class="text-center" style="font-family: var(--main-font)">
+          Have students go to
+          <a>join.intellecture.app</a> and enter the code
+          <span
+            style="background-color: #eee; padding: 3px 5px; border-radius: 5px; font-weight: bold;"
+            >{{ joinCode }}</span
+          >
+          to join.
+        </div>
+      </template>
+      
       <v-select
         v-if="!showNoStudentsMsg"
         v-model="sortBy"
@@ -73,28 +95,6 @@
               </v-list-item-action>
             </v-list-item>
           </template>
-        </template>
-        
-        <template v-if="showNoStudentsMsg">
-          <div
-            class="text-center heading-4"
-            :style="{
-              fontWeight: 'normal',
-              fontSize: '25px',
-              fontFamily: 'var(--main-font)'
-            }"
-          >
-            No students have joined the lecture!
-          </div>
-          <div class="text-center" style="font-family: var(--main-font)">
-            Have students go to
-            <a>join.intellecture.app</a> and enter the code
-            <span
-              style="background-color: #eee; padding: 3px 5px; border-radius: 5px; font-weight: bold;"
-              >{{ joinCode }}</span
-            >
-            to join.
-          </div>
         </template>
 
         <!-- EXAMPLE QUESTION -->
