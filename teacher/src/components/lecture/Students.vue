@@ -1,65 +1,81 @@
 <template>
-  <v-row align="center" justify="center">
+  <v-row justify="center">
     <v-col
-      v-if="presentStudents > 0"
-      :cols="$vuetify.breakpoint.smAndDown ? 12 : 6"
+      v-if="numStudents > 0"
+      :cols="$vuetify.breakpoint.smAndDown ? 12 : 4"
       justify="center"
       align="center"
     >
       <bar-chart :chart-data="datacollection"></bar-chart>
       <div>
         <v-chip class="mr-1"
-          >{{ presentStudents }} student{{
-            presentStudents != 1 ? "s" : ""
+          >{{ numStudents }} student{{
+            numStudents != 1 ? "s" : ""
           }}</v-chip
         >
       </div>
     </v-col>
     <v-col :cols="$vuetify.breakpoint.smAndDown ? 12 : 8">
-      <ul style="list-style-type: none">
-        <li
-          v-for="student in students"
-          v-bind:key="student.uid"
-          v-show="student.inLecture"
-        >
-          <v-banner style="font-family: var(--main-font);">
-            <span>
-              <v-avatar size="42px" class="mr-3">
+      <v-select
+        v-if="!showNoStudentsMsg"
+        v-model="sortBy"
+        :items="sortByItems"
+        filled
+        label="Sort by"
+        hide-details
+      ></v-select>
+      <v-list>
+        <template v-if="showTutorial !== 6">
+          <template v-for="(student, i) in studentsSorted">
+            <v-divider
+              v-if="i !== 0"
+              :key="i"
+            ></v-divider>
+            <v-list-item v-bind:key="student.uid">
+              <v-list-item-avatar size="42px">
                 <img
                   alt="Avatar"
                   :src="student.photo"
                   style="background-color: #F5F5F5;"
                 />
-              </v-avatar>
-              {{ student.first_name }} {{ student.last_name }}
-              <v-btn
-                class="ml-3"
-                text
-                color="red"
-                @click.stop="
-                  showDialog = true;
-                  setActive(student);
-                "
-                >Remove</v-btn
-              >
-            </span>
-            <template v-slot:actions>
-              <v-chip class="mr-3"
-                :color="getUnderstandingColor(individualScores[student.uid])"
-                >{{
-                  individualScores[student.uid] > 0
-                    ? individualScores[student.uid] + "0"
-                    : individualScores[student.uid]
-                }}% understanding</v-chip
-              >
-              <span style="font-size: 15px; color: #BDBDBD;"
-                >Joined {{ formatUnix(student.ts) }}</span
-              >
-            </template>
-          </v-banner>
-        </li>
+              </v-list-item-avatar>
+              <v-list-item-content style="font-family: var(--main-font);">
+                <v-row align="center">
+                  <v-col cols="auto" class="py-0 pr-0">
+                    <v-list-item-title>{{ student.first_name }} {{ student.last_name }}</v-list-item-title>
+                    <v-list-item-subtitle>Joined {{ formatUnix(student.ts) }}</v-list-item-subtitle>
+                  </v-col>
 
-        <li v-if="showNoStudentsMsg">
+                  <v-col class="py-0">
+                    <v-btn
+                      text
+                      color="red"
+                      @click.stop="
+                        showDialog = true;
+                        setActive(student);
+                      "
+                    >Remove</v-btn>
+                  </v-col>
+                </v-row>
+              </v-list-item-content>
+
+              <v-list-item-action>
+                <v-chip 
+                  class="mr-3"
+                  :color="getUnderstandingColor(individualScores[student.uid])"
+                >
+                  {{
+                    individualScores[student.uid] > 0
+                      ? individualScores[student.uid] + "0"
+                      : individualScores[student.uid]
+                  }}% understanding
+                </v-chip>
+              </v-list-item-action>
+            </v-list-item>
+          </template>
+        </template>
+        
+        <template v-if="showNoStudentsMsg">
           <div
             class="text-center heading-4"
             :style="{
@@ -79,25 +95,7 @@
             >
             to join.
           </div>
-        </li>
-
-        <Dialog
-          v-model="showDialog"
-          :lowerHeader="true"
-          :header="dialogHeader"
-          @submit="removeStudent()"
-          :width="600"
-          btnColor="red"
-          btnText="Remove"
-        >
-          <template v-slot:content>
-            <v-checkbox
-              v-model="preventFromJoining"
-              color="success"
-              label="Prevent from joining again"
-            ></v-checkbox>
-          </template>
-        </Dialog>
+        </template>
 
         <!-- EXAMPLE QUESTION -->
         <TutorialDisplay
@@ -116,27 +114,52 @@
             lecture.
           </template>
           <v-expand-transition>
-            <li v-if="showTutorial == 6">
-              <v-banner style="font-family: var(--main-font);">
-                <v-avatar size="42px" class="mr-3">
-                  <!-- CHANGE LATER -->
-                  <img
-                    alt="Avatar"
-                    src="https://i.imgur.com/4Wj8Wz2.jpg"
-                    style="background-color: #F5F5F5;"
-                  /> </v-avatar
-                >Joe Smoe
-                <template v-slot:actions>
-                  <span style="font-size: 15px; color: #BDBDBD;"
-                    >Joined 8:00 AM</span
-                  >
-                </template>
-              </v-banner>
-            </li>
+            <v-list-item v-if="showTutorial == 6">
+              <v-list-item-avatar size="42px">
+                <img
+                  alt="Avatar"
+                  src="https://i.imgur.com/4Wj8Wz2.jpg"
+                  style="background-color: #F5F5F5;"
+                /> 
+              </v-list-item-avatar>
+              <v-list-item-content style="font-family: var(--main-font);">
+                <v-row align="center">
+                  <v-col cols="auto" class="py-0 pr-0">
+                    <v-list-item-title>Joe Smoe</v-list-item-title>
+                    <v-list-item-subtitle>Joined 8:00:00 AM</v-list-item-subtitle>
+                  </v-col>
+                  <v-col class="py-0">
+                    <v-btn text color="red">Remove</v-btn>
+                  </v-col>
+                </v-row>
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-chip class="mr-3" :color="getUnderstandingColor(5)">
+                  50% understanding
+                </v-chip>
+              </v-list-item-action>
+            </v-list-item>
           </v-expand-transition>
         </TutorialDisplay>
-      </ul>
+      </v-list>
     </v-col>
+    <Dialog
+      v-model="showDialog"
+      :lowerHeader="true"
+      :header="dialogHeader"
+      @submit="removeStudent()"
+      :width="600"
+      btnColor="red"
+      btnText="Remove"
+    >
+      <template v-slot:content>
+        <v-checkbox
+          v-model="preventFromJoining"
+          color="success"
+          label="Prevent from joining again"
+        ></v-checkbox>
+      </template>
+    </Dialog>
   </v-row>
 </template>
 
@@ -145,10 +168,11 @@ import TutorialDisplay from "./TutorialDisplay";
 import LineChart from "./Chart";
 import BarChart from "./BarChart";
 import Dialog from "@/components/Dialog";
-import { post } from "@/helpers.js";
+import { post, compareString } from "@/helpers.js";
 
 export default {
   name: "Students",
+
   props: {
     topics: Array,
     students: Object,
@@ -157,6 +181,11 @@ export default {
     joinCode: String,
     individualScores: Object
   },
+
+  created() {
+    console.log('STUDENTS: ', this.students)
+  },
+
   data() {
     return {
       preventFromJoining: false,
@@ -165,14 +194,18 @@ export default {
       noStudentsToShow: true,
       understandingColors: ['rgb(240, 53, 36)', 'rgb(255, 183, 0)', 'rgb(250, 225, 0)', 'rgb(126, 196, 4)', '#B2FF59'],
       maxUnderstanding: 10,
-    };
+      sortByItems: ['Join time', 'Highest understanding', 'Lowest understanding', 'First name', 'Last name'],
+      sortBy: 'Join time',
+    }
   },
+
   components: {
     TutorialDisplay,
     LineChart,
     Dialog,
     BarChart
   },
+
   computed: {
     dialogHeader() {
       return (
@@ -213,16 +246,32 @@ export default {
         ]
       };
     },
-    totalStudents() {
-      return Object.keys(this.students).length;
+    numStudents() {
+      return this.presentStudents.length
     },
     presentStudents() {
       return Object.values(this.students).filter(student => student.inLecture)
-        .length;
-    }
+    },
+    studentsSorted() {
+      return Object.values(this.presentStudents).sort((a, b) => {
+        a.first_name += ''; a.last_name += '' // Convert null names to 'null' strings
+        b.first_name += ''; b.last_name += ''
+        switch (this.sortBy) {
+          case 'Join time':
+            return a.ts - b.ts
+          case 'Highest understanding':
+            return this.individualScores[b.uid] - this.individualScores[a.uid] 
+          case 'Lowest understanding':
+            return this.individualScores[a.uid] - this.individualScores[b.uid] 
+          case 'First name':
+            return compareString(a.first_name, b.first_name)
+          case 'Last name':
+            return compareString(a.last_name, b.last_name)
+        }
+      })
+    },
   },
-  created() {},
-  watch: {},
+
   methods: {
     resetTutorial() {
       this.$emit("resetTutorial");
@@ -258,5 +307,5 @@ export default {
       return color
     },
   }
-};
+}
 </script>
