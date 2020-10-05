@@ -9,6 +9,8 @@ import '@/assets/css/global.css'
 
 // GAuth
 import GAuth from 'vue-google-oauth2'
+
+import './registerServiceWorker'
 const gauthOption = {
   clientId: '462381253872-6vibv72k3cjoqlo17u5jmebgss8c1h4b.apps.googleusercontent.com',
   scope: 'profile email',
