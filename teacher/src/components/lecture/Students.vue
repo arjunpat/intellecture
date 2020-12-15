@@ -54,7 +54,7 @@
               :key="i"
             ></v-divider>
             <StudentListItem 
-              v-if="individualScores[student.uid]"
+              v-if="individualScores[student.uid] || individualScores[student.uid] == 0"
               :key="student.uid"
               :student="student"
               :understanding="individualScores[student.uid]"
