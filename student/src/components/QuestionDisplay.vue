@@ -1,6 +1,6 @@
 <template>
   <v-expand-transition>
-    <v-card tile v-if="questions.length !== 0">
+    <v-card v-if="questions.length !== 0">
       <v-list dense subheader>
         <v-subheader>
           {{ header }}

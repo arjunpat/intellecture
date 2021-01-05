@@ -1,5 +1,3 @@
-<!-- TODO: support tap events (only supports mouse events rn) -->
-
 <template>
   <div 
     @touchstart="moveThumbToTouch"

@@ -1,6 +1,6 @@
 <template>
   <div class="fill-height">
-    <v-overlay :value="!authUser" opacity="0.7" :dark="false">
+    <v-overlay :value="notSignedIn" z-index="10" opacity="0.7" :dark="false">
       <NotSignedIn />
     </v-overlay>
 
@@ -33,25 +33,54 @@
                     Understanding Score
                   </template>
                   <template v-slot:explanation>
-                    Move this slider to rate how well you understand the content being presented.
+                    Move this slider when prompted to rate how well you understand the content being presented.
                   </template>
+                  
+                  <v-card 
+                    class="pa-2"
+                    :style="{ pointerEvents: sliderEnabled ? 'auto' : 'none' }"
+                  >
+                    <v-expand-transition>
+                      <div class="pl-2 text-h6" v-show="sliderEnabled">
+                        Rate your understanding now
+                      </div>
+                    </v-expand-transition>
 
-                  <div id="understanding" class="text-center headline mb-2" style="height: 2em;" :style="{color: color}">
-                    <div id="understandingText">{{ understanding }}</div>
-                    <img v-if="!understanding" :src="require('@/assets/img/sad.svg')" style="width: 2em; height: 2em" />
-                  </div>
+                    <span v-if="showTutorial !== 1">
+                      <v-fade-transition>
+                        <div v-show="!sliderEnabled" class="disabled-overlay">
+                          <span>Waiting for instructor to poll for understanding...</span>
+                        </div>
+                      </v-fade-transition>
+                    </span>
 
-                  <UnderstandingSlider
-                    @updateUnderstanding="updateUnderstanding"
-                    @spammingTooMuch="spammingSliderTooMuch"
-                    v-model="sliderValue"
-                    :min="0"
-                    :max="sliderMax"
-                    :throttleDelay="throttleDelay"
-                    :spamLimitPerMin="spamLimitPerMin"
-                    :spamLockTime="spamLockTime"
-                    class="mb-4"
-                  />
+                    <div id="understanding" class="text-center headline mb-2" style="height: 2em;" :style="{color: color}">
+                      <div id="understandingText">{{ understanding }}</div>
+                      <img v-if="!understanding" :src="require('@/assets/img/sad.svg')" style="width: 2em; height: 2em" />
+                    </div>
+
+                    <UnderstandingSlider
+                      @updateUnderstanding="updateUnderstanding"
+                      @spammingTooMuch="spammingSliderTooMuch"
+                      v-model="sliderValue"
+                      :min="0"
+                      :max="sliderMax"
+                      :throttleDelay="throttleDelay"
+                      :spamLimitPerMin="spamLimitPerMin"
+                      :spamLockTime="spamLockTime"
+                      class="mb-4"
+                    />
+
+                    <div class="d-flex" style="width: 100%">
+                      <v-spacer />
+                      <v-btn 
+                        @click="submitUnderstanding"
+                        :disabled="!sliderEnabled" 
+                        color="#65bb6aff" 
+                        :dark="sliderEnabled"
+                      >Submit</v-btn>
+                    </div>
+                  </v-card>
                 </TutorialDisplay>
 
                 <TutorialDisplay :show="showTutorial == 2" backgroundColor="unset" @next="showTutorial++" @cancel="showTutorial = -1">
@@ -91,7 +120,7 @@
               </span>
             </v-expand-transition>
 
-            <TutorialDisplay :show="showTutorial == 4" backgroundColor="white" @next="showTutorial = 5" @cancel="showTutorial = -1" top>
+            <TutorialDisplay :show="showTutorial == 4" backgroundColor="white" @next="showTutorial++" @cancel="showTutorial = -1" top>
               <template v-slot:title>
                 My questions
               </template>
@@ -184,6 +213,24 @@
 </template>
 
 <style scoped>
+  .disabled-overlay {
+    position: absolute;
+    border-radius: 3px;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+
+    background-color: rgba(50, 50, 50, .3);
+    z-index: 3;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+  }
+
   #understanding {
     transition: all 0.4s;
     position: relative;
@@ -248,6 +295,7 @@ export default {
       // Slider
       sliderValue: 5,
       sliderMax: 10,
+      sliderEnabled: false,
       throttleDelay: 1000,    // Limit understanding to only be updated once every `throttleDelay` ms
       spamLimitPerMin: 30,    // Notify user after spamming slider `spamLimitPerMin` times in a minute
       spamLockTime: 60000,    // ms to lock slider after spamming
@@ -307,7 +355,7 @@ export default {
     if (this.testing) {
       this.lectureInfo = testData.testLectureInfo
       this.questions = testData.testQuestions
-      this.poll = testData.testPoll
+      //this.poll = testData.testPoll
     }
 
     // Show tutorial if first time
@@ -352,7 +400,10 @@ export default {
       if (this.showTutorial === 3 && Object.keys(this.questions).length === 0) 
         return Object.values(this.tutorialQuestions)
       return Object.values(this.questions).sort((a,b) => (a.elapsed > b.elapsed) ? 1 : -1)
-    }
+    },
+    notSignedIn() {
+      return !this.authUser && !this.testing
+    },
   },
   
   methods: {
@@ -446,6 +497,9 @@ export default {
       }
     },
     updateUnderstanding() {
+      // deprecated
+      return
+
       const score = this.sliderValue
       if (this.socket.readyState === this.socket.OPEN) {
         post(`/lectures/live/student/${this.id}/score`, {
@@ -455,6 +509,10 @@ export default {
           log(err)
         })
       }
+    },
+    submitUnderstanding() {
+      // TODO: post to API endpoint
+      this.sliderEnabled = false
     },
     askQuestion(question) {
       post(`/lectures/live/student/${this.id}/question`, {
