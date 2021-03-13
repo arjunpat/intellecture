@@ -179,6 +179,35 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+      <v-dialog
+        :value="Object.keys(pollResponses).length > 0"
+        persistent
+        max-width="400"
+        content-class="ma-0"
+      >
+        <v-card>
+          <v-card-text class="pb-0 pt-4">
+            <div class="mb-2" style="font-family: 'Poppins'; color: black; font-size: 18px;">{{ pollResponses.prompt }}</div>
+            <div v-for="(option, i) in pollResponses.options" :key="i">
+              <span>{{ option.text }}</span>
+              <v-progress-linear :value="option.percentage*100" height="25" color="success">
+                <template v-slot:default="{ value }">
+                  <strong>{{ Math.ceil(value) + '%' }}</strong>
+                </template>
+              </v-progress-linear>
+            </div>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              text
+              @click="pollResponses = {}"
+            >
+              Close
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-container>
   </div>
 </template>
@@ -267,6 +296,7 @@ export default {
       poll: {},
       pollOptionSelected: -1,
       pollError: '',
+      pollResponses: {},
 
       // Tutorial
       showTutorial: -1,
@@ -307,7 +337,8 @@ export default {
     if (this.testing) {
       this.lectureInfo = testData.testLectureInfo
       this.questions = testData.testQuestions
-      this.poll = testData.testPoll
+      //this.poll = testData.testPoll
+      this.pollResponses = testData.testPollResponses
     }
 
     // Show tutorial if first time

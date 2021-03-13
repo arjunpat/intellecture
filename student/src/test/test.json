@@ -9,5 +9,14 @@
       "Red",
       "Yellow"
     ]
+  },
+  "testPollResponses": {
+    "prompt": "If someone was pointing a gun to your head and you had to pick a favorite color, what would it be?",
+    "options": [
+      {"text": "Green", "percentage": 0.5},
+      {"text": "Blue", "percentage": 0.35},
+      {"text": "Red", "percentage": 0.5},
+      {"text": "Yellow", "percentage": 0.15}
+    ]
   }
 }
