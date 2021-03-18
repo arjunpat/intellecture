@@ -39,83 +39,35 @@
             dark
             v-bind="attrs"
             v-on="on"
-            >{{!savedPoll ? 'New' : 'Open'}} poll</v-btn
+            >{{!savedPoll ? 'Create new' : 'Open poll'}}</v-btn
           >
         </template>
-        <v-card>
-          <v-card-title>
-            <span style="font-family: var(--main-font);"
-              >Create a new poll</span
-            >
-          </v-card-title>
-          <v-card-text>
-            <v-container>
-              <v-row>
-                <v-col cols="12">
-                  <v-textarea
-                    solo
-                    v-model="prompt"
-                    name="question"
-                    label="Question"
-                    style="font-family: var(--main-font)"
-                    required
-                    auto-grow
-                    rows="2"
-                  ></v-textarea>
-                </v-col>
-                <v-slide-y-transition :group="true" style="width: 100%;">
-                  <v-col
-                    cols="12"
-                    v-for="(choice, index) in options"
-                    v-bind:key="index"
-                    :style="{ marginTop: index != 0 ? '-40px' : '-30px' }"
-                  >
-                    <v-text-field
-                      :label="'Choice ' + (index + 1)"
-                      required
-                      autocomplete="off"
-                      :value="choice"
-                      v-model="options[index]"
-                    ></v-text-field>
-                  </v-col>
-                </v-slide-y-transition>
-                <v-col cols="12" style="margin-top: -30px;">
-                  <v-btn @click="options.push('')" small class="mr-1">+</v-btn>
-                  <v-btn
-                    @click="removeOption()"
-                    :disabled="this.options.length == 2"
-                    small
-                    >-</v-btn
-                  >
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn
-              color="red"
-              text
-              @click="
-                dialog = false;
-                resetPoll();
-              "
-              >{{savedPoll ? 'Remove' : 'Cancel'}}</v-btn
-            >
-            <v-btn
-              text
-              @click="
-                dialog = false;
-                savePoll();
-              "
-              >Save</v-btn
-            >
-            <v-btn color="green lighten-1" text @click="createPoll()"
-              >Create</v-btn
-            >
-          </v-card-actions>
-        </v-card>
+
+        <EditPolls :givenOptions="options" :givenPrompt="prompt" :savedPoll="savedPoll" @resetPoll="dialog=false; resetPoll()" @savePoll="dialog=false; savePoll();" @setOptions="setOptions" @setPrompt="setPrompt" @createPoll="createPoll"></EditPolls>
+        
       </v-dialog>
+
+      <v-dialog v-model="useOldDialog" persistent max-width="600px">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            class="ml-1"
+            :color="'green lighten-5'"
+            bottom
+            
+            v-bind="attrs"
+            v-on="on"
+            v-show="!savedPoll & activePoll < 0"
+            @click="selectedPoll = false;"
+            >Use Existing</v-btn
+          >
+        </template>
+
+        <SearchPolls v-if="!selectedPoll" :pastPolls="polls" @cancel="useOldDialog = false" @pollSelected="pollSelected"></SearchPolls>
+
+        <EditPolls v-if="selectedPoll" :givenOptions="options" :givenPrompt="prompt" :savedPoll="savedPoll" @resetPoll="useOldDialog=false; resetPoll()" @savePoll="useOldDialog=false; savePoll();" @setOptions="setOptions" @setPrompt="setPrompt" @createPoll="createPoll"></EditPolls>
+        
+      </v-dialog>
+      
     </v-col>
 
     <v-col
@@ -145,6 +97,26 @@
           ><v-chip
             >{{ percentParticipation(poll.votes) }}% participation</v-chip
           >
+          <v-tooltip right>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                class="ml-2"
+                fab
+                dark
+                small
+                color="green"
+                v-bind="attrs"
+                v-on="on"
+                @click="sendResults(poll.uid, index)"
+              >
+                <v-icon dark>
+                  {{ !sentIcon[index] ? 'mdi-send' : 'mdi-send-check' }}
+                </v-icon>
+              </v-btn>
+            </template>
+            <span>Send results</span>
+          </v-tooltip>
+          
         </div>
       </v-col>
     </v-col>
@@ -154,6 +126,8 @@
 <script>
 import TutorialDisplay from "./TutorialDisplay";
 import Dialog from "@/components/Dialog";
+import EditPolls from "@/components/EditPolls";
+import SearchPolls from "@/components/lecture/SearchPolls";
 import { post } from "@/helpers.js";
 import AutoSnackbar from "@/components/AutoSnackbar";
 import BarChart from "./BarChart";
@@ -169,6 +143,7 @@ export default {
   data() {
     return {
       dialog: false,
+      useOldDialog: false,
       options: ["", ""],
       prompt: "",
       snackbar: false,
@@ -176,14 +151,18 @@ export default {
       error: "",
       datacollection: {},
       pastData: [],
-      savedPoll: false
+      savedPoll: false,
+      selectedPoll: false,
+      sentIcon: []
     };
   },
   components: {
     TutorialDisplay,
     Dialog,
     AutoSnackbar,
-    BarChart
+    BarChart,
+    EditPolls,
+    SearchPolls
   },
   computed: {
     smallScreen() {
@@ -202,6 +181,7 @@ export default {
         this.showError("Wait until more students join");
       } else {
         this.dialog = false;
+        this.useOldDialog=false;
         this.options = newOptions;
         post(`/lectures/live/teacher/${this.lectureId}/poll`, {
           prompt: this.prompt,
@@ -220,13 +200,37 @@ export default {
         this.preparePastData();
       });
     },
-    resetPoll() {
+    resetPoll() { // fix with component
       this.savedPoll = false;
       this.prompt = "";
       this.options = ["", ""];
     },
     savePoll() {
       this.savedPoll = true;
+    },
+    sendResults(uid, index) {
+      post(`/lectures/live/teacher/${this.lectureId}/share-poll-results`, {
+        poll_uid: uid
+      }).then(result => {
+        if(result.success) {
+          this.sentIcon[index] = true;
+          console.log(result);
+          console.log(this.sentIcon);
+        } else {
+          this.showError("Could not send results");
+        }
+      });
+    },
+    pollSelected(poll) {
+      this.options = poll.options;
+      this.prompt = poll.prompt;
+      this.selectedPoll = true;
+    },
+    setOptions(options) {
+      this.options = options;
+    },
+    setPrompt(prompt) {
+      this.prompt = prompt
     },
     resetTutorial() {
       this.$emit("resetTutorial");
@@ -276,7 +280,9 @@ export default {
     },
     preparePastData() {
       this.pastData = [];
+      this.sentIcon = [];
       for (let i = 0; i < this.pollsreversed.length; i++) {
+        this.sentIcon.push(false)
         this.pastData.push({
           labels: this.pollsreversed[i].options,
           datasets: [

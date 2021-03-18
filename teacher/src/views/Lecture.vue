@@ -92,6 +92,8 @@
                 :showTutorial="showTutorial"
                 :datacollection="datacollection"
                 :shortened="shortened"
+                :students="students"
+                :individualScores="individualScores"
                 @resetTutorial="resetTutorial()"
                 @nextTutorial="nextTutorial()"
               />
