@@ -72,3 +72,19 @@ Ends a poll.
   "poll_uid": "2342jaSF23jfwl"
 }
 ```
+
+## POST /lectures/live/teacher/:lecture_uid/reset-scores
+
+Resets all student scores back to 5.
+
+## POST /lectures/live/teacher/:lecture_uid/share-poll-results
+
+Shares poll results with all students.
+
+###### Request body:
+
+```javascript
+{
+  "poll_uid": "2342jaSF23jfwl"
+}
+```

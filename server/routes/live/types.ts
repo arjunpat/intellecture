@@ -143,5 +143,13 @@ export namespace WS {
   export interface ResetScores extends Message {
     type: 'reset_scores'
   }
+
+  export interface PollResult extends Message {
+    type: 'poll_result',
+    poll_uid: string,
+    prompt: string,
+    options: string[],
+    counts: number[] // array where each index corresponds to an option
+  }
 }
 

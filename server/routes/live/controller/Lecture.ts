@@ -99,6 +99,9 @@ export default class Lecture {
       case 'rst': // reset
         this.sendToStudents(<WS.ResetScores> { type: 'reset_scores' });
         break;
+      case 'spr':
+        this.sharePollResults(data.poll_uid);
+        break;
       case 'end': // end lecture
         this.end();
         break;
@@ -161,7 +164,7 @@ export default class Lecture {
     }
   }
 
-  async endPoll(poll_uid: string) {
+  endPoll(poll_uid: string) {
     let poll = this.polls.find(e => e.getUid() === poll_uid);
     if (poll && poll.isRunning()) {
       poll.end();
@@ -170,6 +173,19 @@ export default class Lecture {
         type: 'end_poll',
         poll_uid
       });
+    }
+  }
+
+  sharePollResults(poll_uid: string) {
+    let poll = this.polls.find(e => e.getUid() === poll_uid);
+    if (poll && !poll.isRunning()) {
+      this.sendToStudents(<WS.PollResult> {
+        type: 'poll_result',
+        poll_uid: poll.getUid(),
+        prompt: poll.getPrompt(),
+        options: poll.getOptions(),
+        counts: poll.getVoterSummary()
+      })
     }
   }
 

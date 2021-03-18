@@ -286,27 +286,27 @@ router.post('/teacher/:lecture_uid/end-poll', mw.auth, attachLecture, ownsLectur
   res.send(responses.received());
 });
 
-router.post('/teacher/:lecture_uid/active', mw.auth, attachLecture, ownsLecture, (req, res) => {
+router.post('/teacher/:lecture_uid/share-poll-results', mw.auth, attachLecture, ownsLecture, (req: Request, res) => {
   publish(req.params.lecture_uid, {
-    type: 'act'
+    type: 'spr',
+    poll_uid: req.body.poll_uid
   });
 
   res.send(responses.received());
 });
 
-router.post('/teacher/:lecture_uid/reset-scores', mw.auth, attachLecture, ownsLecture, (req, res) => {
-  publish(req.params.lecture_uid, {
-    type: 'rst'
-  });
+const actionMap = {
+  'active': 'act',
+  'reset-scores': 'rst',
+  'enable-individual-scores': 'eis'
+};
+router.post('/teacher/:lecture_uid/:action', mw.auth, attachLecture, ownsLecture, (req, res) => {
+  let action = actionMap[req.params.action];
 
-  res.send(responses.received());
-});
+  if (!action)
+    return res.send(responses.error('action_not_supported'));
 
-router.post('/teacher/:lecture_uid/enable-individual-scores', mw.auth, attachLecture, ownsLecture, (req, res) => {
-  publish(req.params.lecture_uid, {
-    type: 'eis'
-  });
-
+  publish(req.params.lecture_uid, { type: action });
   res.send(responses.received());
 });
 
