@@ -180,17 +180,17 @@
         </v-card>
       </v-dialog>
       <v-dialog
-        :value="Object.keys(pollResponses).length > 0"
+        :value="Object.keys(pollResult).length > 0"
         persistent
         max-width="400"
         content-class="ma-0"
       >
         <v-card>
           <v-card-text class="pb-0 pt-4">
-            <div class="mb-2" style="font-family: 'Poppins'; color: black; font-size: 18px;">{{ pollResponses.prompt }}</div>
-            <div v-for="(option, i) in pollResponses.options" :key="i">
-              <span>{{ option.text }}</span>
-              <v-progress-linear :value="option.percentage*100" height="25" color="success">
+            <div class="mb-2" style="font-family: 'Poppins'; color: black; font-size: 18px;">{{ pollResult.prompt }}</div>
+            <div v-for="(option, i) in pollResult.options" :key="i">
+              <span>{{ option }}</span>
+              <v-progress-linear :value="100 * pollResult.counts[i] / pollResultTotalResponses" height="25" color="success">
                 <template v-slot:default="{ value }">
                   <strong>{{ Math.ceil(value) + '%' }}</strong>
                 </template>
@@ -201,7 +201,7 @@
             <v-spacer></v-spacer>
             <v-btn
               text
-              @click="pollResponses = {}"
+              @click="pollResult = {}"
             >
               Close
             </v-btn>
@@ -296,7 +296,7 @@ export default {
       poll: {},
       pollOptionSelected: -1,
       pollError: '',
-      pollResponses: {},
+      pollResult: {},
 
       // Tutorial
       showTutorial: -1,
@@ -338,7 +338,7 @@ export default {
       this.lectureInfo = testData.testLectureInfo
       this.questions = testData.testQuestions
       //this.poll = testData.testPoll
-      this.pollResponses = testData.testPollResponses
+      this.pollResult = testData.testPollResponses
     }
 
     // Show tutorial if first time
@@ -383,7 +383,13 @@ export default {
       if (this.showTutorial === 3 && Object.keys(this.questions).length === 0) 
         return Object.values(this.tutorialQuestions)
       return Object.values(this.questions).sort((a,b) => (a.elapsed > b.elapsed) ? 1 : -1)
-    }
+    },
+    pollResultTotalResponses() {
+      if (!this.pollResult) return null
+      let sum = 0
+      this.pollResult.counts.forEach(count => sum += count)
+      return sum
+    },
   },
   
   methods: {
@@ -460,6 +466,10 @@ export default {
             if (this.poll.poll_uid === data.poll_uid) {
               this.resetPoll()
             }
+            break
+          case 'poll_result':
+            this.pollResult = data
+            break
         }
       }
 
