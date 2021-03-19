@@ -107,14 +107,14 @@
                 color="green"
                 v-bind="attrs"
                 v-on="on"
-                @click="sendResults(poll.uid, index)"
+                @click="sendResults(poll.poll_uid, index)"
               >
                 <v-icon dark>
                   {{ !sentIcon[index] ? 'mdi-send' : 'mdi-send-check' }}
                 </v-icon>
               </v-btn>
             </template>
-            <span>Send results</span>
+            <span>Share results with students</span>
           </v-tooltip>
           
         </div>
