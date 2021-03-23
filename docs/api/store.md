@@ -32,7 +32,7 @@ Set value in store by key. Value can be any JSON object.
 }
 ```
 
-## GET /classes/get/:key
+## GET /store/get/:key
 
 Get value in store by key.
 
