@@ -177,4 +177,14 @@
       class_uid
     });
   }
+
+  function storeSet(key, value) {
+    post(`/store/set/${key}`, {
+      value
+    });
+  }
+
+  function storeGet(key) {
+    get(`/store/get/${key}`);
+  }
 </script>

@@ -15,6 +15,7 @@ import LectureQUpvotes from './LectureQUpvotes';
 import LectureStudentLog from './LectureStudentLog';
 import Polls from './Polls';
 import PollResponses from './PollResponses';
+import Store from './Store';
 
 import Redis from '../lib/Redis';
 const redis = new Redis();
@@ -41,6 +42,7 @@ export default {
   lectureStudentLog: new LectureStudentLog(mysql),
   polls: new Polls(mysql),
   pollResponses: new PollResponses(mysql),
+  store: new Store(mysql),
   redis,
   hitsCounter,
 };
