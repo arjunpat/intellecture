@@ -64,12 +64,12 @@
             color="red"
             text
             @click="$emit('resetPoll'); savePoll = false; prompt='';"
-            >{{savedPoll ? 'Remove' : 'Cancel'}}</v-btn
+            >{{savedPoll ? 'Clear' : 'Cancel'}}</v-btn
         >
         <v-btn
             text
             @click="$emit('savePoll')"
-            >Save</v-btn
+            >Close</v-btn
         >
         <v-btn color="green lighten-1" text @click="$emit('setOptions', options); $emit('setPrompt', prompt); $emit('createPoll', savePoll); savePoll = false;"
             >Create</v-btn
