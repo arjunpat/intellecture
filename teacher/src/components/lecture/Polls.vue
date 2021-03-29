@@ -331,7 +331,11 @@ export default {
     },
     async genPastPolls() {
       let d = await get('/store/get/polls').then((d) => d.data)
-      this.pastPolls = d
+      if(d === undefined) {
+        this.savePastPolls()
+      } else {
+        this.pastPolls = d
+      }
     },
     async savePastPolls() {
       post('/store/set/polls', {
