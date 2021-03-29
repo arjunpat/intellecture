@@ -11,23 +11,31 @@
                 <v-slide-y-transition :group="true" style="width: 100%;">
                 <template v-for="(poll, index) in filteredItems">
                   <v-list-item
-                    :key="poll.uid"
+                    :key="index"
                     ripple
                     @click="enterPoll(poll)"
                     style="font-family: var(--main-font)" 
                   >
                     <v-list-item-content>
                       <v-list-item-title class="mb-2">{{ poll.prompt }}</v-list-item-title>
-                      <v-list-item-subtitle><v-chip class="mr-1" v-for="(option, i) in poll.options" :key="i">{{ option }}</v-chip></v-list-item-subtitle>
+                      <v-list-item-subtitle><v-chip class="mr-1" v-for="(option, i) in poll.options" :key="index+'-'+i">{{ option }}</v-chip></v-list-item-subtitle>
                     </v-list-item-content>
   
                   </v-list-item>
                   <v-divider
-                    v-if="index + 1 < pastPollsEx.length"
-                    :key="index"
+                    v-if="index + 1 < pastPolls.length"
+                    :key="index+'-divider'"
                   ></v-divider>
                 </template>
                 </v-slide-y-transition>
+
+                <h1 v-if="pastPolls.length == 0" style="font-weight: normal; font-size: 20px;">There are no existing polls to use. Click <v-btn color="success" style="margin-top: -5px;" small>Create new</v-btn> and select <v-chip style="margin-top: 5px;"> <v-checkbox
+                  style="font-family: var(--main-font); display: inline-block; margin-top: -5px; "
+                  label="Save as existing"
+                  color="success"
+                  hide-details
+                  disabled
+                ></v-checkbox></v-chip> to save polls here.</h1>
 
               </v-list>
 
@@ -54,11 +62,15 @@
 
 
 <script>
+
 export default {
   name: 'SearchPolls',
 
   props: {
-   pastPolls: { type: Array, required: true }
+   pastPollsData: { type: Array, required: true }
+  },
+
+  mounted() {
   },
 
   watch: {
@@ -67,7 +79,7 @@ export default {
   data() {
     return {
       search: "",
-      pastPollsEx: [
+      /*pastPollsEx: [
         {
           uid: 'aweiifojaw93a3f23f',
           prompt: 'Why is the sky blue?',
@@ -112,7 +124,8 @@ export default {
           prompt: 'When is your birthday?',
           options: ['Your mom', 'Your dad', 'Your sister', 'Obama']
         },
-      ]
+      ]*/
+      pastPolls: [...this.pastPollsData]
     }
   },
 
@@ -127,8 +140,8 @@ export default {
 
   computed: {
     filteredItems() {
-        return this.pastPollsEx.filter(poll => {
-          if(!this.search) return this.pastPollsEx;
+        return this.pastPolls.filter(poll => {
+          if(!this.search) return this.pastPolls;
           if(poll.prompt.toLowerCase().includes(this.search.toLowerCase())) return true;
           for(let i=0; i<poll.options.length; i++) {
             if(poll.options[i].toLowerCase().includes(this.search.toLowerCase())) return true;

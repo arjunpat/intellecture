@@ -62,9 +62,9 @@
           >
         </template>
 
-        <SearchPolls v-if="!selectedPoll" :pastPolls="polls" @cancel="useOldDialog = false" @pollSelected="pollSelected"></SearchPolls>
+        <SearchPolls v-if="!selectedPoll" :pastPollsData="pastPolls" @cancel="useOldDialog = false" @pollSelected="pollSelected"></SearchPolls>
 
-        <EditPolls v-if="selectedPoll" :givenOptions="options" :givenPrompt="prompt" :savedPoll="savedPoll" @resetPoll="useOldDialog=false; resetPoll()" @savePoll="useOldDialog=false; savePoll();" @setOptions="setOptions" @setPrompt="setPrompt" @createPoll="createPoll"></EditPolls>
+        <EditPolls v-if="selectedPoll" :useExisting="true" :givenOptions="options" :givenPrompt="prompt" :savedPoll="savedPoll" @resetPoll="useOldDialog=false; resetPoll()" @savePoll="useOldDialog=false; savePoll();" @setOptions="setOptions" @setPrompt="setPrompt" @createPoll="createPoll"></EditPolls>
         
       </v-dialog>
       
@@ -128,7 +128,7 @@ import TutorialDisplay from "./TutorialDisplay";
 import Dialog from "@/components/Dialog";
 import EditPolls from "@/components/EditPolls";
 import SearchPolls from "@/components/lecture/SearchPolls";
-import { post } from "@/helpers.js";
+import { post, get } from "@/helpers.js";
 import AutoSnackbar from "@/components/AutoSnackbar";
 import BarChart from "./BarChart";
 
@@ -153,7 +153,8 @@ export default {
       pastData: [],
       savedPoll: false,
       selectedPoll: false,
-      sentIcon: []
+      sentIcon: [],
+      pastPolls: []
     };
   },
   components: {
@@ -170,7 +171,7 @@ export default {
     }
   },
   methods: {
-    createPoll() {
+    createPoll(saveAsExisting) {
       this.savedPoll = false;
       const newOptions = this.options.filter(option => option != "");
       if (this.prompt === "") {
@@ -180,8 +181,21 @@ export default {
       } else if (this.presentStudents == 0) {
         this.showError("Wait until more students join");
       } else {
+        if(saveAsExisting) {
+          this.pastPolls.push(
+            {
+              "prompt": this.prompt,
+              "options": this.options
+            }
+          )
+          post('/store/set/polls', {
+            "value": this.pastPolls
+          }).then(result => {
+            console.log(result)
+          })
+        }
         this.dialog = false;
-        this.useOldDialog=false;
+        this.useOldDialog = false;
         this.options = newOptions;
         post(`/lectures/live/teacher/${this.lectureId}/poll`, {
           prompt: this.prompt,
@@ -307,6 +321,10 @@ export default {
     percentParticipation(votes) {
       var percent = this.numResponses(votes) / this.totalStudents;
       return Math.round(percent * 10000) / 100;
+    },
+    async genPastPolls() {
+      let d = await get('/store/get/polls').then((d) => d.data)
+      this.pastPolls = d
     }
   },
   created() {
@@ -314,6 +332,7 @@ export default {
   },
   mounted() {
     this.initChart();
+    this.genPastPolls();
   },
   computed: {
     activePoll() {

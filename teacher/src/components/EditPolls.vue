@@ -46,6 +46,15 @@
                 >-</v-btn
                 >
             </v-col>
+            <v-col cols="12" v-if="!useExisting">
+            <v-checkbox
+              v-model="savePoll"
+              style="font-family: var(--main-font); margin-top: -15px;"
+              label="Save as existing"
+              color="success"
+              hide-details
+            ></v-checkbox>
+            </v-col>
             </v-row>
         </v-container>
         </v-card-text>
@@ -62,7 +71,7 @@
             @click="$emit('savePoll')"
             >Save</v-btn
         >
-        <v-btn color="green lighten-1" text @click="$emit('setOptions', options); $emit('setPrompt', prompt); $emit('createPoll')"
+        <v-btn color="green lighten-1" text @click="$emit('setOptions', options); $emit('setPrompt', prompt); $emit('createPoll', savePoll);"
             >Create</v-btn
         >
         </v-card-actions>
@@ -72,13 +81,16 @@
 
 
 <script>
+import { post } from "@/helpers.js";
+
 export default {
   name: 'EditPolls',
 
   props: {
    givenPrompt: { type: String, required: true },
    givenOptions: { type: Array, required: true },
-   savedPoll: { type: Boolean, required: true }
+   savedPoll: { type: Boolean, required: true },
+   useExisting: { type: Boolean, default: false }
   },
 
   watch: {
@@ -93,7 +105,8 @@ export default {
   data() {
     return {
         prompt: this.givenPrompt,
-        options: [...this.givenOptions]
+        options: [...this.givenOptions],
+        savePoll: false
     }
   },
 
