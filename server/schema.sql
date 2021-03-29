@@ -109,3 +109,11 @@ CREATE TABLE IF NOT EXISTS poll_responses (
   FOREIGN KEY (poll_uid) REFERENCES polls(uid) ON DELETE CASCADE,
   FOREIGN KEY (account_uid) REFERENCES accounts(uid) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS store (
+  account_uid VARCHAR(36),
+  `key` VARCHAR(30),
+  value TEXT,
+  CONSTRAINT PRIMARY KEY (account_uid, `key`),
+  FOREIGN KEY (account_uid) REFERENCES accounts(uid) ON DELETE CASCADE
+);

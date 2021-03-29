@@ -1,6 +1,6 @@
 import db from '../../../models';
 import { genUnderstandingScore, toStudent, toTeacher } from '../helpers';
-import { genId, genLectureJoinCode, messageSlack } from '../../../lib/helpers';
+import { genId, genLectureJoinCode } from '../../../lib/helpers';
 import extract from './extract';
 import Questions from './Questions';
 import Poll from './Poll';
@@ -179,13 +179,13 @@ export default class Lecture {
   sharePollResults(poll_uid: string) {
     let poll = this.polls.find(e => e.getUid() === poll_uid);
     if (poll && !poll.isRunning()) {
-      this.sendToStudents(<WS.PollResult> {
+      this.sendToStudents(<WS.PollResult>{
         type: 'poll_result',
         poll_uid: poll.getUid(),
         prompt: poll.getPrompt(),
         options: poll.getOptions(),
         counts: poll.getVoterSummary()
-      })
+      });
     }
   }
 
