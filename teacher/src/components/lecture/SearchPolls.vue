@@ -11,7 +11,7 @@
                 <v-slide-y-transition :group="true" style="width: 100%;">
                 <template v-for="(poll, index) in filteredItems">
                   <v-list-item
-                    :key="index"
+                    :key="poll.uid"
                     ripple
                     @click="enterPoll(poll)"
                     style="font-family: var(--main-font)" 
@@ -20,22 +20,28 @@
                       <v-list-item-title class="mb-2">{{ poll.prompt }}</v-list-item-title>
                       <v-list-item-subtitle><v-chip class="mr-1" v-for="(option, i) in poll.options" :key="index+'-'+i">{{ option }}</v-chip></v-list-item-subtitle>
                     </v-list-item-content>
+
+                    <v-list-item-icon>
+                      <v-btn text small @mouseover="hover = true" @mouseleave="hover = false" @click="$emit('removePoll', poll.uid)"><v-icon color="error">mdi-close</v-icon></v-btn>
+                    </v-list-item-icon>
   
                   </v-list-item>
                   <v-divider
-                    v-if="index + 1 < pastPolls.length"
+                    v-if="index + 1 < pastPollsData.length"
                     :key="index+'-divider'"
                   ></v-divider>
                 </template>
                 </v-slide-y-transition>
 
-                <h1 v-if="pastPolls.length == 0" style="font-weight: normal; font-size: 20px;">There are no existing polls to use. Click <v-btn color="success" style="margin-top: -5px;" small>Create new</v-btn> and select <v-chip style="margin-top: 5px;"> <v-checkbox
+                <v-slide-y-transition style="width: 100%;">
+                <h1 v-if="!emptySecond && pastPollsData.length == 0" style="font-weight: normal; font-size: 20px;">There are no existing polls to use. Click <v-btn color="success" style="margin-top: -5px;" small>Create new</v-btn> and select <v-chip style="margin-top: 5px;"> <v-checkbox
                   style="font-family: var(--main-font); display: inline-block; margin-top: -5px; "
                   label="Save as existing"
                   color="success"
                   hide-details
                   disabled
                 ></v-checkbox></v-chip> to save polls here.</h1>
+                </v-slide-y-transition>
 
               </v-list>
 
@@ -49,11 +55,8 @@
           <v-btn
               color="red"
               text
-              @click="$emit('cancel')"
+              @click="$emit('cancel'); emptySecond = false;"
               >Cancel</v-btn
-          >
-          <v-btn color="green lighten-1" text
-              >Continue</v-btn
           >
           </v-card-actions>
     </v-card>
@@ -79,6 +82,8 @@ export default {
   data() {
     return {
       search: "",
+      hover: false,
+      emptySecond: false
       /*pastPollsEx: [
         {
           uid: 'aweiifojaw93a3f23f',
@@ -125,7 +130,6 @@ export default {
           options: ['Your mom', 'Your dad', 'Your sister', 'Obama']
         },
       ]*/
-      pastPolls: [...this.pastPollsData]
     }
   },
 
@@ -134,14 +138,14 @@ export default {
        this.search="";
     },
     enterPoll(poll) {
-      this.$emit("pollSelected", poll);
+      if(!this.hover) this.$emit("pollSelected", poll);
     }
   },
 
   computed: {
     filteredItems() {
-        return this.pastPolls.filter(poll => {
-          if(!this.search) return this.pastPolls;
+        return this.pastPollsData.filter(poll => {
+          if(!this.search) return this.pastPollsData;
           if(poll.prompt.toLowerCase().includes(this.search.toLowerCase())) return true;
           for(let i=0; i<poll.options.length; i++) {
             if(poll.options[i].toLowerCase().includes(this.search.toLowerCase())) return true;
@@ -150,6 +154,14 @@ export default {
         }).sort((a, b) => (a.prompt > b.prompt) ? 1 : -1);
     }
   },
+
+  watch: {
+    pastPollsData(val) {
+      if(val.length == 0) {
+        this.emptySecond = true
+      }
+    }
+  }
 }
 </script>
 

@@ -62,7 +62,7 @@
           >
         </template>
 
-        <SearchPolls v-if="!selectedPoll" :pastPollsData="pastPolls" @cancel="useOldDialog = false" @pollSelected="pollSelected"></SearchPolls>
+        <SearchPolls v-if="!selectedPoll" :pastPollsData="pastPolls" @cancel="useOldDialog = false" @pollSelected="pollSelected" @removePoll="removeExistingPoll"></SearchPolls>
 
         <EditPolls v-if="selectedPoll" :useExisting="true" :givenOptions="options" :givenPrompt="prompt" :savedPoll="savedPoll" @resetPoll="useOldDialog=false; resetPoll()" @savePoll="useOldDialog=false; savePoll();" @setOptions="setOptions" @setPrompt="setPrompt" @createPoll="createPoll"></EditPolls>
         
@@ -182,17 +182,27 @@ export default {
         this.showError("Wait until more students join");
       } else {
         if(saveAsExisting) {
-          this.pastPolls.push(
-            {
-              "prompt": this.prompt,
-              "options": this.options
+          var uid = this.prompt
+          for(let i=0; i<this.options.length; i++) {
+            uid += this.options[i]
+          }
+          var duplicate = false
+          for(let i=0; i<this.pastPolls.length; i++) {
+            if(this.pastPolls[i].uid == uid) {
+              duplicate = true
+              break
             }
-          )
-          post('/store/set/polls', {
-            "value": this.pastPolls
-          }).then(result => {
-            console.log(result)
-          })
+          }
+          if(!duplicate) {
+            this.pastPolls.push(
+              {
+                "uid": uid,
+                "prompt": this.prompt,
+                "options": this.options
+              }
+            )
+            this.savePastPolls()
+          }
         }
         this.dialog = false;
         this.useOldDialog = false;
@@ -210,7 +220,6 @@ export default {
       post(`/lectures/live/teacher/${this.lectureId}/end-poll`, {
         poll_uid: this.polls[this.polls.length - 1].poll_uid
       }).then(result => {
-        console.log(result);
         this.preparePastData();
       });
     },
@@ -228,8 +237,6 @@ export default {
       }).then(result => {
         if(result.success) {
           this.sentIcon[index] = true;
-          console.log(result);
-          console.log(this.sentIcon);
         } else {
           this.showError("Could not send results");
         }
@@ -325,6 +332,21 @@ export default {
     async genPastPolls() {
       let d = await get('/store/get/polls').then((d) => d.data)
       this.pastPolls = d
+    },
+    async savePastPolls() {
+      post('/store/set/polls', {
+        "value": this.pastPolls
+      }).then(result => {
+        console.log(result)
+      })
+    },
+    removeExistingPoll(uid) {
+      for(let i=0; i<this.pastPolls.length; i++) {
+        if(this.pastPolls[i].uid == uid) {
+          this.pastPolls.splice(i, 1)
+          this.savePastPolls()
+        }
+      }
     }
   },
   created() {
@@ -354,7 +376,6 @@ export default {
   },
   watch: {
     votes() {
-      console.log("Votes changed " + this.votes);
       this.initChart();
     },
     polls() {

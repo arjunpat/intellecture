@@ -63,7 +63,7 @@
         <v-btn
             color="red"
             text
-            @click="$emit('resetPoll')"
+            @click="$emit('resetPoll'); savePoll = false; prompt='';"
             >{{savedPoll ? 'Remove' : 'Cancel'}}</v-btn
         >
         <v-btn
@@ -71,7 +71,7 @@
             @click="$emit('savePoll')"
             >Save</v-btn
         >
-        <v-btn color="green lighten-1" text @click="$emit('setOptions', options); $emit('setPrompt', prompt); $emit('createPoll', savePoll);"
+        <v-btn color="green lighten-1" text @click="$emit('setOptions', options); $emit('setPrompt', prompt); $emit('createPoll', savePoll); savePoll = false;"
             >Create</v-btn
         >
         </v-card-actions>
@@ -81,7 +81,6 @@
 
 
 <script>
-import { post } from "@/helpers.js";
 
 export default {
   name: 'EditPolls',
