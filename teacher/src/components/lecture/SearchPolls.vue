@@ -36,7 +36,7 @@
                 <v-slide-y-transition style="width: 100%;">
                 <h1 v-if="!emptySecond && pastPollsData.length == 0" style="font-weight: normal; font-size: 20px;">There are no existing polls to use. Click <v-btn color="success" style="margin-top: -5px;" small>Create new</v-btn> and select <v-chip style="margin-top: 5px;"> <v-checkbox
                   style="font-family: var(--main-font); display: inline-block; margin-top: -5px; "
-                  label="Save as existing"
+                  label="Save for future use"
                   color="success"
                   hide-details
                   disabled
