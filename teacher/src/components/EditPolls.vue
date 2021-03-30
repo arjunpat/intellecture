@@ -50,7 +50,7 @@
             <v-checkbox
               v-model="savePoll"
               style="font-family: var(--main-font); margin-top: -15px;"
-              label="Save as existing"
+              label="Save for future use"
               color="success"
               hide-details
             ></v-checkbox>

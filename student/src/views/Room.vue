@@ -192,7 +192,7 @@
               <span>{{ option }}</span>
               <v-progress-linear :value="100 * pollResult.counts[i] / pollResultTotalResponses" height="25" color="success">
                 <template v-slot:default="{ value }">
-                  <strong>{{ Math.ceil(value) + '%' }}</strong>
+                  <strong>{{ `${Math.ceil(value)}% | ${pollResult.counts[i]} vote${pollResult.counts[i] == 1 ? '' : 's' }` }}</strong>
                 </template>
               </v-progress-linear>
             </div>
