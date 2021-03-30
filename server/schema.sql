@@ -112,8 +112,8 @@ CREATE TABLE IF NOT EXISTS poll_responses (
 
 CREATE TABLE IF NOT EXISTS store (
   account_uid VARCHAR(36),
-  `key` VARCHAR(30),
+  store_key VARCHAR(30),
   value TEXT,
-  CONSTRAINT PRIMARY KEY (account_uid, `key`),
+  CONSTRAINT PRIMARY KEY (account_uid, store_key),
   FOREIGN KEY (account_uid) REFERENCES accounts(uid) ON DELETE CASCADE
 );
